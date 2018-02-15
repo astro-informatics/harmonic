@@ -1,2 +1,5 @@
 *.cache/
 __pycache__/
+*.c
+*.cpython*
+build/

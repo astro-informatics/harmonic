@@ -26,34 +26,18 @@ extra_link_args=[
 ]
 
 setup(
-    classifiers=['Programming Language :: Python :: 2.7'],
-    name = "pyssht",
-    version = "2.0",
+    classifiers=['Programming Language :: Python :: 3.x'],
+    name = "harmonic",
+    version = "0.0",
     prefix='.',
     cmdclass={'build_ext': build_ext},
     ext_modules=cythonize([Extension(
-        "src/python/cy_mass_mapping",
+        "harmonic/harmonic",
         package_dir=['src'],
-        sources=["src/python/cy_mass_mapping.pyx"],
+        sources=["harmonic/harmonic.pyx"],
         include_dirs=include_dirs,
         libraries=[],#["ssht", "fftw3"],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
-    ),
-    Extension("src/python/cy_healpy_mass_mapping",
-            package_dir=['src'],
-            sources=["src/python/cy_healpy_mass_mapping.pyx"],
-            include_dirs=include_dirs,
-            libraries=[],
-            extra_link_args=extra_link_args,
-            extra_compile_args=[]
-    ),
-    Extension("src/python/cy_DES_utils",
-            package_dir=['src'],
-            sources=["src/python/cy_DES_utils.pyx"],
-            include_dirs=include_dirs,
-            libraries=[],
-            extra_link_args=extra_link_args,
-            extra_compile_args=[])
-    ])
+    )])
 )

@@ -1,6 +1,6 @@
-# content of test_sample.py
-def func(x):
-    return x + 1
+import harmonic as hm
+
 
 def test_answer():
-    assert func(4) == 5
+    assert hm.first_function(4) == 4
+    # assert hm.number == 9
