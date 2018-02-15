@@ -3,4 +3,5 @@ python:
   - "3.6"
   - "nightly"
 script:
+  - python setup.py build_ext --inplace
   - pytest
