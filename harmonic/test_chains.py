@@ -1,13 +1,14 @@
-import chains
+import chains as ch
+import pytest
 
 def test_constructor():
     
     ndim = 0    
     with pytest.raises(ValueError):
-        chains = Chains(ndim)
+        chains = ch.Chains(ndim)
         
     ndim = 3    
-    chains = Chains(ndim)
+    chains = ch.Chains(ndim)
     assert chains.ndim == ndim
     assert chains.nchains == 0
     assert chains.nsamples == 0

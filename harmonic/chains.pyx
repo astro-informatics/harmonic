@@ -1,4 +1,5 @@
 import numpy as np
+cimport numpy as np
 
 class Chains:
     """Class to store samples from multiple MCMC chains.    
@@ -33,10 +34,11 @@ class Chains:
             TypeError: Raised when ndim of new chain does not match previous chains.
         """
                         
-        (ndim, nsamples_new) = samples.shape
+        ndim_new     = samples.shape[0]
+        nsamples_new = samples.shape[1]
         
         # Check new chain has correct ndim.
-        if ndim != self.ndim:            
+        if ndim_new != self.ndim:            
             raise TypeError("ndim of new chain does not match previous chains")
         
         self.samples = np.concatenate((self.samples, samples))

@@ -36,7 +36,7 @@ setup(
         package_dir=['src'],
         sources=["harmonic/harmonic.pyx"],
         include_dirs=include_dirs,
-        libraries=[],#["ssht", "fftw3"],
+        libraries=[],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
     ),
@@ -45,7 +45,16 @@ setup(
         package_dir=['src'],
         sources=["harmonic/model.pyx"],
         include_dirs=include_dirs,
-        libraries=[],#["ssht", "fftw3"],
+        libraries=[],
+        extra_link_args=extra_link_args,
+        extra_compile_args=[]
+    ),        
+    Extension(
+        "harmonic/chains",
+        package_dir=['src'],
+        sources=["harmonic/chains.pyx"],
+        include_dirs=include_dirs,
+        libraries=[],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
     ),        
@@ -54,7 +63,7 @@ setup(
         package_dir=['src'],
         sources=["harmonic/tmp_poly_class_example.pyx"],
         include_dirs=include_dirs,
-        libraries=[],#["ssht", "fftw3"],
+        libraries=[],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
     )])
