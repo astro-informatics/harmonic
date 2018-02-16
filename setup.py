@@ -39,5 +39,14 @@ setup(
         libraries=[],#["ssht", "fftw3"],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
+    ),
+    Extension(
+        "harmonic/model_base_class",
+        package_dir=['src'],
+        sources=["harmonic/model_base_class.pyx"],
+        include_dirs=include_dirs,
+        libraries=[],#["ssht", "fftw3"],
+        extra_link_args=extra_link_args,
+        extra_compile_args=[]
     )])
 )
