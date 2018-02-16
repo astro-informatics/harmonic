@@ -8,7 +8,7 @@ class ModelBase(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def __init__(self, hyper_parameters=None):
+    def __init__(self, ranges, hyper_parameters=None):
         """ constructor setting the hyper parameters of the model
         """
 
