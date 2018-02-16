@@ -99,4 +99,5 @@ class ModifiedGaussianMixtureModel(Model):
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Use model to predict the hight of the posterior at point x
         """
-        return  
+        return
+        

@@ -54,11 +54,18 @@ class Chains:
     def add_chains_3d(self, samples):
         pass
             
-    def get_chain_idexes(i):
+    def get_chain_idexes(self, int i):
+        """ Gets the start and index of samples from a chain
+        Args:
+            i: The chain that you want to know the start index of
+
+        Returns:
+            A tuple of the start and end index
+        """
+        if i < 0:
+            raise ValueError("Chain number must be positive")
+        if i >= self.nchains:
+            raise ValueError("Chain number is greater than n_chains-1")
+
         return self.start_indices[i], self.start_indices[i+1]
-                            
-    def get_nsamples_in_chain(i): 
-        pass   
-        # check i valid        
-        # return (self.start_indices[i+1] - self.start_indices[i])
-                            
+                                                        

@@ -55,14 +55,37 @@ def test_add_chain():
     random_dim    =  7
     assert chains.samples[random_sample,random_dim] == samples1[random_sample,random_dim]
 
+def test_get_indexes():
 
+    ndim      = 10 
+    nsamples1 = 300
 
+    chains = ch.Chains(ndim)
+
+    np.random.seed(40)
+    samples1 = np.random.randn(nsamples1,ndim)
+
+    chains.add_chain(samples1)
+
+    nsamples2 = 3000
+    samples2  = np.random.randn(nsamples2,ndim)
+    chains.add_chain(samples2)
+
+    with pytest.raises(ValueError):
+        chains.get_chain_idexes(-1)
     
-        
+    with pytest.raises(ValueError):
+        chains.get_chain_idexes(2)
     
+    chain_start, chain_end = chains.get_chain_idexes(0)
+    assert chain_start == 0
+    assert chain_end   == nsamples1
     
+    chain_start, chain_end = chains.get_chain_idexes(1)
+    assert chain_start == nsamples1
+    assert chain_end   == nsamples1 + nsamples2
     
-    
+
     
 
 
