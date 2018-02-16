@@ -53,16 +53,9 @@ class Chains:
         
     def add_chains_3d(self, samples):
         pass
-        
-        
-    
-    
-    
-    def get_chain(i):
-        pass
-        # check i valid
-        # return self.samples[self.start_indices[i]:
-        #                     self.start_indices[i+1]]                            
+            
+    def get_chain_idexes(i):
+        return self.start_indices[i], self.start_indices[i+1]
                             
     def get_nsamples_in_chain(i): 
         pass   
