@@ -1,6 +1,6 @@
-
 class Chains:
-    """Doc string here"""
+    """Class to store samples from multiple MCMC chains.    
+    """
     
     def __init__(self, samples=empty ndarray):
         self.nchains = 1        
@@ -9,12 +9,23 @@ class Chains:
         self.chain_start_indices = [0] #ndarray?
         self.chain_start_indices.append(self.nsamples)
         
+        
     def add_chain(self, samples):
         # check dimension correct
         self.nchains += 1
         self.samples.append(samples)
         self.nsamples += samples.shape[0] # right dimension?
         self.chain_start_indices.append(self.nsamples)
+    
+    
+    def add_chains(self, samples):
+        
+        
+    def add_chains_3d(self, samples):
+        
+        
+    
+    
     
     def get_chain(i):
         # check i valid
