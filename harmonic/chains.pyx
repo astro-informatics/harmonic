@@ -1,28 +1,50 @@
+import numpy as np
+
 class Chains:
     """Class to store samples from multiple MCMC chains.    
     """
     
     
-    def __init__(self, samples=empty ndarray):        
-        pass
+    def __init__(self, int ndim):   
+        """Construct empty Chains.
         
-        # self.nchains = 1        
-        # self.ndim, self.nsamples = samples.shape
-        # self.samples = samples
-        # self.chain_start_indices = [0] #ndarray?
-        # self.chain_start_indices.append(self.nsamples)
+        Constructor doesn't do anything since we want to support setting up data from different input data formats (e.g. data from a single chain or multiple chains at once).  Data is added by the add_chain* methods.        
+        """    
+        
+        if ndim < 1:
+            raise ValueError("ndim must be greater than 0")
+        self.nchains = 0        
+        self.start_indices = [0] 
+        self.ndim = ndim
+        self.nsamples = 0        
+        self.samples = np.empty((0, self.ndim))
         
         
-    def add_chain(self, samples):
-        pass
         
-        # check dimension correct
-        # self.nchains += 1
-        # self.samples.append(samples)
-        # self.nsamples += samples.shape[0] # right dimension?
-        # self.chain_start_indices.append(self.nsamples)
-        # 
-    
+        
+    def add_chain(self, np.ndarray[double,ndim=2,mode="c"] samples not None):
+        """
+        
+        Args:
+            samples: n_new_samples x ndim
+        
+        
+        Raises:
+            TypeError: Raised when ndim of new chain does not match previous chains.
+        """
+                        
+        (ndim, nsamples_new) = samples.shape
+        
+        # Check new chain has correct ndim.
+        if ndim != self.ndim:            
+            raise TypeError("ndim of new chain does not match previous chains")
+        
+        self.samples = np.concatenate((self.samples, samples))
+        self.nsamples += nsamples_new                
+        self.start_indices.append(self.nsamples)
+        self.nchains += 1
+        
+        
     def add_chains(self, samples):
         pass
         
@@ -37,11 +59,11 @@ class Chains:
     def get_chain(i):
         pass
         # check i valid
-        # return self.samples[self.chain_start_indices[i]:
-        #                     self.chain_start_indices[i+1]]                            
+        # return self.samples[self.start_indices[i]:
+        #                     self.start_indices[i+1]]                            
                             
     def get_nsamples_in_chain(i): 
         pass   
         # check i valid        
-        # return (self.chain_start_indices[i+1] - self.chain_start_indices[i])
+        # return (self.start_indices[i+1] - self.start_indices[i])
                             
