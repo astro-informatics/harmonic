@@ -139,5 +139,8 @@ class Chains:
         return self.start_indices[i], self.start_indices[i+1]
                                                         
     def copy(self):
+        """Copy chain.
+        """
+        
         return copy.copy(self)
 
