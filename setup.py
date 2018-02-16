@@ -41,24 +41,15 @@ setup(
         extra_compile_args=[]
     ),
     Extension(
-        "harmonic/model_base_class",
+        "harmonic/model",
         package_dir=['src'],
-        sources=["harmonic/model_base_class.pyx"],
+        sources=["harmonic/model.pyx"],
         include_dirs=include_dirs,
         libraries=[],#["ssht", "fftw3"],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
-    ),
-        Extension(
-        "harmonic/hyper_sphere",
-        package_dir=['src'],
-        sources=["harmonic/hyper_sphere.pyx"],
-        include_dirs=include_dirs,
-        libraries=[],#["ssht", "fftw3"],
-        extra_link_args=extra_link_args,
-        extra_compile_args=[]
-    ),
-        Extension(
+    ),        
+    Extension(
         "harmonic/tmp_poly_class_example",
         package_dir=['src'],
         sources=["harmonic/tmp_poly_class_example.pyx"],
