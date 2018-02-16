@@ -1,5 +1,6 @@
 import chains as ch
 import pytest
+import numpy as np
 
 def test_constructor():
     
@@ -14,8 +15,48 @@ def test_constructor():
     assert chains.nsamples == 0
     assert len(chains.start_indices) == 1
     assert chains.start_indices[0] == 0
-    
-    
+
+
+def test_add_chain():
+
+    ndim     = 8
+    nsamples1 = 1000
+
+    chains = ch.Chains(ndim)
+
+    np.random.seed(40)
+    samples1 = np.random.randn(nsamples1,ndim)
+
+    chains.add_chain(samples1)
+
+    assert chains.nchains == 1
+    assert chains.nsamples == nsamples1
+    assert len(chains.start_indices) == 2
+    assert chains.start_indices[0] == 0
+    assert chains.start_indices[1] == nsamples1
+    random_sample = np.random.randint(nsamples1)
+    random_dim    = 4
+    assert chains.samples[random_sample,random_dim] == samples1[random_sample,random_dim]
+
+    nsamples2 = 3000
+    samples2  = np.random.randn(nsamples2,ndim)
+    chains.add_chain(samples2)
+
+    assert chains.nchains == 2
+    assert chains.nsamples == nsamples1 + nsamples2
+    assert len(chains.start_indices) == 3
+    assert chains.start_indices[0] == 0
+    assert chains.start_indices[1] == nsamples1
+    assert chains.start_indices[2] == nsamples1 + nsamples2
+    random_sample =  nsamples1 + np.random.randint(nsamples2)
+    random_dim    =  3
+    assert chains.samples[random_sample,random_dim] == samples2[random_sample-nsamples1,random_dim]
+    random_sample = np.random.randint(nsamples1)
+    random_dim    =  7
+    assert chains.samples[random_sample,random_dim] == samples1[random_sample,random_dim]
+
+
+
     
         
     
