@@ -1,5 +1,6 @@
 import numpy as np
 cimport numpy as np
+import copy
 
 class Chains:
     """Class to store samples from multiple MCMC chains.    
@@ -27,7 +28,7 @@ class Chains:
         """
         
         Args:
-            samples: n_new_samples x ndim
+            samples: 2D numpy.ndarray containing the samples with shape (n_new_samples,ndim) and dtype double
         
         
         Raises:
@@ -47,12 +48,49 @@ class Chains:
         self.nchains += 1
         
         
-    def add_chains(self, samples):
-        pass
+    def add_chains_2d(self, np.ndarray[double,ndim=2,mode="c"] samples not None, int n_chains_in):
+        """ Adds a number of chains to the chain class assumes all the chains are of the 
+            same length
+
+        Args:
+            samples: 2D numpy.ndarray containing the samples with shape (n_new_samples*n_chains_in,ndim) and dtype double
+            n_chains_in: int specifying the number of chains.
         
+        """
+
+        if (samples.shape[0] % n_chains_in) != 0:
+            raise ValueError("The number of samples is not a multiple of the nunber of chains")
+
+        # nsamples_new = samples.shape[0]
+        # ndim_new     = samples.shape[1]
+
+        # Check new chain has correct ndim.
+        if samples.shape[1] != self.ndim:            
+            raise TypeError("ndim of new chain does not match previous chains")
+
+        cdef int i_chain, samples_per_chain = samples.shape[0]/n_chains_in
+        for i_chain in range(n_chains_in):
+            self.add_chain(samples[i_chain*samples_per_chain:(i_chain+1)*samples_per_chain,:])
+
+        return
+
+    def add_chains_3d(self, np.ndarray[double,ndim=3,mode="c"] samples not None):
+        """ Adds a number of chains to the chain class assumes all the chains from 3D array
+
+        Args:
+            samples: 2D numpy.ndarray containing the samples with shape (n_chains_in,n_new_samples,ndim) and dtype double
         
-    def add_chains_3d(self, samples):
-        pass
+        """
+
+        # Check new chain has correct ndim.
+        if samples.shape[2] != self.ndim:            
+            raise TypeError("ndim of new chain does not match previous chains")
+
+        cdef int i_chain
+        for i_chain in range(samples.shape[0]):
+            self.add_chain(samples[i_chain,:,:])
+
+        return
             
     def get_chain_idexes(self, int i):
         """ Gets the start and index of samples from a chain
@@ -69,3 +107,6 @@ class Chains:
 
         return self.start_indices[i], self.start_indices[i+1]
                                                         
+    def copy(self):
+        return copy.copy(self)
+
