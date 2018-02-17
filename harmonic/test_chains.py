@@ -315,4 +315,35 @@ def test_nsamples_per_chain():
         assert nsamples_per_chain[i] == nsamples1
     for i in range(nchains1,nchains2+1):
         assert nsamples_per_chain[i] == nsamples2
+                
+def test_split_into_blocks():
+
+    ndim = 8
+    nsamples1 = 169
+    nsamples2 = 441
+    nsamples3 = 208
+
+    chains = ch.Chains(ndim)    
+    np.random.seed(40)
+    samples1 = np.random.randn(nsamples1, ndim)
+    chains.add_chain(samples1)    
+        
+    samples2 = np.random.randn(nsamples2, ndim)
+    chains.add_chain(samples2)    
+    
+    samples3 = np.random.randn(nsamples3, ndim)
+    chains.add_chain(samples3)    
+    
+    chains_blocked = chains.copy()
+
+    nblocks = 10                
+    chains_blocked.split_into_blocks(nblocks)
+    assert chains_blocked.nchains == nblocks
+    
+    # Check mean number of samples per (blocked) chain is similar to desired 
+    # value of hains_blocked.nsamples / nblocks.
+    mean_samples_per_chain = np.mean(chains_blocked.nsamples_per_chain())     
+    err = np.absolute(mean_samples_per_chain \
+        - chains_blocked.nsamples / nblocks)
+    assert err / mean_samples_per_chain < 0.05    
         
