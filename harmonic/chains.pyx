@@ -136,7 +136,29 @@ class Chains:
         if i >= self.nchains:
             raise ValueError("Chain number is greater than nchains-1")
 
-        return self.start_indices[i], self.start_indices[i+1]            
+        return self.start_indices[i], self.start_indices[i+1]
+            
+    def add(self, other):
+        """Add other Chain object to this object.
+        
+        Args: 
+            other: Other Chain object to be added to this object.
+        """
+                
+        if self.ndim != other.ndim:
+            raise ValueError("ndim of other Chain object does not match this "
+            + "Chain object.")
+            
+        if other.nsamples == 0:
+            return            
+        
+        self.samples = np.concatenate((self.samples, other.samples))
+        self.start_indices = self.start_indices \
+             + list(map(lambda x : x + self.nsamples, other.start_indices[1:]))
+        self.nchains += other.nchains
+        self.nsamples += other.nsamples 
+        
+        return        
                                                     
     def copy(self):
         """Copy chain.
