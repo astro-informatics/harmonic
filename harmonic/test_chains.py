@@ -341,7 +341,7 @@ def test_split_into_blocks():
     assert chains_blocked.nchains == nblocks
     
     # Check mean number of samples per (blocked) chain is similar to desired 
-    # value of hains_blocked.nsamples / nblocks.
+    # value of chains_blocked.nsamples / nblocks.
     mean_samples_per_chain = np.mean(chains_blocked.nsamples_per_chain())     
     err = np.absolute(mean_samples_per_chain \
         - chains_blocked.nsamples / nblocks)

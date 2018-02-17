@@ -173,7 +173,8 @@ class Chains:
             None.
         
         Returns:
-            nsamples_per_chain: 1D list of length self.nchains containing the number of samples in each chain.
+            nsamples_per_chain: 1D list of length self.nchains containing the 
+                number of samples in each chain.
         """
         
         zipped = list(zip(self.start_indices[0:self.nchains],
@@ -191,7 +192,10 @@ class Chains:
         (approximately) independent in order to get more independent chains for
         computing various statistics.
         
-        Each existing chain is split into blocks (i.e. new chains), proportionally to the size of the current chains.  Final blocks within each chain end up containing slightly different numbers of samples (since we do not ever want to throw away samples!).
+        Each existing chain is split into blocks (i.e. new chains),
+        proportionally to the size of the current chains.  Final blocks within
+        each chain end up containing slightly different numbers of samples
+        (since we do not ever want to throw away samples!).
                 
         Args: 
             nblocks: Number of new (blocked) chains to split existing chains 
@@ -240,7 +244,8 @@ class Chains:
             block_start_indices[-1] = end
             # print("chain = {}, block_start_indices = {}".format(i_chain, block_start_indices))
 
-            start_indices_new = np.concatenate((start_indices_new, block_start_indices[1:]))
+            start_indices_new = np.concatenate((start_indices_new, 
+                                                block_start_indices[1:]))
 
             # print("chain = {}, start_indices_new = {}".format(i_chain, start_indices_new))
         
