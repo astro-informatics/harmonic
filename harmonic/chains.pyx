@@ -185,40 +185,43 @@ class Chains:
         
 
     def split_into_blocks(self, nblocks=100):
-        """TODO
+        """Split chains into larger number of blocks.
+        
+        The intention of this method is to break chains into blocks that are
+        (approximately) independent in order to get more independent chains for
+        computing various statistics.
+        
+        Each existing chain is split into blocks (i.e. new chains), proportionally to the size of the current chains.  Final blocks within each chain end up containing slightly different numbers of samples (since we do not ever want to throw away samples!).
+                
+        Args: 
+            nblocks: Number of new (blocked) chains to split existing chains 
+                into.
         """
         
         if nblocks <= self.nchains:
             # TODO: display warning
             return
-        
-        # Compute relative size of chains.
-        nsamples_per_chain = np.array(self.nsamples_per_chain())
-        
-        print("\n")
-        print("nsamples_per_chain = {}".format(nsamples_per_chain))
-        
-        rel_size_chain = nsamples_per_chain / self.nsamples
-        
-        print("rel_size_chain = {}".format(rel_size_chain))
-        #blocking_factor = nblocks / self.nchains
-        
+            
+        nsamples_per_chain = np.array(self.nsamples_per_chain())        
+        # print("\n")
+        # print("nsamples_per_chain = {}".format(nsamples_per_chain))        
+        rel_size_chain = nsamples_per_chain / self.nsamples        
+        # print("rel_size_chain = {}".format(rel_size_chain))        
         nblocks_per_chain = np.round(nblocks * rel_size_chain).astype(int)
         
-        nblocks_per_chain[nblocks_per_chain == 0] = 1
-        print("nblocks_per_chain = {}".format(nblocks_per_chain))
-
         # Ensure no chains have zero blocks due to rounding.
-        target_offset = int(nblocks - np.ndarray.sum(nblocks_per_chain))
-        print("target_offset = {}".format(target_offset))
+        nblocks_per_chain[nblocks_per_chain == 0] = 1
+        # print("nblocks_per_chain = {}".format(nblocks_per_chain))
 
         # Potentially adjust blocks per chain due to rounding errors.
+        target_offset = nblocks - np.ndarray.sum(nblocks_per_chain)
+        # print("target_offset = {}".format(target_offset))
         if target_offset != 0:            
             chain_to_adjust = np.argmax(nblocks_per_chain)
             nblocks_per_chain[chain_to_adjust] += target_offset
             if nblocks_per_chain[chain_to_adjust] < 1:
                 raise ValueError("Adjusted block number for chain less than 1.")
-        print("nblocks_per_chain = {}".format(nblocks_per_chain))
+        # print("nblocks_per_chain = {}".format(nblocks_per_chain))
         
         start_indices_new = np.array([0])
         for i_chain in range(self.nchains):
@@ -226,37 +229,23 @@ class Chains:
             end = self.start_indices[i_chain+1]
             
             step = int((end - start) // nblocks_per_chain[i_chain])
-            print("chain = {}, start = {}".format(i_chain, start))
-            print("chain = {}, end = {}".format(i_chain, end))
-            print("chain = {}, step = {}".format(i_chain, step))
+            # print("chain = {}, start = {}".format(i_chain, start))
+            # print("chain = {}, end = {}".format(i_chain, end))
+            # print("chain = {}, step = {}".format(i_chain, step))
 
-            block_start_indices = start + np.array(range(nblocks_per_chain[i_chain]+1), dtype=int) * step
-            # block_start_indices = nblocks_per_chain[i_chain]
+            block_start_indices = start \
+                + np.array(range(nblocks_per_chain[i_chain]+1), dtype=int) \
+                * step
             
-            # block_start_indices = np.arange(start, end, step)
-            # step is number of elements in each block so increment all indices except the first by 1
-            # block_start_indices[1:] += 1
             block_start_indices[-1] = end
-            print("chain = {}, block_start_indices = {}".format(i_chain, block_start_indices))
+            # print("chain = {}, block_start_indices = {}".format(i_chain, block_start_indices))
 
             start_indices_new = np.concatenate((start_indices_new, block_start_indices[1:]))
 
-            print("chain = {}, start_indices_new = {}".format(i_chain, start_indices_new))
+            # print("chain = {}, start_indices_new = {}".format(i_chain, start_indices_new))
         
         self.start_indices = start_indices_new
         self.nchains = nblocks
-        print("nsamples_per_chain = {}".format(self.nsamples_per_chain()))
-
+        # print("nsamples_per_chain = {}".format(self.nsamples_per_chain()))
         
-        mean_samples_per_chain = np.mean(self.nsamples_per_chain()) 
-        print("mean_samples_per_chain = {}".format(mean_samples_per_chain))
-        
-        err = np.absolute(mean_samples_per_chain - self.nsamples / nblocks)
-        print("err = {}".format(err))
-        
-        
-
-
-
         return
-
