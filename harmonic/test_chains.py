@@ -213,7 +213,7 @@ def test_add_chains_3d():
                     random_sample_sub % nsamples2,
                     random_dim]
 
-def test_get_indexes():
+def test_get_indices():
 
     ndim = 10 
     nsamples1 = 300
@@ -230,16 +230,16 @@ def test_get_indexes():
     chains.add_chain(samples2)
 
     with pytest.raises(ValueError):
-        chains.get_chain_idexes(-1)
+        chains.get_chain_indices(-1)
     
     with pytest.raises(ValueError):
-        chains.get_chain_idexes(2)
+        chains.get_chain_indices(2)
     
-    chain_start, chain_end = chains.get_chain_idexes(0)
+    chain_start, chain_end = chains.get_chain_indices(0)
     assert chain_start == 0
     assert chain_end == nsamples1
     
-    chain_start, chain_end = chains.get_chain_idexes(1)
+    chain_start, chain_end = chains.get_chain_indices(1)
     assert chain_start == nsamples1
     assert chain_end == nsamples1 + nsamples2
     

@@ -115,14 +115,14 @@ class Chains:
 
         return
             
-    def get_chain_idexes(self, int i):
+    def get_chain_indices(self, int i):
         """Gets the start and end index of samples from a chain.
         
         The end index specifies the index one passed the end of the chain, i.e. 
         the chain samples can be accessed by self.samples[start:end,:].
         
         Args:
-            i: Index of chain of which to determine start and end indexes.
+            i: Index of chain of which to determine start and end indices.
 
         Returns:
             A tuple of the start and end index, i.e. (start, end).
@@ -136,8 +136,8 @@ class Chains:
         if i >= self.nchains:
             raise ValueError("Chain number is greater than nchains-1")
 
-        return self.start_indices[i], self.start_indices[i+1]
-                                                        
+        return self.start_indices[i], self.start_indices[i+1]            
+                                                    
     def copy(self):
         """Copy chain.
         """
