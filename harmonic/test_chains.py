@@ -284,3 +284,35 @@ def test_add():
     random_dim = 3
     assert chains_added.samples[random_sample,random_dim] \
         == samples2[random_sample-nsamples1*nchains1,random_dim]
+
+def test_nsamples_per_chain():
+
+    ndim = 8
+    np.random.seed(50)
+
+    # Set up first Chains object.
+    chains1 = ch.Chains(ndim)    
+    nsamples1 = 100
+    nchains1 = 60
+    samples1 = np.random.randn(nsamples1 * nchains1, ndim)
+    chains1.add_chains_2d(samples1, nchains1)
+
+    # Set up second Chains object.
+    chains2 = ch.Chains(ndim)
+    nsamples2 = 100
+    nchains2 = 300
+    samples2 = np.random.randn(nsamples2 * nchains2, ndim)
+    chains2.add_chains_2d(samples2, nchains2)
+
+    # Copy chain1 and then add chains2.
+    chains_added = chains1.copy()
+    chains_added.add(chains2)
+    
+    nsamples_per_chain = chains_added.nsamples_per_chain()
+
+    assert len(nsamples_per_chain) == nchains1 + nchains2
+    for i in range(nchains1):
+        assert nsamples_per_chain[i] == nsamples1
+    for i in range(nchains1,nchains2+1):
+        assert nsamples_per_chain[i] == nsamples2
+        

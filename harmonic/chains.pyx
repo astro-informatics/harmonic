@@ -166,3 +166,20 @@ class Chains:
         
         return copy.copy(self)
 
+    def nsamples_per_chain(self):   
+        """Compute list containing number of samples in each chain.
+        
+        Args:
+            None.
+        
+        Returns:
+            nsamples_per_chain: 1D list of length self.nchains containing the number of samples in each chain.
+        """
+        
+        zipped = list(zip(self.start_indices[0:self.nchains],
+                          self.start_indices[1:self.nchains+1]))
+        
+        nsamples_per_chain = list(map(lambda x : x[1] - x[0],  zipped))
+        
+        return nsamples_per_chain 
+        
