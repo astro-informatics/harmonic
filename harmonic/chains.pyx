@@ -15,20 +15,22 @@ class Chains:
         
         if ndim < 1:
             raise ValueError("ndim must be greater than 0")
-        self.nchains = 0        
+        self.nchains       = 0        
         self.start_indices = [0] 
-        self.ndim = ndim
-        self.nsamples = 0        
-        self.samples = np.empty((0, self.ndim))
+        self.ndim          = ndim
+        self.nsamples      = 0        
+        self.samples       = np.empty((0, self.ndim))
+        self.ln_posterior  = np.empty((0))
         
         
         
         
-    def add_chain(self, np.ndarray[double,ndim=2,mode="c"] samples not None):
+    def add_chain(self, np.ndarray[double,ndim=2,mode="c"] samples not None, np.ndarray[double,ndim=1,mode="c"] ln_posterior not None):
         """
         
         Args:
             samples: 2D numpy.ndarray containing the samples with shape (n_new_samples,ndim) and dtype double
+            ln_posterior: 1D numpy.ndarray containing the log_e posterior values with shape (n_new_samples) and dtype double
         
         
         Raises:
@@ -42,13 +44,17 @@ class Chains:
         if ndim_new != self.ndim:            
             raise TypeError("ndim of new chain does not match previous chains")
         
-        self.samples = np.concatenate((self.samples, samples))
+        if nsamples_new != ln_posterior.shape[0]:            
+            raise TypeError("Length of sample and ln_posterior arrays do no match")
+        
+        self.samples      = np.concatenate((self.samples, samples))
+        self.ln_posterior = np.concatenate((self.ln_posterior, ln_posterior))
         self.nsamples += nsamples_new                
         self.start_indices.append(self.nsamples)
         self.nchains += 1
         
         
-    def add_chains_2d(self, np.ndarray[double,ndim=2,mode="c"] samples not None, int n_chains_in):
+    def add_chains_2d(self, np.ndarray[double,ndim=2,mode="c"] samples not None, np.ndarray[double,ndim=1,mode="c"] ln_posterior not None, int n_chains_in):
         """ Adds a number of chains to the chain class assumes all the chains are of the 
             same length
 
@@ -68,13 +74,17 @@ class Chains:
         if samples.shape[1] != self.ndim:            
             raise TypeError("ndim of new chain does not match previous chains")
 
+        if samples.shape[0] != ln_posterior.shape[0]:            
+            raise TypeError("Length of sample and ln_posterior arrays do no match")
+
+
         cdef int i_chain, samples_per_chain = samples.shape[0]/n_chains_in
         for i_chain in range(n_chains_in):
-            self.add_chain(samples[i_chain*samples_per_chain:(i_chain+1)*samples_per_chain,:])
+            self.add_chain(samples[i_chain*samples_per_chain:(i_chain+1)*samples_per_chain,:],ln_posterior[i_chain*samples_per_chain:(i_chain+1)*samples_per_chain])
 
         return
 
-    def add_chains_3d(self, np.ndarray[double,ndim=3,mode="c"] samples not None):
+    def add_chains_3d(self, np.ndarray[double,ndim=3,mode="c"] samples not None, np.ndarray[double,ndim=2,mode="c"] ln_posterior not None):
         """ Adds a number of chains to the chain class assumes all the chains from 3D array
 
         Args:
@@ -86,9 +96,12 @@ class Chains:
         if samples.shape[2] != self.ndim:            
             raise TypeError("ndim of new chain does not match previous chains")
 
+        if samples.shape[0] != ln_posterior.shape[0] or samples.shape[1] != ln_posterior.shape[1]:            
+            raise TypeError("Length of sample and ln_posterior arrays do no match")
+
         cdef int i_chain
         for i_chain in range(samples.shape[0]):
-            self.add_chain(samples[i_chain,:,:])
+            self.add_chain(samples[i_chain,:,:],ln_posterior[i_chain,:])
 
         return
             
@@ -108,5 +121,7 @@ class Chains:
         return self.start_indices[i], self.start_indices[i+1]
                                                         
     def copy(self):
+        """Performs deep copy of the chain class (calls the module copy)
+        """
         return copy.copy(self)
 
