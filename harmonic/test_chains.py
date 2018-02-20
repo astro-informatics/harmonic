@@ -316,6 +316,9 @@ def test_add():
     ln_posterior2 = np.random.randn(nsamples2 * nchains2)
     chains2.add_chains_2d(samples2, ln_posterior2, nchains2)
 
+    with pytest.raises(ValueError):
+        chains1.add(ch.Chains(ndim+1))
+
     # Copy chain1 and then add chains2.
     chains_added = chains1.copy()
     chains_added.add(chains2)
@@ -394,6 +397,9 @@ def test_split_into_blocks():
     chains.add_chain(samples3, ln_posterior3)            
     
     chains_blocked = chains.copy()
+
+    with pytest.raises(ValueError):
+        chains_blocked.split_into_blocks(2)
 
     nblocks = 10                
     chains_blocked.split_into_blocks(nblocks)

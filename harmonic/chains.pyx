@@ -167,6 +167,9 @@ class Chains:
         
         Args: 
             other: Other Chain object to be added to this object.
+
+        Raises:
+            ValueError is the new chain has a different ndim
         """
                 
         if self.ndim != other.ndim:
@@ -224,12 +227,14 @@ class Chains:
         Args: 
             nblocks: Number of new (blocked) chains to split existing chains 
                 into.
+
+        Raises:
+            ValueError if nblocks < the number chains
         """
         
         if nblocks <= self.nchains:
-            # TODO: display warning
-            return
-            
+            raise ValueError("nblocks must be greater then number of chains")
+
         nsamples_per_chain = np.array(self.nsamples_per_chain())        
         # print("\n")
         # print("nsamples_per_chain = {}".format(nsamples_per_chain))        
