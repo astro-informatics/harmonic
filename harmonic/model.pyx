@@ -52,7 +52,7 @@ class Model(metaclass=abc.ABCMeta):
             Predicted posterior value.
         """
 
-cdef double ObjectiveFunction(double R_squared, X, Y, \
+cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                               centres, inv_covarience):
     """ Evaluates the ojective function with the HyperSphere model
     """
@@ -180,7 +180,7 @@ class HyperSphere(Model):
         if ~self.inv_covarience_set:
             self.set_inv_covarience(np.std(X,axis=0)**(-2))
 
-        result = so.minimize_scalar(ObjectiveFunction, bounds=[self.R_domain[0],self.R_domain[1]], \
+        result = so.minimize_scalar(HyperSphereObjectiveFunction, bounds=[self.R_domain[0],self.R_domain[1]], \
                            args=(X, Y, self.centres, self.inv_covarience), method='Bounded')
 
         self.set_R(result.x)
