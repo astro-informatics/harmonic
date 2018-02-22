@@ -20,26 +20,22 @@ class Chains:
         
         if ndim < 1:
             raise ValueError("ndim must be greater than 0")
-        self.nchains       = 0        
+        self.nchains = 0        
         self.start_indices = [0] # stores start index of each chain
-        self.ndim          = ndim
-        self.nsamples      = 0        
-        self.samples       = np.empty((0, self.ndim))
-        self.ln_posterior  = np.empty((0))
-        
-        
-        
+        self.ndim = ndim
+        self.nsamples = 0        
+        self.samples = np.empty((0, self.ndim))
+        self.ln_posterior = np.empty((0))
         
     def add_chain(self, np.ndarray[double,ndim=2,mode="c"] samples not None, 
                   np.ndarray[double,ndim=1,mode="c"] ln_posterior not None):
-        """
+        """Add a single chain to a Chains object.
         
         Args:
             samples: 2D numpy.ndarray containing the samples of a single chain 
                 with shape (nsamples_in, ndim_in) and dtype double.
-            ln_posterior: 1D numpy.ndarray containing the log_e posterior values 
-                with shape (n_new_samples) and dtype double
-        
+            ln_posterior: 1D numpy.ndarray containing the log_e posterior 
+                values with shape (n_new_samples) and dtype double.
         
         Raises:
             TypeError: Raised when ndim of new chain does not match previous 
@@ -54,9 +50,10 @@ class Chains:
             raise TypeError("ndim of new chain does not match previous chains")
         
         if nsamples_in != ln_posterior.shape[0]:            
-            raise TypeError("Length of sample and ln_posterior arrays do no match")
+            raise TypeError("Length of sample and ln_posterior arrays do not "\
+                + "match")
         
-        self.samples      = np.concatenate((self.samples, samples))
+        self.samples = np.concatenate((self.samples, samples))
         self.ln_posterior = np.concatenate((self.ln_posterior, ln_posterior))
         self.nsamples += nsamples_in                
         self.start_indices.append(self.nsamples)
@@ -64,13 +61,16 @@ class Chains:
         
         return
         
-    def add_chains_2d(self, np.ndarray[double,ndim=2,mode="c"] samples not None, 
-                      np.ndarray[double,ndim=1,mode="c"] ln_posterior not None, int nchains_in):
-        """ Adds a number of chains to the chain class assumes all 
-            the chains are of the same length
+    def add_chains_2d(self, np.ndarray[double,ndim=2,mode="c"] samples 
+                      not None, 
+                      np.ndarray[double,ndim=1,mode="c"] ln_posterior not None, 
+                      int nchains_in):
+        """Adds a number of chains to the chain class assumes all the 
+        chains are of the same length.
+            
         Args:
             samples: 2D numpy.ndarray containing the samples with shape 
-                (nsamples_in * nchains_in, ndim) and dtype double.
+                (nsamples_in * nchains_in, ndim) and dtype double.            
             ln_posterior: 1D numpy.ndarray containing the log_e posterior
                 values with shape (nsamples_in * nchains_in) and dtype double.
                 nchains_in: int specifying the number of chains.
@@ -80,7 +80,8 @@ class Chains:
                 number of chains.
             TypeError: Raised when ndim of new chains does not match previous 
                 chains.
-            TypeError: Raised when posterior and samples first length are different
+            TypeError: Raised when posterior and samples first length are 
+                different.
         """
 
         if (samples.shape[0] % nchains_in) != 0:
@@ -95,31 +96,37 @@ class Chains:
             raise TypeError("ndim of new chain does not match previous chains")
 
         if samples.shape[0] != ln_posterior.shape[0]:            
-            raise TypeError("Length of sample and ln_posterior arrays do no match")
+            raise TypeError("Length of sample and ln_posterior arrays do not "\
+                + "match")
 
-
-        cdef int i_chain, samples_per_chain = samples.shape[0]/nchains_in
+        cdef int i_chain, samples_per_chain = samples.shape[0] / nchains_in
         for i_chain in range(nchains_in):
-            self.add_chain(samples[i_chain*samples_per_chain:(i_chain+1)*samples_per_chain,:],
-                    ln_posterior[i_chain*samples_per_chain:(i_chain+1)*samples_per_chain])
+            self.add_chain(
+                samples[i_chain*samples_per_chain:
+                        (i_chain+1)*samples_per_chain, :],
+                ln_posterior[i_chain*samples_per_chain:
+                             (i_chain+1)*samples_per_chain])
 
         return
 
-    def add_chains_3d(self, np.ndarray[double,ndim=3,mode="c"] samples not None, 
-                    np.ndarray[double,ndim=2,mode="c"] ln_posterior not None):
-        """ Adds a number of chains to the chain class assumes all the chains from 3D array
+    def add_chains_3d(self, np.ndarray[double,ndim=3,mode="c"] samples 
+                      not None, 
+                      np.ndarray[double,ndim=2,mode="c"] ln_posterior not None):
+        """Adds a number of chains to the chain class assumes all the chains 
+        from 3D array.
 
         Args:
             samples: 3D numpy.ndarray containing the samples with shape 
                 (nchains_in, nsamples_in, ndim) and dtype double.
             ln_posterior: 2D numpy.ndarray containing the log_e posterior
-                values with shape (nchains_in, nsamples_in) and dtype double.
-                nchains_in: int specifying the number of chains.
+                values with shape (nchains_in, nsamples_in) and dtype double. 
+                nchains_in specifies the number of chains in the passed samples.
       
         Raises: 
             TypeError: Raised when ndim of new chains does not match previous 
                 chains.
-            TypeError: Raised when posterior and samples first and second length are different
+            TypeError: Raised when posterior and samples first and second 
+                length are different
         """
 
         nchains_in = samples.shape[0]
@@ -130,12 +137,14 @@ class Chains:
         if ndim_in != self.ndim:            
             raise TypeError("ndim of new chain does not match previous chains")
 
-        if samples.shape[0] != ln_posterior.shape[0] or samples.shape[1] != ln_posterior.shape[1]:            
-            raise TypeError("Length of sample and ln_posterior arrays do no match")
+        if samples.shape[0] != ln_posterior.shape[0] \
+            or samples.shape[1] != ln_posterior.shape[1]:            
+            raise TypeError("Length of sample and ln_posterior arrays do not "\
+                + "match")
 
         cdef int i_chain
         for i_chain in range(nchains_in):
-            self.add_chain(samples[i_chain,:,:],ln_posterior[i_chain,:])
+            self.add_chain(samples[i_chain,:,:], ln_posterior[i_chain,:])
 
         return
             
@@ -180,7 +189,8 @@ class Chains:
             return            
         
         self.samples = np.concatenate((self.samples, other.samples))
-        self.ln_posterior = np.concatenate((self.ln_posterior, other.ln_posterior))
+        self.ln_posterior = np.concatenate((self.ln_posterior,
+                                            other.ln_posterior))
         self.start_indices = self.start_indices \
              + list(map(lambda x : x + self.nsamples, other.start_indices[1:]))
         self.nchains += other.nchains
