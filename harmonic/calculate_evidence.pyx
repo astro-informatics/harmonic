@@ -83,6 +83,8 @@ class evidence():
 			for i_samples in range(chain.start_indices[i_chains],chain.start_indices[i_chains+1]):
 				p_i[i_chains]        += exp(model.predict(X[i_samples,:]) - Y[i_samples] - mean_shift)
 				n_samples[i_chains]  += 1
+				if i_chains < 5 and i_samples-chain.start_indices[i_chains] < 10:
+					print(model.predict(X[i_samples,:]), Y[i_samples], exp(model.predict(X[i_samples,:]) - Y[i_samples] - mean_shift))
 
 		self.end_run()
 
