@@ -74,10 +74,9 @@ class evidence():
 		cdef long i_chains, i_samples, nchains = self.nchains
 		cdef double mean_shift
 
-		if self.mean_shift_set:
-			mean_shift = self.mean_shift
-		else:
+		if ~self.mean_shift_set:
 			self.set_mean_shift(np.mean(Y))
+		mean_shift = self.mean_shift
 
 		for i_chains in range(nchains):
 			for i_samples in range(chain.start_indices[i_chains],chain.start_indices[i_chains+1]):

@@ -112,7 +112,7 @@ def test_calculate_evidence():
 	print(cal_ev.mean_shift)
 
 
-	assert cal_ev.p  == pytest.approx(10.158667416) 
+	assert cal_ev.p  == pytest.approx(0.158667416) 
 	assert cal_ev.s2 == pytest.approx(1.271069471e-06)
 	assert cal_ev.v2 == pytest.approx(1.171406675e-14)
 
