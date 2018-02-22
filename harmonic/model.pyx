@@ -143,11 +143,12 @@ class HyperSphere(Model):
         cdef int i_dim
 
         if centre_in.size != self.ndim:
-            raise ValueError("centre size is not equal ndim")
+            raise ValueError("centre size is not equal ndim.")
 
         for i_dim in range(self.ndim):
             if ~np.isfinite(centre_in[i_dim]):
-                raise ValueError("Nan/inf's in centre, this may be due to a Nan in the samples")
+                raise ValueError("NaN/Inf's in inv_covariance (may be due " + 
+                                 "to a NaN in samples).")
 
         for i_dim in range(self.ndim):
             self.centre[i_dim] = centre_in[i_dim]
@@ -166,7 +167,8 @@ class HyperSphere(Model):
 
         for i_dim in range(self.ndim):
             if ~np.isfinite(inv_covariance_in[i_dim]):
-                raise ValueError("NaN/Inf's in inv_covariance (may be due to a NaN in samples).")
+                raise ValueError("NaN/Inf's in inv_covariance (may be due " + 
+                                 "to a NaN in samples).")
 
         for i_dim in range(self.ndim):
             self.inv_covariance[i_dim] = inv_covariance_in[i_dim]

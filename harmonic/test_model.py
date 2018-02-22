@@ -108,13 +108,18 @@ def test_hyper_sphere_predict():
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5))
 
     inv_covariance  = np.ones((ndim))*4
-    sphere.set_inv_covariance(inv_covariance)
+    sphere.set_inv_covariance(inv_covariance)   
     x[4] = 2.0001
     assert sphere.predict(x) == -np.inf
     x[4] = 1.9999
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5)+6*np.log(2.0))
 
-
+    centre  = np.array([0., 0., 0., 0., 200., 0.])
+    sphere.set_centre(centre)
+    x[4] = 200.0 + 2.0001
+    assert sphere.predict(x) == -np.inf
+    x[4] = 200.0 + 1.9999
+    assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5)+6*np.log(2.0))
 
 def test_hyper_sphere_fit():
 
