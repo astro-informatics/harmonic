@@ -66,14 +66,5 @@ setup(
         libraries=[],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
-    ),        
-    Extension(
-        "harmonic/tmp_poly_class_example",
-        package_dir=['src'],
-        sources=["harmonic/tmp_poly_class_example.pyx"],
-        include_dirs=include_dirs,
-        libraries=[],
-        extra_link_args=extra_link_args,
-        extra_compile_args=[]
     )])
 )
