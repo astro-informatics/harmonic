@@ -391,6 +391,49 @@ def test_nsamples_per_chain():
         assert nsamples_per_chain[i] == nsamples1
     for i in range(nchains1,nchains2+1):
         assert nsamples_per_chain[i] == nsamples2
+
+def test_remove_burnin():
+    
+    ndim = 8    
+    nsamples1 = 441
+    nsamples2 = 169
+
+    chains = ch.Chains(ndim)    
+    np.random.seed(40)
+    samples1 = np.random.randn(nsamples1, ndim)
+    ln_posterior1 = np.random.randn(nsamples1)
+    chains.add_chain(samples1, ln_posterior1)    
+        
+    samples2 = np.random.randn(nsamples2, ndim)
+    ln_posterior2 = np.random.randn(nsamples2)
+    chains.add_chain(samples2, ln_posterior2) 
+    
+    with pytest.raises(ValueError):
+        chains.remove_burnin(1000)
+    with pytest.raises(ValueError):
+        chains.remove_burnin(200)
+        
+    nburn = 100
+    chains.remove_burnin(nburn)
+    
+    assert chains.nsamples == nsamples1 + nsamples2 - 2*nburn
+    nsamples_per_chain = chains.nsamples_per_chain()    
+    assert nsamples_per_chain[0] == nsamples1 - nburn
+    assert nsamples_per_chain[1] == nsamples2 - nburn
+                
+    random_sample = np.random.randint(nsamples1 - nburn)
+    random_dim = 5
+    assert chains.samples[random_sample, random_dim] \
+        == samples1[random_sample + nburn, random_dim]
+    assert chains.ln_posterior[random_sample] \
+        == ln_posterior1[random_sample + nburn]        
+            
+    random_sample = np.random.randint(nsamples2 - nburn)
+    random_dim = 2
+    assert chains.samples[random_sample + nsamples1 - nburn, random_dim] \
+        == samples2[random_sample + nburn, random_dim]
+    assert chains.ln_posterior[random_sample + nsamples1 - nburn] \
+        == ln_posterior2[random_sample + nburn]
                 
 def test_split_into_blocks():
 
