@@ -6,6 +6,8 @@ def test_hyper_sphere_constructor():
 
     with pytest.raises(ValueError):
         sphere = md.HyperSphere(2, [np.array([0.5,1.5])], hyper_parameters=[5])
+    with pytest.raises(ValueError):
+        sphere = md.HyperSphere(2, [np.array([0.5,1.5]),np.array([0.5,1.5])])
 
     ndim   = 3
     domain = [np.array([0.5,1.5])]
@@ -123,6 +125,12 @@ def test_hyper_sphere_fit():
 
     nsamples = 10000
 
+    with pytest.raises(ValueError):
+        sphere.fit(np.ones((nsamples,ndim+1)),np.ones(nsamples))
+    with pytest.raises(ValueError):
+        sphere.fit(np.ones((nsamples,ndim)),np.ones(nsamples+1))
+
+
     X = np.ones((nsamples,ndim))
     Y = np.ones(nsamples)
 
@@ -152,6 +160,68 @@ def test_hyper_sphere_fit():
     assert sphere.fit(X, Y) == True
     assert sphere.R         == pytest.approx(3.649091)
 
-    pass
+    return
 
-test_hyper_sphere_fit()
+def test_kernel_density_estimate_constructor():
+    with pytest.raises(ValueError):
+        sphere = md.KernelDensityEstimate(2, [np.array([0.5,1.5])], hyper_parameters=[5.])
+    with pytest.raises(ValueError):
+        sphere = md.HyperSphere(2, [])
+
+    ndim    = 3
+    density = md.KernelDensityEstimate(ndim, [], hyper_parameters=[0.1])
+
+    assert density.ndim                == ndim
+    assert density.R                   == pytest.approx(0.1)
+    assert density.scales_set          == False
+    assert density.start_end.shape[0]  == ndim
+    assert density.start_end.shape[1]  == 2
+    assert density.inv_scales.shape[0] == ndim
+
+    for i_dim in range(ndim):
+        assert density.inv_scales[i_dim] == pytest.approx(1.0)
+        for i_row in range(2):
+            assert density.start_end[i_dim,i_row]   == pytest.approx(0.0)
+
+    return
+
+def test_set_scales():
+
+    ndim = 2
+    domain = []
+    hyper_parameters = [0.1]
+
+    density = md.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters)
+
+    X      = np.zeros((2,ndim))-3.0
+    X[1,:] = 2.0
+
+    density.set_scales(X)
+
+    for i_dim in range(ndim):
+        assert density.inv_scales[i_dim]  == 2.
+        assert density.start_end[i_dim,0] == -3.0
+        assert density.start_end[i_dim,1] == 2.0
+
+def test_kernel_density_estimate_fit():
+
+    ndim = 2
+    domain = []
+    hyper_parameters = [0.1]
+
+    density = md.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters)
+
+    nsamples = 10000
+
+    with pytest.raises(ValueError):
+        density.fit(np.ones((nsamples,ndim+1)),np.ones(nsamples))
+    with pytest.raises(ValueError):
+        density.fit(np.ones((nsamples,ndim)),np.ones(nsamples+1))
+
+    # np.random.seed(30)
+    # X = np.random.randn(nsamples,ndim)
+    # Y = -np.sum(X*X,axis=1)/2.0
+
+    # assert sphere.fit(X, Y) == True
+
+    return

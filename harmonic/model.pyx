@@ -85,6 +85,9 @@ class HyperSphere(Model):
         """
         if hyper_parameters != None:
             raise ValueError("Hyper Sphere model has no hyper parameters.")
+        if len(domains) != 1:
+            raise ValueError("Hyper Sphere model domains list should be length 1.")
+
 
         self.ndim   = ndim_in
 
@@ -198,6 +201,25 @@ class HyperSphere(Model):
         else:
             return -np.inf
     
+# cdef dict set_dictionary_function(np.ndarray[double, ndim=2, mode="c"] X):
+#     low_x  = -25.
+#     high_x = 25.
+#     scale_diag = scale*2
+#     index_dict = {}
+#     #loop over samples
+#     post_values = np.zeros((samples_per_walker_net_train*n_train))
+#     for i_walker in range(n_train):
+#         for i_sample in range(samples_per_walker_net_train):
+#             #find which pixel it is in
+#             i_pixel = int((samples_train[i_walker,i_sample,0]-low_x)/scale_diag)
+#             j_pixel = int((samples_train[i_walker,i_sample,1]-low_x)/scale_diag)
+#             pixel_key = str(i_pixel)+" "+str(j_pixel)
+#             # add its index to list in that pixel
+#             if pixel_key in index_dict:
+#                 index_dict[pixel_key].append((i_walker,i_sample))
+#             else:
+#                 index_dict[pixel_key] = [(i_walker,i_sample)]
+
 
 
 class KernelDensityEstimate(Model):
@@ -205,15 +227,78 @@ class KernelDensityEstimate(Model):
     def __init__(self, int ndim, list domains not None, hyper_parameters=None):
         """ constructor setting the hyper parameters of the model
         """
+        if len(hyper_parameters) != 1:
+            raise ValueError("Kernel Density Estimate hyper parameter list should be length 1.")
+        if len(domains) != 0:
+            raise ValueError("Kernel Density Estimate domains list should be length 0.")
+
+        self.ndim     = ndim
+        self.R        = hyper_parameters[0]
+
+        self.scales_set = False
+        self.start_end  = np.zeros((ndim,2))
+        self.inv_scales = np.ones((ndim))
+
+        return
+
+    def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
+
+        cdef int i_dim
+
+        for i_dim in range(self.ndim):
+            self.inv_scales[i_dim]  = 1.0/(self.R * (X[:,i_dim].max() - X[:,i_dim].min()))
+            self.start_end[i_dim,0] = X[:,i_dim].min()
+            self.start_end[i_dim,1] = X[:,i_dim].max()
+            
+        self.scales_set = True
+
+        return
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model
+
+        Raises:
+            ValueError if the first dimension of X is not the same as Y
+            ValueError if the second dimension of X is not the same as ndim
         """
+
+        if X.shape[0] != Y.shape[0]:
+            raise ValueError("X and Y sizes are not the same")
+
+        if X.shape[1] != self.ndim:
+            raise ValueError("X second dimension not the same as ndim")
+
+        #set dictionary 
+
         return
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Use model to predict the hight of the posterior at point x
         """
+        # similar to this
+# def posterior_model_dict(vec_x, samples_train, index_dict, low_x, radius):
+#     #find out the pixel that the sample is in
+#     i_pixel_org = int((vec_x[0]-low_x)/(radius*2))
+#     j_pixel_org = int((vec_x[1]-low_x)/(radius*2))
+#     norm_circle = 1.0/(samples_train.shape[0]*samples_train.shape[1]*np.pi*radius**2)
+#     model_value = 0.0
+
+#     for i_pixel in range(i_pixel_org-1,i_pixel_org+2):
+#         for j_pixel in range(j_pixel_org-1,j_pixel_org+2):
+#             pixel_key = str(i_pixel)+" "+str(j_pixel)
+#             # print (vec_x[0]-low_x)/(scale*2), i_pixel
+#             # loop over list in that pixel
+#             if pixel_key in index_dict:
+#                 for sample_index in index_dict[pixel_key]:
+#                     # do what I did before
+#                     length = np.dot(vec_x-samples_train[sample_index[0],sample_index[1],:], vec_x-samples_train[sample_index[0],sample_index[1],:])
+#                     if length<radius**2:
+#                         model_value += norm_circle
+
+#     return model_value
+
+#     return model_value
+
         return
 
 
