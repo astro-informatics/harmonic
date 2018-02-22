@@ -222,7 +222,9 @@ class Chains:
         Each existing chain is split into blocks (i.e. new chains),
         proportionally to the size of the current chains.  Final blocks within
         each chain end up containing slightly different numbers of samples
-        (since we do not ever want to throw away samples!).
+        (since we do not ever want to throw away samples!).  One could improve
+        this, if required, to distribute the additional samples across all of
+        the blocks of the chain.
                 
         Args: 
             nblocks: Number of new (blocked) chains to split existing chains 
