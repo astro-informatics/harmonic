@@ -99,7 +99,6 @@ def test_calculate_evidence():
 	# Fit the Hyper_sphere
 	sphere.fit(chain.samples,chain.ln_posterior)
 
-	print(sphere.centres, sphere.inv_covarience, sphere.R)
 
 	sphere_dum = md.HyperSphere(ndim+1, domain)
 	with pytest.raises(ValueError):
@@ -107,10 +106,6 @@ def test_calculate_evidence():
 
 	# Calculate evidence
 	cal_ev.calculate_evidence(chain,sphere)
-
-	print(cal_ev.p_i[0:10])
-	print(cal_ev.mean_shift)
-
 
 	assert cal_ev.p  == pytest.approx(0.158667416) 
 	assert cal_ev.s2 == pytest.approx(1.271069471e-06)
