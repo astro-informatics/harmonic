@@ -99,7 +99,6 @@ def test_calculate_evidence():
 	# Fit the Hyper_sphere
 	sphere.fit(chain.samples,chain.ln_posterior)
 
-	print(sphere.centres, sphere.inv_covarience, sphere.R)
 
 	sphere_dum = md.HyperSphere(ndim+1, domain)
 	with pytest.raises(ValueError):
