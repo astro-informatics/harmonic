@@ -213,27 +213,11 @@ cdef dict set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in):
         index = 0
         for i_dim in range(ndim):
             sub_index = <long>((X_in[i_sample,i_dim]-start_end[0,i_dim])/inv_scales[i_dim]) + 1
-            if sub_index < 0 or sub_index >= ngrid:
-                pass
-            # index += 
-
-#     low_x  = -25.
-#     high_x = 25.
-#     scale_diag = scale*2
-#     index_dict = {}
-#     #loop over samples
-#     for i_walker in range(n_train):
-#         for i_sample in range(samples_per_walker_net_train):
-#             #find which pixel it is in
-#             i_pixel = int((samples_train[i_walker,i_sample,0]-low_x)/scale_diag)
-#             j_pixel = int((samples_train[i_walker,i_sample,1]-low_x)/scale_diag)
-#             pixel_key = str(i_pixel)+" "+str(j_pixel)
-#             # add its index to list in that pixel
-#             if pixel_key in index_dict:
-#                 index_dict[pixel_key].append((i_walker,i_sample))
-#             else:
-#                 index_dict[pixel_key] = [(i_walker,i_sample)]
-
+            index += sub_index*ngrid**i_dim
+        if index in grid:
+            grid[index].append(i_sample)
+        else:
+            grid[index] = [i_sample]
 
 
 class KernelDensityEstimate(Model):
@@ -288,11 +272,11 @@ class KernelDensityEstimate(Model):
 
         self.set_scales(X)
 
+        #set dictionary 
         set_grid(self.grid, X, self.start_end, self.inv_scales, self.ngrid)
 
-        #set dictionary 
 
-        return
+        return True
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Use model to predict the hight of the posterior at point x

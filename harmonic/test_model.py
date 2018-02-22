@@ -222,10 +222,11 @@ def test_kernel_density_estimate_fit():
     with pytest.raises(ValueError):
         density.fit(np.ones((nsamples,ndim)),np.ones(nsamples+1))
 
-    # np.random.seed(30)
-    # X = np.random.randn(nsamples,ndim)
-    # Y = -np.sum(X*X,axis=1)/2.0
+    np.random.seed(30)
+    X = np.random.randn(nsamples,ndim)
+    Y = -np.sum(X*X,axis=1)/2.0
 
-    # assert sphere.fit(X, Y) == True
+    assert density.fit(X, Y) == True
+    # assert 1 in density.grid == False
 
     return
