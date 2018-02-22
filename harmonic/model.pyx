@@ -6,14 +6,15 @@ import scipy.special as sp
 import scipy.optimize as so
 
 class Model(metaclass=abc.ABCMeta):
-    """Base class for model
+    """Base abstract class for posterior model.
     
-    All inherited models must implement the abstract constructor and fit and predict methods.
+    All inherited models must implement the abstract constructor, fit and 
+    predict methods.
     """
 
     @abc.abstractmethod
     def __init__(self, int ndim, list domains not None, hyper_parameters=None):
-        """Constructor setting the hyper parameters of the model
+        """Constructor setting the hyper parameters of the model.
         
         Must be implemented by derivied class (currently abstract).
         
@@ -26,14 +27,16 @@ class Model(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
-        """Fit the parameters of the model        
+    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
+            np.ndarray[double, ndim=1, mode="c"] Y):
+        """Fit the parameters of the model.
         
         Must be implemented by derivied class (currently abstract).
         
         Args:
-            X: 2D array of samples of shape nsamples x ndim.
-            Y: 1D array of target posterior values for each sample in X (shape nsamples).
+            X: 2D array of samples of shape (nsamples, ndim).
+            Y: 1D array of target posterior values for each sample in X 
+                of shape (nsamples).
         
         Returns:
             Boolean specifying whether fit successful.
@@ -41,16 +44,17 @@ class Model(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """Use model to predict the value of the posterior at point x
+        """Predict the value of the posterior at point x.
         
         Must be implemented by derivied class (currently abstract).
         
         Args: 
-            x: 1D array of sample to predict posterior value.
+            x: 1D array of sample of shape (ndim) to predict posterior value.
         
         Return:
             Predicted posterior value.
         """
+
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                               centres, inv_covarience):
