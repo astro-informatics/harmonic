@@ -201,13 +201,27 @@ class HyperSphere(Model):
         else:
             return -np.inf
     
-# cdef dict set_dictionary_function(np.ndarray[double, ndim=2, mode="c"] X):
+cdef dict set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in):
+
+    cdef dict grid = grid_in
+    cdef np.ndarray[double, ndim=2, mode="c"] X = X_in, start_end = start_end_in
+    cdef np.ndarray[double, ndim=1, mode="c"] inv_scales = inv_scales_in
+
+    cdef long i_sample, i_dim, sub_index, index, nsamples = X.shape[0], ndim = X.shape[1], ngrid = ngid_in
+
+    for i_sample in range(nsamples):
+        index = 0
+        for i_dim in range(ndim):
+            sub_index = <long>((X_in[i_sample,i_dim]-start_end[0,i_dim])/inv_scales[i_dim]) + 1
+            if sub_index < 0 or sub_index >= ngrid:
+                pass
+            # index += 
+
 #     low_x  = -25.
 #     high_x = 25.
 #     scale_diag = scale*2
 #     index_dict = {}
 #     #loop over samples
-#     post_values = np.zeros((samples_per_walker_net_train*n_train))
 #     for i_walker in range(n_train):
 #         for i_sample in range(samples_per_walker_net_train):
 #             #find which pixel it is in
@@ -238,6 +252,10 @@ class KernelDensityEstimate(Model):
         self.scales_set = False
         self.start_end  = np.zeros((ndim,2))
         self.inv_scales = np.ones((ndim))
+        self.distance   = self.R*self.R/4
+        self.ngrid      = <int>(1.0/self.R+1E-8)+2
+
+        self.grid       = {}
 
         return
 
@@ -249,7 +267,7 @@ class KernelDensityEstimate(Model):
             self.inv_scales[i_dim]  = 1.0/(self.R * (X[:,i_dim].max() - X[:,i_dim].min()))
             self.start_end[i_dim,0] = X[:,i_dim].min()
             self.start_end[i_dim,1] = X[:,i_dim].max()
-            
+
         self.scales_set = True
 
         return
@@ -267,6 +285,10 @@ class KernelDensityEstimate(Model):
 
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim")
+
+        self.set_scales(X)
+
+        set_grid(self.grid, X, self.start_end, self.inv_scales, self.ngrid)
 
         #set dictionary 
 

@@ -33,7 +33,7 @@ class evidence():
 		cdef np.ndarray[double, ndim=1, mode="c"] p_i       = self.p_i
 		cdef np.ndarray[long, ndim=1, mode="c"]   n_samples = self.n_samples
 
-		cdef int i_chains, n_samples_tot=0, nchains = self.nchains
+		cdef long i_chains, n_samples_tot=0, nchains = self.nchains
 		cdef double p=0.0, s2=0.0, k=0.0, dummy, n_eff=0
 
 		for i_chains in range(nchains):
@@ -71,7 +71,7 @@ class evidence():
 		cdef np.ndarray[double, ndim=1, mode="c"] Y=chain.ln_posterior, p_i = self.p_i
 		cdef np.ndarray[long,   ndim=1, mode="c"] n_samples = self.n_samples
 
-		cdef int i_chains, i_samples, nchains = self.nchains
+		cdef long i_chains, i_samples, nchains = self.nchains
 		cdef double mean_shift
 
 		if self.mean_shift_set:

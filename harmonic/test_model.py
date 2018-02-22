@@ -177,11 +177,15 @@ def test_kernel_density_estimate_constructor():
     assert density.start_end.shape[0]  == ndim
     assert density.start_end.shape[1]  == 2
     assert density.inv_scales.shape[0] == ndim
+    assert density.distance            == 0.05**2
+    assert density.ngrid               == 12
 
     for i_dim in range(ndim):
         assert density.inv_scales[i_dim] == pytest.approx(1.0)
         for i_row in range(2):
             assert density.start_end[i_dim,i_row]   == pytest.approx(0.0)
+
+    assert len(density.grid)  == 0
 
     return
 
