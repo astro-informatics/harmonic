@@ -57,13 +57,13 @@ class Model(metaclass=abc.ABCMeta):
 
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
-                              centres, inv_covarience):
+                              centre, inv_covarience):
     """ Evaluates the ojective function with the HyperSphere model
     """
 
     cdef np.ndarray[double, ndim=2, mode="c"] X_here = X
     cdef np.ndarray[double, ndim=1, mode="c"] Y_here = Y, \
-                            centres_here = centres, inv_covarience_here = inv_covarience
+                            centre_here = centre, inv_covarience_here = inv_covarience
 
     cdef int i_dim, i_sample, ndim = X.shape[1], nsample = X.shape[0]
     cdef double objective = 0.0, distance, mean_shift = np.mean(Y)
@@ -72,7 +72,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
     for i_sample in range(nsample):
         distance = 0.0
         for i_dim in range(ndim):
-            distance += (X_here[i_sample,i_dim]-centres_here[i_dim])*(X_here[i_sample,i_dim]-centres_here[i_dim])*inv_covarience_here[i_dim]
+            distance += (X_here[i_sample,i_dim]-centre_here[i_dim])*(X_here[i_sample,i_dim]-centre_here[i_dim])*inv_covarience_here[i_dim]
         if distance < R_squared:
             objective += exp( 2*(mean_shift - Y[i_sample]) ) 
 
@@ -95,8 +95,8 @@ class HyperSphere(Model):
 
         self.ndim   = ndim_in
 
-        self.centres_set        = False
-        self.centres            = np.zeros((ndim_in))
+        self.centre_set        = False
+        self.centre            = np.zeros((ndim_in))
         self.inv_covarience_set = False
         self.inv_covarience     = np.ones((ndim_in))
 
@@ -129,21 +129,21 @@ class HyperSphere(Model):
         return
 
 
-    def set_centres(self, np.ndarray[double, ndim=1, mode="c"] centres_in):
+    def set_centre(self, np.ndarray[double, ndim=1, mode="c"] centre_in):
 
         cdef int i_dim
 
-        if centres_in.size != self.ndim:
-            raise ValueError("centres size is not equal ndim")
+        if centre_in.size != self.ndim:
+            raise ValueError("centre size is not equal ndim")
 
         for i_dim in range(self.ndim):
-            if ~np.isfinite(centres_in[i_dim]):
-                raise ValueError("Nan/inf's in centres, this may be due to a Nan in the samples")
+            if ~np.isfinite(centre_in[i_dim]):
+                raise ValueError("Nan/inf's in centre, this may be due to a Nan in the samples")
 
         for i_dim in range(self.ndim):
-            self.centres[i_dim] = centres_in[i_dim]
+            self.centre[i_dim] = centre_in[i_dim]
 
-        self.centres_set = True
+        self.centre_set = True
 
         return
 
@@ -181,14 +181,14 @@ class HyperSphere(Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim")
 
-        if ~self.centres_set:
-            self.set_centres(np.mean(X,axis=0))
+        if ~self.centre_set:
+            self.set_centre(np.mean(X,axis=0))
 
         if ~self.inv_covarience_set:
             self.set_inv_covarience(np.std(X,axis=0)**(-2))
 
         result = so.minimize_scalar(HyperSphereObjectiveFunction, bounds=[self.R_domain[0],self.R_domain[1]], \
-                           args=(X, Y, self.centres, self.inv_covarience), method='Bounded')
+                           args=(X, Y, self.centre, self.inv_covarience), method='Bounded')
 
         self.set_R(result.x)
 
