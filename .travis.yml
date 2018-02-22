@@ -4,6 +4,7 @@ python:
   - "nightly"
 install:
   - pip install cython
+  - pip install scipy
 script:
   - python setup.py build_ext --inplace
   - pytest
