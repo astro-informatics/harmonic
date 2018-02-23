@@ -229,7 +229,7 @@ class HyperSphere(Model):
         else:
             return -np.inf
     
-cdef dict set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in, D_in):
+cdef KernelDensityEstimate_set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in, D_in):
 
     cdef dict grid = grid_in
     cdef np.ndarray[double, ndim=2, mode="c"] X = X_in, start_end = start_end_in
@@ -249,6 +249,33 @@ cdef dict set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in, D_in):
         else:
             grid[index] = [i_sample]
 
+cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, long ngrid,\
+                                                 long ndim, dict grid, \
+                                                 np.ndarray[double, ndim=2, mode="c"] samples, \
+                                                 np.ndarray[double, ndim=1, mode="c"] x, \
+                                                 np.ndarray[double, ndim=1, mode="c"] inv_scales, \
+                                                 double distance, long *count):
+    # this does create looping boundry conditions but doesn't matter in searching
+    # it will simply slow things down very very slightly 
+    # (probably less then dealing with it will!)
+    if i_dim >= 1:
+        for iter_i_dim in range(-1,2):
+            KernelDensityEstimate_loop_round_and_search(index+iter_i_dim*ngrid**(i_dim-1), i_dim - 1, ngrid, ndim, grid, samples, x, inv_scales, distance, count)
+    else:
+        KernelDensityEstimate_search_in_pixel(index, grid, samples, x, inv_scales, distance, count)
+
+cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
+                                           np.ndarray[double, ndim=2, mode="c"] samples, \
+                                           np.ndarray[double, ndim=1, mode="c"] x, \
+                                           np.ndarray[double, ndim=1, mode="c"] inv_scales, \
+                                           double distance, long *count):
+    if index in grid:
+        for sample_index in grid[index]:
+            # do what I did before
+            length = np.dot((x-samples[sample_index,:])*inv_scales, (x-samples[sample_index,:])*inv_scales)
+            if length<distance:
+                count[0] += 1
+    return
 
 class KernelDensityEstimate(Model):
 
@@ -324,7 +351,7 @@ class KernelDensityEstimate(Model):
         self.set_scales(self.samples)
 
         #set dictionary 
-        set_grid(self.grid, self.samples, self.start_end, self.inv_scales, self.ngrid, self.D)
+        KernelDensityEstimate_set_grid(self.grid, self.samples, self.start_end, self.inv_scales, self.ngrid, self.D)
 
         self.precompute_normalising_factor(self.samples)
 
@@ -335,31 +362,22 @@ class KernelDensityEstimate(Model):
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Use model to predict the hight of the posterior at point x
         """
-        # similar to this
-def posterior_model_dict(vec_x, samples_train, index_dict, low_x, radius):
-    #find out the pixel that the sample is in
-    i_pixel_org = int((vec_x[0]-low_x)/(radius*2))
-    j_pixel_org = int((vec_x[1]-low_x)/(radius*2))
-    norm_circle = 1.0/(samples_train.shape[0]*samples_train.shape[1]*np.pi*radius**2)
-    model_value = 0.0
+        cdef np.ndarray[double, ndim=2, mode="c"] samples    = self.samples,   start_end = self.start_end
+        cdef np.ndarray[double, ndim=1, mode="c"] inv_scales = self.inv_scales
+        cdef long i_sample, i_dim, sub_index, index, nsamples = samples.shape[0], ndim = self.ndim, ngrid = self.ngrid
+        cdef double inv_diam = 1.0/self.D, distance = self.distance
+        cdef dict grid = self.grid
 
-    for i_pixel in range(i_pixel_org-1,i_pixel_org+2):
-        for j_pixel in range(j_pixel_org-1,j_pixel_org+2):
-            pixel_key = str(i_pixel)+" "+str(j_pixel)
-            # print (vec_x[0]-low_x)/(scale*2), i_pixel
-            # loop over list in that pixel
-            if pixel_key in index_dict:
-                for sample_index in index_dict[pixel_key]:
-                    # do what I did before
-                    length = np.dot(vec_x-samples_train[sample_index[0],sample_index[1],:], vec_x-samples_train[sample_index[0],sample_index[1],:])
-                    if length<radius**2:
-                        model_value += norm_circle
+        cdef long count = 0
+        #find out the pixel that the sample is in
+        index = 0
+        for i_dim in range(ndim):
+            sub_index = <long>((x[i_dim]-start_end[i_dim,0])*inv_scales[i_dim]*inv_diam) + 1
+            index += sub_index*ngrid**i_dim
 
-#     return model_value
+        KernelDensityEstimate_loop_round_and_search(index, i_dim, ngrid, ndim, grid, samples, x, inv_scales, distance, &count)
 
-#     return model_value
-
-        return
+        return log(count) - self.ln_norm
 
 
 class ModifiedGaussianMixtureModel(Model):

@@ -101,13 +101,13 @@ def test_hyper_sphere_predict():
     sphere = md.HyperSphere(ndim, domain)
     
     assert sphere.predict(np.zeros((ndim))) == pytest.approx(-5.801314+6*np.log(2.0))
-    # 5.801314 taken from wolfram alpha volume of 6D r=2 sphere
+    # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 
 
     sphere.set_R(4.0)
 
     assert sphere.predict(np.zeros((ndim)))                  == pytest.approx(-5.801314+6*np.log(0.5))
-    # 5.801314 taken from wolfram alpha volume of 6D r=2 sphere
+    # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
     assert sphere.predict(np.full((ndim),4.0))               == -np.inf
     assert np.exp(sphere.predict(np.full((ndim),4.0))+1E99)  == pytest.approx(0.0)
 
@@ -116,7 +116,7 @@ def test_hyper_sphere_predict():
     assert sphere.predict(x) == -np.inf
     x[4] = 3.9999
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5))
-    # 5.801314 taken from wolfram alpha volume of 6D r=2 sphere
+    # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 
 
     inv_covariance  = np.ones((ndim))*4
@@ -125,7 +125,7 @@ def test_hyper_sphere_predict():
     assert sphere.predict(x) == -np.inf
     x[4] = 1.9999
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5)+6*np.log(2.0))
-    # 5.801314 taken from wolfram alpha volume of 6D r=2 sphere
+    # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 
     centre  = np.array([0., 0., 0., 0., 200., 0.])
     sphere.set_centre(centre)
@@ -133,7 +133,7 @@ def test_hyper_sphere_predict():
     assert sphere.predict(x) == -np.inf
     x[4] = 200.0 + 1.9999
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5)+6*np.log(2.0))
-    # 5.801314 taken from wolfram alpha volume of 6D r=2 sphere
+    # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 
 def test_hyper_sphere_fit():
 
@@ -182,7 +182,7 @@ def test_hyper_sphere_fit():
     assert sphere.fit(X, Y) == True
     assert sphere.R         == pytest.approx(3.649091)
     # 3.649091 is the numerical value when first made (and tested), kept here to ensure future code consistancy 
-    
+
 
     return
 
@@ -316,9 +316,28 @@ def test_kernel_density_estimate_fit():
 
     return
 
+def test_kernel_density_estimate_predict():
 
-# def test_kernel_density_estimate_predict():
-#     pass
+    ndim = 2
+    domain = []
+    hyper_parameters = [0.1]
 
+    density = md.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters)
 
-# test_kernel_density_estimate_fit()
+    nsamples = 4
+
+    X = np.zeros((4,ndim))
+    X[0,:] = 0.00
+    X[1,:] = 10.00
+    X[2,:] = 5.00
+    X[3,0] = 5.01
+    X[3,1] = 5.00
+    Y = -np.sum(X*X,axis=1)/2.0
+
+    density.fit(X, Y)
+    assert density.predict(np.array([0.0,0.0]))    == pytest.approx(np.log(1)-np.log(.25*np.pi)-np.log(nsamples))
+    assert density.predict(np.array([0.0,0.501]))  == -np.inf
+    assert density.predict(np.array([5.0,5.0]))    == pytest.approx(np.log(2)-np.log(.25*np.pi)-np.log(nsamples))
+    assert density.predict(np.array([5.5005,5.0])) == pytest.approx(np.log(1)-np.log(.25*np.pi)-np.log(nsamples))
+
+    return
