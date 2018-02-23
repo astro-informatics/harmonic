@@ -97,13 +97,14 @@ class HyperSphere(Model):
             raise ValueError("HyperSphere model domains list should " +
                 "be length 1.")
 
-        self.ndim = ndim_in
-        self.centre_set = False
-        self.centre = np.zeros((ndim_in))
+        self.ndim               = ndim_in
+        self.centre_set         = False
+        self.centre             = np.zeros((ndim_in))
         self.inv_covariance_set = False
-        self.inv_covariance = np.ones((ndim_in))
-        self.R_domain = domains[0]
+        self.inv_covariance     = np.ones((ndim_in))
+        self.R_domain           = domains[0]
         self.set_R(np.mean(self.R_domain))
+        self.fitted             = False
 
     def set_R(self, double R):
         """ sets the radius of the hyper sphere and calculates the volume of the sphere"""
@@ -169,6 +170,9 @@ class HyperSphere(Model):
             if ~np.isfinite(inv_covariance_in[i_dim]):
                 raise ValueError("NaN/Inf's in inv_covariance (may be due " + 
                                  "to a NaN in samples).")
+            if inv_covariance_in[i_dim] <= 0.0:
+                raise ValueError("Inverse Covariance values must " +
+                                "be positive.")
 
         for i_dim in range(self.ndim):
             self.inv_covariance[i_dim] = inv_covariance_in[i_dim]
@@ -206,6 +210,8 @@ class HyperSphere(Model):
             method='Bounded')
 
         self.set_R(result.x)
+
+        self.fitted = result.success
 
         return result.success
 
@@ -264,6 +270,7 @@ class KernelDensityEstimate(Model):
         self.distance           = self.D*self.D/4
         self.ngrid              = <int>(1.0/self.D+1E-8)+3
         self.ln_norm            = 0.0
+        self.fitted             = False
 
         self.grid       = {}
 
@@ -312,13 +319,16 @@ class KernelDensityEstimate(Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim")
 
-        self.set_scales(X)
+        self.samples = X.copy() # TODO consider functionality for shallow copy to save mem
+
+        self.set_scales(self.samples)
 
         #set dictionary 
-        set_grid(self.grid, X, self.start_end, self.inv_scales, self.ngrid, self.D)
+        set_grid(self.grid, self.samples, self.start_end, self.inv_scales, self.ngrid, self.D)
 
-        self.precompute_normalising_factor(X)
+        self.precompute_normalising_factor(self.samples)
 
+        self.fitted = True
 
         return True
 
@@ -326,24 +336,24 @@ class KernelDensityEstimate(Model):
         """Use model to predict the hight of the posterior at point x
         """
         # similar to this
-# def posterior_model_dict(vec_x, samples_train, index_dict, low_x, radius):
-#     #find out the pixel that the sample is in
-#     i_pixel_org = int((vec_x[0]-low_x)/(radius*2))
-#     j_pixel_org = int((vec_x[1]-low_x)/(radius*2))
-#     norm_circle = 1.0/(samples_train.shape[0]*samples_train.shape[1]*np.pi*radius**2)
-#     model_value = 0.0
+def posterior_model_dict(vec_x, samples_train, index_dict, low_x, radius):
+    #find out the pixel that the sample is in
+    i_pixel_org = int((vec_x[0]-low_x)/(radius*2))
+    j_pixel_org = int((vec_x[1]-low_x)/(radius*2))
+    norm_circle = 1.0/(samples_train.shape[0]*samples_train.shape[1]*np.pi*radius**2)
+    model_value = 0.0
 
-#     for i_pixel in range(i_pixel_org-1,i_pixel_org+2):
-#         for j_pixel in range(j_pixel_org-1,j_pixel_org+2):
-#             pixel_key = str(i_pixel)+" "+str(j_pixel)
-#             # print (vec_x[0]-low_x)/(scale*2), i_pixel
-#             # loop over list in that pixel
-#             if pixel_key in index_dict:
-#                 for sample_index in index_dict[pixel_key]:
-#                     # do what I did before
-#                     length = np.dot(vec_x-samples_train[sample_index[0],sample_index[1],:], vec_x-samples_train[sample_index[0],sample_index[1],:])
-#                     if length<radius**2:
-#                         model_value += norm_circle
+    for i_pixel in range(i_pixel_org-1,i_pixel_org+2):
+        for j_pixel in range(j_pixel_org-1,j_pixel_org+2):
+            pixel_key = str(i_pixel)+" "+str(j_pixel)
+            # print (vec_x[0]-low_x)/(scale*2), i_pixel
+            # loop over list in that pixel
+            if pixel_key in index_dict:
+                for sample_index in index_dict[pixel_key]:
+                    # do what I did before
+                    length = np.dot(vec_x-samples_train[sample_index[0],sample_index[1],:], vec_x-samples_train[sample_index[0],sample_index[1],:])
+                    if length<radius**2:
+                        model_value += norm_circle
 
 #     return model_value
 
