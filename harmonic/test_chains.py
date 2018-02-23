@@ -189,6 +189,91 @@ def test_add_chains_2d_and_copy():
     assert chains2.ln_posterior[random_sample]       \
         == ln_posterior2[random_sample-nsamples1*nchains1]
 
+def test_add_chains_2d_list():
+
+    ndim = 8
+    nsamples1 = 100
+    nchains1 = 60
+
+    chains_list1 = []
+    for i_chain in range(nchains1):
+        chains_list1.append(i_chain*nsamples1)
+    chains_list1.append(nchains1*nsamples1)
+
+    chains = ch.Chains(ndim)
+
+    # Set up samples1.
+    np.random.seed(50)
+    samples1 = np.random.randn(nsamples1 * nchains1, ndim)
+    ln_posterior1 = np.random.randn(nsamples1 * nchains1)
+
+    # Check cannot add samples with different ndim.
+    with pytest.raises(ValueError):
+        chains.add_chains_2d_list(np.zeros((2,ndim+1)), np.zeros(2),1,[0,1])
+    with pytest.raises(ValueError):
+        chains.add_chains_2d_list(samples1, ln_posterior1, nchains1+1, [0 for i in range(nchains1)])
+    with pytest.raises(ValueError):
+        chains.add_chains_2d_list(np.zeros((2,ndim)), np.zeros(3),1,[1,2])
+
+    chains.add_chains_2d_list(samples1, ln_posterior1, nchains1, chains_list1)
+
+    assert chains.nchains == nchains1
+    assert chains.nsamples == nsamples1 * nchains1
+    assert len(chains.start_indices) == nchains1 + 1
+    for i in range(nchains1+1):
+        assert chains.start_indices[i] == i * nsamples1
+    assert chains.samples.shape[0] == nsamples1 * nchains1
+    assert chains.samples.shape[1] == ndim
+    assert chains.ln_posterior.shape[0] == nsamples1 * nchains1
+
+    random_sample = np.random.randint(nsamples1 * nchains1)
+    random_dim    = 0
+    assert chains.samples[random_sample,random_dim] \
+        == samples1[random_sample,random_dim]
+    assert chains.ln_posterior[random_sample] \
+        == ln_posterior1[random_sample]
+
+    nsamples2 = 100
+    nchains2  = 300
+
+    samples2 = np.random.randn(nsamples2*nchains2, ndim)
+    ln_posterior2 = np.random.randn(nsamples2*nchains2)
+
+    chains_list2 = []
+    for i_chain in range(nchains2):
+        chains_list2.append(i_chain*nsamples2)
+    chains_list2.append(nchains2*nsamples2)
+
+
+    chains.add_chains_2d_list(samples2, ln_posterior2, nchains2, chains_list2)
+
+    assert chains.nchains == nchains1 + nchains2
+    assert chains.nsamples == nsamples1 * nchains1 + nsamples2 * nchains2 
+    assert len(chains.start_indices) == nchains1 + nchains2 + 1
+    for i in range(nchains1):
+        assert chains.start_indices[i] == i*nsamples1
+    for i in range(nchains1,nchains2+1):
+        assert chains.start_indices[i+nchains1] \
+            == nchains1 * nsamples1 + i * nsamples2
+    assert chains.samples.shape[0] \
+        == nsamples1 * nchains1 + nsamples2 * nchains2
+    assert chains.samples.shape[1] == ndim
+    assert chains.ln_posterior.shape[0] \
+        == nsamples1 * nchains1 + nsamples2 * nchains2
+
+    random_sample = np.random.randint(nsamples1)
+    random_dim =  5
+    assert chains.samples[random_sample,random_dim] \
+        == samples1[random_sample,random_dim]
+    assert chains.ln_posterior[random_sample]       \
+        == ln_posterior1[random_sample]
+    random_sample = nsamples1*nchains1 + np.random.randint(nsamples2*nchains2)
+    random_dim = 2
+    assert chains.samples[random_sample,random_dim] \
+        == samples2[random_sample-nsamples1*nchains1,random_dim]
+    assert chains.ln_posterior[random_sample]       \
+        == ln_posterior2[random_sample-nsamples1*nchains1]     
+
 
 def test_add_chains_3d():
 

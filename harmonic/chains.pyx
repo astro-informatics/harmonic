@@ -9,7 +9,7 @@ class Chains:
     def __init__(self, int ndim):   
         """Construct empty Chains for parameter space of dimension ndim.
         
-        Constructor simply sets ndim.  Chain sampeles are added by the
+        Constructor simply sets ndim.  Chain samples are added by the
         add_chain* methods since we want to support setting up data for chains
         from different input data formats (e.g. data from a single chain or
         multiple chains at once).
@@ -74,6 +74,7 @@ class Chains:
             ln_posterior: 1D numpy.ndarray containing the log_e posterior
                 values with shape (nsamples_in * nchains_in) and dtype double.
                 nchains_in: int specifying the number of chains.
+            int nchains_in: the number of chains to be added
         
         Raises:
             ValueError: Raised when number of samples is not multiple of the   
@@ -101,6 +102,56 @@ class Chains:
 
         cdef int i_chain, samples_per_chain = samples.shape[0] / nchains_in
         for i_chain in range(nchains_in):
+            self.add_chain(
+                samples[i_chain*samples_per_chain:
+                        (i_chain+1)*samples_per_chain, :],
+                ln_posterior[i_chain*samples_per_chain:
+                             (i_chain+1)*samples_per_chain])
+
+        return
+    def add_chains_2d_list(self, np.ndarray[double,ndim=2,mode="c"] samples 
+                      not None, 
+                      np.ndarray[double,ndim=1,mode="c"] ln_posterior not None, 
+                      int nchains_in, list chain_indexes):
+        """Adds a number of chains to the chain class. Uses a list of indexes to understand
+            where each chain starts and stops.
+            
+        Args:
+            samples: 2D numpy.ndarray containing the samples with shape 
+                (nsamples_in * nchains_in, ndim) and dtype double.            
+            ln_posterior: 1D numpy.ndarray containing the log_e posterior
+                values with shape (nsamples_in * nchains_in) and dtype double.
+                nchains_in: int specifying the number of chains.
+            int nchains_in: the number of chains to be added
+            list chain_indexes: List of the starting index of the chains
+        
+        Raises:
+            ValueError: Raised when ndim of new chains does not match previous 
+                chains.
+            ValueError: Raised when posterior and samples first length are 
+                different.
+            ValueError: when the length of the list is not nchains_in + 1
+        """
+
+
+        nsamples_in = samples.shape[0]
+        ndim_in = samples.shape[1]
+
+        # Check new chain has correct ndim.
+        if ndim_in != self.ndim:            
+            raise ValueError("ndim of new chain does not match previous chains")
+
+        if len(chain_indexes) != nchains_in+1:
+            raise ValueError("length of index list is not nchains_in + 1")
+
+        if samples.shape[0] != ln_posterior.shape[0]:            
+            raise ValueError("Length of sample and ln_posterior arrays do not "\
+                + "match")
+
+        cdef int i_chain, samples_per_chain
+
+        for i_chain in range(nchains_in):
+            samples_per_chain = chain_indexes[i_chain+1] - chain_indexes[i_chain]
             self.add_chain(
                 samples[i_chain*samples_per_chain:
                         (i_chain+1)*samples_per_chain, :],

@@ -59,6 +59,15 @@ setup(
         extra_compile_args=[]
     ),
     Extension(
+        "harmonic/data_handle",
+        package_dir=['src'],
+        sources=["harmonic/data_handle.pyx"],
+        include_dirs=include_dirs,
+        libraries=[],
+        extra_link_args=extra_link_args,
+        extra_compile_args=[]
+    ),
+    Extension(
         "harmonic/calculate_evidence",
         package_dir=['src'],
         sources=["harmonic/calculate_evidence.pyx"],
