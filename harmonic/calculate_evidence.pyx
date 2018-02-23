@@ -4,8 +4,17 @@ import chains as ch
 from libc.math cimport exp
 
 class evidence():
-	def __init__(self, int nchains):
+	def __init__(self, long nchains):
+		""" constructor for evidence class. It sets the values
+			to intial values ready for samples to be inputted
 
+		Args:
+			long nchains: the number of chains that are going to be
+				used in the compuation
+
+		Raises:
+			ValueError: if the number of chains is not positive
+		"""
 		if nchains < 1:
 			raise ValueError("nchains must be greater then 0")
 
@@ -21,6 +30,16 @@ class evidence():
 		self.mean_shift     = 0.0
 
 	def set_mean_shift(self, double mean_shift_in):
+		""" Sets the multaplicative shift 
+			(usually the geometric mean) of log_e posterior
+			values to aid numerical stability
+
+		Args:
+			double mean_shift_in: the multaplicative shift
+
+		Raises:
+			ValueError: If mean_shift_in is a NaN 
+		"""
 		if ~np.isfinite(mean_shift_in):
 			raise ValueError("Mean shift must be a number")
 
@@ -29,6 +48,17 @@ class evidence():
 		return
 
 	def end_run(self):
+		""" Uses the running totals of p_i and n_samples for
+			each chain to calculates an estimate of the evidence,
+			and estimate of the varience, and an estimate of the varience
+			of the varience.
+
+		Args:
+			None
+
+		Raises:
+			None
+		"""
 
 		cdef np.ndarray[double, ndim=1, mode="c"] p_i       = self.p_i
 		cdef np.ndarray[long, ndim=1, mode="c"]   n_samples = self.n_samples
@@ -60,6 +90,26 @@ class evidence():
 		return
 
 	def calculate_evidence(self, chain not None, model not None):
+		""" Calculates an estimate of the evidence,
+			and estimate of the varience, and an estimate of the varience
+			of the varience. It does this using running averages of the 
+			totals for each chain. This means it can be called many times
+			with new samples and the evidence estimate will improve
+
+		Args:
+			chain: An instance of the chains class containing the chains
+				to be used in the calculation
+			model: An instance of a model class that has been fitted.
+
+		Raises:
+			ValueError: If the input number of chains to not match the number
+				of chains already set up
+			ValueError: If the dimensions of the model and chains problems 
+				do not match
+
+		Returns:
+			None
+		"""
 
 		if chain.nchains != self.nchains:
 			raise ValueError("nchains do not match")
