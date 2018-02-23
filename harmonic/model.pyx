@@ -14,7 +14,7 @@ class Model(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def __init__(self, int ndim, list domains not None, hyper_parameters=None):
-        """Constructor setting the hyper parameters of the model.
+        """Constructor setting the hyper parameters and domains of the model.
         
         Must be implemented by derivied class (currently abstract).
         
@@ -35,7 +35,7 @@ class Model(metaclass=abc.ABCMeta):
         
         Args:
             X: 2D array of samples of shape (nsamples, ndim).
-            Y: 1D array of target posterior values for each sample in X 
+            Y: 1D array of target log_e posterior values for each sample in X 
                 of shape (nsamples).
         
         Returns:
@@ -52,7 +52,7 @@ class Model(metaclass=abc.ABCMeta):
             x: 1D array of sample of shape (ndim) to predict posterior value.
         
         Return:
-            Predicted posterior value.
+            Predicted log_e posterior value.
         """
 
 
@@ -85,7 +85,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
 
     cdef int i_dim, i_sample, ndim = X.shape[1], nsample = X.shape[0]
     cdef double objective = 0.0, distance, mean_shift = np.mean(Y)
-    cdef double ln_one_over_volume = ndim*log(R_squared)/2 # Parts that do not depend on R is ignored
+    cdef double ln_volume = ndim*log(R_squared)/2 # Parts that do not depend on R is ignored
 
     for i_sample in range(nsample):
         distance_squared = 0.0
@@ -97,7 +97,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
         if distance_squared < R_squared:
             objective += exp( 2*(mean_shift - Y[i_sample]) ) 
 
-    objective = exp(-2*ln_one_over_volume)*objective/nsample
+    objective = exp(-2*ln_volume)*objective/nsample
     # objective = exp(-2*ln_one_over_volume-2*mean_shift)*objective/nsample
 
     return objective
@@ -265,7 +265,7 @@ class HyperSphere(Model):
 
         Args:
             X: 2D array of samples of shape (nsamples, ndim).
-            Y: 1D array of target posterior values for each sample in X 
+            Y: 1D array of target log_e posterior values for each sample in X 
                 of shape (nsamples).
         
         Returns:
@@ -301,6 +301,12 @@ class HyperSphere(Model):
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Use model to predict the hight of the log_e posterior at point x
+
+        Args: 
+            x: 1D array of sample of shape (ndim) to predict posterior value.
+        
+        Return:
+            Predicted posterior value.
         """
 
         x_minus_centre = x - self.centre        
@@ -316,10 +322,28 @@ class HyperSphere(Model):
 cdef KernelDensityEstimate_set_grid(dict grid, \
                                     np.ndarray[double, ndim=2, mode="c"] X, 
                                     np.ndarray[double, ndim=2, mode="c"] start_end, \
-                                    np.ndarray[double, ndim=1, mode="c"] inv_scales, 
-                                    long ngrid, 
-                                    double D):
+                                    np.ndarray[double, ndim=1, mode="c"] inv_scales, \
+                                    long ngrid, double D):
+    """ Creates a dictionary that allows a fast way to find the indexes of samples
+        in a pixel in a grid where the pixel sizes are the diameter of the hyper
+        spheres placed at each sample
 
+    Args:
+        dict grid: Empty dictionary where the list of the sample index will be placed.
+            The key is a index of the grid (c type ordering) and the value is a list
+            containing the indexes in the sample array of all the samples in that index
+        X: 2D array of samples of shape (nsamples, ndim).
+        Y: 1D array of target log_e posterior values for each sample in X 
+            of shape (nsamples).
+        start_end:  2D array of the lowest and highest sample in each dimension (ndim,2)
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
+            max and min of the sample in dimension i
+        long ngrid: Number of pixels in each dimension in the grid
+        double D: The diameter of the hyper sphere
+
+    Returns:
+        None
+    """
 
     cdef long i_sample, i_dim, sub_index, index, nsamples = X.shape[0], ndim = X.shape[1]
     cdef double inv_diam = 1.0/D
@@ -341,6 +365,28 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, long ng
                                                  np.ndarray[double, ndim=1, mode="c"] x, \
                                                  np.ndarray[double, ndim=1, mode="c"] inv_scales, \
                                                  double distance, long *count):
+    """ This is a recursive function that calls itself inorder to call the search_in_pixel 
+        function on one pixel behind and infront of the pixel x is in for each dimension
+
+    Args:
+        long index: The current pixel we are looking at
+        long i_dim: The dimension we are doing the current moving forward and backward in
+        long ngrid: Number of pixels in each dimension in the grid
+        long ndim: The dimension of the problem
+        dict grid: The dictionary with information on which samples are in which pixel. The key 
+            is an index of the grid (c type ordering) and the value is a list
+            containing the indexes in the sample array of all the samples in that index
+        samples: 2D array of samples of shape (nsamples, ndim).
+        x: 1D array of the position we are evaluating the pridiction for
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
+            max and min of the sample in dimension i
+        double distance: The diameter of the hyper sphere
+        long * count: a pointer to the count integer that counts how many hyper spheres the postion
+            x falls inside
+
+    Returns:
+        None
+    """
     # this does create looping boundry conditions but doesn't matter in searching
     # it will simply slow things down very very slightly 
     # (probably less then dealing with it will!)
@@ -355,6 +401,26 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
                                            np.ndarray[double, ndim=1, mode="c"] x, \
                                            np.ndarray[double, ndim=1, mode="c"] inv_scales, \
                                            double distance, long *count):
+    """ Examines all samples that are in the current pixel and counts how
+        many of those position x falls inside
+
+    Args:
+        long index: The current pixel we are looking at
+        long ndim: The dimension of the problem
+        dict grid: The dictionary with information on which samples are in which pixel. The key 
+            is an index of the grid (c type ordering) and the value is a list
+            containing the indexes in the sample array of all the samples in that index
+        samples: 2D array of samples of shape (nsamples, ndim).
+        x: 1D array of the position we are evaluating the prediction for
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
+            max and min of the sample in dimension i
+        double distance: The diameter of the hyper sphere
+        long * count: a pointer to the count integer that counts how many hyper spheres the postion
+            x falls inside
+
+    Returns:
+        None
+    """
     if index in grid:
         for sample_index in grid[index]:
             # do what I did before
@@ -366,12 +432,26 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
 class KernelDensityEstimate(Model):
 
     def __init__(self, int ndim, list domains not None, hyper_parameters=None):
-        """ constructor setting the hyper parameters of the model
+        """ constructor setting the hyper parameters and domains of the model
+
+        Args:
+            long ndim: The dimension of the problem to solve
+            list domains: A list of length 0
+            hyper_parameters: A list of length 1 which should be the diameter in scaled
+                units of the hyper spheres to use in the Kernel Density Estimate
+
+
+        Raises:
+            ValueError: If the hyper_parameters list is not length 1
+            ValueError: If the length of domains list is not 0
+            ValueError: If the ndim_in is not positive
         """
         if len(hyper_parameters) != 1:
             raise ValueError("Kernel Density Estimate hyper parameter list should be length 1.")
         if len(domains) != 0:
             raise ValueError("Kernel Density Estimate domains list should be length 0.")
+        if ndim < 1:
+            raise ValueError("The dimension must be greater then 1")
 
         self.ndim     = ndim
         self.D        = hyper_parameters[0]
@@ -390,6 +470,21 @@ class KernelDensityEstimate(Model):
         return
 
     def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
+        """ sets the scales of the hyper spheres based on the min
+            and max sample in each dimension
+
+        Args:
+            X: 2D array of samples of shape (nsamples, ndim).
+
+        Returns:
+            None
+
+        Raises:
+            ValueError if the second dimension of X is not the same as ndim
+        """
+
+        if X.shape[1] != self.ndim:
+            raise ValueError("X second dimension not the same as ndim")
 
         cdef int i_dim
 
@@ -405,6 +500,18 @@ class KernelDensityEstimate(Model):
         return
 
     def precompute_normalising_factor(self, np.ndarray[double, ndim=2, mode="c"] X):
+        """precomputes the log_e normalisation factor of the density estimation
+
+        Args:
+            X: 2D array of samples of shape (nsamples, ndim).
+
+        Raises:
+            ValueError if the second dimension of X is not the same as ndim
+        """
+
+        if X.shape[1] != self.ndim:
+            raise ValueError("X second dimension not the same as ndim")
+
         cdef double ln_volume, det_covarience = 1.0
 
         for i_dim in range(self.ndim):
@@ -419,7 +526,22 @@ class KernelDensityEstimate(Model):
 
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
-        """Fit the parameters of the model
+        """Fit the parameters of the model by:
+            1) Setting the scales of the model from the samples
+            2) creating the dictionary containing all the information on which samples are in 
+               which pixel in a grid where each pixel size is the same as the diameter of the
+               hyper spheres to be placed on each sample. The key is an index of the grid 
+               (c type ordering) and the value is a list containing the indexes in the sample 
+               array of all the samples in that index
+            3) Precomputes the normalisation factor
+
+        Args:
+            X: 2D array of samples of shape (nsamples, ndim).
+            Y: 1D array of target log_e posterior values for each sample in X 
+                of shape (nsamples).
+        
+        Returns:
+            Boolean specifying whether fit successful.
 
         Raises:
             ValueError if the first dimension of X is not the same as Y
@@ -446,7 +568,13 @@ class KernelDensityEstimate(Model):
         return True
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """Use model to predict the hight of the posterior at point x
+        """Use model to predict the hight of the posterior at point x.
+
+        Args: 
+            x: 1D array of sample of shape (ndim) to predict posterior value.
+        
+        Return:
+            Predicted posterior value.
         """
         cdef np.ndarray[double, ndim=2, mode="c"] samples    = self.samples,   start_end = self.start_end
         cdef np.ndarray[double, ndim=1, mode="c"] inv_scales = self.inv_scales
@@ -469,7 +597,7 @@ class KernelDensityEstimate(Model):
 class ModifiedGaussianMixtureModel(Model):
 
     def __init__(self, int ndim, list domains not None, hyper_parameters=None):
-        """ constructor setting the hyper parameters of the model
+        """ constructor setting the hyper parameters and domains of the model
         """
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):

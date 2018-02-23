@@ -8,6 +8,8 @@ def test_hyper_sphere_constructor():
         sphere = md.HyperSphere(2, [np.array([0.5,1.5])], hyper_parameters=[5])
     with pytest.raises(ValueError):
         sphere = md.HyperSphere(2, [np.array([0.5,1.5]),np.array([0.5,1.5])])
+    with pytest.raises(ValueError):
+        sphere = md.HyperSphere(0, [np.array([0.5,1.5])])
 
     ndim   = 3
     domain = [np.array([0.5,1.5])]
@@ -188,11 +190,11 @@ def test_hyper_sphere_fit():
 
 def test_kernel_density_estimate_constructor():
     with pytest.raises(ValueError):
-        sphere = md.KernelDensityEstimate(2, [np.array([0.5,1.5])], hyper_parameters=[5.])
+        sphere = md.KernelDensityEstimate(2, [np.array([0.5,1.5])], hyper_parameters=[0.1])
     with pytest.raises(ValueError):
         sphere = md.HyperSphere(2, [])
     with pytest.raises(ValueError):
-        sphere = md.HyperSphere(0, [np.array([0.5,1.5])])
+        sphere = md.HyperSphere(0, [], hyper_parameters=[0.1])
 
     ndim    = 3
     density = md.KernelDensityEstimate(ndim, [], hyper_parameters=[0.1])
@@ -225,6 +227,10 @@ def test_set_scales():
 
     density = md.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters)
 
+    nsamples = 10
+    with pytest.raises(ValueError):
+        density.fit(np.ones((nsamples,ndim+1)),np.ones(nsamples))
+
     X      = np.zeros((2,ndim))-3.0
     X[1,:] = 2.0
 
@@ -243,6 +249,10 @@ def test_kernel_density_estimate_precompute_normalising_factor():
     hyper_parameters = [0.1]
 
     density = md.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters)
+
+    nsamples = 10
+    with pytest.raises(ValueError):
+        density.fit(np.ones((nsamples,ndim+1)),np.ones(nsamples))
 
     X = np.zeros((3,ndim))
     X[0,:] = 0.0
