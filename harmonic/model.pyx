@@ -1,7 +1,7 @@
 import abc
 import numpy as np
 cimport numpy as np
-from libc.math cimport sin, log, exp
+from libc.math cimport log, exp
 import scipy.special as sp
 import scipy.optimize as so
 
@@ -205,19 +205,21 @@ class HyperSphere(Model):
         else:
             return -np.inf
     
-cdef dict set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in):
+cdef dict set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in, D_in):
 
     cdef dict grid = grid_in
     cdef np.ndarray[double, ndim=2, mode="c"] X = X_in, start_end = start_end_in
     cdef np.ndarray[double, ndim=1, mode="c"] inv_scales = inv_scales_in
 
     cdef long i_sample, i_dim, sub_index, index, nsamples = X.shape[0], ndim = X.shape[1], ngrid = ngid_in
+    cdef double inv_diam = 1.0/D_in
 
     for i_sample in range(nsamples):
         index = 0
         for i_dim in range(ndim):
-            sub_index = <long>((X_in[i_sample,i_dim]-start_end[0,i_dim])/inv_scales[i_dim]) + 1
+            sub_index = <long>((X_in[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim]*inv_diam) + 1
             index += sub_index*ngrid**i_dim
+            # print(i_dim, X_in[i_sample,i_dim], start_end[i_dim,0], inv_scales[i_dim], (X_in[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim], sub_index, ngrid, index)
         if index in grid:
             grid[index].append(i_sample)
         else:
@@ -235,13 +237,15 @@ class KernelDensityEstimate(Model):
             raise ValueError("Kernel Density Estimate domains list should be length 0.")
 
         self.ndim     = ndim
-        self.R        = hyper_parameters[0]
+        self.D        = hyper_parameters[0]
 
-        self.scales_set = False
-        self.start_end  = np.zeros((ndim,2))
-        self.inv_scales = np.ones((ndim))
-        self.distance   = self.R*self.R/4
-        self.ngrid      = <int>(1.0/self.R+1E-8)+2
+        self.scales_set         = False
+        self.start_end          = np.zeros((ndim,2))
+        self.inv_scales         = np.ones((ndim))
+        self.inv_scales_squared = np.ones((ndim))
+        self.distance           = self.D*self.D/4
+        self.ngrid              = <int>(1.0/self.D+1E-8)+3
+        self.ln_norm            = 0.0
 
         self.grid       = {}
 
@@ -252,13 +256,29 @@ class KernelDensityEstimate(Model):
         cdef int i_dim
 
         for i_dim in range(self.ndim):
-            self.inv_scales[i_dim]  = 1.0/(self.R * (X[:,i_dim].max() - X[:,i_dim].min()))
+            self.inv_scales[i_dim]  = 1.0/(X[:,i_dim].max() - X[:,i_dim].min())
             self.start_end[i_dim,0] = X[:,i_dim].min()
             self.start_end[i_dim,1] = X[:,i_dim].max()
+
+        self.inv_scales_squared = self.inv_scales**2
 
         self.scales_set = True
 
         return
+
+    def precompute_normalising_factor(self, np.ndarray[double, ndim=2, mode="c"] X):
+        cdef double ln_volume, det_covarience = 1.0
+
+        for i_dim in range(self.ndim):
+            det_covarience *= 1.0/self.inv_scales[i_dim]
+
+        ln_volume = ((self.ndim/2)*log(np.pi) + self.ndim*log(self.D/2) - sp.gammaln(self.ndim/2+1) + log(det_covarience))
+         
+
+        self.ln_norm = log(<double>X.shape[0]) + ln_volume
+        pass
+
+
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model
@@ -277,7 +297,9 @@ class KernelDensityEstimate(Model):
         self.set_scales(X)
 
         #set dictionary 
-        set_grid(self.grid, X, self.start_end, self.inv_scales, self.ngrid)
+        set_grid(self.grid, X, self.start_end, self.inv_scales, self.ngrid, self.D)
+
+        self.precompute_normalising_factor(X)
 
 
         return True

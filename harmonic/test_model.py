@@ -172,13 +172,14 @@ def test_kernel_density_estimate_constructor():
     density = md.KernelDensityEstimate(ndim, [], hyper_parameters=[0.1])
 
     assert density.ndim                == ndim
-    assert density.R                   == pytest.approx(0.1)
+    assert density.D                   == pytest.approx(0.1)
     assert density.scales_set          == False
     assert density.start_end.shape[0]  == ndim
     assert density.start_end.shape[1]  == 2
     assert density.inv_scales.shape[0] == ndim
     assert density.distance            == 0.05**2
-    assert density.ngrid               == 12
+    assert density.ngrid               == 13
+    assert density.ln_norm             == pytest.approx(0.0)
 
     for i_dim in range(ndim):
         assert density.inv_scales[i_dim] == pytest.approx(1.0)
@@ -203,9 +204,61 @@ def test_set_scales():
     density.set_scales(X)
 
     for i_dim in range(ndim):
-        assert density.inv_scales[i_dim]  == 2.
-        assert density.start_end[i_dim,0] == -3.0
-        assert density.start_end[i_dim,1] == 2.0
+        assert density.inv_scales[i_dim]          == pytest.approx(1.0/5.0)
+        assert density.inv_scales_squared[i_dim]  == pytest.approx(1.0/25.0)
+        assert density.start_end[i_dim,0]         == pytest.approx(-3.0)
+        assert density.start_end[i_dim,1]         == pytest.approx(2.0)
+
+def test_kernel_density_estimate_precompute_normalising_factor():
+
+    ndim = 2
+    domain = []
+    hyper_parameters = [0.1]
+
+    density = md.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters)
+
+    X = np.zeros((3,ndim))
+    X[0,:] = 0.0
+    X[1,:] = 10.0
+    X[2,:] = 5.0
+
+    density.set_scales(X)
+    density.precompute_normalising_factor(X)
+
+    assert density.D        == pytest.approx(0.1)
+    assert density.distance == pytest.approx(0.0025)
+    assert density.ln_norm  == pytest.approx(np.log(.25*np.pi)+np.log(3))
+
+    X = np.zeros((4,ndim))
+    X[0,:] = -10.0
+    X[1,:] = 10.0
+    X[2,:] = 5.0
+
+    density.set_scales(X)
+    density.precompute_normalising_factor(X)
+
+    assert density.D        == pytest.approx(0.1)
+    assert density.distance == pytest.approx(0.0025)
+    assert density.ln_norm  == pytest.approx(np.log(1.*np.pi)+np.log(4))
+
+    ndim   = 6
+    domain = []
+    hyper_parameters = [0.2]
+    density = md.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters)
+
+    X = np.zeros((3,ndim))
+    X[0,:] = -10.0
+    X[1,:] = 1.0
+    X[2,:] = 10.0
+
+    density.set_scales(X)
+    density.precompute_normalising_factor(X)
+
+    assert density.D          == pytest.approx(0.2)
+    assert density.distance   == pytest.approx(0.01)
+    assert density.ln_norm    == pytest.approx(5.801314+np.log(3))
+
+    return
 
 def test_kernel_density_estimate_fit():
 
@@ -222,11 +275,31 @@ def test_kernel_density_estimate_fit():
     with pytest.raises(ValueError):
         density.fit(np.ones((nsamples,ndim)),np.ones(nsamples+1))
 
-    np.random.seed(30)
-    X = np.random.randn(nsamples,ndim)
+    X = np.zeros((3,ndim))
+    X[0,:] = 0.0
+    X[1,:] = 10.0
+    X[2,:] = 5.0
     Y = -np.sum(X*X,axis=1)/2.0
 
-    assert density.fit(X, Y) == True
-    # assert 1 in density.grid == False
+    assert density.fit(X, Y)    == True
+    print(density.grid)
+    assert density.grid[14][0]  == 0
+    assert density.grid[143][0] == 1
+    assert density.grid[78][0]  == 2
+
+    X = np.ascontiguousarray(np.array([np.linspace(0,10.,20),np.zeros(20)]).T)
+    X[3,1] = 1.0
+
+    print(X)
+    assert density.fit(X,np.ones(20)) == True
+    print(density.grid)
+    assert density.grid[0][0]   == 2
 
     return
+
+
+# def test_kernel_density_estimate_predict():
+#     pass
+
+
+# test_kernel_density_estimate_fit()
