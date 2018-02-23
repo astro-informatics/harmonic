@@ -162,7 +162,7 @@ def test_hyper_sphere_fit():
     Y = -np.sum(X*X,axis=1)/2.0
 
     assert sphere.fit(X, Y) == True
-    assert sphere.R         == pytest.approx(3.649091) 
+    assert sphere.R         == pytest.approx(1.910259417) 
     # 3.649091 is the numerical value when first made (and tested), kept here to ensure future code consistancy 
     assert sphere.fitted    == True
 
@@ -171,7 +171,7 @@ def test_hyper_sphere_fit():
     Y = -np.sum((X-1.0)**2,axis=1)/2.0
 
     assert sphere.fit(X, Y) == True
-    assert sphere.R         == pytest.approx(3.649091)
+    assert sphere.R         == pytest.approx(1.910259417)
     # 3.649091 is the numerical value when first made (and tested), kept here to ensure future code consistancy 
 
     np.random.seed(30)
@@ -180,7 +180,7 @@ def test_hyper_sphere_fit():
     Y = -X[:,0]*X[:,0]/2.0 - X[:,1]*X[:,1]/(2.0*0.25)
 
     assert sphere.fit(X, Y) == True
-    assert sphere.R         == pytest.approx(3.649091)
+    assert sphere.R         == pytest.approx(1.910259417)
     # 3.649091 is the numerical value when first made (and tested), kept here to ensure future code consistancy 
 
 
@@ -191,6 +191,8 @@ def test_kernel_density_estimate_constructor():
         sphere = md.KernelDensityEstimate(2, [np.array([0.5,1.5])], hyper_parameters=[5.])
     with pytest.raises(ValueError):
         sphere = md.HyperSphere(2, [])
+    with pytest.raises(ValueError):
+        sphere = md.HyperSphere(0, [np.array([0.5,1.5])])
 
     ndim    = 3
     density = md.KernelDensityEstimate(ndim, [], hyper_parameters=[0.1])

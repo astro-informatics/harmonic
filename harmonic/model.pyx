@@ -1,7 +1,7 @@
 import abc
 import numpy as np
 cimport numpy as np
-from libc.math cimport log, exp
+from libc.math cimport log, exp, sqrt
 import scipy.special as sp
 import scipy.optimize as so
 
@@ -59,6 +59,23 @@ class Model(metaclass=abc.ABCMeta):
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                               centre, inv_covariance):
     """ Evaluates the ojective function with the HyperSphere model
+        this is the varience of the estimator subject to a linear transformation
+        that does not depend on the radius of the sphere (the bit being fitted).
+
+    Args:
+        double R_squared: the radius of the hyper sphere squared
+        X: 2D numpy.ndarray containing the samples 
+            with shape (nsamples, ndim) and dtype double.
+        Y: 1D numpy.ndarray containing the log_e posterior 
+            values with shape (nsamples) and dtype double.
+        centre: 1D numpy.ndarray containing the centre of the sphere 
+            with shape (ndim) and dtype double.
+        ln_posterior: 1D numpy.ndarray containing the diagonal of the
+            inverse covariance matrix
+            values with shape (ndim) and dtype double.
+
+    Return:
+        The value of the objective function
     """
 
     cdef np.ndarray[double, ndim=2, mode="c"] X_here = X
@@ -88,14 +105,29 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
 
 class HyperSphere(Model):
 
-    def __init__(self, int ndim_in, list domains not None, hyper_parameters=None):
+    def __init__(self, long ndim_in, list domains not None, hyper_parameters=None):
         """ constructor setting the hyper parameters of the model
+
+        Args:
+            long ndim_in: The dimension of the problem to solve
+            list domains: A list of length 1 containing a 1D array
+                of length 2 containing the lower and upper bound of the
+                radius of the hyper sphere
+            hyper_parameters: Should not be set as there are no hyper parameters
+                for this model
+
+        Raises:
+            ValueError: If the hyper_parameters variable is not None
+            ValueError: If the length of domains list is not one
+            ValueError: If the ndim_in is not positive
         """
         if hyper_parameters != None:
             raise ValueError("HyperSphere model has no hyper parameters.")
         if len(domains) != 1:
             raise ValueError("HyperSphere model domains list should " +
                 "be length 1.")
+        if ndim_in < 1:
+            raise ValueError("The dimension must be greater then 1")
 
         self.ndim               = ndim_in
         self.centre_set         = False
@@ -107,7 +139,15 @@ class HyperSphere(Model):
         self.fitted             = False
 
     def set_R(self, double R):
-        """ sets the radius of the hyper sphere and calculates the volume of the sphere"""
+        """ sets the radius of the hyper sphere and calculates the volume of the sphere
+
+        Args:
+            double R: The radius sphere
+
+        Raises:
+            ValueError: If the radius is a NaN
+            ValueError: If the Raises is not positive
+        """
 
         if ~np.isfinite(R):
             raise ValueError("Radius is a NaN.")
@@ -120,7 +160,18 @@ class HyperSphere(Model):
         return
 
     def set_precompucted_values(self):
+        """ precomputes volume of the hyper sphere (scaled ellipse)
+            and the squared radius
 
+        Args:
+            None
+
+        Raises:
+            None
+
+        Returns:
+            None
+        """
         cdef int i_dim
         cdef double det_covariance = 1.0
 
@@ -140,6 +191,17 @@ class HyperSphere(Model):
         return
 
     def set_centre(self, np.ndarray[double, ndim=1, mode="c"] centre_in):
+        """Sets the centre of the hyper sphere
+
+        Args:
+            centre_in: 1D numpy.ndarray containing the centre of sphere 
+                with shape (ndim) and dtype double.
+
+        Raises:
+            ValueError: If the length of the centre array is not the same as
+                ndim
+            ValueError: If the centre array contains a NaN
+        """
 
         cdef int i_dim
 
@@ -160,6 +222,20 @@ class HyperSphere(Model):
 
     def set_inv_covariance(self, np.ndarray[double, ndim=1, mode="c"] 
                            inv_covariance_in):
+
+        """Sets the centre of the hyper sphere
+
+        Args:
+            inv_covariance_in: 1D numpy.ndarray containing the diagonal of 
+                inverse convarience matrix that defines the ellipse
+                with shape (ndim) and dtype double.
+
+        Raises:
+            ValueError: If the length of the inv_covariance array is not the same as
+                ndim
+            ValueError: If the inv_covariance array contains a NaN
+            ValueError: If the inv_covariance array contains a value that is not positive
+        """
 
         cdef int i_dim
 
@@ -187,6 +263,14 @@ class HyperSphere(Model):
             np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model
 
+        Args:
+            X: 2D array of samples of shape (nsamples, ndim).
+            Y: 1D array of target posterior values for each sample in X 
+                of shape (nsamples).
+        
+        Returns:
+            Boolean specifying whether fit successful.
+
         Raises:
             ValueError if the first dimension of X is not the same as Y
             ValueError if the second dimension of X is not the same as ndim
@@ -209,7 +293,7 @@ class HyperSphere(Model):
             args=(X, Y, self.centre, self.inv_covariance), 
             method='Bounded')
 
-        self.set_R(result.x)
+        self.set_R(sqrt(result.x))
 
         self.fitted = result.success
 
@@ -229,19 +313,21 @@ class HyperSphere(Model):
         else:
             return -np.inf
     
-cdef KernelDensityEstimate_set_grid(grid_in, X_in, start_end_in, inv_scales_in, ngid_in, D_in):
+cdef KernelDensityEstimate_set_grid(dict grid, \
+                                    np.ndarray[double, ndim=2, mode="c"] X, 
+                                    np.ndarray[double, ndim=2, mode="c"] start_end, \
+                                    np.ndarray[double, ndim=1, mode="c"] inv_scales, 
+                                    long ngrid, 
+                                    double D):
 
-    cdef dict grid = grid_in
-    cdef np.ndarray[double, ndim=2, mode="c"] X = X_in, start_end = start_end_in
-    cdef np.ndarray[double, ndim=1, mode="c"] inv_scales = inv_scales_in
 
-    cdef long i_sample, i_dim, sub_index, index, nsamples = X.shape[0], ndim = X.shape[1], ngrid = ngid_in
-    cdef double inv_diam = 1.0/D_in
+    cdef long i_sample, i_dim, sub_index, index, nsamples = X.shape[0], ndim = X.shape[1]
+    cdef double inv_diam = 1.0/D
 
     for i_sample in range(nsamples):
         index = 0
         for i_dim in range(ndim):
-            sub_index = <long>((X_in[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim]*inv_diam) + 1
+            sub_index = <long>((X[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim]*inv_diam) + 1
             index += sub_index*ngrid**i_dim
             # print(i_dim, X_in[i_sample,i_dim], start_end[i_dim,0], inv_scales[i_dim], (X_in[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim], sub_index, ngrid, index)
         if index in grid:

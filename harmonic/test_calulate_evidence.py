@@ -107,9 +107,9 @@ def test_calculate_evidence():
 	# Calculate evidence
 	cal_ev.calculate_evidence(chain,sphere)
 
-	assert cal_ev.p       == pytest.approx(0.158883104) 
-	assert cal_ev.s2      == pytest.approx(1.281771305e-06)
-	assert cal_ev.v2**0.5 == pytest.approx(1.077659850e-07)
+	assert cal_ev.p       == pytest.approx(0.159438606) 
+	assert cal_ev.s2      == pytest.approx(1.158805126e-07)
+	assert cal_ev.v2**0.5 == pytest.approx(1.142786462e-08)
 
 	return
 
