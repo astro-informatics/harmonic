@@ -220,7 +220,52 @@ class Chains:
         nsamples_per_chain = list(map(lambda x : x[1] - x[0],  zipped))
         
         return nsamples_per_chain 
+
+    def remove_burnin(self, nburn=100):
+        """Remove burn-in samples from each chain.
         
+        Args:
+            nburn: Number of burn-in samples to remove from each chain.
+        
+        Returns: 
+            None.
+            
+        Raises:
+            ValueError: Raised when nburn not less then number of samples in 
+                each chain.
+        """
+        
+        start_indices_new = [0]
+        samples_new = np.empty((0, self.ndim))
+        ln_posterior_new = np.empty((0))
+        
+        cdef int i_sample = 0        
+        cdef int i_chain, nsamples_chain
+        for i_chain in range(self.nchains):
+            
+            start = self.start_indices[i_chain]
+            end = self.start_indices[i_chain+1]
+            nsamples_chain = end - start            
+            
+            if nburn >= nsamples_chain:
+                raise ValueError("nburn must be less than " 
+                    + "number of samples in chain")
+                    
+            samples_new = np.concatenate( \
+                (samples_new, self.samples[start+nburn:end, :]))
+            ln_posterior_new = np.concatenate( \
+                (ln_posterior_new, self.ln_posterior[start+nburn:end]))
+        
+            i_sample += nsamples_chain - nburn       
+                
+            start_indices_new.append(i_sample)
+            
+        self.samples = samples_new
+        self.ln_posterior = ln_posterior_new
+        self.start_indices = start_indices_new
+        self.nsamples = i_sample    
+        
+        return
 
     def split_into_blocks(self, nblocks=100):
         """Split chains into larger number of blocks.
@@ -269,6 +314,7 @@ class Chains:
         # print("nblocks_per_chain = {}".format(nblocks_per_chain))
         
         start_indices_new = np.array([0])
+        cdef int i_chain
         for i_chain in range(self.nchains):
             start = self.start_indices[i_chain]
             end = self.start_indices[i_chain+1]

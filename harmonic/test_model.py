@@ -18,12 +18,12 @@ def test_hyper_sphere_constructor():
     assert sphere.R_domain[0]        == pytest.approx(0.5)
     assert sphere.R_domain[1]        == pytest.approx(1.5)
     assert sphere.R                  == pytest.approx(1.0)
-    assert sphere.centres_set        == False
-    assert sphere.inv_covarience_set == False
+    assert sphere.centre_set        == False
+    assert sphere.inv_covariance_set == False
 
     for i_dim in range(ndim):
-        assert sphere.centres[i_dim]        == pytest.approx(0.0)
-        assert sphere.inv_covarience[i_dim] == pytest.approx(1.0)
+        assert sphere.centre[i_dim]        == pytest.approx(0.0)
+        assert sphere.inv_covariance[i_dim] == pytest.approx(1.0)
 
 
 def test_hyper_sphere_set_sphere_centre_and_shape():
@@ -34,26 +34,26 @@ def test_hyper_sphere_set_sphere_centre_and_shape():
     sphere = md.HyperSphere(ndim, domain)
 
     with pytest.raises(ValueError):
-        sphere.set_centres(np.array([0.0,0.0]))
+        sphere.set_centre(np.array([0.0,0.0]))
     with pytest.raises(ValueError):
-        sphere.set_centres(np.array([0.0,0.0,np.nan]))
+        sphere.set_centre(np.array([0.0,0.0,np.nan]))
 
     with pytest.raises(ValueError):
-        sphere.set_inv_covarience(np.array([0.0,0.0]))
+        sphere.set_inv_covariance(np.array([0.0,0.0]))
     with pytest.raises(ValueError):
-        sphere.set_inv_covarience(np.array([0.0,0.0,np.nan]))
+        sphere.set_inv_covariance(np.array([0.0,0.0,np.nan]))
 
-    sphere.set_centres(np.array([1.5,3.0,2.0]))
-    assert sphere.centres[0]  == pytest.approx(1.5)
-    assert sphere.centres[1]  == pytest.approx(3.0)
-    assert sphere.centres[2]  == pytest.approx(2.0)
-    assert sphere.centres_set == True
+    sphere.set_centre(np.array([1.5,3.0,2.0]))
+    assert sphere.centre[0]  == pytest.approx(1.5)
+    assert sphere.centre[1]  == pytest.approx(3.0)
+    assert sphere.centre[2]  == pytest.approx(2.0)
+    assert sphere.centre_set == True
 
-    sphere.set_inv_covarience(np.array([2.5,4.0,-1.0]))
-    assert sphere.inv_covarience[0]  == pytest.approx(2.5)
-    assert sphere.inv_covarience[1]  == pytest.approx(4.0)
-    assert sphere.inv_covarience[2]  == pytest.approx(-1.0)
-    assert sphere.inv_covarience_set == True
+    sphere.set_inv_covariance(np.array([2.5,4.0,-1.0]))
+    assert sphere.inv_covariance[0]  == pytest.approx(2.5)
+    assert sphere.inv_covariance[1]  == pytest.approx(4.0)
+    assert sphere.inv_covariance[2]  == pytest.approx(-1.0)
+    assert sphere.inv_covariance_set == True
 
 
 def test_hyper_sphere_set_radius_and_precompute_values():
@@ -83,7 +83,7 @@ def test_hyper_sphere_set_radius_and_precompute_values():
     assert sphere.R_squared          == pytest.approx(4.0)
     assert sphere.ln_one_over_volume == pytest.approx(-5.801314)
 
-    sphere.set_inv_covarience(np.full((ndim),2.0))
+    sphere.set_inv_covariance(np.full((ndim),2.0))
 
     assert sphere.ln_one_over_volume == pytest.approx(-5.801314-3*np.log(0.5))
 
@@ -107,14 +107,19 @@ def test_hyper_sphere_predict():
     x[4] = 3.9999
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5))
 
-    inv_covarience  = np.ones((ndim))*4
-    sphere.set_inv_covarience(inv_covarience)
+    inv_covariance  = np.ones((ndim))*4
+    sphere.set_inv_covariance(inv_covariance)   
     x[4] = 2.0001
     assert sphere.predict(x) == -np.inf
     x[4] = 1.9999
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5)+6*np.log(2.0))
 
-
+    centre  = np.array([0., 0., 0., 0., 200., 0.])
+    sphere.set_centre(centre)
+    x[4] = 200.0 + 2.0001
+    assert sphere.predict(x) == -np.inf
+    x[4] = 200.0 + 1.9999
+    assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5)+6*np.log(2.0))
 
 def test_hyper_sphere_fit():
 

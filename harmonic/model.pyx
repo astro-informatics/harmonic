@@ -57,23 +57,27 @@ class Model(metaclass=abc.ABCMeta):
 
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
-                              centres, inv_covarience):
+                              centre, inv_covariance):
     """ Evaluates the ojective function with the HyperSphere model
     """
 
     cdef np.ndarray[double, ndim=2, mode="c"] X_here = X
     cdef np.ndarray[double, ndim=1, mode="c"] Y_here = Y, \
-                            centres_here = centres, inv_covarience_here = inv_covarience
+        centre_here = centre, \
+        inv_covariance_here = inv_covariance
 
     cdef int i_dim, i_sample, ndim = X.shape[1], nsample = X.shape[0]
     cdef double objective = 0.0, distance, mean_shift = np.mean(Y)
     cdef double ln_one_over_volume = ndim*log(R_squared)/2 # Parts that do not depend on R is ignored
 
     for i_sample in range(nsample):
-        distance = 0.0
+        distance_squared = 0.0
         for i_dim in range(ndim):
-            distance += (X_here[i_sample,i_dim]-centres_here[i_dim])*(X_here[i_sample,i_dim]-centres_here[i_dim])*inv_covarience_here[i_dim]
-        if distance < R_squared:
+            distance_squared += \
+                (X_here[i_sample,i_dim] - centre_here[i_dim]) \
+                * (X_here[i_sample,i_dim] - centre_here[i_dim]) \
+                * inv_covariance_here[i_dim]
+        if distance_squared < R_squared:
             objective += exp( 2*(mean_shift - Y[i_sample]) ) 
 
     objective = exp(-2*ln_one_over_volume)*objective/nsample
@@ -88,18 +92,16 @@ class HyperSphere(Model):
         """ constructor setting the hyper parameters of the model
         """
         if hyper_parameters != None:
-            raise ValueError("Hyper Sphere model has no hyper parameters.")
+            raise ValueError("HyperSphere model has no hyper parameters.")
         if len(domains) != 1:
-            raise ValueError("Hyper Sphere model domains list should be length 1.")
+            raise ValueError("HyperSphere model domains list should " +
+                "be length 1.")
 
-
-        self.ndim   = ndim_in
-
-        self.centres_set        = False
-        self.centres            = np.zeros((ndim_in))
-        self.inv_covarience_set = False
-        self.inv_covarience     = np.ones((ndim_in))
-
+        self.ndim = ndim_in
+        self.centre_set = False
+        self.centre = np.zeros((ndim_in))
+        self.inv_covariance_set = False
+        self.inv_covariance = np.ones((ndim_in))
         self.R_domain = domains[0]
         self.set_R(np.mean(self.R_domain))
 
@@ -107,67 +109,78 @@ class HyperSphere(Model):
         """ sets the radius of the hyper sphere and calculates the volume of the sphere"""
 
         if ~np.isfinite(R):
-            raise ValueError("Radius is a Nan")
+            raise ValueError("Radius is a NaN.")
         if R <= 0.0:
-            raise ValueError("Radius must be positive")
+            raise ValueError("Radius must be positive.")
 
-        self.R                  = R
+        self.R = R
         self.set_precompucted_values()
+        
         return
 
     def set_precompucted_values(self):
 
-
         cdef int i_dim
-        cdef double det_covarience = 1.0
+        cdef double det_covariance = 1.0
 
         for i_dim in range(self.ndim):
-            det_covarience *= 1.0/self.inv_covarience[i_dim]
+            det_covariance *= 1.0/self.inv_covariance[i_dim]
 
-        self.R_squared          = self.R*self.R
-        self.ln_one_over_volume = -((self.ndim/2)*np.log(np.pi) + self.ndim*np.log(self.R) - sp.gammaln(self.ndim/2+1) + 0.5*log(det_covarience))
+        self.R_squared = self.R*self.R
+        
+        # Compute log_e(1/volume).        
+        # First compute volume of hypersphere then adjust for transformation 
+        # by C^{1/2} to give hyper-ellipse by multiplying by 0.5*det(C).        
+        volume_hypersphere = (self.ndim/2)*log(np.pi) \
+            + self.ndim*log(self.R) - sp.gammaln(self.ndim/2+1)
+        self.ln_one_over_volume = \
+            - volume_hypersphere - 0.5*log(det_covariance) 
+            
         return
 
-
-    def set_centres(self, np.ndarray[double, ndim=1, mode="c"] centres_in):
+    def set_centre(self, np.ndarray[double, ndim=1, mode="c"] centre_in):
 
         cdef int i_dim
 
-        if centres_in.size != self.ndim:
-            raise ValueError("centres size is not equal ndim")
+        if centre_in.size != self.ndim:
+            raise ValueError("centre size is not equal ndim.")
 
         for i_dim in range(self.ndim):
-            if ~np.isfinite(centres_in[i_dim]):
-                raise ValueError("Nan/inf's in centres, this may be due to a Nan in the samples")
+            if ~np.isfinite(centre_in[i_dim]):
+                raise ValueError("NaN/Inf's in inv_covariance (may be due " + 
+                                 "to a NaN in samples).")
 
         for i_dim in range(self.ndim):
-            self.centres[i_dim] = centres_in[i_dim]
+            self.centre[i_dim] = centre_in[i_dim]
 
-        self.centres_set = True
+        self.centre_set = True
 
         return
 
-    def set_inv_covarience(self, np.ndarray[double, ndim=1, mode="c"] inv_covarience_in):
+    def set_inv_covariance(self, np.ndarray[double, ndim=1, mode="c"] 
+                           inv_covariance_in):
 
         cdef int i_dim
 
-        if inv_covarience_in.size != self.ndim:
-            raise ValueError("inv_covarience size is not equal ndim")
+        if inv_covariance_in.size != self.ndim:
+            raise ValueError("inv_covariance size is not equal ndim.")
 
         for i_dim in range(self.ndim):
-            if ~np.isfinite(inv_covarience_in[i_dim]):
-                raise ValueError("Nan/inf's in inv_covarience, this may be due to a Nan in the samples")
+            if ~np.isfinite(inv_covariance_in[i_dim]):
+                raise ValueError("NaN/Inf's in inv_covariance (may be due " + 
+                                 "to a NaN in samples).")
 
         for i_dim in range(self.ndim):
-            self.inv_covarience[i_dim] = inv_covarience_in[i_dim]
+            self.inv_covariance[i_dim] = inv_covariance_in[i_dim]
 
-        self.inv_covarience_set = True
+        self.inv_covariance_set = True
 
         self.set_precompucted_values()
 
         return
 
-    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
+    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
+            np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model
 
         Raises:
@@ -176,19 +189,21 @@ class HyperSphere(Model):
         """
 
         if X.shape[0] != Y.shape[0]:
-            raise ValueError("X and Y sizes are not the same")
+            raise ValueError("X and Y sizes are not the same.")
 
         if X.shape[1] != self.ndim:
-            raise ValueError("X second dimension not the same as ndim")
+            raise ValueError("X second dimension not the same as ndim.")
 
-        if ~self.centres_set:
-            self.set_centres(np.mean(X,axis=0))
+        if ~self.centre_set:
+            self.set_centre(np.mean(X, axis=0))
 
-        if ~self.inv_covarience_set:
-            self.set_inv_covarience(np.std(X,axis=0)**(-2))
+        if ~self.inv_covariance_set:
+            self.set_inv_covariance(np.std(X, axis=0)**(-2))
 
-        result = so.minimize_scalar(HyperSphereObjectiveFunction, bounds=[self.R_domain[0],self.R_domain[1]], \
-                           args=(X, Y, self.centres, self.inv_covarience), method='Bounded')
+        result = so.minimize_scalar(HyperSphereObjectiveFunction, 
+            bounds=[self.R_domain[0], self.R_domain[1]], 
+            args=(X, Y, self.centre, self.inv_covariance), 
+            method='Bounded')
 
         self.set_R(result.x)
 
@@ -198,9 +213,12 @@ class HyperSphere(Model):
         """Use model to predict the hight of the log_e posterior at point x
         """
 
-        distance = np.dot(x,self.inv_covarience*x)
+        x_minus_centre = x - self.centre        
+        
+        distance_squared = \
+            np.dot(x_minus_centre, x_minus_centre*self.inv_covariance)
 
-        if distance < self.R_squared:
+        if distance_squared < self.R_squared:
             return self.ln_one_over_volume
         else:
             return -np.inf
