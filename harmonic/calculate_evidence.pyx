@@ -21,14 +21,14 @@ class evidence():
             ValueError: if the number of chains is not positive
         """
         if nchains < 1:
-            raise ValueError("nchains must be greater then 0")
+            raise ValueError("nchains must be greater than 0.")
 
         if ndim < 1:
-            raise ValueError("nchains must be greater then 0")
+            raise ValueError("ndim must be greater than 0.")
 
 
-        self.p_i       = np.zeros(nchains)
-        self.n_samples = np.zeros((nchains),dtype=int)
+        self.p_i = np.zeros(nchains)
+        self.nsamples_per_chain = np.zeros((nchains),dtype=int)
 
         self.nchains = nchains
         self.ndim = ndim
@@ -37,7 +37,7 @@ class evidence():
         self.v2 = 0.0
 
         self.mean_shift_set = False
-        self.mean_shift     = 0.0
+        self.mean_shift = 0.0
 
     def set_mean_shift(self, double mean_shift_in):
         """ Sets the multaplicative shift 
@@ -53,11 +53,11 @@ class evidence():
         if ~np.isfinite(mean_shift_in):
             raise ValueError("Mean shift must be a number")
 
-        self.mean_shift     = mean_shift_in
+        self.mean_shift = mean_shift_in
         self.mean_shift_set = True
         return
 
-    def end_run(self):
+    def process_run(self):
         """ Uses the running totals of p_i and n_samples for
             each chain to calculates an estimate of the evidence,
             and estimate of the varience, and an estimate of the varience
@@ -70,27 +70,27 @@ class evidence():
             None
         """
 
-        cdef np.ndarray[double, ndim=1, mode="c"] p_i       = self.p_i
-        cdef np.ndarray[long, ndim=1, mode="c"]   n_samples = self.n_samples
+        cdef np.ndarray[double, ndim=1, mode="c"] p_i = self.p_i
+        cdef np.ndarray[long, ndim=1, mode="c"] nsamples_per_chain = self.nsamples_per_chain
 
-        cdef long i_chains, n_samples_tot=0, nchains = self.nchains
+        cdef long i_chains, nsamples=0, nchains = self.nchains
         cdef double p=0.0, s2=0.0, k=0.0, dummy, n_eff=0
 
         for i_chains in range(nchains):
             p             += p_i[i_chains]
-            n_samples_tot += n_samples[i_chains]
-        p /= n_samples_tot
+            nsamples += nsamples_per_chain[i_chains]
+        p /= nsamples
 
         for i_chains in range(nchains):
-            dummy  = p_i[i_chains]/n_samples[i_chains]
+            dummy  = p_i[i_chains]/nsamples_per_chain[i_chains]
             dummy -= p
-            n_eff += n_samples[i_chains]*n_samples[i_chains]
-            s2    += n_samples[i_chains]*dummy*dummy
-            k     += n_samples[i_chains]*dummy*dummy*dummy*dummy
+            n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
+            s2    += nsamples_per_chain[i_chains]*dummy*dummy
+            k     += nsamples_per_chain[i_chains]*dummy*dummy*dummy*dummy
 
-        n_eff = <double>n_samples_tot*<double>n_samples_tot/n_eff
-        s2   /= n_samples_tot
-        k    /= n_samples_tot
+        n_eff = <double>nsamples*<double>nsamples/n_eff
+        s2   /= nsamples
+        k    /= nsamples
         k    /= s2*s2
 
         self.p   = p*exp(self.mean_shift)
@@ -99,7 +99,7 @@ class evidence():
         self.v2 *= ((k - 1) + 2./(n_eff-1))
         return
 
-    def calculate_evidence(self, chain not None, model not None):
+    def add_chains(self, chains not None, model not None):
         """ Calculates an estimate of the evidence,
             and estimate of the varience, and an estimate of the varience
             of the varience. It does this using running averages of the 
@@ -107,7 +107,7 @@ class evidence():
             with new samples and the evidence estimate will improve
 
         Args:
-            chain: An instance of the chains class containing the chains
+            chains: An instance of the chains class containing the chains
                 to be used in the calculation
             model: An instance of a model class that has been fitted.
 
@@ -121,19 +121,19 @@ class evidence():
             None
         """
 
-        if chain.nchains != self.nchains:
+        if chains.nchains != self.nchains:
             raise ValueError("nchains do not match")
 
-        if chain.ndim != self.ndim:
+        if chains.ndim != self.ndim:
             raise ValueError("Chains ndim inconsistent")
 
         if model.ndim != self.ndim:
             raise ValueError("Model ndim inconsistent")
 
-        cdef np.ndarray[double, ndim=2, mode="c"] X = chain.samples
-        cdef np.ndarray[double, ndim=1, mode="c"] Y = chain.ln_posterior
+        cdef np.ndarray[double, ndim=2, mode="c"] X = chains.samples
+        cdef np.ndarray[double, ndim=1, mode="c"] Y = chains.ln_posterior
         cdef np.ndarray[double, ndim=1, mode="c"] p_i = self.p_i
-        cdef np.ndarray[long,   ndim=1, mode="c"] n_samples = self.n_samples
+        cdef np.ndarray[long,   ndim=1, mode="c"] nsamples_per_chain = self.nsamples_per_chain
 
         cdef long i_chains, i_samples, nchains = self.nchains
         cdef double mean_shift
@@ -143,10 +143,13 @@ class evidence():
         mean_shift = self.mean_shift
 
         for i_chains in range(nchains):
-            for i_samples in range(chain.start_indices[i_chains],chain.start_indices[i_chains+1]):
-                p_i[i_chains]        += exp(model.predict(X[i_samples,:]) - Y[i_samples] - mean_shift)
-                n_samples[i_chains]  += 1
+            i_samples_start = chains.start_indices[i_chains]
+            i_samples_end = chains.start_indices[i_chains+1]
+            for i_samples in range(i_samples_start, i_samples_end):
+                p_i[i_chains] += exp( model.predict(X[i_samples,:]) \
+                    - Y[i_samples] - mean_shift )
+                nsamples_per_chain[i_chains] += 1
 
-        self.end_run()
+        self.process_run()
 
         return

@@ -24,12 +24,12 @@ def test_constructor():
     assert rho.s2             == pytest.approx(0.0)
     assert rho.v2             == pytest.approx(0.0)
     assert rho.p_i.size       == nchains 
-    assert rho.n_samples.size == nchains 
+    assert rho.nsamples_per_chain.size == nchains 
     assert rho.mean_shift     == pytest.approx(0.0)
     assert rho.mean_shift_set == False
     for i_chain in range(nchains):
         assert rho.p_i[i_chain]       == pytest.approx(0.0)
-        assert rho.n_samples[i_chain] == 0
+        assert rho.nsamples_per_chain[i_chain] == 0
 
 def test_set_mean_shift():
     nchains = 100
@@ -44,7 +44,7 @@ def test_set_mean_shift():
     assert rho.mean_shift      == pytest.approx(2.0)
     assert rho.mean_shift_set  == True
 
-def test_end_run():
+def test_process_run():
 
     nchains = 10
     n_samples = 20
@@ -55,8 +55,8 @@ def test_end_run():
     np.random.seed(1)
     samples   = np.random.randn(nchains,n_samples)
     rho.p_i       = np.sum(samples,axis=1)
-    rho.n_samples = np.ones(nchains, dtype=int)*n_samples
-    rho.end_run()
+    rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
+    rho.process_run()
 
     p  = np.mean(samples)
     s2 = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
@@ -72,9 +72,9 @@ def test_end_run():
     samples_scaled = np.random.randn(nchains,n_samples)*np.exp(-mean_shift)
     samples        = samples_scaled*np.exp(mean_shift)
     rho.p_i        = np.sum(samples_scaled,axis=1)
-    rho.n_samples  = np.ones(nchains, dtype=int)*n_samples
+    rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
     rho.mean_shift = mean_shift
-    rho.end_run()
+    rho.process_run()
 
     p  = np.mean(samples)
     s2 = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
@@ -84,7 +84,7 @@ def test_end_run():
     assert rho.s2 == pytest.approx(s2)
     assert rho.v2 == pytest.approx(v2)
 
-def test_calculate_evidence():
+def test_add_chains():
 
     nchains   = 200
     nsamples  = 500
@@ -109,10 +109,10 @@ def test_calculate_evidence():
 
     sphere_dum = md.HyperSphere(ndim+1, domain)
     with pytest.raises(ValueError):
-        cal_ev.calculate_evidence(chain,sphere_dum)
+        cal_ev.add_chains(chain,sphere_dum)
 
     # Calculate evidence
-    cal_ev.calculate_evidence(chain,sphere)
+    cal_ev.add_chains(chain,sphere)
 
     assert cal_ev.p       == pytest.approx(0.159438606) 
     assert cal_ev.s2      == pytest.approx(1.158805126e-07)
