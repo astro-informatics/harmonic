@@ -124,7 +124,7 @@ class Chains:
                 values with shape (nsamples_in * nchains_in) and dtype double.
                 nchains_in: int specifying the number of chains.
             int nchains_in: Number of chains to be added.
-            list chain_indexes: list of the starting index of the chains.
+            list chain_indexes: List of the starting index of the chains.
         
         Raises:
             ValueError: Raised when ndim of new chains does not match previous 

@@ -89,7 +89,6 @@ def test_hyper_sphere_set_radius_and_precompute_values():
     assert sphere.ln_one_over_volume == pytest.approx(-5.801314)
     # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 
-
     sphere.set_inv_covariance(np.full((ndim),2.0))
 
     assert sphere.ln_one_over_volume == pytest.approx(-5.801314-3*np.log(0.5))
@@ -105,13 +104,14 @@ def test_hyper_sphere_predict():
     assert sphere.predict(np.zeros((ndim))) == pytest.approx(-5.801314+6*np.log(2.0))
     # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 
-
     sphere.set_R(4.0)
 
-    assert sphere.predict(np.zeros((ndim)))                  == pytest.approx(-5.801314+6*np.log(0.5))
+    assert sphere.predict(np.zeros((ndim))) \
+        == pytest.approx(-5.801314+6*np.log(0.5))
     # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
-    assert sphere.predict(np.full((ndim),4.0))               == -np.inf
-    assert np.exp(sphere.predict(np.full((ndim),4.0))+1E99)  == pytest.approx(0.0)
+    assert sphere.predict(np.full((ndim),4.0)) == -np.inf
+    assert np.exp(sphere.predict(np.full((ndim),4.0))+1E99) \
+        == pytest.approx(0.0)
 
     x    = np.zeros((ndim))
     x[4] = 4.0001
@@ -119,7 +119,6 @@ def test_hyper_sphere_predict():
     x[4] = 3.9999
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5))
     # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
-
 
     inv_covariance  = np.ones((ndim))*4
     sphere.set_inv_covariance(inv_covariance)   
@@ -137,6 +136,7 @@ def test_hyper_sphere_predict():
     assert sphere.predict(x) == pytest.approx(-5.801314+6*np.log(0.5)+6*np.log(2.0))
     # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 
+
 def test_hyper_sphere_fit():
 
     ndim = 2
@@ -151,10 +151,9 @@ def test_hyper_sphere_fit():
     with pytest.raises(ValueError):
         sphere.fit(np.ones((nsamples,ndim)),np.ones(nsamples+1))
 
-
     X = np.ones((nsamples,ndim))
     Y = np.ones(nsamples)
-
+    
     X[0,0] = np.nan
     with pytest.raises(ValueError):
         sphere.fit(X,Y)
@@ -165,7 +164,9 @@ def test_hyper_sphere_fit():
 
     assert sphere.fit(X, Y) == True
     assert sphere.R         == pytest.approx(1.910259417) 
-    # 3.649091 is the numerical value when first made (and tested), kept here to ensure future code consistancy 
+    # 1.910259417 is the numerical value when first implemented (and tested) 
+    # and is specified here as a regression test.
+         
     assert sphere.fitted    == True
 
     np.random.seed(30)
@@ -174,7 +175,8 @@ def test_hyper_sphere_fit():
 
     assert sphere.fit(X, Y) == True
     assert sphere.R         == pytest.approx(1.910259417)
-    # 3.649091 is the numerical value when first made (and tested), kept here to ensure future code consistancy 
+    # 1.910259417 is the numerical value when first implemented (and tested) 
+    # and is specified here as a regression test.
 
     np.random.seed(30)
     X = np.random.randn(nsamples,ndim)
@@ -183,10 +185,9 @@ def test_hyper_sphere_fit():
 
     assert sphere.fit(X, Y) == True
     assert sphere.R         == pytest.approx(1.910259417)
-    # 3.649091 is the numerical value when first made (and tested), kept here to ensure future code consistancy 
+    # 1.910259417 is the numerical value when first implemented (and tested) 
+    # and is specified here as a regression test.
 
-
-    return
 
 def test_kernel_density_estimate_constructor():
     with pytest.raises(ValueError):

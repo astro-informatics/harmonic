@@ -57,25 +57,26 @@ class Model(metaclass=abc.ABCMeta):
 
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
-                              centre, inv_covariance):
-    """ Evaluates the ojective function with the HyperSphere model
-        this is the varience of the estimator subject to a linear transformation
-        that does not depend on the radius of the sphere (the bit being fitted).
+                                         centre, inv_covariance):
+    """Evaluate ojective function forthe HyperSphere model. Objective function
+    is given by the variance of the estimator (subject to a linear
+    transformation that does not depend on the radius of the sphere, which is
+    the variable to be fitted).
 
     Args:
-        double R_squared: the radius of the hyper sphere squared
+        double R_squared: Radius of the hyper sphere squared.
         X: 2D numpy.ndarray containing the samples 
             with shape (nsamples, ndim) and dtype double.
         Y: 1D numpy.ndarray containing the log_e posterior 
             values with shape (nsamples) and dtype double.
         centre: 1D numpy.ndarray containing the centre of the sphere 
-            with shape (ndim) and dtype double.
-        ln_posterior: 1D numpy.ndarray containing the diagonal of the
-            inverse covariance matrix
-            values with shape (ndim) and dtype double.
+            with shape (ndim) and dtype double.            
+        inv_covariance_in: 1D numpy.ndarray containing the diagonal of  inverse
+            convarience matrix that defines the ellipse with shape (ndim) and 
+            dtype double.            
 
     Return:
-        The value of the objective function
+        Value of the objective function.
     """
 
     cdef np.ndarray[double, ndim=2, mode="c"] X_here = X
@@ -85,7 +86,8 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
 
     cdef int i_dim, i_sample, ndim = X.shape[1], nsample = X.shape[0]
     cdef double objective = 0.0, distance, mean_shift = np.mean(Y)
-    cdef double ln_volume = ndim*log(R_squared)/2 # Parts that do not depend on R is ignored
+    cdef double ln_volume = ndim*log(R_squared)/2  # Parts that do not depend
+                                                   # on R are ignored.
 
     for i_sample in range(nsample):
         distance_squared = 0.0
@@ -104,30 +106,37 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
 
 
 class HyperSphere(Model):
+    """HyperSphere Model to approximate the log_e posterior by a 
+    hyper-ellipsoid.
+    """
 
     def __init__(self, long ndim_in, list domains not None, hyper_parameters=None):
-        """ constructor setting the hyper parameters of the model
+        """Constructor setting the parameters of the model.
 
         Args:
-            long ndim_in: The dimension of the problem to solve
+            long ndim_in: Dimension of the problem to solve.
             list domains: A list of length 1 containing a 1D array
                 of length 2 containing the lower and upper bound of the
-                radius of the hyper sphere
-            hyper_parameters: Should not be set as there are no hyper parameters
-                for this model
+                radius of the hyper-sphere.
+            hyper_parameters: Should not be set as there are no hyperparameters
+                for this model (in general, however, models can have hyperparameters).
+                
+        Returns: 
+            None
 
         Raises:
-            ValueError: If the hyper_parameters variable is not None
-            ValueError: If the length of domains list is not one
-            ValueError: If the ndim_in is not positive
+            ValueError: If the hyper_parameters variable is not None.
+            ValueError: If the length of domains list is not one.
+            ValueError: If the ndim_in is not positive.
         """
+        
         if hyper_parameters != None:
-            raise ValueError("HyperSphere model has no hyper parameters.")
+            raise ValueError("HyperSphere model has no hyperparameters.")
         if len(domains) != 1:
             raise ValueError("HyperSphere model domains list should " +
                 "be length 1.")
         if ndim_in < 1:
-            raise ValueError("The dimension must be greater then 1")
+            raise ValueError("Dimension must be greater than 0.")
 
         self.ndim               = ndim_in
         self.centre_set         = False
@@ -139,14 +148,17 @@ class HyperSphere(Model):
         self.fitted             = False
 
     def set_R(self, double R):
-        """ sets the radius of the hyper sphere and calculates the volume of the sphere
+        """Set the radius of the hypersphere and calculate its volume.
 
         Args:
-            double R: The radius sphere
+            double R: The radius of the hyper-sphere.
 
+        Returns:
+            None
+        
         Raises:
-            ValueError: If the radius is a NaN
-            ValueError: If the Raises is not positive
+            ValueError: If the radius is a NaN.
+            ValueError: If the Raises is not positive.
         """
 
         if ~np.isfinite(R):
@@ -160,8 +172,8 @@ class HyperSphere(Model):
         return
 
     def set_precompucted_values(self):
-        """ precomputes volume of the hyper sphere (scaled ellipse)
-            and the squared radius
+        """Precompute volume of the hyper sphere (scaled ellipse) and squared 
+        radius.
 
         Args:
             None
@@ -172,6 +184,7 @@ class HyperSphere(Model):
         Returns:
             None
         """
+        
         cdef int i_dim
         cdef double det_covariance = 1.0
 
@@ -191,12 +204,15 @@ class HyperSphere(Model):
         return
 
     def set_centre(self, np.ndarray[double, ndim=1, mode="c"] centre_in):
-        """Sets the centre of the hyper sphere
+        """Set centre of the hyper-sphere.
 
         Args:
             centre_in: 1D numpy.ndarray containing the centre of sphere 
                 with shape (ndim) and dtype double.
 
+        Returns:
+            None
+            
         Raises:
             ValueError: If the length of the centre array is not the same as
                 ndim
@@ -222,19 +238,24 @@ class HyperSphere(Model):
 
     def set_inv_covariance(self, np.ndarray[double, ndim=1, mode="c"] 
                            inv_covariance_in):
-
-        """Sets the centre of the hyper sphere
+        """Set diagonal inverse covariances for the hyper-sphere.
+        
+        Only diagonal covariance structure is supported.
 
         Args:
             inv_covariance_in: 1D numpy.ndarray containing the diagonal of 
                 inverse convarience matrix that defines the ellipse
                 with shape (ndim) and dtype double.
+                
+        Returns:
+            None
 
         Raises:
-            ValueError: If the length of the inv_covariance array is not the same as
-                ndim
-            ValueError: If the inv_covariance array contains a NaN
-            ValueError: If the inv_covariance array contains a value that is not positive
+            ValueError: If the length of the inv_covariance array is not equal 
+                to ndim.
+            ValueError: If the inv_covariance array contains a NaN.
+            ValueError: If the inv_covariance array contains a value that is 
+                not positive.
         """
 
         cdef int i_dim
@@ -261,7 +282,7 @@ class HyperSphere(Model):
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
             np.ndarray[double, ndim=1, mode="c"] Y):
-        """Fit the parameters of the model
+        """Fit the parameters of the model (i.e. its radius).
 
         Args:
             X: 2D array of samples of shape (nsamples, ndim).
@@ -272,8 +293,8 @@ class HyperSphere(Model):
             Boolean specifying whether fit successful.
 
         Raises:
-            ValueError if the first dimension of X is not the same as Y
-            ValueError if the second dimension of X is not the same as ndim
+            ValueError if the first dimension of X is not the same as Y.
+            ValueError if the second dimension of X is not the same as ndim.
         """
 
         if X.shape[0] != Y.shape[0]:
@@ -300,15 +321,18 @@ class HyperSphere(Model):
         return result.success
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """Use model to predict the hight of the log_e posterior at point x
+        """Use model to predict the value of log_e posterior at point x.
 
         Args: 
             x: 1D array of sample of shape (ndim) to predict posterior value.
         
         Return:
             Predicted posterior value.
+            
+        Raises:
+            None
         """
-
+        
         x_minus_centre = x - self.centre        
         
         distance_squared = \
@@ -318,6 +342,7 @@ class HyperSphere(Model):
             return self.ln_one_over_volume
         else:
             return -np.inf
+    
     
 cdef KernelDensityEstimate_set_grid(dict grid, \
                                     np.ndarray[double, ndim=2, mode="c"] X, 
@@ -499,7 +524,8 @@ class KernelDensityEstimate(Model):
 
         return
 
-    def precompute_normalising_factor(self, np.ndarray[double, ndim=2, mode="c"] X):
+    def precompute_normalising_factor(self, 
+                                      np.ndarray[double, ndim=2, mode="c"] X):
         """precomputes the log_e normalisation factor of the density estimation
 
         Args:
@@ -523,9 +549,8 @@ class KernelDensityEstimate(Model):
         self.ln_norm = log(<double>X.shape[0]) + ln_volume
         pass
 
-
-
-    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
+    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
+            np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model by:
             1) Setting the scales of the model from the samples
             2) creating the dictionary containing all the information on which samples are in 
