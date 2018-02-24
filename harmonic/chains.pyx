@@ -200,6 +200,37 @@ class Chains:
 
         return
             
+    def get_sub_chains(self,list chains_wanted):
+        """ Creates a new chain instance with the chains
+        indexed in chains_wanted. (useful for cross validation)
+
+        Args:
+            list chains_wanted: List of indexes of chains that 
+            the new chain instance will contain
+
+        Returns:
+            chians containing the chains wanted
+
+        Raises:
+            ValueError: If any of the chains_wanted indexes
+                are out of bounds ie on in range 0-nchains-1
+        """
+
+        new_nchains = len(chains_wanted)
+
+        for chain_index in chains_wanted:
+            if chain_index < 0 or chain_index >= self.nchains:
+                raise ValueError("chains_wanted contains index out of bounds")
+
+        sub_chains = Chains(self.ndim)
+
+        for chain_index in chains_wanted:
+            sub_chains.add_chain(\
+                self.samples[self.start_indices[chain_index]:self.start_indices[chain_index+1],:],\
+                self.ln_posterior[self.start_indices[chain_index]:self.start_indices[chain_index+1]])
+
+        return sub_chains
+
     def get_chain_indices(self, int i):
         """Gets the start and end index of samples from a chain.
         

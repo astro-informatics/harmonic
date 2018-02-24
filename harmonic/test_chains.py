@@ -374,6 +374,35 @@ def test_add_chains_3d():
         == ln_posterior2[random_sample_sub // nsamples2,
                          random_sample_sub % nsamples2]
 
+def test_get_sub_chains():
+
+    ndim     = 4
+    nsamples = 100
+    nchains  = 10
+
+    chains_wanted = [9,5,6]
+
+    chains = ch.Chains(ndim)
+
+    np.random.seed(40)
+    samples = np.random.randn(nchains,nsamples,ndim)
+    ln_posterior = np.random.randn(nchains,nsamples)
+
+    chains.add_chains_3d(samples, ln_posterior)
+
+    with pytest.raises(ValueError):
+        chains.get_sub_chains([0,2,-1])
+    with pytest.raises(ValueError):
+        chains.get_sub_chains([0,2,nchains+1])
+
+    sub_chains = chains.get_sub_chains(chains_wanted)
+
+    assert sub_chains.nchains == len(chains_wanted)
+    random_sub_chain = 2
+    random_chain     = chains_wanted[random_sub_chain]
+    random_sample    = np.random.randint(nsamples)
+    random_dim       = 3
+    assert sub_chains.samples[random_sub_chain*nsamples+random_sample,random_dim] == samples[random_chain,random_sample,random_dim]
 
 def test_get_indexes():
 
