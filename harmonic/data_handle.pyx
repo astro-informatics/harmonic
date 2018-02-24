@@ -51,3 +51,27 @@ def split_data(chains not None, split_ratio=0.5):
 									chains.start_indices[nchains_train:])
 
 	return chains_train, chains_use
+
+
+def cross_validation(chains, domains, hyper_parameters, ncross=2, MODEL="KernalDensityEstimation"):
+	""" Splits data into ncross chunks. Then fits the model using
+		each of the hyper parameters given using all but one of the 
+		chunks. This procedure is done for all the chunks and the 
+		average varience from all the chunks is used to decide which
+		hyper parameters list was better.
+
+	Args:
+		chains: instance of a chains class with the data 
+			trianed on
+		domains: The domains of the model's parameters
+		hyper_parameters: A list of length ncross where each entry
+			is a hyper_parameters list to be trialed
+
+	Returns:
+		hyper_parameter list that was most succesful
+
+		Raises:
+	"""
+
+	if MODEL == "KernalDensityEstimation":
+		print("using ", MODEL)

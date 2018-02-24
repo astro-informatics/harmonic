@@ -109,3 +109,26 @@ def test_split_data():
         == samples[(random_sample // nsamples) + nchains_train,
                     random_sample % nsamples,random_dim]
 
+
+def test_cross_validation():
+
+    ndim        = 2
+    nsamples    = 100
+    nchains     = 200
+    ncross      = 5
+
+    hyper_parameters = [10**R for R in range(-5,0)]
+
+    print(hyper_parameters)
+
+    chains = ch.Chains(ndim)
+
+    np.random.seed(3)
+    samples       = np.random.randn(nchains, nsamples, ndim)
+    ln_posterior  = -np.sum(samples*samples, axis=2)/2.0
+
+    chains.add_chains_3d(samples, ln_posterior)
+
+    dh.cross_validation(chains, [], hyper_parameters)
+
+test_cross_validation()
