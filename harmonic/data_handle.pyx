@@ -2,13 +2,14 @@ import numpy as np
 cimport numpy as np
 import chains as ch
 import model as md
+import calculate_evidence as cbe
 
 # module to do 
 # 1) sample spliting for training and using the data
 # 2) cross validation on the models to chose hyper parameter
 
 
-def split_data(chains not None, split_ratio=0.5):
+def split_data(chains not None, double split_ratio=0.5):
     """splits the data in a chains instance into two
        so the new chains instances can be used for testing
        and calculationg the evidence.
@@ -25,9 +26,13 @@ def split_data(chains not None, split_ratio=0.5):
         chains_use: instance of a chains class to be used
             to calculate the evidence
 
-
+    Raises:
+        ValueError: If split_ratio is not between 0 and 1
 
     """
+
+    if split_ratio < 0.0 or split_ratio > 1.0:
+        raise ValueError("split_ratio must be between 0 and 1")
 
     nchains_train = int(chains.nchains * split_ratio)
     nchains_use   = chains.nchains - nchains_train
@@ -53,8 +58,42 @@ def split_data(chains not None, split_ratio=0.5):
 
     return chains_train, chains_use
 
+def validation_fit_indexes(long i_cross, long nchains_in_val_set, long ncross, list indexes):
+    """ Function that pulls out the correct indexes for the chains of the
+        validation and training sets
 
-def cross_validation(chains, list domains, list hyper_parameters, long ncross=2, str MODEL="KernelDensityEstimate"):
+    Args:
+        long i_cross: integer giving the cross validation iteration to perform
+        long nchains_in_val_set: The number of chains that will go in each 
+            validation set
+        long ncross: The number of cross validation sets being made
+        list indexes: T=A list with the suffled indexes
+
+    Returns:
+        list indexes_val: The list list of indexes for the validation set
+        list indexes_fit: The list of indexes for the training set
+
+    Raises:
+        ValueError: If the value of i_cross doesn't fall between 0 and ncross-1
+    """
+
+
+    if i_cross < 0 or i_cross >= ncross:
+        raise ValueError("i_cross is not the range set by ncross")
+
+    cdef list indexes_val, indexes_fit
+
+    if i_cross < ncross-1:
+        indexes_val = indexes[i_cross*nchains_in_val_set:(i_cross+1)*nchains_in_val_set]
+        indexes_fit = indexes[:i_cross*nchains_in_val_set] + indexes[(i_cross+1)*nchains_in_val_set:]
+    else:
+        indexes_val = indexes[(i_cross)*nchains_in_val_set:] # ensures all the chains get used even if nchains % ncross != 0
+        indexes_fit = indexes[:i_cross*nchains_in_val_set]
+
+    return indexes_val, indexes_fit
+
+
+def cross_validation(chains, list domains, list hyper_parameters, long ncross=2, str MODEL="KernelDensityEstimate", int seed=-1):
     """ Splits data into ncross chunks. Then fits the model using
         each of the hyper parameters given using all but one of the 
         chunks. This procedure is done for all the chunks and the 
@@ -64,18 +103,71 @@ def cross_validation(chains, list domains, list hyper_parameters, long ncross=2,
     Args:
         chains: instance of a chains class with the data 
             trianed on
-        domains: The domains of the model's parameters
-        hyper_parameters: A list of length ncross where each entry
+        list domains: The domains of the model's parameters
+        list hyper_parameters: A list of length ncross where each entry
             is a hyper_parameters list to be trialed
+        str MODEL: stirng identifying the model that is being cross 
+            validated. Options are ("KernelDensityEstimate"),
+            (default = "KernelDensityEstimate")
+        int seed: seed for random number when drawing the chains,
+            if this is negative the seed is not set
 
     Returns:
         hyper_parameter list that was most succesful
 
         Raises:
+            ValueError: If MODEL is not one of the posible models
     """
 
+    cdef long i_cross, i_val, nchains_in_val_set
+    cdef set posible_models
+    cdef list indexes, indexes_val, indexes_fit, hyper_parameter
 
-    for i_val, hyper_parameter in enumerate(hyper_parameters):
+    cdef np.ndarray[double, ndim=2, mode='c'] validation_variences = np.zeros((ncross,len(hyper_parameters)))
 
-        if MODEL == "KernelDensityEstimate":
-            model = md.KernelDensityEstimate(chains.ndim, domains, hyper_parameters=hyper_parameter)
+    posible_models = {"KernelDensityEstimate"}
+
+    if not MODEL in posible_models:
+        print(MODEL, posible_models)
+        raise ValueError("MODEL is not one of the possible models to cross validate")
+
+    if seed > 0:
+        np.random.seed(seed)
+
+    indexes = list(np.random.permutation(chains.nchains))
+
+    nchains_in_val_set = chains.nchains/ncross
+
+    for i_cross in range(ncross):
+
+        indexes_val, indexes_fit = validation_fit_indexes(i_cross, nchains_in_val_set, ncross, indexes)
+
+        chains_val = chains.get_sub_chains(indexes_val)
+        chains_fit = chains.get_sub_chains(indexes_fit)
+
+        for i_val, hyper_parameter in enumerate(hyper_parameters):
+            if MODEL == "KernelDensityEstimate":
+                model = md.KernelDensityEstimate(chains.ndim, domains, hyper_parameters=hyper_parameter)
+
+            print("fit model")
+            model.fit(chains_fit.samples,chains_fit.ln_posterior)
+            print("calculate evidence")
+            cal_ev = cbe.evidence(chains_val.nchains, chains_val.ndim)
+            cal_ev.add_chains(chains_val,model)
+            print(cal_ev.p, cal_ev.s2**0.5/cal_ev.p)
+
+            sphere = md.HyperSphere(chains_fit.ndim,[np.array([1E-1,1E1])])
+
+            sphere.fit(chains_fit.samples,chains_fit.ln_posterior)
+
+            cal_ev1 = cbe.evidence(chains_val.nchains,chains_val.ndim)
+            cal_ev1.add_chains(chains_val,sphere)
+            print(cal_ev1.p, cal_ev1.s2**0.5/cal_ev1.p)
+
+
+            validation_variences[i_cross,i_val] = cal_ev.s2
+
+    return np.mean(validation_variences, axis=0)
+
+
+

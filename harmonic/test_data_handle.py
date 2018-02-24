@@ -1,6 +1,7 @@
 import numpy as np
 import data_handle as dh
 import chains as ch
+import pytest
 
 def test_split_data():
 
@@ -70,6 +71,12 @@ def test_split_data():
 
     chains_all.add_chains_3d(samples, ln_posterior)
 
+    with pytest.raises(ValueError):
+        chains_train, chains_use = dh.split_data(chains_all, split_ratio=-0.1)
+
+    with pytest.raises(ValueError):
+        chains_train, chains_use = dh.split_data(chains_all, split_ratio=1.5)
+
     chains_train, chains_use = dh.split_data(chains_all, split_ratio=split_ratio)
 
 
@@ -110,14 +117,52 @@ def test_split_data():
                     random_sample % nsamples,random_dim]
 
 
+def test_validation_fit_indexes():
+
+    nchains = 10
+    ncross  = 3
+
+    np.random.seed(0)
+    indexes = list(np.random.permutation(nchains)) # creates [2, 8, 4, 9, 1, 6, 7, 3, 0, 5]
+
+    nchains_in_val_set = nchains/ncross
+
+    with pytest.raises(ValueError):
+        dh.validation_fit_indexes(ncross, nchains_in_val_set, ncross, indexes)
+    with pytest.raises(ValueError):
+        dh.validation_fit_indexes(-1, nchains_in_val_set, ncross, indexes)
+
+    indexes_val, indexes_fit = dh.validation_fit_indexes(0, nchains_in_val_set, ncross, indexes)
+    assert len(indexes_val) == 3
+    for index_val, index_check in zip(indexes_val, [2, 8, 4]):
+        assert index_val == index_check
+    for index_fit, index_check in zip(indexes_fit, [9, 1, 6, 7, 3, 0, 5]):
+        assert index_fit == index_check
+
+    indexes_val, indexes_fit = dh.validation_fit_indexes(1, nchains_in_val_set, ncross, indexes)
+    assert len(indexes_val) == 3
+    for index_val, index_check in zip(indexes_val, [9, 1, 6]):
+        assert index_val == index_check
+    for index_fit, index_check in zip(indexes_fit, [2, 8, 4, 7, 3, 0, 5]):
+        assert index_fit == index_check
+
+    indexes_val, indexes_fit = dh.validation_fit_indexes(2, nchains_in_val_set, ncross, indexes)
+    assert len(indexes_val) == 4
+    for index_val, index_check in zip(indexes_val, [7, 3, 0, 5]):
+        assert index_val == index_check
+    for index_fit, index_check in zip(indexes_fit, [2, 8, 4, 9, 1, 6]):
+        assert index_fit == index_check
+
+
 def test_cross_validation():
 
     ndim        = 2
-    nsamples    = 100
+    nsamples    = 1000
     nchains     = 200
-    ncross      = 5
+    ncross      = 4
+    step        = 1
 
-    hyper_parameters = [[10**R] for R in range(-5,0)]
+    hyper_parameters = [[10**R] for R in range(-ncross-step,-step)]
 
     chains = ch.Chains(ndim)
 
@@ -127,6 +172,13 @@ def test_cross_validation():
 
     chains.add_chains_3d(samples, ln_posterior)
 
+    # with pytest.raises(ValueError):
+    #     dh.cross_validation(chains, [], hyper_parameters, MODEL="not_a_model")
+
+
     dh.cross_validation(chains, [], hyper_parameters)
+
+    # with pytest.raises(TypeError):
+    #     dh.cross_validation(chains, [], hyper_parameters, MODEL="not_a_model")
 
 test_cross_validation()
