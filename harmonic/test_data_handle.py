@@ -117,7 +117,7 @@ def test_cross_validation():
     nchains     = 200
     ncross      = 5
 
-    hyper_parameters = [10**R for R in range(-5,0)]
+    hyper_parameters = [[10**R] for R in range(-5,0)]
 
     chains = ch.Chains(ndim)
 
