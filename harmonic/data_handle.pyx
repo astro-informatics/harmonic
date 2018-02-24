@@ -1,6 +1,7 @@
 import numpy as np
 cimport numpy as np
 import chains as ch
+import model as md
 
 # module to do 
 # 1) sample spliting for training and using the data
@@ -53,7 +54,7 @@ def split_data(chains not None, split_ratio=0.5):
     return chains_train, chains_use
 
 
-def cross_validation(chains, domains, hyper_parameters, ncross=2, MODEL="KernalDensityEstimation"):
+def cross_validation(chains, list domains, list hyper_parameters, long ncross=2, str MODEL="KernelDensityEstimate"):
     """ Splits data into ncross chunks. Then fits the model using
         each of the hyper parameters given using all but one of the 
         chunks. This procedure is done for all the chunks and the 
@@ -73,7 +74,8 @@ def cross_validation(chains, domains, hyper_parameters, ncross=2, MODEL="KernalD
         Raises:
     """
 
-    
 
-    if MODEL == "KernalDensityEstimation":
-        model = md.KernalDensityEstimation(chains.ndim, domains, hyper_parameters[i_val])
+    for i_val, hyper_parameter in enumerate(hyper_parameters):
+
+        if MODEL == "KernelDensityEstimate":
+            model = md.KernelDensityEstimate(chains.ndim, domains, hyper_parameters=hyper_parameter)
