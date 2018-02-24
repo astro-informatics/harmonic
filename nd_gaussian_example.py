@@ -9,18 +9,18 @@ import matplotlib.pyplot as plt
 
 def ln_analytic_evidence(ndim, cov):
     # ln_vol = (ndim/2)*np.log(np.pi) + ndim*np.log(w) - sp.gammaln(ndim/2+1)
-	ln_norm_lik = -0.5*ndim*np.log(2*np.pi)-0.5*np.log(np.linalg.det(cov))
-	return -ln_norm_lik
+    ln_norm_lik = -0.5*ndim*np.log(2*np.pi)-0.5*np.log(np.linalg.det(cov))
+    return -ln_norm_lik
 
 def ln_Posterior(x, inv_cov):
-	return -np.dot(x,np.dot(inv_cov,x))/2.0
+    return -np.dot(x,np.dot(inv_cov,x))/2.0
 
 def X_to_Y(X, inv_cov):
-	Y = np.empty((X.shape[0],X.shape[1]))
-	for i_x in range(X.shape[0]):
-		for i_y in range(X.shape[1]):
-			Y[i_x,i_y] = ln_Posterior(X[i_x,i_y,:], inv_cov)
-	return Y
+    Y = np.empty((X.shape[0],X.shape[1]))
+    for i_x in range(X.shape[0]):
+        for i_y in range(X.shape[1]):
+            Y[i_x,i_y] = ln_Posterior(X[i_x,i_y,:], inv_cov)
+    return Y
 
 ndim = 5
 print("ndim = ", ndim)

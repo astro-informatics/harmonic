@@ -119,8 +119,6 @@ def test_cross_validation():
 
     hyper_parameters = [10**R for R in range(-5,0)]
 
-    print(hyper_parameters)
-
     chains = ch.Chains(ndim)
 
     np.random.seed(3)
