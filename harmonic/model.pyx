@@ -415,9 +415,9 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, long ng
     # this does create looping boundry conditions but doesn't matter in searching
     # it will simply slow things down very very slightly 
     # (probably less then dealing with it will!)
-    if i_dim >= 1:
+    if i_dim >= 0:
         for iter_i_dim in range(-1,2):
-            KernelDensityEstimate_loop_round_and_search(index+iter_i_dim*ngrid**(i_dim-1), i_dim - 1, ngrid, ndim, grid, samples, x, inv_scales, distance, count)
+            KernelDensityEstimate_loop_round_and_search(index+iter_i_dim*ngrid**(i_dim), i_dim-1, ngrid, ndim, grid, samples, x, inv_scales, distance, count)
     else:
         KernelDensityEstimate_search_in_pixel(index, grid, samples, x, inv_scales, distance, count)
 

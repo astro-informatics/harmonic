@@ -1,6 +1,7 @@
 import pytest
 import model as md
 import numpy as np
+import matplotlib.pyplot as plt
 
 def test_hyper_sphere_constructor():
 
@@ -353,4 +354,17 @@ def test_kernel_density_estimate_predict():
     assert density.predict(np.array([5.0,5.0]))    == pytest.approx(np.log(2)-np.log(.25*np.pi)-np.log(nsamples))
     assert density.predict(np.array([5.5005,5.0])) == pytest.approx(np.log(1)-np.log(.25*np.pi)-np.log(nsamples))
 
+    # test if normalised
+    # n_grid = 500
+    # post_grid = np.zeros((n_grid,n_grid))
+    # for i_x in range(n_grid):
+    #     for i_y in range(n_grid):
+    #         post_grid[i_x,i_y] = np.exp(density.predict(np.array([i_x*10.0/n_grid,i_y*10.0/n_grid])))
+
+    # print(np.sum(post_grid)*(10./n_grid)*(10./n_grid))
+
+    # plt.imshow(post_grid)
+    # plt.show()
+
     return
+test_kernel_density_estimate_predict()

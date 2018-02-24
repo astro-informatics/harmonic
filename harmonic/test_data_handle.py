@@ -157,9 +157,9 @@ def test_validation_fit_indexes():
 def test_cross_validation():
 
     ndim        = 2
-    nsamples    = 1000
+    nsamples    = 100
     nchains     = 200
-    ncross      = 4
+    ncross      = 2
     step        = 1
 
     hyper_parameters = [[10**R] for R in range(-ncross-step,-step)]
