@@ -28,10 +28,10 @@ def test_add_chain():
 
     # Check cannot add samples with different ndim.
     ndim_tmp = 9
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         chains.add_chain(np.zeros((2,ndim_tmp)), np.zeros(2))
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         chains.add_chain(np.zeros((2,ndim)), np.zeros(3))
 
     # Add random samples1.
@@ -100,11 +100,11 @@ def test_add_chains_2d_and_copy():
     ln_posterior1 = np.random.randn(nsamples1 * nchains1)
 
     # Check cannot add samples with different ndim.
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         chains.add_chains_2d(np.zeros((2,ndim+1)), np.zeros(2),1)
     with pytest.raises(ValueError):
         chains.add_chains_2d(samples1, ln_posterior1, nchains1+1)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         chains.add_chains_2d(np.zeros((2,ndim)), np.zeros(3),1)
 
     chains.add_chains_2d(samples1, ln_posterior1, nchains1)
@@ -303,12 +303,12 @@ def test_add_chains_3d():
     ln_posterior1 = np.random.randn(nchains1 ,nsamples1)
 
     # Check cannot add sampes with different ndim
-    with pytest.raises(TypeError):
-        chains.add_chains_3d(np.zeros((2,2,ndim+1)))
-    with pytest.raises(TypeError):
-        chains.add_chains_3d(np.zeros((2,2,ndim)),np.zeros(1,2))
-    with pytest.raises(TypeError):
-        chains.add_chains_3d(np.zeros((2,2,ndim)),np.zeros(2,1))
+    with pytest.raises(ValueError):
+        chains.add_chains_3d(np.zeros((2,2,ndim+1)),np.zeros((2,2)))
+    with pytest.raises(ValueError):
+        chains.add_chains_3d(np.zeros((2,2,ndim)),np.zeros((1,2)))
+    with pytest.raises(ValueError):
+        chains.add_chains_3d(np.zeros((2,2,ndim)),np.zeros((2,1)))
 
     chains.add_chains_3d(samples1, ln_posterior1)
 

@@ -13,17 +13,18 @@ class Model(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def __init__(self, int ndim, list domains not None, hyper_parameters=None):
+    def __init__(self, long ndim, list domains not None, hyper_parameters=None):
         """Constructor setting the hyper parameters and domains of the model.
         
         Must be implemented by derivied class (currently abstract).
         
         Args: 
-            domains: List of 1D numpy ndarrays containing the 
+            long ndim: The dimension of the problem to solve
+            list domains: List of 1D numpy ndarrays containing the 
                 domains for each parameter of model.  Each domain 
                 is of length two, specifying a lower and upper bound for real
                 hyper parameters but can be different in other cases if required.  
-            hyper_parameters: Hyperparameters for model.
+            list hyper_parameters: Hyperparameters for model.
         """
 
     @abc.abstractmethod
@@ -84,7 +85,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
         centre_here = centre, \
         inv_covariance_here = inv_covariance
 
-    cdef int i_dim, i_sample, ndim = X.shape[1], nsample = X.shape[0]
+    cdef long i_dim, i_sample, ndim = X.shape[1], nsample = X.shape[0]
     cdef double objective = 0.0, distance, mean_shift_here = mean_shift
     cdef double ln_volume = ndim*log(R_squared)/2  # Parts that do not depend
                                                    # on R are ignored.
@@ -185,7 +186,7 @@ class HyperSphere(Model):
             None
         """
         
-        cdef int i_dim
+        cdef long i_dim
         cdef double det_covariance = 1.0
 
         for i_dim in range(self.ndim):
@@ -219,7 +220,7 @@ class HyperSphere(Model):
             ValueError: If the centre array contains a NaN
         """
 
-        cdef int i_dim
+        cdef long i_dim
 
         if centre_in.size != self.ndim:
             raise ValueError("centre size is not equal ndim.")
@@ -258,7 +259,7 @@ class HyperSphere(Model):
                 not positive.
         """
 
-        cdef int i_dim
+        cdef long i_dim
 
         if inv_covariance_in.size != self.ndim:
             raise ValueError("inv_covariance size is not equal ndim.")
@@ -457,7 +458,7 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
 
 class KernelDensityEstimate(Model):
 
-    def __init__(self, int ndim, list domains not None, hyper_parameters=None):
+    def __init__(self, long ndim, list domains not None, hyper_parameters=[0.1]):
         """ constructor setting the hyper parameters and domains of the model
 
         Args:
@@ -487,7 +488,7 @@ class KernelDensityEstimate(Model):
         self.inv_scales         = np.ones((ndim))
         self.inv_scales_squared = np.ones((ndim))
         self.distance           = self.D*self.D/4
-        self.ngrid              = <int>(1.0/self.D+1E-8)+3
+        self.ngrid              = <long>(1.0/self.D+1E-8)+3
         self.ln_norm            = 0.0
         self.fitted             = False
 
@@ -512,7 +513,7 @@ class KernelDensityEstimate(Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim")
 
-        cdef int i_dim
+        cdef long i_dim
 
         for i_dim in range(self.ndim):
             self.inv_scales[i_dim]  = 1.0/(X[:,i_dim].max() - X[:,i_dim].min())
@@ -622,8 +623,20 @@ class KernelDensityEstimate(Model):
 
 class ModifiedGaussianMixtureModel(Model):
 
-    def __init__(self, int ndim, list domains not None, hyper_parameters=None):
+    def __init__(self, long ndim, list domains not None, hyper_parameters=None):
         """ constructor setting the hyper parameters and domains of the model
+
+        Args:
+            long ndim: The dimension of the problem to solve
+            list domains: A list of length 0
+            hyper_parameters: A list of length 1 which should be the diameter in scaled
+                units of the hyper spheres to use in the Kernel Density Estimate
+
+
+        Raises:
+            ValueError: If the hyper_parameters list is not length 1
+            ValueError: If the length of domains list is not 0
+            ValueError: If the ndim_in is not positive
         """
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):

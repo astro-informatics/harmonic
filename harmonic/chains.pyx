@@ -6,7 +6,7 @@ class Chains:
     """Class to store samples from multiple MCMC chains.    
     """
         
-    def __init__(self, int ndim):   
+    def __init__(self, long ndim):   
         """Construct empty Chains for parameter space of dimension ndim.
         
         Constructor simply sets ndim.  Chain samples are added by the
@@ -38,7 +38,7 @@ class Chains:
                 values with shape (n_new_samples) and dtype double.
         
         Raises:
-            TypeError: Raised when ndim of new chain does not match previous 
+            ValueError: Raised when ndim of new chain does not match previous 
                 chains.
         """
                         
@@ -47,10 +47,10 @@ class Chains:
         
         # Check new chain has correct ndim.
         if ndim_in != self.ndim:            
-            raise TypeError("ndim of new chain does not match previous chains")
+            raise ValueError("ndim of new chain does not match previous chains")
         
         if nsamples_in != ln_posterior.shape[0]:            
-            raise TypeError("Length of sample and ln_posterior arrays do not "\
+            raise ValueError("Length of sample and ln_posterior arrays do not "\
                 + "match")
         
         self.samples = np.concatenate((self.samples, samples))
@@ -64,7 +64,7 @@ class Chains:
     def add_chains_2d(self, np.ndarray[double,ndim=2,mode="c"] samples 
                       not None, 
                       np.ndarray[double,ndim=1,mode="c"] ln_posterior not None, 
-                      int nchains_in):
+                      long nchains_in):
         """Adds a number of chains to the chain class assumes all the 
         chains are of the same length.
             
@@ -73,14 +73,14 @@ class Chains:
                 (nsamples_in * nchains_in, ndim) and dtype double.            
             ln_posterior: 1D numpy.ndarray containing the log_e posterior
                 values with shape (nsamples_in * nchains_in) and dtype double.
-            int nchains_in: Number of chains to be added.
+            long nchains_in: Number of chains to be added.
         
         Raises:
             ValueError: Raised when number of samples is not multiple of the   
                 number of chains.
-            TypeError: Raised when ndim of new chains does not match previous 
+            ValueError: Raised when ndim of new chains does not match previous 
                 chains.
-            TypeError: Raised when posterior and samples first length are 
+            ValueError: Raised when posterior and samples first length are 
                 different.
         """
 
@@ -93,13 +93,13 @@ class Chains:
 
         # Check new chain has correct ndim.
         if ndim_in != self.ndim:            
-            raise TypeError("ndim of new chain does not match previous chains")
+            raise ValueError("ndim of new chain does not match previous chains")
 
         if samples.shape[0] != ln_posterior.shape[0]:            
-            raise TypeError("Length of sample and ln_posterior arrays do not "\
+            raise ValueError("Length of sample and ln_posterior arrays do not "\
                 + "match")
 
-        cdef int i_chain, samples_per_chain = samples.shape[0] / nchains_in
+        cdef long i_chain, samples_per_chain = samples.shape[0] / nchains_in
         for i_chain in range(nchains_in):
             self.add_chain(
                 samples[i_chain*samples_per_chain:
@@ -113,7 +113,7 @@ class Chains:
                            not None, 
                            np.ndarray[double,ndim=1,mode="c"] ln_posterior 
                            not None, 
-                           int nchains_in, list chain_indexes):        
+                           long nchains_in, list chain_indexes):        
         """Adds a number of chains to the chain class. Uses a list of indexes to
         understand where each chain starts and stops.
             
@@ -122,8 +122,7 @@ class Chains:
                 (nsamples_in * nchains_in, ndim) and dtype double.            
             ln_posterior: 1D numpy.ndarray containing the log_e posterior
                 values with shape (nsamples_in * nchains_in) and dtype double.
-                nchains_in: int specifying the number of chains.
-            int nchains_in: Number of chains to be added.
+            long nchains_in: Number of chains to be added.
             list chain_indexes: List of the starting index of the chains.
         
         Raises:
@@ -149,7 +148,7 @@ class Chains:
             raise ValueError("Length of sample and ln_posterior arrays do not "\
                 + "match")
 
-        cdef int i_chain, samples_per_chain
+        cdef long i_chain, samples_per_chain
 
         for i_chain in range(nchains_in):
             samples_per_chain = chain_indexes[i_chain+1] - chain_indexes[i_chain]
@@ -175,9 +174,9 @@ class Chains:
                 nchains_in specifies the number of chains in the passed samples.
       
         Raises: 
-            TypeError: Raised when ndim of new chains does not match previous 
+            ValueError: Raised when ndim of new chains does not match previous 
                 chains.
-            TypeError: Raised when posterior and samples first and second 
+            ValueError: Raised when posterior and samples first and second 
                 length are different
         """
 
@@ -187,14 +186,14 @@ class Chains:
 
         # Check new chain has correct ndim.
         if ndim_in != self.ndim:            
-            raise TypeError("ndim of new chain does not match previous chains")
+            raise ValueError("ndim of new chain does not match previous chains")
 
         if samples.shape[0] != ln_posterior.shape[0] \
             or samples.shape[1] != ln_posterior.shape[1]:            
-            raise TypeError("Length of sample and ln_posterior arrays do not "\
+            raise ValueError("Length of sample and ln_posterior arrays do not "\
                 + "match")
 
-        cdef int i_chain
+        cdef long i_chain
         for i_chain in range(nchains_in):
             self.add_chain(samples[i_chain,:,:], ln_posterior[i_chain,:])
 
@@ -231,7 +230,7 @@ class Chains:
 
         return sub_chains
 
-    def get_chain_indices(self, int i):
+    def get_chain_indices(self, long i):
         """Gets the start and end index of samples from a chain.
         
         The end index specifies the index one passed the end of the chain, i.e. 
@@ -322,8 +321,8 @@ class Chains:
         samples_new = np.empty((0, self.ndim))
         ln_posterior_new = np.empty((0))
         
-        cdef int i_sample = 0        
-        cdef int i_chain, nsamples_chain
+        cdef long i_sample = 0        
+        cdef long i_chain, nsamples_chain
         for i_chain in range(self.nchains):
             
             start = self.start_indices[i_chain]
@@ -380,7 +379,7 @@ class Chains:
         # print("nsamples_per_chain = {}".format(nsamples_per_chain))        
         rel_size_chain = nsamples_per_chain / self.nsamples        
         # print("rel_size_chain = {}".format(rel_size_chain))        
-        nblocks_per_chain = np.round(nblocks * rel_size_chain).astype(int)
+        nblocks_per_chain = np.round(nblocks * rel_size_chain).astype(long)
         
         # Ensure no chains have zero blocks due to rounding.
         nblocks_per_chain[nblocks_per_chain == 0] = 1
@@ -397,18 +396,18 @@ class Chains:
         # print("nblocks_per_chain = {}".format(nblocks_per_chain))
         
         start_indices_new = np.array([0])
-        cdef int i_chain
+        cdef long i_chain
         for i_chain in range(self.nchains):
             start = self.start_indices[i_chain]
             end = self.start_indices[i_chain+1]
             
-            step = int((end - start) // nblocks_per_chain[i_chain])
+            step = long((end - start) // nblocks_per_chain[i_chain])
             # print("chain = {}, start = {}".format(i_chain, start))
             # print("chain = {}, end = {}".format(i_chain, end))
             # print("chain = {}, step = {}".format(i_chain, step))
 
             block_start_indices = start \
-                + np.array(range(nblocks_per_chain[i_chain]+1), dtype=int) \
+                + np.array(range(nblocks_per_chain[i_chain]+1), dtype=long) \
                 * step
             
             block_start_indices[-1] = end

@@ -34,7 +34,7 @@ def split_data(chains not None, double split_ratio=0.5):
     if split_ratio < 0.0 or split_ratio > 1.0:
         raise ValueError("split_ratio must be between 0 and 1")
 
-    nchains_train = int(chains.nchains * split_ratio)
+    nchains_train = long(chains.nchains * split_ratio)
     nchains_use   = chains.nchains - nchains_train
 
     ndim = chains.ndim
@@ -95,7 +95,7 @@ def validation_fit_indexes(long i_cross, long nchains_in_val_set, long ncross, l
 
 def cross_validation(chains, list domains, list hyper_parameters, \
                      long ncross=2, str MODEL="KernelDensityEstimate", \
-                     int seed=-1, bint verbose=False):
+                     long seed=-1, bint verbose=False):
     """ Splits data into ncross chunks. Then fits the model using
         each of the hyper parameters given using all but one of the 
         chunks. This procedure is done for all the chunks and the 
@@ -111,7 +111,7 @@ def cross_validation(chains, list domains, list hyper_parameters, \
         str MODEL: stirng identifying the model that is being cross 
             validated. Options are ("KernelDensityEstimate"),
             (default = "KernelDensityEstimate")
-        int seed: seed for random number when drawing the chains,
+        long seed: seed for random number when drawing the chains,
             if this is negative the seed is not set
         bool verbose: Set to True to print results from cross validation
             evidence calculations (default=False)

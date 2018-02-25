@@ -186,7 +186,5 @@ def test_cross_validation():
                         verbose=False)
     assert validation_variences[0] == pytest.approx(9.74522749e-05) 
     assert validation_variences[1] == pytest.approx(2.57373056e-06) 
-    # with pytest.raises(TypeError):
-    #     dh.cross_validation(chains, [], hyper_parameters, MODEL="not_a_model")
 
 test_cross_validation()
