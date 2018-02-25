@@ -355,16 +355,20 @@ def test_kernel_density_estimate_predict():
     assert density.predict(np.array([5.5005,5.0])) == pytest.approx(np.log(1)-np.log(.25*np.pi)-np.log(nsamples))
 
     # test if normalised
-    # n_grid = 500
-    # post_grid = np.zeros((n_grid,n_grid))
-    # for i_x in range(n_grid):
-    #     for i_y in range(n_grid):
-    #         post_grid[i_x,i_y] = np.exp(density.predict(np.array([i_x*10.0/n_grid,i_y*10.0/n_grid])))
+    n_grid = 100
+    grid_start  = -2.0
+    grid_length = 14.0
+    post_grid = np.zeros((n_grid,n_grid))
+    for i_x in range(n_grid):
+        for i_y in range(n_grid):
+            x = grid_start +  grid_length*i_x/n_grid
+            y = grid_start +  grid_length*i_y/n_grid
+            post_grid[i_x,i_y] = np.exp(density.predict(np.array([x,y])))
 
-    # print(np.sum(post_grid)*(10./n_grid)*(10./n_grid))
+    assert np.sum(post_grid)*(grid_length/n_grid)*(grid_length/n_grid) == pytest.approx(1.0,rel=1E-2)
 
     # plt.imshow(post_grid)
     # plt.show()
 
     return
-test_kernel_density_estimate_predict()
+# test_kernel_density_estimate_predict()

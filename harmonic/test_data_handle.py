@@ -157,12 +157,13 @@ def test_validation_fit_indexes():
 def test_cross_validation():
 
     ndim        = 2
-    nsamples    = 100
+    nsamples    = 10
     nchains     = 200
     ncross      = 2
-    step        = 1
+    step        = 0
 
-    hyper_parameters = [[10**R] for R in range(-ncross-step,-step)]
+    hyper_parameters_HS  = [None for R in range(-ncross-step,-step)]
+    hyper_parameters_KDE = [[10**R] for R in range(-ncross-step,-step)]
 
     chains = ch.Chains(ndim)
 
@@ -172,12 +173,19 @@ def test_cross_validation():
 
     chains.add_chains_3d(samples, ln_posterior)
 
-    # with pytest.raises(ValueError):
-    #     dh.cross_validation(chains, [], hyper_parameters, MODEL="not_a_model")
+    with pytest.raises(ValueError):
+        dh.cross_validation(chains, [], hyper_parameters_KDE, MODEL="not_a_model")
 
 
-    dh.cross_validation(chains, [], hyper_parameters)
-
+    # just checks the result of the code is unchanged
+    validation_variences = dh.cross_validation(chains, [np.array([1E-1,1E1])], \
+                        hyper_parameters_HS, MODEL="HyperSphere", verbose=False)
+    assert validation_variences[0] == pytest.approx(1.48812772e-05) 
+    assert validation_variences[1] == pytest.approx(1.48812772e-05) 
+    validation_variences = dh.cross_validation(chains, [], hyper_parameters_KDE, \
+                        verbose=False)
+    assert validation_variences[0] == pytest.approx(9.74522749e-05) 
+    assert validation_variences[1] == pytest.approx(2.57373056e-06) 
     # with pytest.raises(TypeError):
     #     dh.cross_validation(chains, [], hyper_parameters, MODEL="not_a_model")
 
