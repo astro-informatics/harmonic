@@ -57,7 +57,7 @@ class Model(metaclass=abc.ABCMeta):
 
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
-                                         centre, inv_covariance):
+                                         centre, inv_covariance, mean_shift):
     """Evaluate ojective function forthe HyperSphere model. Objective function
     is given by the variance of the estimator (subject to a linear
     transformation that does not depend on the radius of the sphere, which is
@@ -85,7 +85,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
         inv_covariance_here = inv_covariance
 
     cdef int i_dim, i_sample, ndim = X.shape[1], nsample = X.shape[0]
-    cdef double objective = 0.0, distance, mean_shift = np.mean(Y)
+    cdef double objective = 0.0, distance, mean_shift_here = mean_shift
     cdef double ln_volume = ndim*log(R_squared)/2  # Parts that do not depend
                                                    # on R are ignored.
 
@@ -97,7 +97,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                 * (X_here[i_sample,i_dim] - centre_here[i_dim]) \
                 * inv_covariance_here[i_dim]
         if distance_squared < R_squared:
-            objective += exp( 2*(mean_shift - Y[i_sample]) ) 
+            objective += exp( 2*(mean_shift_here - Y[i_sample]) ) 
 
     objective = exp(-2*ln_volume)*objective/nsample
     # objective = exp(-2*ln_one_over_volume-2*mean_shift)*objective/nsample
@@ -309,9 +309,10 @@ class HyperSphere(Model):
         if ~self.inv_covariance_set:
             self.set_inv_covariance(np.std(X, axis=0)**(-2))
 
+        mean_shift = np.mean(Y)
         result = so.minimize_scalar(HyperSphereObjectiveFunction, 
             bounds=[self.R_domain[0], self.R_domain[1]], 
-            args=(X, Y, self.centre, self.inv_covariance), 
+            args=(X, Y, self.centre, self.inv_covariance, mean_shift), 
             method='Bounded')
 
         self.set_R(sqrt(result.x))
