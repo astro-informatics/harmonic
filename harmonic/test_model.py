@@ -431,20 +431,25 @@ def test_evaluate_one_guassian():
 
     return
 
+def test_delta_theta_ij():
+    #TODO
+    pass
+
 def test_ModifiedGaussianMixtureModel_constructor():
 
     ndim       = 4
     domains    = [np.array([1E-1,1E1])]
+    gamma      = 1E-8
     nguassians = 3
 
     with pytest.raises(ValueError):
-        MGMM = md.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,1E1])], hyper_parameters=[5,2])
+        MGMM = md.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,1E1])], hyper_parameters=[5])
     with pytest.raises(ValueError):
-        MGMM = md.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,1E1]),np.array([1E-1,1E1])], hyper_parameters=[4])
+        MGMM = md.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,1E1]),np.array([1E-1,1E1])], hyper_parameters=[4,2])
     with pytest.raises(ValueError):
-        MGMM = md.ModifiedGaussianMixtureModel(0, [np.array([0.5,1.5])], hyper_parameters=[5])
+        MGMM = md.ModifiedGaussianMixtureModel(0, [np.array([0.5,1.5])], hyper_parameters=[5,1E-1])
 
-    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians])
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
 
     assert MGMM.ndim            == ndim
     assert MGMM.alpha_domain[0] == domains[0][0]
@@ -464,8 +469,9 @@ def test_ModifiedGaussianMixtureModel_set_weights():
     ndim       = 4
     domains    = [np.array([1E-1,1E1])]
     nguassians = 3
+    gamma      = 1E-8
 
-    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians])
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
 
     with pytest.raises(ValueError):
         MGMM.set_weights(np.ones(nguassians+1))
@@ -501,8 +507,9 @@ def test_ModifiedGaussianMixtureModel_set_alphas():
     ndim       = 4
     domains    = [np.array([1E-1,1E1])]
     nguassians = 3
+    gamma      = 1E-8
 
-    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians])
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
 
     with pytest.raises(ValueError):
         MGMM.set_alphas(np.ones(nguassians+1))
@@ -529,8 +536,9 @@ def test_ModifiedGaussianMixtureModel_set_centres():
     ndim       = 4
     domains    = [np.array([1E-1,1E1])]
     nguassians = 3
+    gamma      = 1E-8
 
-    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians])
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
 
     with pytest.raises(ValueError):
         MGMM.set_centres(np.ones((nguassians+1,ndim)))
@@ -556,8 +564,9 @@ def test_ModifiedGaussianMixtureModel_set_inv_covarience():
     ndim       = 4
     domains    = [np.array([1E-1,1E1])]
     nguassians = 3
+    gamma      = 1E-8
 
-    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians])
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
 
     with pytest.raises(ValueError):
         MGMM.set_inv_covariance(np.ones((nguassians+1,ndim)))
@@ -589,6 +598,7 @@ def test_ModifiedGaussianMixtureModel_predict():
     ntrials    = 20
     ndim       = 50
     nguassians = 25
+    gamma      = 1E-8
     domains    = [np.array([1E-1,1E1])]
 
     alphas         = np.abs(np.ones(nguassians) + np.random.randn(nguassians)*0.2)
@@ -598,7 +608,7 @@ def test_ModifiedGaussianMixtureModel_predict():
     weights        = np.random.uniform(size=(nguassians))
     weights        = weights/np.sum(weights)
 
-    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians])
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
 
     MGMM.set_alphas(alphas)
     MGMM.set_centres(mus)

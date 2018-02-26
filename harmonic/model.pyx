@@ -751,6 +751,31 @@ def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
 
     return evaluate_one_guassian(x, mu, inv_covariance, alpha, weight, ndim)
 
+cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
+                    np.ndarray[double, ndim=1, mode="c"] mu, \
+                    np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
+                    long ndim):
+
+    cdef long i_dim
+    cdef double distance, seperation
+
+    for i_dim in range(ndim):
+        seperation = x[i_dim]-mu[i_dim]
+        distance += seperation*seperation*inv_covariance[i_dim]
+
+    return distance
+
+
+def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
+                        np.ndarray[double, ndim=1, mode="c"] mu, \
+                        np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
+                        long ndim):
+
+    return delta_theta_ij(x, mu, inv_covariance, ndim)
+
+
+
+
 class ModifiedGaussianMixtureModel(Model):
 
     def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8]):
@@ -907,7 +932,6 @@ class ModifiedGaussianMixtureModel(Model):
         self.inv_covariance = inv_covariance_in.copy()
 
         return
-
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model
