@@ -776,6 +776,7 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
 
 
 
+
 class ModifiedGaussianMixtureModel(Model):
 
     def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8]):

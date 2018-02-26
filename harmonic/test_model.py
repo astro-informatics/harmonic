@@ -432,8 +432,23 @@ def test_evaluate_one_guassian():
     return
 
 def test_delta_theta_ij():
-    #TODO
-    pass
+
+    np.random.seed(0)
+
+    ntrials = 20
+    ndim    = 5
+
+    alpha = 3.0
+    mu = np.random.randn(ndim)
+    diag_cov = np.ones(ndim) + np.random.randn(ndim)*0.1
+    inv_covariance = 1.0/diag_cov
+
+    for i_trials in range(ntrials):
+        x = np.random.randn(ndim)*5*i_trials/ntrials
+        y = md.delta_theta_ij_wrap(x, mu, inv_covariance, ndim)
+        assert y == np.sum((x-mu)*(x-mu)*inv_covariance)
+
+    return
 
 def test_ModifiedGaussianMixtureModel_constructor():
 
