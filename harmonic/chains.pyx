@@ -199,20 +199,20 @@ class Chains:
 
         return
             
-    def get_sub_chains(self,list chains_wanted):
-        """ Creates a new chain instance with the chains
-        indexed in chains_wanted. (useful for cross validation)
+    def get_sub_chains(self, list chains_wanted):
+        """Creates a new chain instance with the chains
+        indexed in chains_wanted. (Useful for cross validation.)
 
         Args:
-            list chains_wanted: List of indexes of chains that 
-            the new chain instance will contain
+            list chains_wanted: List of indexes of chains that the new chain
+                instance will contain.
 
         Returns:
-            chians containing the chains wanted
+            sub_chains: Chains object containing the chains wanted.
 
         Raises:
-            ValueError: If any of the chains_wanted indexes
-                are out of bounds ie on in range 0-nchains-1
+            ValueError: If any of the chains_wanted indexes are out of bounds
+                i.e. outside of range 0 to nchains-1.
         """
 
         new_nchains = len(chains_wanted)
@@ -225,8 +225,10 @@ class Chains:
 
         for chain_index in chains_wanted:
             sub_chains.add_chain(\
-                self.samples[self.start_indices[chain_index]:self.start_indices[chain_index+1],:],\
-                self.ln_posterior[self.start_indices[chain_index]:self.start_indices[chain_index+1]])
+                self.samples[self.start_indices[chain_index]:\
+                             self.start_indices[chain_index+1],:],\
+                self.ln_posterior[self.start_indices[chain_index]:
+                                  self.start_indices[chain_index+1]])
 
         return sub_chains
 

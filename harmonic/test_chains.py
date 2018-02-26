@@ -402,7 +402,9 @@ def test_get_sub_chains():
     random_chain     = chains_wanted[random_sub_chain]
     random_sample    = np.random.randint(nsamples)
     random_dim       = 3
-    assert sub_chains.samples[random_sub_chain*nsamples+random_sample,random_dim] == samples[random_chain,random_sample,random_dim]
+    assert sub_chains.samples[random_sub_chain * nsamples + random_sample,\
+                              random_dim] \
+                              == samples[random_chain,random_sample,random_dim]
 
 def test_get_indexes():
 
