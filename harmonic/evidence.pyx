@@ -4,17 +4,16 @@ import chains as ch
 from libc.math cimport exp
 
 class Evidence:
-    """Class description here
+    """Compute inverse evidence values from chains, using posterior model.  
     
+    Multiple chains can be added in sequence (to avoid having to store very long chains).    
     """
         
     def __init__(self, long nchains, model not None):
-        """ constructor for evidence class. It sets the values
-        to intial values ready for samples to be inputted
+        """Construct evidence class for computing inverse evidence values from set number of chains and initialised posterior model.        
 
         Args:
-            long nchains: the number of chains that are going to be
-                used in the compuation            
+            long nchains: Number of chains that will be used in the compuation.
             model: An instance of a posterior model class that has been fitted.
         
         Raises:
@@ -45,16 +44,14 @@ class Evidence:
         
         self.model = model
 
-    def set_mean_shift(self, double mean_shift_in):
-        """ Sets the multaplicative shift 
-            (usually the geometric mean) of log_e posterior
-            values to aid numerical stability
+    def set_mean_shift(self, double mean_shift_in):        
+        """Set the multiplicative shift of log_e posterior values to aid numerical stability (usually the geometric mean).
 
         Args:
-            double mean_shift_in: the multaplicative shift
+            double mean_shift_in: Multiplicative shift.
 
         Raises:
-            ValueError: If mean_shift_in is a NaN 
+            ValueError: If mean_shift_in is NaN .
         """
         if ~np.isfinite(mean_shift_in):
             raise ValueError("Mean shift must be a number")
@@ -63,11 +60,12 @@ class Evidence:
         self.mean_shift_set = True
         return
 
-    def process_run(self):
-        """ Uses the running totals of running_sum and n_samples for
-            each chain to calculates an estimate of the evidence,
-            and estimate of the varience, and an estimate of the varience
-            of the varience.
+    def process_run(self):        
+        """Use the running totals of running_sum and nsamples_per_chain
+        to calculate an estimate of the inverse evidence, its variance,
+        and the variance of the variance.
+
+        This method is ran each time chains are added to update the inverse variance estimates from the running totals.
 
         Args:
             None
@@ -105,17 +103,20 @@ class Evidence:
         self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
         return
 
-    def add_chains(self, chains not None):
-        """ Calculates an estimate of the evidence,
-            and estimate of the varience, and an estimate of the varience
-            of the varience. It does this using running averages of the 
-            totals for each chain. This means it can be called many times
-            with new samples and the evidence estimate will improve
+    def add_chains(self, chains not None):        
+        """Add new chains and calculate an estimate of the inverse evidence, its
+        variance, and the variance of the variance.  
+        
+        Calculations are performed by using running averages of the totals for
+        each chain. Consequently, the method can be called many times with new
+        samples for each chain so that the evidence estimate will improve.  The
+        rationale is that not all samples need to be stored in memory for
+        high-dimensional problems.  Note that the same number of chains needs to
+        be considered for each call.
 
         Args:
             chains: An instance of the chains class containing the chains
-                to be used in the calculation
-            
+                to be used in the calculation.            
 
         Raises:
             ValueError: If the input number of chains to not match the number
