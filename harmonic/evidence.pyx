@@ -32,7 +32,7 @@ class Evidence:
             raise ValueError("Model not fitted.")
 
         self.running_sum = np.zeros(nchains)
-        self.nsamples_per_chain = np.zeros((nchains),dtype=int)
+        self.nsamples_per_chain = np.zeros((nchains),dtype=long)
 
         self.nchains = nchains
         self.ndim = model.ndim
