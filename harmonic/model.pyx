@@ -753,7 +753,7 @@ def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
 
 class ModifiedGaussianMixtureModel(Model):
 
-    def __init__(self, long ndim, list domains not None, hyper_parameters=None):
+    def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8]):
         """ constructor setting the hyper parameters and domains of the model of the
             MGMM which models the posterior as a group of Gaussians.
 
@@ -762,18 +762,19 @@ class ModifiedGaussianMixtureModel(Model):
             list domains: A list of length 1 with the range of scale parameter of the
                 covariance matrix. ie the range of alpha, where, C' = alpha * C_samples,
                 and C_samples is the diagonal of the covariance in the samples in each cluster
-            hyper_parameters: A list of length 1 which should be nummber of clusters 
+            hyper_parameters: A list of length 2, the first of which should be nummber of clusters
+                and the second is the regularisation parameter gamma.
 
 
         Raises:
-            ValueError: If the hyper_parameters list is not length 1
+            ValueError: If the hyper_parameters list is not length 2
             ValueError: If the length of domains list is not 0
             ValueError: If the ndim_in is not positive
         """
 
-        if len(hyper_parameters) != 1:
+        if len(hyper_parameters) != 2:
             raise ValueError("ModifiedGaussianMixtureModel model hyper_parameters list " +
-                "shoule be length 1.")
+                "shoule be length 2.")
         if len(domains) != 1:
             raise ValueError("ModifiedGaussianMixtureModel model domains list should " +
                 "be length 1.")
@@ -783,6 +784,7 @@ class ModifiedGaussianMixtureModel(Model):
         self.ndim           = ndim
         self.alpha_domain   = domains[0]
         self.nguassians     = hyper_parameters[0]
+        self.gamma          = hyper_parameters[1]
         self.theta_weights  = np.zeros(self.nguassians)
         self.alphas         = np.ones(self.nguassians)
         self.centres        = np.zeros((self.nguassians,self.ndim))
@@ -811,7 +813,7 @@ class ModifiedGaussianMixtureModel(Model):
         Raises:
             ValueError: If the input array length is not nguassians
             ValueError: If the input array contains a NaN
-            ValueError: If aleast one of the wieghts is negative
+            ValueError: If aleast one of the weights is negative
             ValueError: If the sum of the weights is too close to zero
 
         """
@@ -906,6 +908,7 @@ class ModifiedGaussianMixtureModel(Model):
 
         return
 
+
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model
         """
@@ -928,5 +931,4 @@ class ModifiedGaussianMixtureModel(Model):
         for i_guas in range(nguassians):
             value += evaluate_one_guassian(x, mus[i_guas,:], inv_covariances[i_guas,:], \
                                            alphas[i_guas], weights[i_guas], ndim)
-
         return value 
