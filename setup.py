@@ -57,11 +57,20 @@ setup(
         libraries=[],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
-    ),        
+    ),
     Extension(
-        "harmonic/tmp_poly_class_example",
+        "harmonic/data_handle",
         package_dir=['src'],
-        sources=["harmonic/tmp_poly_class_example.pyx"],
+        sources=["harmonic/data_handle.pyx"],
+        include_dirs=include_dirs,
+        libraries=[],
+        extra_link_args=extra_link_args,
+        extra_compile_args=[]
+    ),
+    Extension(
+        "harmonic/evidence",
+        package_dir=['src'],
+        sources=["harmonic/evidence.pyx"],
         include_dirs=include_dirs,
         libraries=[],
         extra_link_args=extra_link_args,
