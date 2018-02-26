@@ -162,9 +162,9 @@ def cross_validation(chains, list domains, list hyper_parameters, \
             cal_ev.add_chains(chains_val)
 
             if verbose:
-                print(MODEL, cal_ev.p, cal_ev.s2, cal_ev.s2**0.5/cal_ev.p, cal_ev.v2)
+                print(MODEL, cal_ev.evidence_inv, cal_ev.evidence_inv_var, cal_ev.evidence_inv_var**0.5/cal_ev.evidence_inv, cal_ev.evidence_inv_var_var)
 
-            validation_variences[i_cross,i_val] = cal_ev.s2
+            validation_variences[i_cross,i_val] = cal_ev.evidence_inv_var
 
     return np.mean(validation_variences, axis=0)
 

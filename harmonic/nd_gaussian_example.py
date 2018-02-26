@@ -86,7 +86,7 @@ for i_real in range(n_real):
     cal_ev = cbe.Evidence(nchains, sphere)
     cal_ev.add_chains(chains)
 
-    print(np.exp(ln_rho), cal_ev.p, np.sqrt(cal_ev.s2)/cal_ev.p, cal_ev.s2, cal_ev.v2)
+    print(np.exp(ln_rho), cal_ev.evidence_inv, np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, cal_ev.evidence_inv_var, cal_ev.evidence_inv_var_var)
 
 clock = time.clock() - clock
 
