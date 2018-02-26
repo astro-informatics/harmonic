@@ -130,6 +130,9 @@ class evidence():
         if model.ndim != self.ndim:
             raise ValueError("Model ndim inconsistent")
 
+        if not model.is_fitted():
+            raise ValueError("Model not fitted")
+
         cdef np.ndarray[double, ndim=2, mode="c"] X = chains.samples
         cdef np.ndarray[double, ndim=1, mode="c"] Y = chains.ln_posterior
         cdef np.ndarray[double, ndim=1, mode="c"] p_i = self.p_i

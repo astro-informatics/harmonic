@@ -13,7 +13,6 @@ def test_constructor():
     with pytest.raises(ValueError):
         rho = cbe.evidence(100, 0)
 
-
     nchains = 100
     ndim = 1000
     
@@ -103,11 +102,16 @@ def test_add_chains():
 
     # Add samples to chains
     chain.add_chains_3d(X, Y)
+
+    with pytest.raises(ValueError):
+        cal_ev.add_chains(chain, sphere)
+
     # Fit the Hyper_sphere
     sphere.fit(chain.samples,chain.ln_posterior)
 
-
+    
     sphere_dum = md.HyperSphere(ndim+1, domain)
+    sphere_dum.fitted = True
     with pytest.raises(ValueError):
         cal_ev.add_chains(chain,sphere_dum)
 

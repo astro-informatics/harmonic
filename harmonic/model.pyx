@@ -56,6 +56,16 @@ class Model(metaclass=abc.ABCMeta):
             Predicted log_e posterior value.
         """
 
+    @abc.abstractmethod
+    def is_fitted(self):
+        """Specify whether model has been fitted.
+        
+        Args: 
+            None.
+            
+        Return:
+            Boolean specifying whether the model has been fitted.
+        """
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                                          centre, inv_covariance, mean_shift):
@@ -147,6 +157,18 @@ class HyperSphere(Model):
         self.R_domain           = domains[0]
         self.set_R(np.mean(self.R_domain))
         self.fitted             = False
+
+    def is_fitted(self):
+        """Specify whether model has been fitted.
+        
+        Args: 
+            None.
+            
+        Return:
+            Boolean specifying whether the model has been fitted.
+        """
+
+        return self.fitted
 
     def set_R(self, double R):
         """Set the radius of the hypersphere and calculate its volume.
@@ -496,6 +518,18 @@ class KernelDensityEstimate(Model):
 
         return
 
+    def is_fitted(self):
+        """Specify whether model has been fitted.
+        
+        Args: 
+            None.
+            
+        Return:
+            Boolean specifying whether the model has been fitted.
+        """
+
+        return self.fitted
+        
     def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
         """ sets the scales of the hyper spheres based on the min
             and max sample in each dimension
@@ -750,6 +784,19 @@ class ModifiedGaussianMixtureModel(Model):
         self.alphas         = np.ones(self.nguassians)
         self.centres        = np.zeros((self.nguassians,self.ndim))
         self.inv_covariance = np.ones((self.nguassians,self.ndim))
+        self.fitted         = False
+
+    def is_fitted(self):
+        """Specify whether model has been fitted.
+        
+        Args: 
+            None.
+            
+        Return:
+            Boolean specifying whether the model has been fitted.
+        """
+
+        return self.fitted
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
         """set the weights of the Guassians
