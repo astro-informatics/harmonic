@@ -620,8 +620,7 @@ class KernelDensityEstimate(Model):
 
         return log(count) - self.ln_norm
 
-cdef theta_to_weights(np.ndarray[double, ndim=1, mode="c"] theta, \
-        np.ndarray[double, ndim=1, mode="c"] weights,\
+cdef np.ndarray[double, ndim=1, mode="c"] theta_to_weights(np.ndarray[double, ndim=1, mode="c"] theta, \
         long nguassians):
     """ function to calculate the weights from the theta_weights
 
@@ -636,23 +635,23 @@ cdef theta_to_weights(np.ndarray[double, ndim=1, mode="c"] theta, \
         None
     """
     cdef double norm = 0.0
-    cdef i_dim
+    cdef i_guas
+    cdef np.ndarray[double, ndim=1, mode="c"] weights = np.empty(nguassians)
 
-    for i_dim in range(nguassians):
-        norm += exp(theta[i_dim])
+    for i_guas in range(nguassians):
+        norm += exp(theta[i_guas])
     norm = 1.0/norm
 
-    for i_dim in range(nguassians):
-        weights[i_dim] = exp(theta[i_dim])*norm
-    return
+    for i_guas in range(nguassians):
+        weights[i_guas] = exp(theta[i_guas])*norm
+    return weights
 
-def theta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] theta, \
-        np.ndarray[double, ndim=1, mode="c"] weights,\
-        long ndim):
+def theta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] theta, 
+        long nguassians):
     """wrapper for theta_to_weights"""
 
-    theta_to_weights(theta, weights, ndim)
-    return
+    
+    return theta_to_weights(theta, nguassians)
 
 cdef double calculate_gaussian_normalisation(double alpha, np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
     """calculated the normalisation for on evaluate_one_guassian
@@ -704,7 +703,7 @@ cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
         distance += (x[i_dim] - mu[i_dim]) * (x[i_dim] - mu[i_dim]) * inv_covariance[i_dim]
     distance /= 2.0*alpha
 
-    return exp(-distance)*norm
+    return exp(-distance)*norm*weight
 
 def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
                            np.ndarray[double, ndim=1, mode="c"] mu, \
@@ -748,23 +747,113 @@ class ModifiedGaussianMixtureModel(Model):
         self.alpha_domain   = domains[0]
         self.nguassians     = hyper_parameters[0]
         self.theta_weights  = np.zeros(self.nguassians)
-        self.alpha          = np.ones(self.nguassians)
-        self.centres        = np.zeros((self.ndim,self.nguassians))
-        self.inv_covariance = np.ones((self.ndim,self.nguassians))
+        self.alphas         = np.ones(self.nguassians)
+        self.centres        = np.zeros((self.nguassians,self.ndim))
+        self.inv_covariance = np.ones((self.nguassians,self.ndim))
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
+        """set the weights of the Guassians
 
-        if weights_in.size != self.ndim:
-            ValueError("Weights must have length ndim")
+        Args:
+            ndarray weights_in: 1D array containing the weights (no need to normalise)
+                with shape (nguassians)
 
-        for i_dim in range(self.ndim):
-            if np.isnan(weights_in[i_dim]):
-                ValueError("Weights contains a NaN")
-            if weights_in[i_dim] < 0.0:
-                ValueError("Weights must be positive")
+        Raises:
+            ValueError: If the input array length is not nguassians
+            ValueError: If the input array contains a NaN
+            ValueError: If aleast one of the wieghts is negative
+            ValueError: If the sum of the weights is too close to zero
 
-                
+        """
+        if weights_in.size != self.nguassians:
+            raise ValueError("Weights must have length nguassians")
+
+        for i_guas in range(self.nguassians):
+            if np.isnan(weights_in[i_guas]):
+                raise ValueError("Weights contains a NaN")
+            if weights_in[i_guas] < 0.0:
+                raise ValueError("Weights must be non-negative")
+
+        if np.sum(weights_in) < 1E-8:
+            raise ValueError("At least one weight must be non-negative")
+
         self.theta_weights = np.log(weights_in)
+        return
+
+    def set_alphas(self, np.ndarray[double, ndim=1, mode="c"] alphas_in):
+        """set the alphas
+
+        Args:
+            ndarray alphas_in: 1D array containing the alpha scalings with shape (nguassians)
+
+        Raises:
+            ValueError: If the input array length is not nguassians
+            ValueError: If the input array contains a NaN
+            ValueError: If aleast one of the alphas not positive
+        """
+        if alphas_in.size != self.nguassians:
+            raise ValueError("alphas must have length nguassians")
+
+        for i_guas in range(self.nguassians):
+            if np.isnan(alphas_in[i_guas]):
+                raise ValueError("alphas contains a NaN")
+            if alphas_in[i_guas] <= 0.0:
+                raise ValueError("alphas must be positive")
+
+
+        self.alphas = alphas_in.copy()
+        return
+
+    def set_centres(self, np.ndarray[double, ndim=2, mode="c"] centres_in):
+        """set the centres of the Guassians
+
+        Args:
+            ndarray centres_in: 2D array containing the centres
+                with shape (ndim, nguassians)
+
+        Raises:
+            ValueError: If the input array is not the correct shape
+            ValueError: If the input array contains a NaN
+
+        """
+        if centres_in.shape[0] != self.nguassians or centres_in.shape[1] != self.ndim:
+            raise ValueError("centres must be shape (nguassians,ndim)")
+
+        for i_guas in range(self.nguassians):
+            for i_dim in range(self.ndim):
+                if np.isnan(centres_in[i_guas,i_dim]):
+                    raise ValueError("Centres contains a NaN")
+
+        self.centres = centres_in.copy()
+
+        return
+
+    def set_inv_covariance(self, np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
+        """set the inverse convarience of the Guassians
+
+        Args:
+            ndarray inv_covariance_in: 2D array containing the centres
+                with shape (ndim, nguassians)
+
+        Raises:
+            ValueError: If the input array is not the correct shape
+            ValueError: If the input array contains a NaN
+            ValueError: If the input array contains a number that is 
+                not positive
+
+        """
+        if inv_covariance_in.shape[0] != self.nguassians or inv_covariance_in.shape[1] != self.ndim:
+            raise ValueError("inv_covariance must be shape (nguassians,ndim)")
+
+        for i_guas in range(self.nguassians):
+            for i_dim in range(self.ndim):
+                if np.isnan(inv_covariance_in[i_guas,i_dim]):
+                    raise ValueError("inv_covariance contains a NaN")
+                if inv_covariance_in[i_guas,i_dim] <= 0.0:
+                    raise ValueError("inv_covariance contains a number that is not positive")
+
+        self.inv_covariance = inv_covariance_in.copy()
+
         return
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
@@ -775,4 +864,19 @@ class ModifiedGaussianMixtureModel(Model):
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Use model to predict the hight of the posterior at point x
         """
-        return
+
+        cdef np.ndarray[double, ndim=2, mode="c"] mus = self.centres
+        cdef np.ndarray[double, ndim=2, mode="c"] inv_covariances = self.inv_covariance
+        cdef np.ndarray[double, ndim=1, mode="c"] alphas = self.alphas
+        cdef np.ndarray[double, ndim=1, mode="c"] weights 
+
+        cdef long i_guas, nguassians = self.nguassians, ndim = self.ndim
+        cdef double value = 0.0
+
+        weights = theta_to_weights(self.theta_weights, nguassians)
+
+        for i_guas in range(nguassians):
+            value += evaluate_one_guassian(x, mus[i_guas,:], inv_covariances[i_guas,:], \
+                                           alphas[i_guas], weights[i_guas], ndim)
+
+        return value 
