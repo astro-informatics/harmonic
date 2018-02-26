@@ -221,7 +221,7 @@ class HyperSphere(Model):
         
         # Compute log_e(1/volume).        
         # First compute volume of hypersphere then adjust for transformation 
-        # by C^{1/2} to give hyper-ellipse by multiplying by 0.5*det(C).        
+        # by C^{1/2} to give hyper-ellipse by multiplying by det(C)^0.5.        
         volume_hypersphere = (self.ndim/2)*log(np.pi) \
             + self.ndim*log(self.R) - sp.gammaln(self.ndim/2+1)
         self.ln_one_over_volume = \
