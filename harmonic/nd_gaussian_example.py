@@ -1,6 +1,6 @@
 import numpy as np
 import chains as ch
-import calculate_evidence as cbe
+import evidence as cbe
 import model as md
 import emcee
 import scipy.special as sp

@@ -1,4 +1,4 @@
-import calculate_evidence as cbe
+import evidence as cbe
 import pytest
 import numpy as np
 from scipy.stats import kurtosis
@@ -8,15 +8,15 @@ import model as md
 def test_constructor():
 
     with pytest.raises(ValueError):
-        rho = cbe.evidence(0, 100)
+        rho = cbe.Evidence(0, 100)
 
     with pytest.raises(ValueError):
-        rho = cbe.evidence(100, 0)
+        rho = cbe.Evidence(100, 0)
 
     nchains = 100
     ndim = 1000
     
-    rho = cbe.evidence(nchains, ndim)
+    rho = cbe.Evidence(nchains, ndim)
 
     assert rho.nchains        == nchains
     assert rho.p              == pytest.approx(0.0)
@@ -33,7 +33,7 @@ def test_constructor():
 def test_set_mean_shift():
     nchains = 100
     ndim = 1000
-    rho = cbe.evidence(nchains, ndim)
+    rho = cbe.Evidence(nchains, ndim)
 
     with pytest.raises(ValueError):
         rho.set_mean_shift(np.nan)
@@ -49,7 +49,7 @@ def test_process_run():
     n_samples = 20
     ndim = 1000
 
-    rho = cbe.evidence(nchains, ndim)
+    rho = cbe.Evidence(nchains, ndim)
 
     np.random.seed(1)
     samples   = np.random.randn(nchains,n_samples)
@@ -93,7 +93,7 @@ def test_add_chains():
     domain = [np.array([1E-1,1E1])]
     sphere = md.HyperSphere(ndim, domain)
     chain  = ch.Chains(ndim)
-    cal_ev = cbe.evidence(nchains, ndim)
+    cal_ev = cbe.Evidence(nchains, ndim)
 
     # create samples of unnormalised Gaussian
     np.random.seed(30)

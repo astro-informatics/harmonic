@@ -3,7 +3,7 @@ cimport numpy as np
 import chains as ch
 from libc.math cimport exp
 
-class evidence():
+class Evidence:
     """Class description here
     
     """
