@@ -111,7 +111,10 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
             objective += exp( 2*(mean_shift_here - Y[i_sample]) ) 
 
     objective = exp(-2*ln_volume)*objective/nsample
-    # objective = exp(-2*ln_one_over_volume-2*mean_shift)*objective/nsample
+    
+    # If were to correct for mean shift do the following (however, not 
+    # necessary when minimising objective function).
+    # objective = exp(-2*ln_volume-2*mean_shift_here)*objective/nsample
 
     return objective
 
