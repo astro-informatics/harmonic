@@ -187,4 +187,3 @@ def test_cross_validation():
     assert validation_variences[0] == pytest.approx(9.74522749e-05) 
     assert validation_variences[1] == pytest.approx(2.57373056e-06) 
 
-test_cross_validation()

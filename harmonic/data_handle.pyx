@@ -2,7 +2,7 @@ import numpy as np
 cimport numpy as np
 import chains as ch
 import model as md
-import calculate_evidence as cbe
+import evidence as cbe
 
 # module to do 
 # 1) sample spliting for training and using the data
@@ -158,8 +158,8 @@ def cross_validation(chains, list domains, list hyper_parameters, \
             model.fit(chains_fit.samples,chains_fit.ln_posterior)
 
             # calculate evidence
-            cal_ev = cbe.evidence(chains_val.nchains, chains_val.ndim)
-            cal_ev.add_chains(chains_val,model)
+            cal_ev = cbe.Evidence(chains_val.nchains, model)
+            cal_ev.add_chains(chains_val)
 
             if verbose:
                 print(MODEL, cal_ev.p, cal_ev.s2, cal_ev.s2**0.5/cal_ev.p, cal_ev.v2)
