@@ -759,7 +759,7 @@ cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
                     long ndim):
 
     cdef long i_dim
-    cdef double distance, seperation
+    cdef double distance = 0.0, seperation
 
     for i_dim in range(ndim):
         seperation = x[i_dim]-mu[i_dim]
@@ -776,8 +776,53 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
     return delta_theta_ij(x, mu, inv_covariance, ndim)
 
 
+cdef double I_ij(np.ndarray[double, ndim=1, mode="c"] x, \
+                        np.ndarray[double, ndim=1, mode="c"] mu, \
+                        np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
+                        double alpha, double weight, double Pi, long ndim):
 
+    cdef double norm = calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
+    cdef double delta_theta = delta_theta_ij(x, mu, inv_covariance, ndim)
 
+    return weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - Pi)
+
+cdef double I_i(np.ndarray[double, ndim=1, mode="c"] x, \
+                np.ndarray[double, ndim=2, mode="c"] centres, \
+                np.ndarray[double, ndim=2, mode="c"] inv_covariances, \
+                np.ndarray[double, ndim=2, mode="c"] alphas, \
+                np.ndarray[double, ndim=2, mode="c"] weights, \
+                double Pi, long nguassians, long ndim):
+
+    cdef double I_i = 0.0
+    cdef long i_guas
+
+    for i_guas in range(nguassians):
+        I_i += I_ij(x, centres[i_guas,:], inv_covariances[i_guas,:], \
+                    alphas[i_guas], weights[i_guas], Pi, ndim)
+
+    return I_i
+
+# cdef double gradient_i1i2_w(np.ndarray[double, ndim=2, mode="c"] X, \
+#                             np.ndarray[double, ndim=2, mode="c"] centres, \
+#                             np.ndarray[double, ndim=2, mode="c"] inv_covariances, \
+#                             np.ndarray[double, ndim=2, mode="c"] alphas, \
+#                             np.ndarray[double, ndim=2, mode="c"] weights, \
+#                             np.ndarray[double, ndim=1, mode="c"] Y, \
+#                             long nguassians, long ndim, long i1_sample, \
+#                             long i2_sample, long j_guas):
+
+    
+
+# cdef double gradient_i1i2_alphas(np.ndarray[double, ndim=2, mode="c"] X, \
+#                                 np.ndarray[double, ndim=2, mode="c"] centres, \
+#                                 np.ndarray[double, ndim=2, mode="c"] inv_covariances, \
+#                                 np.ndarray[double, ndim=2, mode="c"] alphas, \
+#                                 np.ndarray[double, ndim=2, mode="c"] weights, \
+#                                 np.ndarray[double, ndim=1, mode="c"] Y, \
+#                                 long nguassians, long ndim, long i1_sample, \
+#                                 long i2_sample, long j_guas):
+
+    
 
 class ModifiedGaussianMixtureModel(Model):
 
