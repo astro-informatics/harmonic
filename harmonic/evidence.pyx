@@ -99,9 +99,9 @@ class Evidence:
         kur    /= nsamples
         kur    /= evidence_inv_var*evidence_inv_var
 
-        self.evidence_inv = evidence_inv*exp(self.mean_shift)
-        self.evidence_inv_var = evidence_inv_var*exp(2*self.mean_shift)/(n_eff)
-        self.evidence_inv_var_var  = evidence_inv_var**2*exp(4*self.mean_shift)/(n_eff*n_eff*n_eff)
+        self.evidence_inv = evidence_inv*exp(-self.mean_shift)
+        self.evidence_inv_var = evidence_inv_var*exp(-2*self.mean_shift)/(n_eff)
+        self.evidence_inv_var_var  = evidence_inv_var**2*exp(-4*self.mean_shift)/(n_eff*n_eff*n_eff)
         self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
         return
 
@@ -148,7 +148,7 @@ class Evidence:
             i_samples_end = chains.start_indices[i_chains+1]
             for i_samples in range(i_samples_start, i_samples_end):
                 running_sum[i_chains] += exp( self.model.predict(X[i_samples,:]) \
-                    - Y[i_samples] - mean_shift )
+                    - Y[i_samples] + mean_shift )
                 nsamples_per_chain[i_chains] += 1
 
         self.process_run()
