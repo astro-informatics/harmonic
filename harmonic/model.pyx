@@ -853,8 +853,9 @@ class ModifiedGaussianMixtureModel(Model):
 
         if np.sum(weights_in) < 1E-8:
             raise ValueError("At least one weight must be non-negative")
-
-        self.theta_weights = np.log(weights_in)
+            
+        with np.errstate(divide="ignore"):
+            self.theta_weights = np.log(weights_in)
         return
 
     def set_alphas(self, np.ndarray[double, ndim=1, mode="c"] alphas_in):
