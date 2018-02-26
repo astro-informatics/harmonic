@@ -6,17 +6,22 @@ import chains as ch
 import model as md
 
 def test_constructor():
-
-    with pytest.raises(ValueError):
-        rho = cbe.Evidence(0, 100)
-
-    with pytest.raises(ValueError):
-        rho = cbe.Evidence(100, 0)
-
+    
     nchains = 100
     ndim = 1000
+    domain = [np.array([1E-1,1E1])]
     
-    rho = cbe.Evidence(nchains, ndim)
+    sphere = md.HyperSphere(ndim, domain)
+    
+    sphere.fitted = False    
+    with pytest.raises(ValueError):
+        rho = cbe.Evidence(nchains=100, model=sphere)
+
+    sphere.fitted = True
+    with pytest.raises(ValueError):
+        rho = cbe.Evidence(nchains=0, model=sphere)
+    
+    rho = cbe.Evidence(nchains, sphere)
 
     assert rho.nchains        == nchains
     assert rho.p              == pytest.approx(0.0)
@@ -31,10 +36,13 @@ def test_constructor():
         assert rho.nsamples_per_chain[i_chain] == 0
 
 def test_set_mean_shift():
+    
     nchains = 100
-    ndim = 1000
-    rho = cbe.Evidence(nchains, ndim)
-
+    ndim = 1000    
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fitted = True
+    rho = cbe.Evidence(nchains, sphere)
     with pytest.raises(ValueError):
         rho.set_mean_shift(np.nan)
 
@@ -49,7 +57,10 @@ def test_process_run():
     n_samples = 20
     ndim = 1000
 
-    rho = cbe.Evidence(nchains, ndim)
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fitted = True
+    rho = cbe.Evidence(nchains, sphere)
 
     np.random.seed(1)
     samples   = np.random.randn(nchains,n_samples)
@@ -89,34 +100,23 @@ def test_add_chains():
     nsamples  = 500
     ndim      = 2
 
-    # create classes
-    domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)
-    chain  = ch.Chains(ndim)
-    cal_ev = cbe.Evidence(nchains, ndim)
-
-    # create samples of unnormalised Gaussian
+    # Create samples of unnormalised Gaussian    
     np.random.seed(30)
     X = np.random.randn(nchains,nsamples,ndim)
     Y = -np.sum(X*X,axis=2)/2.0
 
     # Add samples to chains
+    chain  = ch.Chains(ndim)    
     chain.add_chains_3d(X, Y)
 
-    with pytest.raises(ValueError):
-        cal_ev.add_chains(chain, sphere)
-
     # Fit the Hyper_sphere
-    sphere.fit(chain.samples,chain.ln_posterior)
-
-    
-    sphere_dum = md.HyperSphere(ndim+1, domain)
-    sphere_dum.fitted = True
-    with pytest.raises(ValueError):
-        cal_ev.add_chains(chain,sphere_dum)
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)        
+    sphere.fit(chain.samples, chain.ln_posterior)    
 
     # Calculate evidence
-    cal_ev.add_chains(chain,sphere)
+    cal_ev = cbe.Evidence(nchains, sphere)
+    cal_ev.add_chains(chain)
 
     assert cal_ev.p       == pytest.approx(0.159438606) 
     assert cal_ev.s2      == pytest.approx(1.158805126e-07)

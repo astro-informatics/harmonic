@@ -19,7 +19,7 @@ class Model(metaclass=abc.ABCMeta):
         Must be implemented by derivied class (currently abstract).
         
         Args: 
-            long ndim: The dimension of the problem to solve
+            long ndim: Dimension of the problem to solve.
             list domains: List of 1D numpy ndarrays containing the 
                 domains for each parameter of model.  Each domain 
                 is of length two, specifying a lower and upper bound for real

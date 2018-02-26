@@ -83,8 +83,8 @@ for i_real in range(n_real):
     sphere = md.HyperSphere(ndim, domains)
     sphere.fit(chains.samples,chains.ln_posterior)
 
-    cal_ev = cbe.evidence(nchains, ndim)
-    cal_ev.add_chains(chains,sphere)
+    cal_ev = cbe.Evidence(nchains, sphere)
+    cal_ev.add_chains(chains)
 
     print(np.exp(ln_rho), cal_ev.p, np.sqrt(cal_ev.s2)/cal_ev.p, cal_ev.s2, cal_ev.v2)
 
