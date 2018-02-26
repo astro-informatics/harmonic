@@ -1,7 +1,7 @@
 import abc
 import numpy as np
 cimport numpy as np
-from libc.math cimport log, exp, sqrt
+from libc.math cimport log, exp, sqrt, M_PI
 import scipy.special as sp
 import scipy.optimize as so
 
@@ -620,17 +620,113 @@ class KernelDensityEstimate(Model):
 
         return log(count) - self.ln_norm
 
+cdef theta_to_weights(np.ndarray[double, ndim=1, mode="c"] theta, \
+        np.ndarray[double, ndim=1, mode="c"] weights,\
+        long nguassians):
+    """ function to calculate the weights from the theta_weights
+
+    Args:
+        ndarray theta: 1D array conataining the theta values to be converted
+            with shape (nguassians)
+        ndarray theta: 1D array where the weight values will go
+            with shape (nguassians)
+        long nguassians: The number of Gaussiansin the model
+
+    Raises:
+        None
+    """
+    cdef double norm = 0.0
+    cdef i_dim
+
+    for i_dim in range(nguassians):
+        norm += exp(theta[i_dim])
+    norm = 1.0/norm
+
+    for i_dim in range(nguassians):
+        weights[i_dim] = exp(theta[i_dim])*norm
+    return
+
+def theta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] theta, \
+        np.ndarray[double, ndim=1, mode="c"] weights,\
+        long ndim):
+    """wrapper for theta_to_weights"""
+
+    theta_to_weights(theta, weights, ndim)
+    return
+
+cdef double calculate_gaussian_normalisation(double alpha, np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
+    """calculated the normalisation for on evaluate_one_guassian
+
+    Args:
+        double alpha: The scalling parameter of the covariance matrix
+        ndarray inv_covariance: 1D array containing the inverse convarience matrix
+        long ndim: The dimension of the problem
+
+    Returns:
+        a double with the normalisation factor
+    """
+    cdef long i_dim
+    cdef double det=1.0
+
+    for i_dim in range(ndim):
+        det *= alpha*2*M_PI/inv_covariance[i_dim]
+
+
+    return 1.0/sqrt(det)
+
+def calculate_gaussian_normalisation_wrap(double alpha, np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
+
+    return calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
+
+cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
+                           np.ndarray[double, ndim=1, mode="c"] mu, \
+                           np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
+                           double alpha, double weight, long ndim):
+    """evaluate one guassian
+
+    Args:
+        ndarray x: postion where the Gaussian is to be evaluated, with shape
+            (ndim)
+        ndarray mu: the center of the Guassians, with shape (ndim)
+        ndarray inv_covariance: 1D array containing the inverse convarience matrix
+        double alpha: The scalling parameter of the covariance matrix
+        double weight: The weight applied to that Guassian
+        long ndim: The dimension of the problem
+
+    Returns:
+        a double with the hight of the Guassian
+
+    """
+    cdef double y, distance = 0.0, norm = calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
+    cdef long i_dim
+
+    for i_dim in range(ndim):
+        distance += (x[i_dim] - mu[i_dim]) * (x[i_dim] - mu[i_dim]) * inv_covariance[i_dim]
+    distance /= 2.0*alpha
+
+    return exp(-distance)*norm
+
+def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
+                           np.ndarray[double, ndim=1, mode="c"] mu, \
+                           np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
+                           double alpha, double weight, long ndim):
+    """ wrapper for evaluate_one_guassian
+    """
+
+    return evaluate_one_guassian(x, mu, inv_covariance, alpha, weight, ndim)
 
 class ModifiedGaussianMixtureModel(Model):
 
     def __init__(self, long ndim, list domains not None, hyper_parameters=None):
-        """ constructor setting the hyper parameters and domains of the model
+        """ constructor setting the hyper parameters and domains of the model of the
+            MGMM which models the posterior as a group of Gaussians.
 
         Args:
             long ndim: The dimension of the problem to solve
-            list domains: A list of length 0
-            hyper_parameters: A list of length 1 which should be the diameter in scaled
-                units of the hyper spheres to use in the Kernel Density Estimate
+            list domains: A list of length 1 with the range of scale parameter of the
+                covariance matrix. ie the range of alpha, where, C' = alpha * C_samples,
+                and C_samples is the diagonal of the covariance in the samples in each cluster
+            hyper_parameters: A list of length 1 which should be nummber of clusters 
 
 
         Raises:
@@ -638,6 +734,38 @@ class ModifiedGaussianMixtureModel(Model):
             ValueError: If the length of domains list is not 0
             ValueError: If the ndim_in is not positive
         """
+
+        if len(hyper_parameters) != 1:
+            raise ValueError("ModifiedGaussianMixtureModel model hyper_parameters list " +
+                "shoule be length 1.")
+        if len(domains) != 1:
+            raise ValueError("ModifiedGaussianMixtureModel model domains list should " +
+                "be length 1.")
+        if ndim < 1:
+            raise ValueError("Dimension must be greater than 0.")
+
+        self.ndim           = ndim
+        self.alpha_domain   = domains[0]
+        self.nguassians     = hyper_parameters[0]
+        self.theta_weights  = np.zeros(self.nguassians)
+        self.alpha          = np.ones(self.nguassians)
+        self.centres        = np.zeros((self.ndim,self.nguassians))
+        self.inv_covariance = np.ones((self.ndim,self.nguassians))
+
+    def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
+
+        if weights_in.size != self.ndim:
+            ValueError("Weights must have length ndim")
+
+        for i_dim in range(self.ndim):
+            if np.isnan(weights_in[i_dim]):
+                ValueError("Weights contains a NaN")
+            if weights_in[i_dim] < 0.0:
+                ValueError("Weights must be positive")
+
+                
+        self.theta_weights = np.log(weights_in)
+        return
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model
