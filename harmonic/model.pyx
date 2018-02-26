@@ -513,7 +513,9 @@ class KernelDensityEstimate(Model):
         self.inv_scales         = np.ones((ndim))
         self.inv_scales_squared = np.ones((ndim))
         self.distance           = self.D*self.D/4
-        self.ngrid              = <long>(1.0/self.D+1E-8)+3
+        self.ngrid              = <long>(1.0/self.D+1E-8)+3 
+                                # +3 for 1 extra cell either side and another 
+                                # cell for rounding errors.
         self.ln_norm            = 0.0
         self.fitted             = False
 
