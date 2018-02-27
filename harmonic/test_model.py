@@ -372,19 +372,19 @@ def test_kernel_density_estimate_predict():
 
     return
 
-def test_theta_to_weights():
+def test_beta_to_weights():
     
     ndim = 3
 
-    theta   = np.zeros(ndim)
-    weights = md.theta_to_weights_wrap(theta, ndim)
+    beta   = np.zeros(ndim)
+    weights = md.beta_to_weights_wrap(beta, ndim)
     
 
     for i_dim in range(ndim):
         assert weights[i_dim] == pytest.approx(1/3.0)
 
-    theta[1] = 1.0
-    weights = md.theta_to_weights_wrap(theta, ndim)
+    beta[1] = 1.0
+    weights = md.beta_to_weights_wrap(beta, ndim)
     norm = (2+np.exp(1))
     assert weights[0] == pytest.approx(1/norm)
     assert weights[1] == pytest.approx(np.exp(1.0)/norm)
@@ -471,11 +471,13 @@ def test_ModifiedGaussianMixtureModel_constructor():
     assert MGMM.alpha_domain[1] == domains[0][1]
     assert MGMM.nguassians      == nguassians
     for i_guas in range(nguassians):
-        assert MGMM.theta_weights[i_guas] == pytest.approx(0.0)
+        assert MGMM.beta_weights[i_guas] == pytest.approx(0.0)
         assert MGMM.alphas[i_guas]        == pytest.approx(1.0)
         for i_dim in range(ndim):
             assert MGMM.centres[i_guas,i_dim]         == pytest.approx(0.0)
             assert MGMM.inv_covariance[i_guas,i_dim]  == pytest.approx(1.0)
+    assert MGMM.learning_rate == 0.1
+    assert MGMM.centres_inv_cov_set == False
 
     return    
 
@@ -504,15 +506,15 @@ def test_ModifiedGaussianMixtureModel_set_weights():
     MGMM.set_weights(np.ones(nguassians))
 
     for i_dim in range(nguassians):
-        assert MGMM.theta_weights[i_dim] == pytest.approx(0.0)
+        assert MGMM.beta_weights[i_dim] == pytest.approx(0.0)
 
     weights    = np.zeros(nguassians)
     weights[1] = 1.0
     MGMM.set_weights(weights)
 
-    assert MGMM.theta_weights[0] == -np.inf
-    assert MGMM.theta_weights[1] == pytest.approx(0.0)
-    assert MGMM.theta_weights[2] == -np.inf
+    assert MGMM.beta_weights[0] == -np.inf
+    assert MGMM.beta_weights[1] == pytest.approx(0.0)
+    assert MGMM.beta_weights[2] == -np.inf
 
     return
 
@@ -606,6 +608,49 @@ def test_ModifiedGaussianMixtureModel_set_inv_covarience():
 
     return
 
+def test_ModifiedGaussianMixtureModel_set_inv_covarience():
+
+    ndim       = 4
+    domains    = [np.array([1E-1,1E1])]
+    nguassians = 3
+    gamma      = 1E-8
+
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
+
+    with pytest.raises(ValueError):
+        MGMM.set_centres_and_inv_covariance(np.ones((nguassians+1,ndim)),np.ones((nguassians,ndim)))
+    with pytest.raises(ValueError):
+        MGMM.set_centres_and_inv_covariance(np.ones((nguassians,ndim+1)),np.ones((nguassians,ndim)))
+    with pytest.raises(ValueError):
+        tmp_inv_covariences      = np.ones((nguassians,ndim))
+        tmp_inv_covariences[1,2] = np.nan
+        MGMM.set_centres_and_inv_covariance(tmp_inv_covariences,np.ones((nguassians,ndim)))
+    with pytest.raises(ValueError):
+        MGMM.set_centres_and_inv_covariance(np.ones((nguassians,ndim)),np.ones((nguassians+1,ndim)))
+    with pytest.raises(ValueError):
+        MGMM.set_centres_and_inv_covariance(np.ones((nguassians,ndim)),np.ones((nguassians,ndim+1)))
+    with pytest.raises(ValueError):
+        tmp_inv_covariences      = np.ones((nguassians,ndim))
+        tmp_inv_covariences[1,2] = np.nan
+        MGMM.set_centres_and_inv_covariance(np.ones((nguassians,ndim)),tmp_inv_covariences)
+    with pytest.raises(ValueError):
+        tmp_inv_covariences      = np.ones((nguassians,ndim))
+        tmp_inv_covariences[1,2] = -1.0
+        MGMM.set_centres_and_inv_covariance(np.ones((nguassians,ndim)),tmp_inv_covariences)
+
+    np.random.seed(0)
+    random_array1 = np.random.randn(nguassians,ndim)
+    random_array2 = 1.0 + np.random.randn(nguassians,ndim)*0.1
+    MGMM.set_centres_and_inv_covariance(random_array1, random_array2)
+
+    for i_guas in range(nguassians):
+        for i_dim in range(ndim):
+            assert MGMM.centres[i_guas,i_dim]        == pytest.approx(random_array1[i_guas,i_dim])
+            assert MGMM.inv_covariance[i_guas,i_dim] == pytest.approx(random_array2[i_guas,i_dim])
+
+    assert MGMM.centres_inv_cov_set == True
+
+    return
 def test_ModifiedGaussianMixtureModel_predict():
 
     np.random.seed(0)
@@ -637,7 +682,82 @@ def test_ModifiedGaussianMixtureModel_predict():
         for i_guas in range(nguassians):
             norm = md.calculate_gaussian_normalisation_wrap(alphas[i_guas], inv_covariance[i_guas,:], ndim)
             y_compare += np.exp(-np.sum((x-mus[i_guas,:])*(x-mus[i_guas,:])*inv_covariance[i_guas,:])/(2.0*alphas[i_guas]))*norm*weights[i_guas]
-        assert y == pytest.approx(y_compare)
+        assert y == pytest.approx(np.log(y_compare))
 
     return
+
+
+def test_ModifiedGaussianMixtureModel_fit():
+
+    np.random.seed(1)
+
+    nsamples   = 20000
+    ndim       = 2
+    nguassians = 2
+    gamma      = 1E-8
+    domains    = [np.array([1E-1,1E1])]
+
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
+
+    X = np.zeros((nsamples,ndim))
+    Y = np.zeros((nsamples))
+    X[:nsamples//2,:] = np.random.randn(nsamples//2,ndim)
+    X[nsamples//2:,:] = np.random.randn(nsamples//2,ndim) + 10.
+    Y[:nsamples//2] = -np.sum(X[:nsamples//2,:]*X[:nsamples//2,:]/2.0,axis=1)
+    Y[nsamples//2:] = -np.sum((X[nsamples//2:,:]-10.)**2/2.0,axis=1)
+    # X = np.random.randn(nsamples,ndim)
+    # Y = -np.sum(X*X/2.0,axis=1)
+
+    MGMM.fit(X, Y)
+
+
+
+    return
+
+test_ModifiedGaussianMixtureModel_fit()
+
+
+
+
+# def test_idea():
+
+#     np.random.seed(0)
+
+#     ntrials    = 100
+#     nsamples   = 2000
+#     ndim       = 2
+#     nguassians = 1
+#     gamma      = 1E-8
+#     domains    = [np.array([1E-20,5E0])]
+
+#     mus            = np.zeros((nguassians,ndim))
+#     diag_cov       = np.ones((nguassians,ndim))
+#     inv_covariance = 1.0/diag_cov
+#     weights        = np.ones((nguassians))
+
+#     MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma])
+
+#     MGMM.set_centres(mus)
+#     MGMM.set_inv_covariance(inv_covariance)
+#     MGMM.set_weights(weights)
+
+#     O = np.zeros(ntrials)
+
+#     x = np.random.randn(nsamples,ndim)
+#     for i_trials in range(ntrials):
+#         alphas    = np.array([domains[0][0] + (domains[0][1]-domains[0][0])*i_trials/ntrials])
+#         MGMM.set_alphas(alphas)
+
+#         for i_sample in range(nsamples):
+#             y = MGMM.predict(x[i_sample,:])
+#             O[i_trials] += np.exp(2*y+np.dot(x[i_sample,:],x[i_sample,:]))
+
+
+#     plt.plot(np.linspace(0,domains[0][1],ntrials),O)
+#     plt.show()
+
+#     return
+
+# test_idea()
+
 
