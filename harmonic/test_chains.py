@@ -1,4 +1,4 @@
-import chains as ch
+import harmonic.chains as ch
 import pytest
 import numpy as np
 

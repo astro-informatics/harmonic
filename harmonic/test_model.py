@@ -1,5 +1,5 @@
 import pytest
-import model as md
+import harmonic.model as md
 import numpy as np
 import matplotlib.pyplot as plt
 

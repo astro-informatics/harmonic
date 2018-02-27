@@ -1,7 +1,11 @@
 import numpy as np
-import chains as ch
-import evidence as cbe
-import model as md
+import sys
+sys.path.append(".")
+import harmonic as hm
+#sys.path.append(hm.__file__)
+#from harmonic import chains as ch
+#import harmonic.evidence as cbe
+#import harmonic.model as md
 import emcee
 import scipy.special as sp
 import time 
@@ -77,13 +81,13 @@ for i_real in range(n_real):
     #                  #truths=[0.0, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
     # plt.show()
 
-    chains = ch.Chains(ndim)
+    chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, Y)
 
-    sphere = md.HyperSphere(ndim, domains)
+    sphere = hm.model.HyperSphere(ndim, domains)
     sphere.fit(chains.samples,chains.ln_posterior)
 
-    cal_ev = cbe.Evidence(nchains, sphere)
+    cal_ev = hm.Evidence(nchains, sphere)
     cal_ev.add_chains(chains)
 
     print(np.exp(ln_rho), cal_ev.evidence_inv, np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, cal_ev.evidence_inv_var, cal_ev.evidence_inv_var_var)

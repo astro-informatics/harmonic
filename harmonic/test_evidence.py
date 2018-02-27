@@ -1,9 +1,9 @@
-import evidence as cbe
 import pytest
 import numpy as np
 from scipy.stats import kurtosis
-import chains as ch
-import model as md
+import harmonic.chains as ch
+import harmonic.model as md
+import harmonic.evidence as cbe
 
 def test_constructor():
     

@@ -1,6 +1,6 @@
 import numpy as np
-import data_handle as dh
-import chains as ch
+import harmonic.data_handle as dh
+import harmonic.chains as ch
 import pytest
 
 def test_split_data():

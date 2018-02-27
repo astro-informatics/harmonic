@@ -31,15 +31,7 @@ setup(
     version = "0.0",
     prefix='.',
     cmdclass={'build_ext': build_ext},
-    ext_modules=cythonize([Extension(
-        "harmonic/harmonic",
-        package_dir=['src'],
-        sources=["harmonic/harmonic.pyx"],
-        include_dirs=include_dirs,
-        libraries=[],
-        extra_link_args=extra_link_args,
-        extra_compile_args=[]
-    ),
+    ext_modules=cythonize([
     Extension(
         "harmonic/model",
         package_dir=['src'],

@@ -31,8 +31,8 @@ def split_data(chains not None, double split_ratio=0.5):
 
     """
 
-    if split_ratio < 0.0 or split_ratio > 1.0:
-        raise ValueError("split_ratio must be between 0 and 1")
+    if split_ratio <= 0.0 or split_ratio >= 1.0:
+        raise ValueError("split_ratio must be strictly between 0 and 1")
 
     nchains_train = long(chains.nchains * split_ratio)
     nchains_use   = chains.nchains - nchains_train
