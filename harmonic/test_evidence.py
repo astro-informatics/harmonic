@@ -188,3 +188,16 @@ def test_compute_bayes_factors():
     
     assert bf12 == pytest.approx(np.exp(ln_bf12))
     assert bf12_std == pytest.approx(np.exp(ln_bf12_std))
+    
+    # Test bayes factor reduces to single evidence calculation.
+    ev2_inv = 1.0
+    ev2_inv_var = 0.0
+    ev2 = cbe.Evidence(nchains, sphere)
+    ev2.evidence_inv = ev2_inv
+    ev2.evidence_inv_var = ev2_inv_var
+    ev2.chains_added = True
+    (bf12, bf12_std) = cbe.compute_bayes_factor(ev1, ev2)
+
+    (evidence, evidence_std) = ev1.compute_evidence()
+    assert bf12 == pytest.approx(evidence)
+    assert bf12_std == pytest.approx(evidence_std)
