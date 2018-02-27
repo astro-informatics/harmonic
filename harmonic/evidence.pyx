@@ -42,6 +42,8 @@ class Evidence:
         self.mean_shift_set = False
         self.mean_shift = 0.0
         
+        self.chains_added = False
+        
         self.model = model
 
     def set_mean_shift(self, double mean_shift_in):        
@@ -120,7 +122,7 @@ class Evidence:
 
         Raises:
             ValueError: If the input number of chains to not match the number
-                of chains already set up            
+                of chains already set up.
 
         Returns:
             None
@@ -153,5 +155,113 @@ class Evidence:
                 nsamples_per_chain[i_chains] += 1
 
         self.process_run()
+        
+        self.chains_added = True
 
         return
+
+    def compute_evidence(self):
+        """Compute evidence from the inverse evidence.
+        
+        Args: 
+            None.
+
+        Returns: (evidence, evidence_std)
+            evidence: Estimate of evidence.
+            evidence_std: Estimate of standard deviation of evidence.
+        """
+        
+        common_factor = 1.0 + self.evidence_inv_var/(self.evidence_inv**2)
+        
+        evidence = common_factor / self.evidence_inv        
+        
+        evidence_std = np.sqrt(common_factor) / self.evidence_inv
+        
+        return (evidence, evidence_std)
+        
+    def compute_ln_evidence(self):
+        """Compute log_e of evidence from the inverse evidence.
+        
+        Args: 
+            None.
+
+        Returns: (ln_evidence, ln_evidence_std)
+            ln_evidence: Estimate of log_e of evidence.
+            ln_evidence_std: Estimate of log_e of standard deviation of evidence.
+        """
+        
+        common_factor = 1.0 + self.evidence_inv_var/(self.evidence_inv**2)
+        
+        ln_evidence = np.log(common_factor) - np.log(self.evidence_inv)
+        
+        ln_evidence_std = 0.5*np.log(common_factor) - np.log(self.evidence_inv)
+        
+        return (ln_evidence, ln_evidence_std)        
+        
+
+def compute_bayes_factor(ev1, ev2):
+    """Compute Bayes factor of two models.
+    
+    Args:
+        ev1: Evidence object of model 1 with chains added.
+        ev2: Evidence object of model 2 with chains added.
+    
+    Returns: (bf12, bf12_std)
+        bf12: Estimate of the Bayes factor Z_1 / Z_2.
+        bf12_std: Estimate of the standard deviation of the Bayes factor
+            Z_1 / Z_2.
+    
+    Raises:
+        ValueError: Raised if model 1 does not have chains added. 
+        ValueError: Raised if model 2 does not have chains added. 
+    """
+    
+    if not ev1.chains_added:
+        raise ValueError("Evidence for model 1 does not have chains added")
+    if not ev2.chains_added:
+        raise ValueError("Evidence for model 2 does not have chains added")
+        
+    common_factor = 1.0 + ev1.evidence_inv_var/(ev1.evidence_inv**2)
+
+    bf12 = ev2.evidence_inv / ev1.evidence_inv * common_factor
+    
+    bf12_std = np.sqrt( ev1.evidence_inv**2 * ev2.evidence_inv_var \
+                        + ev2.evidence_inv**2 * ev1.evidence_inv_var ) \
+                      / (ev1.evidence_inv**2)
+    
+    return (bf12, bf12_std)
+
+def compute_ln_bayes_factor(ev1, ev2):
+    """Compute log_e of Bayes factor of two models.
+    
+    Args:
+        ev1: Evidence object of model 1 with chains added.
+        ev2: Evidence object of model 2 with chains added.
+    
+    Returns: (ln_bf12, ln_bf12_std)
+        ln_bf12: Estimate of log_e of the Bayes factor Z_1 / Z_2.
+        ln_bf12_std: Estimate of log_e of the standard deviation of the Bayes 
+            factor Z_1 / Z_2.
+    
+    Raises:
+        ValueError: Raised if model 1 does not have chains added. 
+        ValueError: Raised if model 2 does not have chains added. 
+    """
+    
+    if not ev1.chains_added:
+        raise ValueError("Evidence for model 1 does not have chains added")
+    if not ev2.chains_added:
+        raise ValueError("Evidence for model 2 does not have chains added")
+        
+    common_factor = 1.0 + ev1.evidence_inv_var/(ev1.evidence_inv**2)
+
+    ln_bf12 = np.log(ev2.evidence_inv) - np.log(ev1.evidence_inv) \
+        + np.log(common_factor)
+        
+    factor = ev1.evidence_inv**2 * ev2.evidence_inv_var \
+             + ev2.evidence_inv**2 * ev1.evidence_inv_var
+             
+    ln_bf12_std = 0.5*np.log(factor) - 2.0 * np.log(ev1.evidence_inv)
+    
+    return (ln_bf12, ln_bf12_std)
+    

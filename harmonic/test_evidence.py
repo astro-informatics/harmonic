@@ -125,3 +125,66 @@ def test_add_chains():
 
     return
 
+def test_compute_evidence():
+    
+    ndim = 2
+    nchains = 100
+    
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)        
+    sphere.fitted = True
+    
+    ev_inv = 1E10
+    ev_inv_var = 2E10
+    ev = cbe.Evidence(nchains, sphere)
+    ev.evidence_inv = ev_inv
+    ev.evidence_inv_var = ev_inv_var
+    
+    (evidence, evidence_std) = ev.compute_evidence()
+    assert evidence \
+        == pytest.approx((1 + ev_inv_var / ev_inv**2) / ev_inv)
+    assert evidence_std**2 \
+        == pytest.approx((1 + ev_inv_var / ev_inv**2) / ev_inv**2)
+    
+    (ln_evidence, ln_evidence_std) = ev.compute_ln_evidence()
+    assert evidence == pytest.approx(np.exp(ln_evidence))
+    assert evidence_std == pytest.approx(np.exp(ln_evidence_std))
+    
+def test_compute_bayes_factors():
+    
+    ndim = 2
+    nchains = 100
+    
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)        
+    sphere.fitted = True
+    
+    ev1_inv = 1E10
+    ev1_inv_var = 2E10
+    ev1 = cbe.Evidence(nchains, sphere)
+    ev1.evidence_inv = ev1_inv
+    ev1.evidence_inv_var = ev1_inv_var
+    ev1.chains_added = True
+    
+    ndim = 4
+    nchains = 600
+        
+    ev2_inv = 3E10
+    ev2_inv_var = 4E10
+    ev2 = cbe.Evidence(nchains, sphere)
+    ev2.evidence_inv = ev2_inv
+    ev2.evidence_inv_var = ev2_inv_var
+    ev2.chains_added = True
+    
+    bf12_check = ev2_inv / ev1_inv * (1.0 + ev2_inv_var / ev2_inv**2)
+    bf12_var_check = (ev1_inv**2 * ev2_inv_var + ev2_inv**2 * ev1_inv_var) / ev1_inv**4
+    
+    (bf12, bf12_std) = cbe.compute_bayes_factor(ev1, ev2)
+    
+    assert bf12 == pytest.approx(bf12_check)
+    assert bf12_std == pytest.approx(np.sqrt(bf12_var_check))
+    
+    (ln_bf12, ln_bf12_std) = cbe.compute_ln_bayes_factor(ev1, ev2)
+    
+    assert bf12 == pytest.approx(np.exp(ln_bf12))
+    assert bf12_std == pytest.approx(np.exp(ln_bf12_std))
