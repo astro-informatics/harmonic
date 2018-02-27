@@ -144,7 +144,7 @@ def test_compute_evidence():
     assert evidence \
         == pytest.approx((1 + ev_inv_var / ev_inv**2) / ev_inv)
     assert evidence_std**2 \
-        == pytest.approx((1 + ev_inv_var / ev_inv**2) / ev_inv**2)
+        == pytest.approx(ev_inv_var / ev_inv**4)
     
     (ln_evidence, ln_evidence_std) = ev.compute_ln_evidence()
     assert evidence == pytest.approx(np.exp(ln_evidence))

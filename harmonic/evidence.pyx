@@ -175,7 +175,7 @@ class Evidence:
         
         evidence = common_factor / self.evidence_inv        
         
-        evidence_std = np.sqrt(common_factor) / self.evidence_inv
+        evidence_std = np.sqrt(self.evidence_inv_var) / (self.evidence_inv**2)
         
         return (evidence, evidence_std)
         
@@ -194,7 +194,8 @@ class Evidence:
         
         ln_evidence = np.log(common_factor) - np.log(self.evidence_inv)
         
-        ln_evidence_std = 0.5*np.log(common_factor) - np.log(self.evidence_inv)
+        ln_evidence_std = 0.5*np.log(self.evidence_inv_var) \
+            - 2.0*np.log(self.evidence_inv)
         
         return (ln_evidence, ln_evidence_std)        
         
