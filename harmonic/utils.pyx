@@ -69,34 +69,41 @@ def split_data(chains not None, double training_proportion=0.5):
 
     return chains_train, chains_test
 
-def validation_fit_indexes(long i_cross, long nchains_in_val_set, long ncross, list indexes):
-    """ Function that pulls out the correct indexes for the chains of the
-        validation and training sets
+def validation_fit_indexes(long i_cross, long nchains_in_val_set, long ncross,
+                           list indexes):
+    """Pull out the correct indexes for the chains of the validation and 
+    training sets.
 
     Args:
-        long i_cross: integer giving the cross validation iteration to perform
-        long nchains_in_val_set: The number of chains that will go in each 
-            validation set
-        long ncross: The number of cross validation sets being made
-        list indexes: T=A list with the suffled indexes
+        long i_cross: Cross validation iteration to perform.
+        long nchains_in_val_set: Number of chains that will go into each 
+            validation set.
+        long ncross: Number of cross validation sets to be made.
+        list indexes: T=A list with the suffled indexes.
 
     Returns:
-        list indexes_val: The list list of indexes for the validation set
-        list indexes_fit: The list of indexes for the training set
+        list indexes_val: List of indexes for the validation set.
+        list indexes_fit: List of indexes for the training set.
 
     Raises:
-        ValueError: If the value of i_cross doesn't fall between 0 and ncross-1
+        ValueError: If the value of i_cross does not fall between 0 and 
+            ncross-1.
     """
-
 
     if i_cross < 0 or i_cross >= ncross:
         raise ValueError("i_cross is not the range set by ncross")
 
+    if nchains_in_val_set < 1 or nchains_in_val_set >= len(indexes):
+        raise ValueError("nchains_in_val_set must be strictly between 0 " \
+            "and length of indexes.")
+
     cdef list indexes_val, indexes_fit
 
     if i_cross < ncross-1:
-        indexes_val = indexes[i_cross*nchains_in_val_set:(i_cross+1)*nchains_in_val_set]
-        indexes_fit = indexes[:i_cross*nchains_in_val_set] + indexes[(i_cross+1)*nchains_in_val_set:]
+        indexes_val = indexes[i_cross*nchains_in_val_set: \
+                              (i_cross+1)*nchains_in_val_set]
+        indexes_fit = indexes[:i_cross*nchains_in_val_set] \
+            + indexes[(i_cross+1)*nchains_in_val_set:]
     else:
         indexes_val = indexes[(i_cross)*nchains_in_val_set:] # ensures all the chains get used even if nchains % ncross != 0
         indexes_fit = indexes[:i_cross*nchains_in_val_set]
