@@ -108,7 +108,7 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
     return indexes_val, indexes_fit
 
 
-def fold_validation(chains, list domains, list hyper_parameters, \
+def cross_validation(chains, list domains, list hyper_parameters, \
                      long nfold=2, str MODEL="KernelDensityEstimate", \
                      long seed=-1, bint verbose=False):
     

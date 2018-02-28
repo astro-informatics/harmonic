@@ -163,7 +163,7 @@ def test_validation_fit_indexes():
         assert index_fit == index_check
 
 
-def test_fold_validation():
+def test_cross_validation():
 
     ndim        = 2
     nsamples    = 10
@@ -182,15 +182,15 @@ def test_fold_validation():
     chains.add_chains_3d(samples, ln_posterior)
 
     with pytest.raises(ValueError):
-        utils.fold_validation(chains, [], hyper_parameters_KDE, MODEL="not_a_model")
+        utils.cross_validation(chains, [], hyper_parameters_KDE, MODEL="not_a_model")
 
     # just checks the result of the code is unchanged
-    validation_variances = utils.fold_validation(chains, 
+    validation_variances = utils.cross_validation(chains, 
         [np.array([1E-1,1E1])], \
         hyper_parameters_HS, MODEL="HyperSphere", verbose=False)
     assert validation_variances[0] == pytest.approx(1.48812772e-05) 
     assert validation_variances[1] == pytest.approx(1.48812772e-05) 
-    validation_variances = utils.fold_validation(chains, [], hyper_parameters_KDE, \
+    validation_variances = utils.cross_validation(chains, [], hyper_parameters_KDE, \
                         verbose=False)
     assert validation_variances[0] == pytest.approx(9.74522749e-05) 
     assert validation_variances[1] == pytest.approx(2.57373056e-06) 
