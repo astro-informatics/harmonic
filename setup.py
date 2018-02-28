@@ -33,7 +33,7 @@ setup(
     cmdclass={'build_ext': build_ext},
     ext_modules=cythonize([
     Extension(
-        "harmonic/model",
+        "harmonic.model",
         package_dir=['src'],
         sources=["harmonic/model.pyx"],
         include_dirs=include_dirs,
@@ -42,7 +42,7 @@ setup(
         extra_compile_args=[]
     ),        
     Extension(
-        "harmonic/chains",
+        "harmonic.chains",
         package_dir=['src'],
         sources=["harmonic/chains.pyx"],
         include_dirs=include_dirs,
@@ -51,7 +51,7 @@ setup(
         extra_compile_args=[]
     ),
     Extension(
-        "harmonic/data_handle",
+        "harmonic.data_handle",
         package_dir=['src'],
         sources=["harmonic/data_handle.pyx"],
         include_dirs=include_dirs,
@@ -60,7 +60,7 @@ setup(
         extra_compile_args=[]
     ),
     Extension(
-        "harmonic/evidence",
+        "harmonic.evidence",
         package_dir=['src'],
         sources=["harmonic/evidence.pyx"],
         include_dirs=include_dirs,
