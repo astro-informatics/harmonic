@@ -760,7 +760,21 @@ cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
                     np.ndarray[double, ndim=1, mode="c"] mu, \
                     np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
                     long ndim):
+    """ function to evaluate delta_theta_ij squared which is part 
+        the gradient of the objective function
 
+    Args:
+        ndarray x: 1D array containing the current sample (ndim)
+        ndarray mu: 1D array containing the centre of the guassian with
+            shape (ndim)
+        ndarray inv_covariance: 1D array containing the inverse convarience
+            of the guassian with shape (ndim)
+        long ndim: The dimension of the problem
+
+    Returns:
+        double delta_theta_ij: the value of delta_theta_ij squared
+
+    """
     cdef long i_dim
     cdef double distance = 0.0, seperation
 
@@ -775,6 +789,8 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
                         np.ndarray[double, ndim=1, mode="c"] mu, \
                         np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
                         long ndim):
+    """delta_theta_ij wrapper
+    """
 
     return delta_theta_ij(x, mu, inv_covariance, ndim)
 
@@ -784,6 +800,24 @@ cdef double calculate_I_ij(np.ndarray[double, ndim=1, mode="c"] x, \
                         np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
                         double alpha, double weight, double ln_Pi, long ndim, \
                         double mean_shift):
+    """ function to evaluate I_ij which is part the gradient of the objective function
+
+    Args:
+        ndarray x: 1D array containing the current sample (ndim)
+        ndarray mu: 1D array containing the centre of the guassian with
+            shape (ndim)
+        ndarray inv_covariance: 1D array containing the inverse convarience
+            of the guassian with shape (ndim)
+        double alpha: the current values of alpha (for this guassian)
+        double weights: the current values of the weight (for this guassian)
+        ndarray ln_Pi: the current ln posterior
+        long ndim: The dimension of the problem
+        double mean_shift: The mean of the Y values to remove that size fromscaling the gradient
+
+    Returns:
+        double I_ij: the value of I_ij
+
+    """
 
     cdef double norm = alpha**(-ndim)#calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
     cdef double delta_theta = delta_theta_ij(x, mu, inv_covariance, ndim)
@@ -804,6 +838,27 @@ cdef double calculate_I_i(np.ndarray[double, ndim=1, mode="c"] x, \
                 np.ndarray[double, ndim=1, mode="c"] alphas, \
                 np.ndarray[double, ndim=1, mode="c"] weights, \
                 double ln_Pi, long nguassians, long ndim, double mean_shift):
+    """ function to evaluate I_i which is part the gradient of the objective function
+
+    Args:
+        ndarray x: 1D array containing the current sample (ndim)
+        ndarray centres: 2D array containing the centres of the guassians with
+            shape (nguassians, ndim)
+        ndarray inv_covariances: 2D array containing the inverse convarience
+            of the guassians with shape (nguassians, ndim)
+        ndarray alphas: 1D array containing the current values of alpha
+            with shape (nguassians)
+        ndarray weights: 1D array containing the current values of the weights (linear)
+            with shape (nguassians)
+        ndarray ln_Pi: the current ln posterior
+        long nguassians: The number of guassians
+        long ndim: The dimension of the problem
+        double mean_shift: The mean of the Y values to remove that size fromscaling the gradient
+
+    Returns:
+        double I_i: the value of I_i
+
+    """
 
     cdef double I_i = 0.0
     cdef long i_guas
@@ -824,6 +879,34 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
                         np.ndarray[double, ndim=1, mode="c"] Y, \
                         long nguassians, long ndim, long i1_sample, \
                         long i2_sample, double gamma, double mean_shift):
+    """ function to evaluate the gradient of the objective function
+
+    Args:
+        ndarray grad_alpha: 1D array where the gradient of alpha will be placed
+            shape (nguassians)
+        ndarray grad_beta: 1D array where the gradient of beta will be placed
+            shape (nguassians)
+        ndarray X: 2D array containing the X values shape (nsamples, ndim)
+        ndarray centres: 2D array containing the centres of the guassians with
+            shape (nguassians, ndim)
+        ndarray inv_covariances: 2D array containing the inverse convarience
+            of the guassians with shape (nguassians, ndim)
+        ndarray alphas: 1D array containing the current values of alpha
+            with shape (nguassians)
+        ndarray weights: 1D array containing the current values of the weights (linear)
+            with shape (nguassians)
+        ndarray Y: 1D array containing the X values shape (nsamples)
+        long nguassians: The number of guassians
+        long ndim: The dimension of the problem
+        long i1_sample: The first sample to be considered (usefull for mini batch gradient decent)
+        long i2_sample: The second sample to be considered
+        double gamma: The regularisation parameter
+        double mean_shift: The mean of the Y values to remove that size fromscaling the gradient
+
+    Returns:
+        None
+
+    """
 
     cdef np.ndarray[double, ndim=1, mode='c'] x_i, mu_g, inv_cov_g
     cdef double I_i, I_ij, dummy
@@ -1079,8 +1162,32 @@ class ModifiedGaussianMixtureModel(Model):
 
         # TODO: learning_rate, nbatch and max_iter inputs 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
-        """Fit the parameters of the model
+        """Fit the parameters of the model by:
+                if centres and inv_covariances not set
+                    1) Finding clusters using the k-means clustering from scikit learn 
+                    2) using the samples in the clusters to find the centres and covariance matricies
+                
+                3) minimizing the objective function using the gradients and mini batch desent
+
+            Args:
+                X: 2D array of samples of shape (nsamples, ndim).
+                Y: 1D array of target log_e posterior values for each sample in X 
+                    of shape (nsamples).
+            
+            Returns:
+                Boolean specifying whether fit successful.
+
+            Raises:
+                ValueError if the first dimension of X is not the same as Y
+                ValueError if the first dimension of X is not the same as Y
+                ValueError if the second dimension of X is not the same as ndim
         """
+
+        if X.shape[0] != Y.shape[0]:
+            raise ValueError("X and Y sizes are not the same")
+
+        if X.shape[1] != self.ndim:
+            raise ValueError("X second dimension not the same as ndim")
 
         cdef np.ndarray[double, ndim=2, mode='c'] centres         = self.centres
         cdef np.ndarray[double, ndim=2, mode='c'] inv_covariances = self.inv_covariance
