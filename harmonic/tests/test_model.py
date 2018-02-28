@@ -689,34 +689,49 @@ def test_ModifiedGaussianMixtureModel_predict():
 
 def test_ModifiedGaussianMixtureModel_fit():
 
-    np.random.seed(0)
+    np.random.seed(2)
 
-    nsamples   = 100
+    nsamples   = 2000
     ndim       = 2
     nguassians = 2
     gamma      = 1E-30
     domains    = [np.array([1E-2,10E0])]
-    sigma      = 4.0
+    sigma1     = 2.0
+    sigma2     = 4.0
+    mu_off     = 20.0
 
-    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma,50.0,100,2])
-    MGMM.verbose = True
-    MGMM.set_centres_and_inv_covariance(np.zeros((nguassians,ndim)),np.ones((nguassians,ndim))/(sigma*sigma))
+    MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma,1.0,20,10])
+    # MGMM.verbose = True
 
     X = np.zeros((nsamples,ndim))
     Y = np.zeros((nsamples))
-    X[:nsamples//2,:] = np.random.randn(nsamples//2,ndim)
-    X[nsamples//2:,:] = np.random.randn(nsamples//2,ndim) + 10.
-    Y[:nsamples//2] = -np.sum(X[:nsamples//2,:]*X[:nsamples//2,:]/2.0,axis=1)
-    Y[nsamples//2:] = -np.sum((X[nsamples//2:,:]-10.)**2/2.0,axis=1)
-    # X = np.random.randn(nsamples,ndim)*sigma
-    # Y = -np.sum(X*X/(2.0*sigma**2),axis=1)
+    X[:nsamples//4,:] = np.random.randn(nsamples//4,ndim)*sigma1
+    X[nsamples//4:,:] = np.random.randn(3*nsamples//4,ndim)*sigma2 + mu_off
+    Y[:nsamples//4] = -np.sum(X[:nsamples//4,:]*X[:nsamples//4,:]/(2.0*sigma1*sigma1),axis=1)
+    Y[nsamples//4:] = -np.sum((X[nsamples//4:,:]-mu_off)**2/(2.0*sigma2*sigma2),axis=1)
 
     MGMM.fit(X, Y)
 
+    assert MGMM.centres[0,0] == pytest.approx(20.19605982) # makes sense as close to 20.0
+    assert MGMM.centres[0,1] == pytest.approx(19.69715662)
+    assert MGMM.centres[1,0] == pytest.approx(-0.02629883) # makes sense as close to 0.0
+    assert MGMM.centres[1,1] == pytest.approx(-0.16510091)
 
+    assert MGMM.inv_covariance[0,0] == pytest.approx(0.06037615) # makes sense as close to 1/(4.0**2)
+    assert MGMM.inv_covariance[0,1] == pytest.approx(0.06203164)
+    assert MGMM.inv_covariance[1,0] == pytest.approx(0.24818792) # makes sense as close to 1/(2.0**2)
+    assert MGMM.inv_covariance[1,1] == pytest.approx(0.24781514)
+
+    assert MGMM.alphas[0] == pytest.approx(0.97124474) # makes sense as close to 1
+    assert MGMM.alphas[1] == pytest.approx(0.99543287) # makes sense as close to 1
+
+    norm    = np.sum(np.exp(MGMM.beta_weights))
+    weights = np.exp(MGMM.beta_weights)/norm
+
+    assert weights[0] == pytest.approx(0.2561104) # makes sense as close to 0.25
+    assert weights[1] == pytest.approx(0.7438896) # makes sense as close to 0.75
 
     return
-
 
 # def test_idea(sigma):
 
