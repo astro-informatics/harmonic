@@ -78,7 +78,8 @@ def validation_fit_indexes(long i_cross, long nchains_in_val_set, long ncross, l
         long nchains_in_val_set: The number of chains that will go in each 
             validation set
         long ncross: The number of cross validation sets being made
-        list indexes: T=A list with the suffled indexes
+        list indexes: The list of the chains to be used in cross validation
+            that need to be split
 
     Returns:
         list indexes_val: The list list of indexes for the validation set
