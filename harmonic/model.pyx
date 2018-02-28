@@ -767,7 +767,7 @@ cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
     for i_dim in range(ndim):
         seperation = x[i_dim]-mu[i_dim]
         distance += seperation*seperation*inv_covariance[i_dim]
-
+    # print(x, inv_covariance, distance)
     return distance
 
 
@@ -782,33 +782,35 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
 cdef double calculate_I_ij(np.ndarray[double, ndim=1, mode="c"] x, \
                         np.ndarray[double, ndim=1, mode="c"] mu, \
                         np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
-                        double alpha, double weight, double ln_Pi, long ndim):
+                        double alpha, double weight, double ln_Pi, long ndim, \
+                        double mean_shift):
 
-    cdef double norm = calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
+    cdef double norm = alpha**(-ndim)#calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
     cdef double delta_theta = delta_theta_ij(x, mu, inv_covariance, ndim)
-    if weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - ln_Pi) > 1E2:
-        print("ln_Pi ", ln_Pi)
-        print("x ", x)
-        print("mu ", mu)
-        print("inv_covariance ", inv_covariance)
-        print("delta_theta ", delta_theta)
-        print("I_ij ", weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - ln_Pi))
+    # if weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - ln_Pi + mean_shift) > 1E8:
+    # print("ln_Pi ", ln_Pi)
+    # print("x ", x)
+    # print("mu ", mu)
+    # print("inv_covariance ", inv_covariance)
+    # print("delta_theta ", delta_theta)
+    # print("norm", norm)
+    # print("I_ij ", weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - ln_Pi + mean_shift))
 
-    return weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - ln_Pi)
+    return weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - ln_Pi + mean_shift)
 
 cdef double calculate_I_i(np.ndarray[double, ndim=1, mode="c"] x, \
                 np.ndarray[double, ndim=2, mode="c"] centres, \
                 np.ndarray[double, ndim=2, mode="c"] inv_covariances, \
                 np.ndarray[double, ndim=1, mode="c"] alphas, \
                 np.ndarray[double, ndim=1, mode="c"] weights, \
-                double ln_Pi, long nguassians, long ndim):
+                double ln_Pi, long nguassians, long ndim, double mean_shift):
 
     cdef double I_i = 0.0
     cdef long i_guas
 
     for i_guas in range(nguassians):
         I_i += calculate_I_ij(x, centres[i_guas,:], inv_covariances[i_guas,:], \
-                    alphas[i_guas], weights[i_guas], ln_Pi, ndim)
+                    alphas[i_guas], weights[i_guas], ln_Pi, ndim, mean_shift)
     # print("I_i ", I_i)
     return I_i
 
@@ -821,7 +823,7 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
                         np.ndarray[double, ndim=1, mode="c"] weights, \
                         np.ndarray[double, ndim=1, mode="c"] Y, \
                         long nguassians, long ndim, long i1_sample, \
-                        long i2_sample, double gamma):
+                        long i2_sample, double gamma, double mean_shift):
 
     cdef np.ndarray[double, ndim=1, mode='c'] x_i, mu_g, inv_cov_g
     cdef double I_i, I_ij, dummy
@@ -839,7 +841,7 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
         for i_dim in range(ndim):
             x_i[i_dim] = X[i_sample,i_dim]
         I_i = calculate_I_i(x_i, centres, inv_covariances, alphas, \
-                  weights, Y[i_sample], nguassians, ndim)
+                  weights, Y[i_sample], nguassians, ndim, mean_shift)
 
         for i_guas in range(nguassians):
             for i_dim in range(ndim):
@@ -847,7 +849,7 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
                 inv_cov_g[i_dim] = inv_covariances[i_guas,i_dim]
 
             I_ij = calculate_I_ij(x_i, mu_g, inv_cov_g, alphas[i_guas], \
-                weights[i_guas], Y[i_sample], ndim)
+                weights[i_guas], Y[i_sample], ndim, mean_shift)
 
             dummy  = -<double>ndim/alphas[i_guas]
             dummy += delta_theta_ij(x_i, mu_g, inv_cov_g, ndim)/(alphas[i_guas]*alphas[i_guas]*alphas[i_guas])
@@ -859,13 +861,12 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
         grad_alpha[i_guas] /= <double>i2_sample - <double>i1_sample
         grad_beta[i_guas]  /= <double>i2_sample - <double>i1_sample 
 
-
     return
     
 
 class ModifiedGaussianMixtureModel(Model):
 
-    def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8]):
+    def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8,None,None,None]):
         """ constructor setting the hyper parameters and domains of the model of the
             MGMM which models the posterior as a group of Gaussians.
 
@@ -884,9 +885,9 @@ class ModifiedGaussianMixtureModel(Model):
             ValueError: If the ndim_in is not positive
         """
 
-        if len(hyper_parameters) != 2:
+        if len(hyper_parameters) != 5:
             raise ValueError("ModifiedGaussianMixtureModel model hyper_parameters list " +
-                "shoule be length 2.")
+                "shoule be length 5.")
         if len(domains) != 1:
             raise ValueError("ModifiedGaussianMixtureModel model domains list should " +
                 "be length 1.")
@@ -902,9 +903,19 @@ class ModifiedGaussianMixtureModel(Model):
         self.centres             = np.zeros((self.nguassians,self.ndim))
         self.inv_covariance      = np.ones((self.nguassians,self.ndim))
         self.centres_inv_cov_set = False
-        self.learning_rate       = 0.1
-        self.max_iter            = 100
-        self.nbatch              = 100
+        if hyper_parameters[2] == None:
+            self.learning_rate   = 0.1
+        else:
+            self.learning_rate   = hyper_parameters[2]
+        if hyper_parameters[3] == None:
+            self.max_iter        = 50
+        else:
+            self.max_iter        = hyper_parameters[3]
+        if hyper_parameters[4] == None:
+            self.nbatch          = 100
+        else:
+            self.nbatch          = hyper_parameters[4]
+        self.verbose             = False
         self.fitted              = False
 
     def is_fitted(self):
@@ -1082,23 +1093,16 @@ class ModifiedGaussianMixtureModel(Model):
 
         cdef double gamma = self.gamma, learning_rate = self.learning_rate
         cdef double alpha_lower_bound = self.alpha_domain[0], alpha_upper_bound = self.alpha_domain[1]
+        cdef double mean_shift = np.mean(Y)
         cdef long i_dim, i_guas, i_sample, i_iter, i_batch, i1_sample, i2_sample
         cdef long ndim = self.ndim, nguassians = self.nguassians, nsamples = X.shape[0]
-        cdef long max_iter = self.max_iter, nbatch = self.nbatch
+        cdef long max_iter = self.max_iter, nbatch = min(self.nbatch,nsamples)
         cdef bint keep_going = True
 
-
-        if ~self.centres_inv_cov_set:
+        if not self.centres_inv_cov_set:
             # scale data
             scaler = preprocessing.StandardScaler(copy=True).fit(X)
-
-
             X_scaled = scaler.transform(X)
-            # plt.figure()
-            # plt.scatter(X[:,0],X[:,1])
-            # plt.figure()
-            # plt.scatter(X_scaled[:,0],X_scaled[:,1])
-
 
             # set up with k-means clustering
             kmeans = KMeans(n_clusters=nguassians, random_state=0).fit(X_scaled)
@@ -1113,17 +1117,20 @@ class ModifiedGaussianMixtureModel(Model):
                     centres[i_guas, i_dim]         += X[i_sample,i_dim]
                     inv_covariances[i_guas, i_dim] += X[i_sample,i_dim]*X[i_sample,i_dim]
 
-            centres[:]         = centres/cluster_count
-            inv_covariances[:] = inv_covariances/cluster_count - centres*centres
-
-            print(centres, inv_covariances)
-            plt.show()
-
+            for i_guas in range(nguassians):
+                for i_dim in range(ndim):
+                    centres[i_guas,i_dim]         = centres[i_guas,i_dim]/cluster_count[i_guas]
+                    inv_covariances[i_guas,i_dim] = inv_covariances[i_guas,i_dim]/cluster_count[i_guas] \
+                                                    - centres[i_guas,i_dim]*centres[i_guas,i_dim]
+                    inv_covariances[i_guas,i_dim] = 1.0/inv_covariances[i_guas,i_dim]
+        print(inv_covariances)
         # randomally incialise the parameters
-        alphas[:] = np.random.lognormal(size=nguassians)
+        alphas[:] = np.random.lognormal(sigma=0.1,size=nguassians)
         betas[:]  = np.random.randn(nguassians)
         grad_alpha = np.zeros(nguassians)
         grad_beta = np.zeros(nguassians)
+        if self.verbose:
+            print("param ", alphas, betas)
 
         for i_guas in range(nguassians):
             if alphas[i_guas] < alpha_lower_bound:
@@ -1133,7 +1140,6 @@ class ModifiedGaussianMixtureModel(Model):
 
         i_iter = 0
         while(keep_going):
-            print(i_iter, alphas, betas)
             for i_batch in range(nbatch):
                 i1_sample = i_batch*nsamples//nbatch
                 if i_batch == nbatch-1:
@@ -1145,12 +1151,13 @@ class ModifiedGaussianMixtureModel(Model):
                 gradient_i1i2(grad_alpha, grad_beta, X, centres, \
                               inv_covariances, alphas, weights, Y, \
                               nguassians, ndim, i1_sample, \
-                              i2_sample, gamma)
+                              i2_sample, gamma, mean_shift)
                 # print("grads ", grad_alpha, grad_beta)
                 # update parameters
                 for i_guas in range(nguassians):
                     alphas[i_guas] -= learning_rate*grad_alpha[i_guas]
                     betas[i_guas]  -= learning_rate*grad_beta[i_guas]
+                # print(" ", alphas, betas)
 
                 for i_guas in range(nguassians):
                     if alphas[i_guas] < alpha_lower_bound:
@@ -1158,12 +1165,14 @@ class ModifiedGaussianMixtureModel(Model):
                     if alphas[i_guas] > alpha_upper_bound:
                         alphas[i_guas] = alpha_upper_bound
 
+            if self.verbose:
+                print("param ", alphas, betas)
             # check stopping criteria
             i_iter += 1
             if i_iter >= max_iter:
                 keep_going = False
-        print(i_iter, alphas, betas) #(100, array([ 0.68876968,  0.94165105]), array([ 0.63068305,  0.96944796]))
 
+        self.fitted = True
         return
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
