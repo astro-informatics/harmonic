@@ -982,6 +982,9 @@ class ModifiedGaussianMixtureModel(Model):
         if ndim < 1:
             raise ValueError("Dimension must be greater than 0.")
 
+        if hyper_parameters[0] < 1:
+            raise ValueError("nguassians must be a positive integer")
+
         self.ndim                = ndim
         self.alpha_domain        = domains[0]
         self.nguassians          = hyper_parameters[0]

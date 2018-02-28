@@ -169,10 +169,12 @@ def test_cross_validation():
     ndim        = 2
     nsamples    = 10
     nchains     = 200
-    nfold      = 2
+    nfold       = 2
 
-    hyper_parameters_HS  = [None for R in range(3)]
-    hyper_parameters_KDE = [[10**R] for R in range(-2,0)]
+
+    hyper_parameters_HS   = [None for R in range(3)]
+    hyper_parameters_KDE  = [[10**R] for R in range(-2,0)]
+    hyper_parameters_MGMM = [[nguassians,1E-30,0.1*nguassians*nguassians,30,1] for nguassians in range(1,4)]
 
     chains = ch.Chains(ndim)
 
@@ -193,3 +195,9 @@ def test_cross_validation():
                                                   verbose=False)
     assert validation_variances[0] == pytest.approx(9.74522749e-05) 
     assert validation_variances[1] == pytest.approx(2.57373056e-06) 
+    validation_variances = utils.cross_validation(chains, 
+        [np.array([1E-2,10E0])], \
+        hyper_parameters_MGMM, modelClass=md.ModifiedGaussianMixtureModel, verbose=False)
+    assert validation_variances[0] == pytest.approx(1.42162247e-07) 
+    assert validation_variances[1] == pytest.approx(2.99342874e-06) 
+    assert validation_variances[2] == pytest.approx(4.90910611e-06) 

@@ -169,7 +169,7 @@ def cross_validation(chains,
             
             model = modelClass(chains.ndim, domains, 
                                hyper_parameters=hyper_parameter)
-            
+
             # Fit model
             model.fit(chains_fit.samples,chains_fit.ln_posterior)
 
