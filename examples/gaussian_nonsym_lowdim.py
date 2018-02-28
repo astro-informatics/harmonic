@@ -76,6 +76,11 @@ for i_real in range(n_real):
     # lnprob  = sampler.lnprob
     Y       = X_to_Y(samples,inv_cov)
 
+    Y2 = sampler.lnprobability
+    print("Y.shape = {}".format(Y.shape))
+    print("Y2.shape = {}".format(Y2.shape))
+    print("Y == Y2 = {}".format(np.array_equal(Y,Y2)))
+    
     # import corner
     # fig = corner.corner(samples.reshape((-1, ndim)))#, labels=["x1","x2","x3","x4","x4","x4","x4","x4","x4","x4","x4","x4","x4","x4"],
     #                  #truths=[0.0, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
