@@ -108,10 +108,12 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
     return indexes_val, indexes_fit
 
 
-def cross_validation(chains, list domains, list hyper_parameters, \
-                     long nfold=2, str MODEL="KernelDensityEstimate", \
-                     long seed=-1, bint verbose=False):
-    
+def cross_validation(chains, 
+                     list domains, 
+                     list hyper_parameters, 
+                     long nfold=2, 
+                     modelClass = md.KernelDensityEstimate, 
+                     long seed=-1, bint verbose=False):    
     """Perform fold validation for given model using chains to be split into validation and training data.
     
     First, splits data into nfold chunks. Second, fits the model using each of
@@ -125,13 +127,12 @@ def cross_validation(chains, list domains, list hyper_parameters, \
             training and validation data herein).
         list domains: Domains of the model's parameters.
         list hyper_parameters: List of hyper_parameters where each entry is a 
-            hyper_parameter list to be considered.
-        str MODEL: String identifying the model that is being fold 
-            validated. Options are ("KernelDensityEstimate"),
-            (default = "KernelDensityEstimate")
+            hyper_parameter list to be considered.        
+        Model modelClass: Class of model that is being cross validated          
+            (default = KernelDensityEstimate).            
         long seed: Seed for random number when drawing the chains
             (if this is negative the seed is not set).
-        bool verbose: Set to True to print results from fold validation
+        bool verbose: Set to True to print results from cross validation
             evidence calculations (default=False).
 
     Returns:
@@ -147,11 +148,6 @@ def cross_validation(chains, list domains, list hyper_parameters, \
     cdef list indexes, indexes_val, indexes_fit, hyper_parameter
 
     cdef np.ndarray[double, ndim=2, mode='c'] validation_variances = np.zeros((nfold,len(hyper_parameters)))
-
-    posible_models = {"HyperSphere", "KernelDensityEstimate"}
-
-    if not MODEL in posible_models:
-        raise ValueError("MODEL is not one of the possible models to fold validate")
 
     if seed > 0:
         np.random.seed(seed)
@@ -170,11 +166,10 @@ def cross_validation(chains, list domains, list hyper_parameters, \
         chains_fit = chains.get_sub_chains(indexes_fit)
 
         for i_val, hyper_parameter in enumerate(hyper_parameters):
-            if MODEL == "HyperSphere":
-                model = md.HyperSphere(chains.ndim, domains, hyper_parameters=hyper_parameter)
-            if MODEL == "KernelDensityEstimate":
-                model = md.KernelDensityEstimate(chains.ndim, domains, hyper_parameters=hyper_parameter)
-
+            
+            model = modelClass(chains.ndim, domains, 
+                               hyper_parameters=hyper_parameter)
+            
             # Fit model
             model.fit(chains_fit.samples,chains_fit.ln_posterior)
 
@@ -183,7 +178,7 @@ def cross_validation(chains, list domains, list hyper_parameters, \
             cal_ev.add_chains(chains_val)
 
             if verbose:
-                print(MODEL, cal_ev.evidence_inv, cal_ev.evidence_inv_var, cal_ev.evidence_inv_var**0.5/cal_ev.evidence_inv, cal_ev.evidence_inv_var_var)
+                print(cal_ev.evidence_inv, cal_ev.evidence_inv_var, cal_ev.evidence_inv_var**0.5/cal_ev.evidence_inv, cal_ev.evidence_inv_var_var)
 
             validation_variances[i_fold,i_val] = cal_ev.evidence_inv_var
 
