@@ -51,9 +51,9 @@ setup(
         extra_compile_args=[]
     ),
     Extension(
-        "harmonic.data_handle",
+        "harmonic.utils",
         package_dir=['src'],
-        sources=["harmonic/data_handle.pyx"],
+        sources=["harmonic/utils.pyx"],
         include_dirs=include_dirs,
         libraries=[],
         extra_link_args=extra_link_args,
