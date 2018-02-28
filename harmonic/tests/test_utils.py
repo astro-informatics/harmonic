@@ -122,24 +122,24 @@ def test_split_data():
 def test_validation_fit_indexes():
 
     nchains = 10
-    ncross  = 3
+    nfold  = 3
 
     np.random.seed(0)
     indexes = list(np.random.permutation(nchains)) 
         # creates [2, 8, 4, 9, 1, 6, 7, 3, 0, 5]
 
-    nchains_in_val_set = nchains/ncross
+    nchains_in_val_set = nchains/nfold
 
     with pytest.raises(ValueError):
-        utils.validation_fit_indexes(ncross, nchains_in_val_set, ncross, indexes)
+        utils.validation_fit_indexes(nfold, nchains_in_val_set, nfold, indexes)
     with pytest.raises(ValueError):
-        utils.validation_fit_indexes(-1, nchains_in_val_set, ncross, indexes)
+        utils.validation_fit_indexes(-1, nchains_in_val_set, nfold, indexes)
     with pytest.raises(ValueError):
         utils.validation_fit_indexes(0, nchains_in_val_set=nchains+1,
-                                     ncross=ncross, indexes=indexes)
+                                     nfold=nfold, indexes=indexes)
     
     indexes_val, indexes_fit = \
-        utils.validation_fit_indexes(0, nchains_in_val_set, ncross, indexes)
+        utils.validation_fit_indexes(0, nchains_in_val_set, nfold, indexes)
     assert len(indexes_val) == 3
     for index_val, index_check in zip(indexes_val, [2, 8, 4]):
         assert index_val == index_check
@@ -147,7 +147,7 @@ def test_validation_fit_indexes():
         assert index_fit == index_check
 
     indexes_val, indexes_fit = \
-        utils.validation_fit_indexes(1, nchains_in_val_set, ncross, indexes)
+        utils.validation_fit_indexes(1, nchains_in_val_set, nfold, indexes)
     assert len(indexes_val) == 3
     for index_val, index_check in zip(indexes_val, [9, 1, 6]):
         assert index_val == index_check
@@ -155,7 +155,7 @@ def test_validation_fit_indexes():
         assert index_fit == index_check
 
     indexes_val, indexes_fit = \
-        utils.validation_fit_indexes(2, nchains_in_val_set, ncross, indexes)
+        utils.validation_fit_indexes(2, nchains_in_val_set, nfold, indexes)
     assert len(indexes_val) == 4
     for index_val, index_check in zip(indexes_val, [7, 3, 0, 5]):
         assert index_val == index_check
@@ -163,12 +163,12 @@ def test_validation_fit_indexes():
         assert index_fit == index_check
 
 
-def test_cross_validation():
+def test_fold_validation():
 
     ndim        = 2
     nsamples    = 10
     nchains     = 200
-    ncross      = 2
+    nfold      = 2
 
     hyper_parameters_HS  = [None for R in range(3)]
     hyper_parameters_KDE = [[10**R] for R in range(-2,0)]
@@ -182,15 +182,15 @@ def test_cross_validation():
     chains.add_chains_3d(samples, ln_posterior)
 
     with pytest.raises(ValueError):
-        utils.cross_validation(chains, [], hyper_parameters_KDE, MODEL="not_a_model")
+        utils.fold_validation(chains, [], hyper_parameters_KDE, MODEL="not_a_model")
 
     # just checks the result of the code is unchanged
-    validation_variances = utils.cross_validation(chains, 
+    validation_variances = utils.fold_validation(chains, 
         [np.array([1E-1,1E1])], \
         hyper_parameters_HS, MODEL="HyperSphere", verbose=False)
     assert validation_variances[0] == pytest.approx(1.48812772e-05) 
     assert validation_variances[1] == pytest.approx(1.48812772e-05) 
-    validation_variances = utils.cross_validation(chains, [], hyper_parameters_KDE, \
+    validation_variances = utils.fold_validation(chains, [], hyper_parameters_KDE, \
                         verbose=False)
     assert validation_variances[0] == pytest.approx(9.74522749e-05) 
     assert validation_variances[1] == pytest.approx(2.57373056e-06) 
