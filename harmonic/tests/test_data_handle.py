@@ -8,7 +8,7 @@ def test_split_data():
     ndim        = 5
     nsamples    = 100
     nchains     = 200
-    split_ratio = 0.5
+    training_proportion = 0.5
 
     chains_all = ch.Chains(ndim)
 
@@ -18,10 +18,9 @@ def test_split_data():
 
     chains_all.add_chains_3d(samples, ln_posterior)
 
-    chains_train, chains_use = dh.split_data(chains_all, split_ratio=split_ratio)
+    chains_train, chains_test = dh.split_data(chains_all, training_proportion=training_proportion)
 
-
-    nchains_train = int(nchains*split_ratio)
+    nchains_train = int(nchains*training_proportion)
 
     assert chains_train.nchains            == nchains_train
     assert chains_train.nsamples           == nsamples * nchains_train
@@ -39,21 +38,21 @@ def test_split_data():
         == samples[random_sample // nsamples,
                     random_sample % nsamples,random_dim]
 
-    nchains_use = nchains - nchains_train
+    nchains_test = nchains - nchains_train
 
-    assert chains_use.nchains      == nchains_use
-    assert chains_use.nsamples     == nsamples * nchains_use
-    assert len(chains_use.start_indices) == nchains_use + 1
-    for i in range(nchains_use + 1):
-        assert chains_use.start_indices[i] == i * nsamples
+    assert chains_test.nchains      == nchains_test
+    assert chains_test.nsamples     == nsamples * nchains_test
+    assert len(chains_test.start_indices) == nchains_test + 1
+    for i in range(nchains_test + 1):
+        assert chains_test.start_indices[i] == i * nsamples
 
-    assert chains_use.samples.shape[0]        == nsamples * nchains_use
-    assert chains_use.samples.shape[1]        == ndim
-    assert chains_use.ln_posterior.shape[0]   == nsamples * nchains_use
+    assert chains_test.samples.shape[0]        == nsamples * nchains_test
+    assert chains_test.samples.shape[1]        == ndim
+    assert chains_test.ln_posterior.shape[0]   == nsamples * nchains_test
 
-    random_sample = np.random.randint(nsamples * nchains_use)
+    random_sample = np.random.randint(nsamples * nchains_test)
     random_dim    = 3
-    assert chains_use.samples[random_sample,random_dim] \
+    assert chains_test.samples[random_sample,random_dim] \
         == samples[(random_sample // nsamples) + nchains_train,
                     random_sample % nsamples,random_dim]
 
@@ -61,7 +60,7 @@ def test_split_data():
     ndim        = 5
     nsamples    = 100
     nchains     = 200
-    split_ratio = 0.75
+    training_proportion = 0.75
 
     chains_all = ch.Chains(ndim)
 
@@ -72,15 +71,18 @@ def test_split_data():
     chains_all.add_chains_3d(samples, ln_posterior)
 
     with pytest.raises(ValueError):
-        chains_train, chains_use = dh.split_data(chains_all, split_ratio=-0.1)
+        chains_train, chains_test = dh.split_data(chains_all, training_proportion=-0.1)
 
     with pytest.raises(ValueError):
-        chains_train, chains_use = dh.split_data(chains_all, split_ratio=1.5)
+        chains_train, chains_test = dh.split_data(chains_all, training_proportion=1.5)
 
-    chains_train, chains_use = dh.split_data(chains_all, split_ratio=split_ratio)
+    with pytest.raises(ValueError):
+        chains_train, chains_test = dh.split_data(chains_all, training_proportion=1E-10)
+
+    chains_train, chains_test = dh.split_data(chains_all, training_proportion=training_proportion)
 
 
-    nchains_train = int(nchains*split_ratio)
+    nchains_train = int(nchains*training_proportion)
 
     assert chains_train.nchains            == nchains_train
     assert chains_train.nsamples           == nsamples * nchains_train
@@ -98,21 +100,21 @@ def test_split_data():
         == samples[random_sample // nsamples,
                     random_sample % nsamples,random_dim]
 
-    nchains_use = nchains - nchains_train
+    nchains_test = nchains - nchains_train
 
-    assert chains_use.nchains      == nchains_use
-    assert chains_use.nsamples     == nsamples * nchains_use
-    assert len(chains_use.start_indices) == nchains_use + 1
-    for i in range(nchains_use + 1):
-        assert chains_use.start_indices[i] == i * nsamples
+    assert chains_test.nchains      == nchains_test
+    assert chains_test.nsamples     == nsamples * nchains_test
+    assert len(chains_test.start_indices) == nchains_test + 1
+    for i in range(nchains_test + 1):
+        assert chains_test.start_indices[i] == i * nsamples
 
-    assert chains_use.samples.shape[0]        == nsamples * nchains_use
-    assert chains_use.samples.shape[1]        == ndim
-    assert chains_use.ln_posterior.shape[0]   == nsamples * nchains_use
+    assert chains_test.samples.shape[0]        == nsamples * nchains_test
+    assert chains_test.samples.shape[1]        == ndim
+    assert chains_test.ln_posterior.shape[0]   == nsamples * nchains_test
 
-    random_sample = np.random.randint(nsamples * nchains_use)
+    random_sample = np.random.randint(nsamples * nchains_test)
     random_dim    = 3
-    assert chains_use.samples[random_sample,random_dim] \
+    assert chains_test.samples[random_sample,random_dim] \
         == samples[(random_sample // nsamples) + nchains_train,
                     random_sample % nsamples,random_dim]
 

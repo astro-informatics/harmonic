@@ -9,38 +9,49 @@ import evidence as cbe
 # 2) cross validation on the models to chose hyper parameter
 
 
-def split_data(chains not None, double split_ratio=0.5):
-    """splits the data in a chains instance into two
-       so the new chains instances can be used for testing
-       and calculationg the evidence.
+def split_data(chains not None, double training_proportion=0.5):    
+    """Split the data in a chains instance into two (e.g. training and test
+    sets) so that the new chains instances can be used for training and
+    calculationg the evidence on the "test" set.
+
+    Chains are split so that the first chains in the original chains object go 
+    into the training set and the following go into the test set.
 
     Args:
-        chains: instance of a chains class with the data 
-            to be split
-        split_ratio: The ratio of the data to be used in
-            training (default=0.5)
+        chains: Instance of a chains class containing the data to be split.
+        training_proportion: The ratio of the data to be used in training 
+            (default=0.5)
 
-    Returns:
-        chains_train: instance of a chains class to be used
-            to fit the model
-        chains_use: instance of a chains class to be used
-            to calculate the evidence
+    Returns: (chains_train, chains_test)
+        chains_train: Instance of a chains class containing chains to be used 
+            to fit the model (e.g. training).
+        chains_test: Instance of a chains class containing chains to be used
+            to calculate the evidence (e.g. testing).
 
     Raises:
-        ValueError: If split_ratio is not between 0 and 1
-
+        ValueError: Raised if training_proportion is not strictly between 0
+            and 1.
+        ValueError: Raised if resulting nchains in training set is less than 1.
+        ValueError: Raised if resulting nchains in test set is less than 1.
     """
 
-    if split_ratio <= 0.0 or split_ratio >= 1.0:
-        raise ValueError("split_ratio must be strictly between 0 and 1")
+    if training_proportion <= 0.0 or training_proportion >= 1.0:
+        raise ValueError("training_proportion must be strictly between " \
+            "0 and 1.")
 
-    nchains_train = long(chains.nchains * split_ratio)
-    nchains_use   = chains.nchains - nchains_train
+    nchains_train = long(chains.nchains * training_proportion)
+    nchains_test   = chains.nchains - nchains_train
+    
+    if nchains_train < 1:
+        raise ValueError("nchains for training set must strictly greater " \
+            "than 0.")
+    if nchains_test < 1:
+        raise ValueError("nchains for test set must strictly greater than 0.")
 
     ndim = chains.ndim
 
     chains_train = ch.Chains(ndim)
-    chains_use   = ch.Chains(ndim)
+    chains_test   = ch.Chains(ndim)
 
     start_index = chains.start_indices[0]
     end_index   = chains.start_indices[nchains_train]
@@ -51,12 +62,12 @@ def split_data(chains not None, double split_ratio=0.5):
 
     start_index = chains.start_indices[nchains_train]
     end_index   = chains.start_indices[-1]
-    chains_use.add_chains_2d_list(chains.samples[start_index:end_index,:],\
-                                    chains.ln_posterior[start_index:end_index],\
-                                    nchains_use, \
-                                    chains.start_indices[nchains_train:])
+    chains_test.add_chains_2d_list(chains.samples[start_index:end_index,:],\
+                                   chains.ln_posterior[start_index:end_index],\
+                                   nchains_test, \
+                                   chains.start_indices[nchains_train:])
 
-    return chains_train, chains_use
+    return chains_train, chains_test
 
 def validation_fit_indexes(long i_cross, long nchains_in_val_set, long ncross, list indexes):
     """ Function that pulls out the correct indexes for the chains of the
@@ -167,6 +178,3 @@ def cross_validation(chains, list domains, list hyper_parameters, \
             validation_variences[i_cross,i_val] = cal_ev.evidence_inv_var
 
     return np.mean(validation_variences, axis=0)
-
-
-
