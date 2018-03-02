@@ -21,7 +21,7 @@ print("ndim = ", ndim)
 
 
 cov = np.zeros((ndim,ndim))
-diag_cov = np.ones(ndim) + np.random.randn(ndim)
+diag_cov = np.ones(ndim) + np.random.randn(ndim)*0.1
 np.fill_diagonal(cov, diag_cov)
 
 cov[0,1] = 0.5*np.sqrt(cov[0,0]*cov[1,1])
@@ -36,8 +36,8 @@ print("ln_rho = ", ln_rho)
 
 
 nchains               = 200
-samples_per_chain     = 2000
-burn_in               = 1000
+samples_per_chain     = 1000
+burn_in               = 10
 samples_per_chain_net = (samples_per_chain-burn_in)
 
 plot_sample = True
@@ -59,8 +59,8 @@ for i_real in range(n_real):
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior, args=[inv_cov])
     sampler.run_mcmc(pos, samples_per_chain)
 
-    samples = sampler.chain[:,burn_in:,:]
-    Y = sampler.lnprobability
+    samples = np.ascontiguousarray(sampler.chain[:,burn_in:,:])
+    Y = np.ascontiguousarray(sampler.lnprobability[:,burn_in:])
 
     if plot_sample:
         import corner
