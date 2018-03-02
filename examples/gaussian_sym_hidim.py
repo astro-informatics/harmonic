@@ -8,11 +8,12 @@ import time
 import matplotlib.pyplot as plt
 
 def ln_analytic_evidence(ndim, cov):
-    ln_norm_lik = -0.5*ndim*np.log(2*np.pi)-0.5*np.log(np.linalg.det(cov))
+    ln_norm_lik = -0.5*ndim*np.log(2*np.pi)-0.5*np.log(np.linalg.det(cov)) #TODO: diagonal covariance (same variance in each direction)
     return -ln_norm_lik
 
 def ln_Posterior(x, inv_cov):
     return -np.dot(x,np.dot(inv_cov,x))/2.0
+    #TODO: avoid doing matrix multiplication here (set sigma=1)
 
 print("nD Guassian example:")
 
@@ -36,7 +37,7 @@ print("ln_rho = ", ln_rho)
 
 
 nchains               = 200
-samples_per_chain     = 1000
+samples_per_chain     = 2000
 burn_in               = 0
 samples_per_chain_net = (samples_per_chain-burn_in)
 
@@ -57,7 +58,7 @@ for i_real in range(n_real):
     pos = [np.zeros(ndim) + np.random.randn(ndim) for i in range(nchains)]
 
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior, args=[inv_cov])
-    (pos, prob, state) = sampler.run_mcmc(pos, samples_per_chain)
+    sampler.run_mcmc(pos, samples_per_chain)
 
     samples = np.ascontiguousarray(sampler.chain[:,burn_in:,:])
     Y = np.ascontiguousarray(sampler.lnprobability[:,burn_in:])
@@ -81,26 +82,6 @@ for i_real in range(n_real):
 
     print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
         " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
-        
-        
-    # Temporary code to add more chains    
-    sampler.reset()
-    (pos, prob, state) = sampler.run_mcmc(pos, 10*samples_per_chain)
-    samples = np.ascontiguousarray(sampler.chain[:,:,:])
-    Y = np.ascontiguousarray(sampler.lnprobability[:,:])
-
-    
-    chains2 = hm.Chains(ndim)
-    chains2.add_chains_3d(samples, Y)
-    
-    chains_train2, chains_test2 = hm.utils.split_data(chains2, training_proportion=0.01)
-    
-    cal_ev.add_chains(chains_test2)
-
-    
-    print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
-        " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
-            
 
 clock = time.clock() - clock
 
