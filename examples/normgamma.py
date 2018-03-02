@@ -77,11 +77,6 @@ for lamb_el in lamb_array:
     prior_prams = (0.0, lamb_el, 1E-3, 1E-3)
 
 
-    ln_rho = -ln_analytic_evidence(x, prior_prams)
-    print("ln_rho = ", ln_rho)
-
-
-
     for i_real in range(n_real):
         pos = [np.array([x_info[0],1.0/x_info[1]**2]) + x_info[1]*np.random.randn(ndim)/np.sqrt(x_info[2]) for i in range(nchains)]
 
@@ -100,27 +95,41 @@ for lamb_el in lamb_array:
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, Y)
 
-        chains_trian, chains_test = hm.utils.split_data(chains, training_proportion=0.5)
+        chains_trian, chains_test = hm.utils.split_data(chains, training_proportion=0.25)
 
         hyper_parameters_MGMM = [[1,1E-8,0.1,6,10],\
                 [2,1E-8,0.5,6,10]]#, [3,1E-8,2.0,10,10]]
 
-        validation_variances = hm.utils.cross_validation(chains_trian, 
+        validation_variances_MGMM = hm.utils.cross_validation(chains_trian, 
             [np.array([1E-2,5E0])], \
-            hyper_parameters_MGMM, nfold=3, modelClass=hm.model.ModifiedGaussianMixtureModel, verbose=True)
+            hyper_parameters_MGMM, nfold=3, modelClass=hm.model.ModifiedGaussianMixtureModel, verbose=True, seed=0)
 
-        print("validation variances: ", validation_variances)
+        print("validation variances MGMM: ", validation_variances_MGMM)
+        best_hyper_param_MGMM = np.argmin(validation_variances_MGMM)
 
-        best_hyper_param = np.argmin(validation_variances)
+        hyper_parameters_sphere = [None]
+        validation_variances_Sphere = hm.utils.cross_validation(chains_trian, 
+            [np.array([1E-2,5E0])], \
+            hyper_parameters_sphere, nfold=3, modelClass=hm.model.HyperSphere, verbose=True, seed=0)
 
-        MGMM = hm.model.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,5E0])], \
-                hyper_parameters=hyper_parameters_MGMM[best_hyper_param])
-        MGMM.verbose=True
-        MGMM.fit(chains_trian.samples,chains_trian.ln_posterior)
+        print("validation variances sphere: ", validation_variances_Sphere)
+        best_hyper_param_sphere = np.argmin(validation_variances_Sphere)
 
-        cal_ev = hm.Evidence(chains_test.nchains, MGMM)
+        if validation_variances_MGMM[best_hyper_param_MGMM] < validation_variances_Sphere[best_hyper_param_sphere]:
+            model = hm.model.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,5E0])], \
+                hyper_parameters=hyper_parameters_MGMM[best_hyper_param_MGMM])
+            model.verbose=True
+        else:
+            model = hm.model.HyperSphere(ndim, [np.array([1E-1,5E0])], \
+                            hyper_parameters=None)
+
+        model.fit(chains_trian.samples,chains_trian.ln_posterior)
+
+        cal_ev = hm.Evidence(chains_test.nchains, model)
         cal_ev.add_chains(chains_test)
 
+        ln_rho = -ln_analytic_evidence(x, prior_prams)
+        print("ln_rho = ", ln_rho)
         print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
             " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
 
