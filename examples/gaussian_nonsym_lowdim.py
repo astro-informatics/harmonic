@@ -36,8 +36,8 @@ print("ln_rho = ", ln_rho)
 
 
 nchains               = 200
-samples_per_chain     = 1000
-burn_in               = 0
+samples_per_chain     = 2000
+burn_in               = 1000
 samples_per_chain_net = (samples_per_chain-burn_in)
 
 plot_sample = True

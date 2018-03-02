@@ -100,11 +100,26 @@ for lamb_el in lamb_array:
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, Y)
 
-        sphere = hm.model.HyperSphere(ndim, domains)
-        sphere.fit(chains.samples,chains.ln_posterior)
+        chains_trian, chains_test = hm.utils.split_data(chains, training_proportion=0.5)
 
-        cal_ev = hm.Evidence(nchains, sphere)
-        cal_ev.add_chains(chains)
+        hyper_parameters_MGMM = [[1,1E-8,0.1,6,10],\
+                [2,1E-8,0.5,6,10]]#, [3,1E-8,2.0,10,10]]
+
+        validation_variances = hm.utils.cross_validation(chains_trian, 
+            [np.array([1E-2,5E0])], \
+            hyper_parameters_MGMM, nfold=3, modelClass=hm.model.ModifiedGaussianMixtureModel, verbose=True)
+
+        print("validation variances: ", validation_variances)
+
+        best_hyper_param = np.argmin(validation_variances)
+
+        MGMM = hm.model.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,5E0])], \
+                hyper_parameters=hyper_parameters_MGMM[best_hyper_param])
+        MGMM.verbose=True
+        MGMM.fit(chains_trian.samples,chains_trian.ln_posterior)
+
+        cal_ev = hm.Evidence(chains_test.nchains, MGMM)
+        cal_ev.add_chains(chains_test)
 
         print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
             " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")

@@ -951,6 +951,54 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
 
     return
     
+cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
+                        np.ndarray[double, ndim=2, mode="c"] centres, \
+                        np.ndarray[double, ndim=2, mode="c"] inv_covariances, \
+                        np.ndarray[double, ndim=1, mode="c"] alphas, \
+                        np.ndarray[double, ndim=1, mode="c"] weights, \
+                        np.ndarray[double, ndim=1, mode="c"] Y, \
+                        long nguassians, long ndim, long nsamples, \
+                        double gamma, double mean_shift):
+    """ function to evaluate scaled objective function
+
+    Args:
+        ndarray X: 2D array containing the X values shape (nsamples, ndim)
+        ndarray centres: 2D array containing the centres of the guassians with
+            shape (nguassians, ndim)
+        ndarray inv_covariances: 2D array containing the inverse convarience
+            of the guassians with shape (nguassians, ndim)
+        ndarray alphas: 1D array containing the current values of alpha
+            with shape (nguassians)
+        ndarray weights: 1D array containing the current values of the weights (linear)
+            with shape (nguassians)
+        ndarray Y: 1D array containing the X values shape (nsamples)
+        long nguassians: The number of guassians
+        long ndim: The dimension of the problem
+        double gamma: The regularisation parameter
+        double mean_shift: The mean of the Y values to remove that size fromscaling the gradient
+
+    Returns:
+        double with the scaled objective function
+
+    """
+
+    cdef np.ndarray[double, ndim=1, mode='c'] x_i
+    cdef double I_i, reg=0.0
+    cdef long i_sample, i_dim, index, i_guas
+
+    x_i       = np.zeros(ndim)
+
+    for i_sample in range(nsamples):
+        index = i_sample
+        for i_dim in range(ndim):
+            x_i[i_dim] = X[index,i_dim]
+        I_i = calculate_I_i(x_i, centres, inv_covariances, alphas, \
+                  weights, Y[index], nguassians, ndim, mean_shift)
+
+    for i_guas in range(nguassians):
+        reg += alphas[i_guas]*alphas[i_guas]
+
+    return I_i*I_i + 0.5*gamma*reg
 
 class ModifiedGaussianMixtureModel(Model):
 
@@ -1243,12 +1291,15 @@ class ModifiedGaussianMixtureModel(Model):
             print("centres : ", centres)
             print("inv_covariances : ", inv_covariances)
         # randomally incialise the parameters
-        alphas[:] = np.random.lognormal(sigma=0.5,size=nguassians)
+        alphas[:] = np.random.lognormal(sigma=0.25,size=nguassians)
         betas[:]  = np.random.randn(nguassians)
         grad_alpha = np.zeros(nguassians)
         grad_beta = np.zeros(nguassians)
         if self.verbose:
-            print("param ", alphas, beta_to_weights(betas, nguassians))
+            print("iteration : ", 0, "param ", alphas, beta_to_weights(betas, nguassians))
+            print("objective function :", objective_function(X, centres, \
+                                        inv_covariances, alphas, beta_to_weights(betas, nguassians), \
+                                        Y, nguassians, ndim, nsamples, gamma, mean_shift))
 
         for i_guas in range(nguassians):
             if alphas[i_guas] < alpha_lower_bound:
@@ -1285,10 +1336,13 @@ class ModifiedGaussianMixtureModel(Model):
                     if alphas[i_guas] > alpha_upper_bound:
                         alphas[i_guas] = alpha_upper_bound
 
-            if self.verbose:
-                print("param ", alphas, beta_to_weights(betas, nguassians))
             # check stopping criteria
             i_iter += 1
+            if self.verbose:
+                print("iteration : ", i_iter, "param ", alphas, beta_to_weights(betas, nguassians))
+                print("objective function :", objective_function(X, centres, \
+                                            inv_covariances, alphas, weights, \
+                                            Y, nguassians, ndim, nsamples, gamma, mean_shift))
             if i_iter >= max_iter:
                 keep_going = False
 
