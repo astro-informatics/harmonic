@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import argparse
 import many_real_gaussian_nonsym_lowdim as results
 
+# Run by:
+# ~/Src/harmonic   review  python examples/plot_example.py examples/data/many_real_gaussian_nonsym_lowdim
+
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('base_name', metavar='base_name', type=str, 
                    help='an integer for the accumulator')
