@@ -96,7 +96,7 @@ for i_real in range(n_real):
     cal_ev = hm.Evidence(chains_test.nchains, density)
     cal_ev.add_chains(chains_test)
 
-    ln_rho = np.log(1000.)
+    ln_rho = np.log(1000.) # Analytic for 2D.
     print("ln_rho = ", ln_rho)
     print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
         " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
