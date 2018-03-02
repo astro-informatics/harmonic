@@ -207,7 +207,7 @@ def test_kernel_density_estimate_constructor():
     assert density.start_end.shape[0]  == ndim
     assert density.start_end.shape[1]  == 2
     assert density.inv_scales.shape[0] == ndim
-    assert density.distance            == 0.05**2
+    assert density.radius_squared            == 0.05**2
     assert density.ngrid               == 13
     assert density.ln_norm             == pytest.approx(0.0)
     assert density.fitted              == False
@@ -265,7 +265,7 @@ def test_kernel_density_estimate_precompute_normalising_factor():
     density.precompute_normalising_factor(X)
 
     assert density.D        == pytest.approx(0.1)
-    assert density.distance == pytest.approx(0.0025)
+    assert density.radius_squared == pytest.approx(0.0025)
     assert density.ln_norm  == pytest.approx(np.log(.25*np.pi)+np.log(3))
 
     X = np.zeros((4,ndim))
@@ -277,7 +277,7 @@ def test_kernel_density_estimate_precompute_normalising_factor():
     density.precompute_normalising_factor(X)
 
     assert density.D        == pytest.approx(0.1)
-    assert density.distance == pytest.approx(0.0025)
+    assert density.radius_squared == pytest.approx(0.0025)
     assert density.ln_norm  == pytest.approx(np.log(1.*np.pi)+np.log(4))
 
     ndim   = 6
@@ -294,7 +294,7 @@ def test_kernel_density_estimate_precompute_normalising_factor():
     density.precompute_normalising_factor(X)
 
     assert density.D          == pytest.approx(0.2)
-    assert density.distance   == pytest.approx(0.01)
+    assert density.radius_squared   == pytest.approx(0.01)
     assert density.ln_norm    == pytest.approx(5.801314+np.log(3)) 
     # 5.801314 taken from wolfram alpha log(volume) of 6D r=2 sphere
 

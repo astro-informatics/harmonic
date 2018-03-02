@@ -381,23 +381,26 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
                                     np.ndarray[double, ndim=2, mode="c"] X, 
                                     np.ndarray[double, ndim=2, mode="c"] start_end, \
                                     np.ndarray[double, ndim=1, mode="c"] inv_scales, \
-                                    long ngrid, double D):
-    """ Creates a dictionary that allows a fast way to find the indexes of samples
-        in a pixel in a grid where the pixel sizes are the diameter of the hyper
-        spheres placed at each sample
+                                    long ngrid, double D):    
+    """Creates a dictionary that allows a fast way to find the indexes of
+    samples in a pixel in a grid where the pixel sizes are the diameter of the
+    hyper spheres placed at each sample.
 
-    Args:
-        dict grid: Empty dictionary where the list of the sample index will be placed.
-            The key is a index of the grid (c type ordering) and the value is a list
-            containing the indexes in the sample array of all the samples in that index
+    Args:        
+        dict grid: Empty dictionary where the list of the sample index will be
+            placed. The key is an index of the grid (c type ordering) and the 
+            value is a list containing the indexes in the sample array of all 
+            the samples in that index.            
         X: 2D array of samples of shape (nsamples, ndim).
         Y: 1D array of target log_e posterior values for each sample in X 
             of shape (nsamples).
-        start_end:  2D array of the lowest and highest sample in each dimension (ndim,2)
-        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
-            max and min of the sample in dimension i
-        long ngrid: Number of pixels in each dimension in the grid
-        double D: The diameter of the hyper sphere
+        start_end:  2D array of the lowest and highest sample in each dimension 
+            (ndim,2).        
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the
+            difference between the max and min of the sample in dimension 
+            i.        
+        long ngrid: Number of pixels in each dimension in the grid.
+        double D: Diameter of the hyper sphere.
 
     Returns:
         None
@@ -411,7 +414,6 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
         for i_dim in range(ndim):
             sub_index = <long>((X[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim]*inv_diam) + 1
             index += sub_index*ngrid**i_dim
-            # print(i_dim, X_in[i_sample,i_dim], start_end[i_dim,0], inv_scales[i_dim], (X_in[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim], sub_index, ngrid, index)
         if index in grid:
             grid[index].append(i_sample)
         else:
@@ -422,25 +424,28 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, long ng
                                                  np.ndarray[double, ndim=2, mode="c"] samples, \
                                                  np.ndarray[double, ndim=1, mode="c"] x, \
                                                  np.ndarray[double, ndim=1, mode="c"] inv_scales, \
-                                                 double distance, long *count):
-    """ This is a recursive function that calls itself inorder to call the search_in_pixel 
-        function on one pixel behind and infront of the pixel x is in for each dimension
+                                                 double radius_squared, long *count):    
+    """Recursive function that calls itself in order to call the search_in_pixel
+    function on one pixel behind and infront of the pixel x is in for each
+    dimension.
 
     Args:
-        long index: The current pixel we are looking at
-        long i_dim: The dimension we are doing the current moving forward and backward in
-        long ngrid: Number of pixels in each dimension in the grid
-        long ndim: The dimension of the problem
-        dict grid: The dictionary with information on which samples are in which pixel. The key 
-            is an index of the grid (c type ordering) and the value is a list
-            containing the indexes in the sample array of all the samples in that index
+        long index: The current pixel we are looking at.
+        long i_dim: The dimension we are doing the current moving forward and   
+            backward in.
+        long ngrid: Number of pixels in each dimension in the grid.
+        long ndim: The dimension of the problem.        
+        dict grid: The dictionary with information on which samples are in
+            which pixel. The key is an index of the grid (c type ordering) and 
+            the value is a list containing the indexes in the sample array of 
+            all the samples in that index.            
         samples: 2D array of samples of shape (nsamples, ndim).
-        x: 1D array of the position we are evaluating the pridiction for
-        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
-            max and min of the sample in dimension i
-        double distance: The diameter of the hyper sphere
-        long * count: a pointer to the count integer that counts how many hyper spheres the postion
-            x falls inside
+        x: 1D array of the position we are evaluating the prediction for.
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the 
+            difference between the max and min of the sample in dimension i.
+        double radius_squared: Radius squared of the local hypersphere.
+        long * count: a pointer to the count integer that counts how many hyper 
+            spheres the postion x falls inside.
 
     Returns:
         None
@@ -450,40 +455,49 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, long ng
     # (probably less then dealing with it will!)
     if i_dim >= 0:
         for iter_i_dim in range(-1,2):
-            KernelDensityEstimate_loop_round_and_search(index+iter_i_dim*ngrid**(i_dim), i_dim-1, ngrid, ndim, grid, samples, x, inv_scales, distance, count)
+            KernelDensityEstimate_loop_round_and_search(index+iter_i_dim*ngrid**(i_dim), i_dim-1, ngrid, ndim, grid, samples, x, inv_scales, radius_squared, count)
     else:
-        KernelDensityEstimate_search_in_pixel(index, grid, samples, x, inv_scales, distance, count)
+        KernelDensityEstimate_search_in_pixel(index, grid, samples, x, inv_scales, radius_squared, count)
 
 cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
                                            np.ndarray[double, ndim=2, mode="c"] samples, \
                                            np.ndarray[double, ndim=1, mode="c"] x, \
                                            np.ndarray[double, ndim=1, mode="c"] inv_scales, \
-                                           double distance, long *count):
-    """ Examines all samples that are in the current pixel and counts how
-        many of those position x falls inside
+                                           double radius_squared, long *count):
+    """Examines all samples that are in the current pixel and counts how many of
+    those position x falls inside
 
     Args:
-        long index: The current pixel we are looking at
-        long ndim: The dimension of the problem
-        dict grid: The dictionary with information on which samples are in which pixel. The key 
-            is an index of the grid (c type ordering) and the value is a list
-            containing the indexes in the sample array of all the samples in that index
+        long index: The current pixel we are looking at.
+        long ndim: The dimension of the problem.
+        dict grid: The dictionary with information on which samples are in
+            which pixel. The key is an index of the grid (c type ordering) and 
+            the value is a list containing the indexes in the sample array of 
+            all the samples in that index.
         samples: 2D array of samples of shape (nsamples, ndim).
         x: 1D array of the position we are evaluating the prediction for
-        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
-            max and min of the sample in dimension i
-        double distance: The diameter of the hyper sphere
-        long * count: a pointer to the count integer that counts how many hyper spheres the postion
-            x falls inside
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the 
+            difference between the max and min of the sample in dimension i.
+        double radius_squared: Radius squared of the local hypersphere.        
+        long * count: a pointer to the count integer that counts how many hyper 
+            spheres the postion x falls inside.
 
     Returns:
         None
     """
-    if index in grid:
+    
+    cdef long sample_index, i_dim, ndim = x.size
+    cdef double length = 0.0, dummy
+    
+    if index in grid:        
         for sample_index in grid[index]:
-            # do what I did before
-            length = np.dot((x-samples[sample_index,:])*inv_scales, (x-samples[sample_index,:])*inv_scales)
-            if length<distance:
+            length = 0.0
+            for i_dim in range(ndim):
+                dummy  = x[i_dim]-samples[sample_index,i_dim]
+                dummy *= inv_scales[i_dim]
+                dummy *= dummy
+                length += dummy
+            if length<radius_squared:
                 count[0] += 1
     return
 
@@ -519,7 +533,7 @@ class KernelDensityEstimate(Model):
         self.start_end          = np.zeros((ndim,2))
         self.inv_scales         = np.ones((ndim))
         self.inv_scales_squared = np.ones((ndim))
-        self.distance           = self.D*self.D/4
+        self.radius_squared           = self.D*self.D/4
         numerical_stability     = 1E-8
         self.ngrid              = <long>(1.0/self.D+numerical_stability)+3 
                                 # +3 for 1 extra cell either side and another 
@@ -665,7 +679,7 @@ class KernelDensityEstimate(Model):
         cdef long i_sample, i_dim, sub_index, index
         cdef long nsamples = samples.shape[0], ndim = self.ndim
         cdef long ngrid = self.ngrid
-        cdef double inv_diam = 1.0/self.D, distance = self.distance
+        cdef double inv_diam = 1.0/self.D, radius_squared = self.radius_squared
         cdef dict grid = self.grid
 
         cdef long count = 0
@@ -678,7 +692,7 @@ class KernelDensityEstimate(Model):
 
         KernelDensityEstimate_loop_round_and_search(index, i_dim, ngrid, ndim, 
                                                     grid, samples, x, 
-                                                    inv_scales, distance, 
+                                                    inv_scales, radius_squared, 
                                                     &count)
 
         return log(count) - self.ln_norm
