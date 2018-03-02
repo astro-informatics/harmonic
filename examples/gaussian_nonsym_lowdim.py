@@ -36,11 +36,11 @@ print("ln_rho = ", ln_rho)
 
 
 nchains               = 200
-samples_per_chain     = 1000
-burn_in               = 10
+samples_per_chain     = 2000
+burn_in               = 0
 samples_per_chain_net = (samples_per_chain-burn_in)
 
-plot_sample = True
+plot_sample = False
 
 n_real = 1
 
@@ -71,11 +71,13 @@ for i_real in range(n_real):
     chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, Y)
 
-    sphere = hm.model.HyperSphere(ndim, domains)
-    sphere.fit(chains.samples,chains.ln_posterior)
+    chains_train, chains_test = hm.utils.split_data(chains, training_proportion=0.01)
 
-    cal_ev = hm.Evidence(nchains, sphere)
-    cal_ev.add_chains(chains)
+    sphere = hm.model.HyperSphere(ndim, domains)
+    sphere.fit(chains_train.samples,chains_train.ln_posterior)
+
+    cal_ev = hm.Evidence(chains_test.nchains, sphere)
+    cal_ev.add_chains(chains_test)
 
     print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
         " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
