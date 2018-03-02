@@ -70,6 +70,8 @@ class Model(metaclass=abc.ABCMeta):
             Boolean specifying whether the model has been fitted.
         """
 
+# ===== Hyper sphere model =====
+
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                                          centre, inv_covariance, mean_shift):
     """Evaluate ojective function forthe HyperSphere model. Objective function
@@ -373,28 +375,32 @@ class HyperSphere(Model):
         else:
             return -np.inf
     
+# ===== Kernel Density Estimation model =====
     
 cdef KernelDensityEstimate_set_grid(dict grid, \
                                     np.ndarray[double, ndim=2, mode="c"] X, 
                                     np.ndarray[double, ndim=2, mode="c"] start_end, \
                                     np.ndarray[double, ndim=1, mode="c"] inv_scales, \
-                                    long ngrid, double D):
-    """ Creates a dictionary that allows a fast way to find the indexes of samples
-        in a pixel in a grid where the pixel sizes are the diameter of the hyper
-        spheres placed at each sample
+                                    long ngrid, double D):    
+    """Creates a dictionary that allows a fast way to find the indexes of
+    samples in a pixel in a grid where the pixel sizes are the diameter of the
+    hyper spheres placed at each sample.
 
-    Args:
-        dict grid: Empty dictionary where the list of the sample index will be placed.
-            The key is a index of the grid (c type ordering) and the value is a list
-            containing the indexes in the sample array of all the samples in that index
+    Args:        
+        dict grid: Empty dictionary where the list of the sample index will be
+            placed. The key is an index of the grid (c type ordering) and the 
+            value is a list containing the indexes in the sample array of all 
+            the samples in that index.            
         X: 2D array of samples of shape (nsamples, ndim).
         Y: 1D array of target log_e posterior values for each sample in X 
             of shape (nsamples).
-        start_end:  2D array of the lowest and highest sample in each dimension (ndim,2)
-        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
-            max and min of the sample in dimension i
-        long ngrid: Number of pixels in each dimension in the grid
-        double D: The diameter of the hyper sphere
+        start_end:  2D array of the lowest and highest sample in each dimension 
+            (ndim,2).        
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the
+            difference between the max and min of the sample in dimension 
+            i.        
+        long ngrid: Number of pixels in each dimension in the grid.
+        double D: Diameter of the hyper sphere.
 
     Returns:
         None
@@ -408,7 +414,6 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
         for i_dim in range(ndim):
             sub_index = <long>((X[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim]*inv_diam) + 1
             index += sub_index*ngrid**i_dim
-            # print(i_dim, X_in[i_sample,i_dim], start_end[i_dim,0], inv_scales[i_dim], (X_in[i_sample,i_dim]-start_end[i_dim,0])*inv_scales[i_dim], sub_index, ngrid, index)
         if index in grid:
             grid[index].append(i_sample)
         else:
@@ -419,25 +424,28 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, long ng
                                                  np.ndarray[double, ndim=2, mode="c"] samples, \
                                                  np.ndarray[double, ndim=1, mode="c"] x, \
                                                  np.ndarray[double, ndim=1, mode="c"] inv_scales, \
-                                                 double distance, long *count):
-    """ This is a recursive function that calls itself inorder to call the search_in_pixel 
-        function on one pixel behind and infront of the pixel x is in for each dimension
+                                                 double radius_squared, long *count):    
+    """Recursive function that calls itself in order to call the search_in_pixel
+    function on one pixel behind and infront of the pixel x is in for each
+    dimension.
 
     Args:
-        long index: The current pixel we are looking at
-        long i_dim: The dimension we are doing the current moving forward and backward in
-        long ngrid: Number of pixels in each dimension in the grid
-        long ndim: The dimension of the problem
-        dict grid: The dictionary with information on which samples are in which pixel. The key 
-            is an index of the grid (c type ordering) and the value is a list
-            containing the indexes in the sample array of all the samples in that index
+        long index: The current pixel we are looking at.
+        long i_dim: The dimension we are doing the current moving forward and   
+            backward in.
+        long ngrid: Number of pixels in each dimension in the grid.
+        long ndim: The dimension of the problem.        
+        dict grid: The dictionary with information on which samples are in
+            which pixel. The key is an index of the grid (c type ordering) and 
+            the value is a list containing the indexes in the sample array of 
+            all the samples in that index.            
         samples: 2D array of samples of shape (nsamples, ndim).
-        x: 1D array of the position we are evaluating the pridiction for
-        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
-            max and min of the sample in dimension i
-        double distance: The diameter of the hyper sphere
-        long * count: a pointer to the count integer that counts how many hyper spheres the postion
-            x falls inside
+        x: 1D array of the position we are evaluating the prediction for.
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the 
+            difference between the max and min of the sample in dimension i.
+        double radius_squared: Radius squared of the local hypersphere.
+        long * count: a pointer to the count integer that counts how many hyper 
+            spheres the postion x falls inside.
 
     Returns:
         None
@@ -447,54 +455,66 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, long ng
     # (probably less then dealing with it will!)
     if i_dim >= 0:
         for iter_i_dim in range(-1,2):
-            KernelDensityEstimate_loop_round_and_search(index+iter_i_dim*ngrid**(i_dim), i_dim-1, ngrid, ndim, grid, samples, x, inv_scales, distance, count)
+            KernelDensityEstimate_loop_round_and_search(index+iter_i_dim*ngrid**(i_dim), i_dim-1, ngrid, ndim, grid, samples, x, inv_scales, radius_squared, count)
     else:
-        KernelDensityEstimate_search_in_pixel(index, grid, samples, x, inv_scales, distance, count)
+        KernelDensityEstimate_search_in_pixel(index, grid, samples, x, inv_scales, radius_squared, count)
 
 cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
                                            np.ndarray[double, ndim=2, mode="c"] samples, \
                                            np.ndarray[double, ndim=1, mode="c"] x, \
                                            np.ndarray[double, ndim=1, mode="c"] inv_scales, \
-                                           double distance, long *count):
-    """ Examines all samples that are in the current pixel and counts how
-        many of those position x falls inside
+                                           double radius_squared, long *count):
+    """Examines all samples that are in the current pixel and counts how many of
+    those position x falls inside
 
     Args:
-        long index: The current pixel we are looking at
-        long ndim: The dimension of the problem
-        dict grid: The dictionary with information on which samples are in which pixel. The key 
-            is an index of the grid (c type ordering) and the value is a list
-            containing the indexes in the sample array of all the samples in that index
+        long index: The current pixel we are looking at.
+        long ndim: The dimension of the problem.
+        dict grid: The dictionary with information on which samples are in
+            which pixel. The key is an index of the grid (c type ordering) and 
+            the value is a list containing the indexes in the sample array of 
+            all the samples in that index.
         samples: 2D array of samples of shape (nsamples, ndim).
         x: 1D array of the position we are evaluating the prediction for
-        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the difference between the
-            max and min of the sample in dimension i
-        double distance: The diameter of the hyper sphere
-        long * count: a pointer to the count integer that counts how many hyper spheres the postion
-            x falls inside
+        inv_scales: 1D array of the 1.0/delta_x_i where delta_x_i is the 
+            difference between the max and min of the sample in dimension i.
+        double radius_squared: Radius squared of the local hypersphere.        
+        long * count: a pointer to the count integer that counts how many hyper 
+            spheres the postion x falls inside.
 
     Returns:
         None
     """
-    if index in grid:
+    
+    cdef long sample_index, i_dim, ndim = x.size
+    cdef double length = 0.0, dummy
+    
+    if index in grid:        
         for sample_index in grid[index]:
-            # do what I did before
-            length = np.dot((x-samples[sample_index,:])*inv_scales, (x-samples[sample_index,:])*inv_scales)
-            if length<distance:
+            length = 0.0
+            for i_dim in range(ndim):
+                dummy  = x[i_dim]-samples[sample_index,i_dim]
+                dummy *= inv_scales[i_dim]
+                dummy *= dummy
+                length += dummy
+            if length<radius_squared:
                 count[0] += 1
     return
 
 class KernelDensityEstimate(Model):
+    """KernelDensityEstimate model to approximate the log_e posterior using 
+    kernel density estimation."""
 
     def __init__(self, long ndim, list domains not None, hyper_parameters=[0.1]):
-        """ constructor setting the hyper parameters and domains of the model
+        """Constructor setting the hyperparameters and domains of the 
+        model.        
 
         Args:
-            long ndim: The dimension of the problem to solve
-            list domains: A list of length 0
-            hyper_parameters: A list of length 1 which should be the diameter in scaled
-                units of the hyper spheres to use in the Kernel Density Estimate
-
+            long ndim_: Dimension of the problem to solve.
+            list domains: List of length 0.
+            list hyper_parameters: A list of length 1 containing the diameter 
+                in scaled units of the hyper spheres to use in the Kernel 
+                Density Estimate.
 
         Raises:
             ValueError: If the hyper_parameters list is not length 1
@@ -506,7 +526,7 @@ class KernelDensityEstimate(Model):
         if len(domains) != 0:
             raise ValueError("Kernel Density Estimate domains list should be length 0.")
         if ndim < 1:
-            raise ValueError("The dimension must be greater then 1")
+            raise ValueError("ndim must be greater then 0.")
 
         self.ndim     = ndim
         self.D        = hyper_parameters[0]
@@ -515,8 +535,9 @@ class KernelDensityEstimate(Model):
         self.start_end          = np.zeros((ndim,2))
         self.inv_scales         = np.ones((ndim))
         self.inv_scales_squared = np.ones((ndim))
-        self.distance           = self.D*self.D/4
-        self.ngrid              = <long>(1.0/self.D+1E-8)+3 
+        self.radius_squared           = self.D*self.D/4
+        numerical_stability     = 1E-8
+        self.ngrid              = <long>(1.0/self.D+numerical_stability)+3 
                                 # +3 for 1 extra cell either side and another 
                                 # cell for rounding errors.
         self.ln_norm            = 0.0
@@ -539,8 +560,8 @@ class KernelDensityEstimate(Model):
         return self.fitted
         
     def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
-        """ sets the scales of the hyper spheres based on the min
-            and max sample in each dimension
+        """Sets the scales of the hyper spheres based on the min
+        and max sample in each dimension.
 
         Args:
             X: 2D array of samples of shape (nsamples, ndim).
@@ -558,9 +579,11 @@ class KernelDensityEstimate(Model):
         cdef long i_dim
 
         for i_dim in range(self.ndim):
-            self.inv_scales[i_dim]  = 1.0/(X[:,i_dim].max() - X[:,i_dim].min())
-            self.start_end[i_dim,0] = X[:,i_dim].min()
-            self.start_end[i_dim,1] = X[:,i_dim].max()
+            xmax = X[:,i_dim].max()
+            xmin = X[:,i_dim].min()
+            self.inv_scales[i_dim]  = 1.0/(xmax - xmin)
+            self.start_end[i_dim,0] = xmin
+            self.start_end[i_dim,1] = xmax
 
         self.inv_scales_squared = self.inv_scales**2
 
@@ -570,25 +593,26 @@ class KernelDensityEstimate(Model):
 
     def precompute_normalising_factor(self, 
                                       np.ndarray[double, ndim=2, mode="c"] X):
-        """precomputes the log_e normalisation factor of the density estimation
+        """Precompute the log_e normalisation factor of the density estimation.
 
         Args:
             X: 2D array of samples of shape (nsamples, ndim).
 
         Raises:
-            ValueError if the second dimension of X is not the same as ndim
+            ValueError: if the second dimension of X is not the same as ndim.
         """
 
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim")
 
-        cdef double ln_volume, det_covarience = 1.0
+        cdef double ln_volume, det_scaling = 1.0
 
         for i_dim in range(self.ndim):
-            det_covarience *= 1.0/self.inv_scales[i_dim]
+            det_scaling *= 1.0/self.inv_scales[i_dim]
 
-        ln_volume = ((self.ndim/2)*log(np.pi) + self.ndim*log(self.D/2) - sp.gammaln(self.ndim/2+1) + log(det_covarience))
-         
+        ln_volume = ((self.ndim/2)*log(np.pi) + self.ndim*log(self.D/2) - sp.gammaln(self.ndim/2+1) + log(det_scaling))
+        # Not 0.5*log(det_scaling) since constructed from inv_scales not 
+        # inv_scales_squared.
 
         self.ln_norm = log(<double>X.shape[0]) + ln_volume
         pass
@@ -596,13 +620,17 @@ class KernelDensityEstimate(Model):
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
             np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model by:
-            1) Setting the scales of the model from the samples
-            2) creating the dictionary containing all the information on which samples are in 
-               which pixel in a grid where each pixel size is the same as the diameter of the
-               hyper spheres to be placed on each sample. The key is an index of the grid 
-               (c type ordering) and the value is a list containing the indexes in the sample 
-               array of all the samples in that index
-            3) Precomputes the normalisation factor
+            
+            1) Setting the scales of the model from the samples.
+            
+            2) Creating the dictionary containing all the information on which
+            samples are in which pixel in a grid where each pixel size is the
+            same as the diameter of the hyper spheres to be placed on each
+            sample. The key is an index of the grid (c type ordering) and the
+            value is a list containing the indexes in the sample array of all
+            the samples in that index 3.
+            
+            3) Precomputing the normalisation factor.
 
         Args:
             X: 2D array of samples of shape (nsamples, ndim).
@@ -623,12 +651,14 @@ class KernelDensityEstimate(Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim")
 
-        self.samples = X.copy() # TODO consider functionality for shallow copy to save mem
+        self.samples = X.copy() # TODO consider functionality for shallow copy 
+                                # to save mem
 
         self.set_scales(self.samples)
 
-        #set dictionary 
-        KernelDensityEstimate_set_grid(self.grid, self.samples, self.start_end, self.inv_scales, self.ngrid, self.D)
+        # Set dictionary 
+        KernelDensityEstimate_set_grid(self.grid, self.samples, self.start_end, 
+                                       self.inv_scales, self.ngrid, self.D)
 
         self.precompute_normalising_factor(self.samples)
 
@@ -637,7 +667,7 @@ class KernelDensityEstimate(Model):
         return True
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """Use model to predict the hight of the posterior at point x.
+        """Use model to predict the value of the posterior at point x.
 
         Args: 
             x: 1D array of sample of shape (ndim) to predict posterior value.
@@ -645,37 +675,50 @@ class KernelDensityEstimate(Model):
         Return:
             Predicted posterior value.
         """
-        cdef np.ndarray[double, ndim=2, mode="c"] samples    = self.samples,   start_end = self.start_end
+        cdef np.ndarray[double, ndim=2, mode="c"] samples = self.samples        
+        cdef np.ndarray[double, ndim=2, mode="c"] start_end = self.start_end
         cdef np.ndarray[double, ndim=1, mode="c"] inv_scales = self.inv_scales
-        cdef long i_sample, i_dim, sub_index, index, nsamples = samples.shape[0], ndim = self.ndim, ngrid = self.ngrid
-        cdef double inv_diam = 1.0/self.D, distance = self.distance
+        cdef long i_sample, i_dim, sub_index, index
+        cdef long nsamples = samples.shape[0], ndim = self.ndim
+        cdef long ngrid = self.ngrid
+        cdef double inv_diam = 1.0/self.D, radius_squared = self.radius_squared
         cdef dict grid = self.grid
 
         cdef long count = 0
-        #find out the pixel that the sample is in
+        
+        # Find the pixel that the sample is in
         index = 0
         for i_dim in range(ndim):
             sub_index = <long>((x[i_dim]-start_end[i_dim,0])*inv_scales[i_dim]*inv_diam) + 1
             index += sub_index*ngrid**i_dim
 
-        KernelDensityEstimate_loop_round_and_search(index, i_dim, ngrid, ndim, grid, samples, x, inv_scales, distance, &count)
+        KernelDensityEstimate_loop_round_and_search(index, i_dim, ngrid, ndim, 
+                                                    grid, samples, x, 
+                                                    inv_scales, radius_squared, 
+                                                    &count)
 
         return log(count) - self.ln_norm
 
-cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(np.ndarray[double, ndim=1, mode="c"] beta, \
-        long nguassians):
-    """ function to calculate the weights from the beta_weights
+
+# ===== Modified Gausian mixture model =====
+
+cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(\
+    np.ndarray[double,  ndim=1, mode="c"] beta, long nguassians):
+    """Calculate the weights from the beta_weights.
 
     Args:
-        ndarray beta: 1D array conataining the beta values to be converted
+        ndarray beta: 1D array containing the beta values to be converted
             with shape (nguassians)
-        ndarray beta: 1D array where the weight values will go
-            with shape (nguassians)
-        long nguassians: The number of Gaussiansin the model
+        
+        long nguassians: The number of Gaussians in the model.
 
+    Return:
+        ndarray weights: 1D array where the weight values will go
+            with shape (nguassians)
     Raises:
         None
     """
+    
     cdef double norm = 0.0
     cdef i_guas
     cdef np.ndarray[double, ndim=1, mode="c"] weights = np.empty(nguassians)
@@ -690,8 +733,8 @@ cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(np.ndarray[double, ndi
 
 def beta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] beta, 
         long nguassians):
-    """wrapper for beta_to_weights"""
-
+    """Wrapper for beta_to_weights    
+    """
     
     return beta_to_weights(beta, nguassians)
 
@@ -1000,20 +1043,22 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
 
     return I_i*I_i + 0.5*gamma*reg
 
-class ModifiedGaussianMixtureModel(Model):
+class ModifiedGaussianMixtureModel(Model):    
+    """ModifiedGaussianMixtureModel (MGMM) to approximate the log_e posterior by
+    a  modified Gaussian mixture model. """
 
-    def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8,None,None,None]):
-        """ constructor setting the hyper parameters and domains of the model of the
-            MGMM which models the posterior as a group of Gaussians.
+    def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8,None,None,None]):        
+        """Constructor setting the hyper parameters and domains of the model
+        of the MGMM which models the posterior as a group of Gaussians.
 
         Args:
-            long ndim: The dimension of the problem to solve
-            list domains: A list of length 1 with the range of scale parameter of the
-                covariance matrix. ie the range of alpha, where, C' = alpha * C_samples,
-                and C_samples is the diagonal of the covariance in the samples in each cluster
-            hyper_parameters: A list of length 2, the first of which should be nummber of clusters
-                and the second is the regularisation parameter gamma.
-
+            long ndim: The dimension of the problem to solve.            
+            list domains: A list of length 1 with the range of scale parameter
+                of the covariance matrix, i.e. the range of alpha, where
+                C' = alpha * C_samples, and C_samples is the diagonal of the covariance in the samples in each cluster.
+            hyper_parameters: A list of length 2, the first of which should be 
+                nummber of clusters and the second is the regularisation 
+                parameter gamma.
 
         Raises:
             ValueError: If the hyper_parameters list is not length 2
@@ -1070,18 +1115,19 @@ class ModifiedGaussianMixtureModel(Model):
         return self.fitted
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
-        """set the weights of the Guassians
+        """Set the weights of the Guassians.
+        
+        The weights are the softmax of the betas.
 
         Args:
-            ndarray weights_in: 1D array containing the weights (no need to normalise)
-                with shape (nguassians)
+            ndarray weights_in: 1D array containing the weights (no need to     
+                normalise) with shape (nguassians).
 
         Raises:
-            ValueError: If the input array length is not nguassians
-            ValueError: If the input array contains a NaN
-            ValueError: If aleast one of the weights is negative
-            ValueError: If the sum of the weights is too close to zero
-
+            ValueError: If the input array length is not nguassians.
+            ValueError: If the input array contains a NaN.
+            ValueError: If at least one of the weights is negative.
+            ValueError: If the sum of the weights is too close to zero.
         """
         if weights_in.size != self.nguassians:
             raise ValueError("Weights must have length nguassians")
@@ -1100,15 +1146,16 @@ class ModifiedGaussianMixtureModel(Model):
         return
 
     def set_alphas(self, np.ndarray[double, ndim=1, mode="c"] alphas_in):
-        """set the alphas
+        """Set the alphas (i.e. scales).
 
         Args:
-            ndarray alphas_in: 1D array containing the alpha scalings with shape (nguassians)
+            ndarray alphas_in: 1D array containing the alpha scalings with 
+                shape (nguassians)
 
         Raises:
-            ValueError: If the input array length is not nguassians
-            ValueError: If the input array contains a NaN
-            ValueError: If aleast one of the alphas not positive
+            ValueError: If the input array length is not nguassians.
+            ValueError: If the input array contains a NaN.
+            ValueError: If at least one of the alphas not positive.
         """
         if alphas_in.size != self.nguassians:
             raise ValueError("alphas must have length nguassians")
@@ -1119,22 +1166,21 @@ class ModifiedGaussianMixtureModel(Model):
             if alphas_in[i_guas] <= 0.0:
                 raise ValueError("alphas must be positive")
 
-
         self.alphas = alphas_in.copy()
         return
 
     def set_centres(self, np.ndarray[double, ndim=2, mode="c"] centres_in):
-        """set the centres of the Guassians
+        """Set the centres of the Guassians.
 
         Args:
             ndarray centres_in: 2D array containing the centres
                 with shape (ndim, nguassians)
 
         Raises:
-            ValueError: If the input array is not the correct shape
-            ValueError: If the input array contains a NaN
-
+            ValueError: If the input array is not the correct shape.
+            ValueError: If the input array contains a NaN.
         """
+        
         if centres_in.shape[0] != self.nguassians or centres_in.shape[1] != self.ndim:
             raise ValueError("centres must be shape (nguassians,ndim)")
 
@@ -1148,19 +1194,19 @@ class ModifiedGaussianMixtureModel(Model):
         return
 
     def set_inv_covariance(self, np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
-        """set the inverse convarience of the Guassians
+        """Set the inverse convariance of the Guassians.
 
         Args:
             ndarray inv_covariance_in: 2D array containing the centres
                 with shape (ndim, nguassians)
 
         Raises:
-            ValueError: If the input array is not the correct shape
-            ValueError: If the input array contains a NaN
+            ValueError: If the input array is not the correct shape.
+            ValueError: If the input array contains a NaN.
             ValueError: If the input array contains a number that is 
-                not positive
-
+                not positive.
         """
+        
         if inv_covariance_in.shape[0] != self.nguassians or inv_covariance_in.shape[1] != self.ndim:
             raise ValueError("inv_covariance must be shape (nguassians,ndim)")
 
@@ -1175,22 +1221,22 @@ class ModifiedGaussianMixtureModel(Model):
 
         return
 
-    def set_centres_and_inv_covariance(self, np.ndarray[double, ndim=2, mode="c"] centres_in,\
-                                        np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
-        """set the centres and inverse convarience of the Guassians
+    def set_centres_and_inv_covariance(self, \
+        np.ndarray[double, ndim=2, mode="c"] centres_in,\
+        np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
+        """Set the centres and inverse convariance of the Guassians.
 
         Args:
             ndarray centres_in: 2D array containing the centres
-                with shape (ndim, nguassians)
+                with shape (ndim, nguassians).
             ndarray inv_covariance_in: 2D array containing the centres
-                with shape (ndim, nguassians)
+                with shape (ndim, nguassians).
 
         Raises:
-            ValueError: If the input arrays are not the correct shape
-            ValueError: If the input arrays contain a NaN
+            ValueError: If the input arrays are not the correct shape.
+            ValueError: If the input arrays contain a NaN.
             ValueError: If the input covariance contains a number that is 
-                not positive
-
+                not positive.
         """
 
         if centres_in.shape[0] != self.nguassians or centres_in.shape[1] != self.ndim:
@@ -1216,27 +1262,30 @@ class ModifiedGaussianMixtureModel(Model):
         self.centres_inv_cov_set = True
         return
 
-        # TODO: learning_rate, nbatch and max_iter inputs 
-    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
-        """Fit the parameters of the model by:
-                if centres and inv_covariances not set
-                    1) Finding clusters using the k-means clustering from scikit learn 
-                    2) using the samples in the clusters to find the centres and covariance matricies
+    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
+            np.ndarray[double, ndim=1, mode="c"] Y):
+        """Fit the parameters of the model as follows.
                 
-                3) minimizing the objective function using the gradients and mini batch desent
+            If centres and inv_covariances not set:
+                1) Find clusters using the k-means clustering from 
+                   scikit learn.
+                2) Use the samples in the clusters to find the centres and 
+                  covariance matricies.
+            
+            Then minimize the objective function using the gradients and mini- batch stochastic descent.
 
             Args:
                 X: 2D array of samples of shape (nsamples, ndim).
-                Y: 1D array of target log_e posterior values for each sample in X 
-                    of shape (nsamples).
+                Y: 1D array of target log_e posterior values for each sample in 
+                    X of shape (nsamples).
             
             Returns:
                 Boolean specifying whether fit successful.
 
             Raises:
-                ValueError if the first dimension of X is not the same as Y
-                ValueError if the first dimension of X is not the same as Y
-                ValueError if the second dimension of X is not the same as ndim
+                ValueError if the first dimension of X is not the same as Y.
+                ValueError if the first dimension of X is not the same as Y.
+                ValueError if the second dimension of X is not the same as ndim.
         """
 
         if X.shape[0] != Y.shape[0]:
@@ -1350,7 +1399,13 @@ class ModifiedGaussianMixtureModel(Model):
         return
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """Use model to predict the hight of the posterior at point x
+        """Use model to predict the hight of the posterior at point x.
+        
+        Args: 
+            x: 1D array of sample of shape (ndim) to predict posterior value.
+
+        Return:
+            Predicted posterior value.
         """
 
         cdef np.ndarray[double, ndim=2, mode="c"] mus = self.centres
