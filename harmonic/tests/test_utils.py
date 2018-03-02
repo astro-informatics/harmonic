@@ -198,6 +198,6 @@ def test_cross_validation():
     validation_variances = utils.cross_validation(chains, 
         [np.array([1E-2,10E0])], \
         hyper_parameters_MGMM, modelClass=md.ModifiedGaussianMixtureModel, verbose=False)
-    assert validation_variances[0] == pytest.approx(1.42162247e-07) 
-    assert validation_variances[1] == pytest.approx(2.99342874e-06) 
-    assert validation_variances[2] == pytest.approx(4.90910611e-06) 
+    assert validation_variances[0] == pytest.approx(1.41849113e-07) 
+    assert validation_variances[1] == pytest.approx(3.01021287e-06) 
+    assert validation_variances[2] == pytest.approx(4.52651400e-06) 
