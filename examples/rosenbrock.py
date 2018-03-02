@@ -34,66 +34,72 @@ print("Rosenbrock example:")
 
 ndim = 2
 
-nchains               = 100
+nchains               = 200
 samples_per_chain     = 3000
 burn_in               = 2000
 samples_per_chain_net = (samples_per_chain-burn_in)
 
 plot_sample = False
+verbose     = True
 
+nfold = 2
+
+nhyper = 2
+step   = -2
+domain = []
+hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
+print("hyper parameters to try : ", hyper_parameters)
 n_real = 1
 
-ln_rho = np.log(1000.)
-print("ln_rho = ", ln_rho)
 
-nguassians = [15,20,25,30,35]
-domains    = [np.array([5E-2,5E0])]
+for i_real in range(n_real):
 
-np.random.seed(0)
-pos = [np.random.randn(ndim)*0.1 for i in range(nchains)]
+    pos = [np.random.randn(ndim)*0.1 for i in range(nchains)]
 
-sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior)
-sampler.run_mcmc(pos, samples_per_chain)
+    sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior)
+    sampler.run_mcmc(pos, samples_per_chain)
 
-samples = np.ascontiguousarray(sampler.chain[:,burn_in:,:])
-Y = np.ascontiguousarray(sampler.lnprobability[:,burn_in:])
+    samples = np.ascontiguousarray(sampler.chain[:,burn_in:,:])
+    Y = np.ascontiguousarray(sampler.lnprobability[:,burn_in:])
+    print("samples drawn")
 
-if plot_sample:
-    plt.plot(sampler.chain[0,:,0])
-    plt.plot(sampler.chain[0,:,1])
-    plt.show()
+    if plot_sample:
+        plt.plot(sampler.chain[0,:,0])
+        plt.plot(sampler.chain[0,:,1])
+        plt.show()
 
-    import corner
-    fig = corner.corner(samples.reshape((-1, ndim)))#, labels=["x1","x2","x3","x4","x4","x4","x4","x4","x4","x4","x4","x4","x4","x4"],
-                     #truths=[0.0, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
-    plt.show()
+        import corner
+        fig = corner.corner(samples.reshape((-1, ndim)))#, labels=["x1","x2","x3","x4","x4","x4","x4","x4","x4","x4","x4","x4","x4","x4"],
+                         #truths=[0.0, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
+        plt.show()
 
 
-chains = hm.Chains(ndim)
-chains.add_chains_3d(samples, Y)
+    chains = hm.Chains(ndim)
+    chains.add_chains_3d(samples, Y)
 
-hyper_parameters = [nguassians[2],1E-4,0.1,10000,2]
-MGMM = hm.model.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=hyper_parameters)
-MGMM.verbose=True
-MGMM.fit(chains.samples,chains.ln_posterior)
+    chains_trian, chains_test = hm.utils.split_data(chains)
 
-hyper_parameters_MGMM = [[nguassians,1E-30,0.1*nguassians*nguassians,10000,100] for nguassians in range(1,4)]
+    print("start validation")
+    validation_variances = hm.utils.cross_validation(chains_trian, 
+        domain, \
+        hyper_parameters, nfold=nfold, modelClass=hm.model.KernelDensityEstimate, verbose=verbose, seed=0)
 
-validation_variances = utils.cross_validation(chains, 
-    [np.array([1E-2,10E0])], \
-    hyper_parameters_MGMM, modelClass=md.ModifiedGaussianMixtureModel, verbose=True)
+    print("validation variances: ", validation_variances)
+    best_hyper_param = np.argmin(validation_variances)
 
-chains = hm.Chains(ndim)
-chains.add_chains_3d(samples, Y)
+    print("Using hyper parameter ", hyper_parameters[best_hyper_param])
 
-sphere = hm.model.HyperSphere(ndim, domains)
-sphere.fit(chains.samples,chains.ln_posterior)
+    density = hm.model.KernelDensityEstimate(ndim, domain, hyper_parameters=hyper_parameters[best_hyper_param])
 
-cal_ev = hm.Evidence(nchains, sphere)
-cal_ev.add_chains(chains)
+    density.fit(chains_trian.samples,chains_trian.ln_posterior)
 
-print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
-    " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
+    cal_ev = hm.Evidence(chains_test.nchains, density)
+    cal_ev.add_chains(chains_test)
+
+    ln_rho = np.log(1000.)
+    print("ln_rho = ", ln_rho)
+    print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
+        " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
 
 
 

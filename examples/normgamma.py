@@ -63,7 +63,17 @@ samples_per_chain     = 1500
 burn_in               = 500
 samples_per_chain_net = (samples_per_chain-burn_in)
 
+nfold = 3
+hyper_parameters_MGMM = [[1,1E-8,0.1,6,10],\
+        [2,1E-8,0.5,6,10]]#, [3,1E-8,2.0,10,10]]
+hyper_parameters_sphere = [None]
+
+training_proportion = 0.25
+domains_sphere = [np.array([1E-1,5E0])]
+domains_MGMM = [np.array([1E-1,5E0])]
+
 plot_sample = False
+verbose     = False
 
 n_real = 1
 
@@ -95,32 +105,31 @@ for lamb_el in lamb_array:
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, Y)
 
-        chains_trian, chains_test = hm.utils.split_data(chains, training_proportion=0.25)
+        chains_trian, chains_test = hm.utils.split_data(chains, training_proportion=training_proportion)
 
-        hyper_parameters_MGMM = [[1,1E-8,0.1,6,10],\
-                [2,1E-8,0.5,6,10]]#, [3,1E-8,2.0,10,10]]
 
         validation_variances_MGMM = hm.utils.cross_validation(chains_trian, 
-            [np.array([1E-2,5E0])], \
-            hyper_parameters_MGMM, nfold=3, modelClass=hm.model.ModifiedGaussianMixtureModel, verbose=True, seed=0)
+            domains_MGMM, \
+            hyper_parameters_MGMM, nfold=nfold, modelClass=hm.model.ModifiedGaussianMixtureModel, verbose=verbose, seed=0)
 
         print("validation variances MGMM: ", validation_variances_MGMM)
         best_hyper_param_MGMM = np.argmin(validation_variances_MGMM)
 
-        hyper_parameters_sphere = [None]
         validation_variances_Sphere = hm.utils.cross_validation(chains_trian, 
-            [np.array([1E-2,5E0])], \
-            hyper_parameters_sphere, nfold=3, modelClass=hm.model.HyperSphere, verbose=True, seed=0)
+            domains_sphere, \
+            hyper_parameters_sphere, nfold=nfold, modelClass=hm.model.HyperSphere, verbose=verbose, seed=0)
 
         print("validation variances sphere: ", validation_variances_Sphere)
         best_hyper_param_sphere = np.argmin(validation_variances_Sphere)
 
         if validation_variances_MGMM[best_hyper_param_MGMM] < validation_variances_Sphere[best_hyper_param_sphere]:
-            model = hm.model.ModifiedGaussianMixtureModel(ndim, [np.array([1E-1,5E0])], \
+            print("Using MGMM with hyper_parameters :", hyper_parameters_MGMM[best_hyper_param_MGMM])
+            model = hm.model.ModifiedGaussianMixtureModel(ndim, domains_MGMM, \
                 hyper_parameters=hyper_parameters_MGMM[best_hyper_param_MGMM])
-            model.verbose=True
+            model.verbose=verbose
         else:
-            model = hm.model.HyperSphere(ndim, [np.array([1E-1,5E0])], \
+            print("Using HyperSphere")
+            model = hm.model.HyperSphere(ndim, domains_sphere, \
                             hyper_parameters=None)
 
         model.fit(chains_trian.samples,chains_trian.ln_posterior)
