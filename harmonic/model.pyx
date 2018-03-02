@@ -502,6 +502,8 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
     return
 
 class KernelDensityEstimate(Model):
+    """KernelDensityEstimate model to approximate the log_e posterior using 
+    kernel density estimation."""
 
     def __init__(self, long ndim, list domains not None, hyper_parameters=[0.1]):
         """Constructor setting the hyperparameters and domains of the 
@@ -1041,20 +1043,22 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
 
     return I_i*I_i + 0.5*gamma*reg
 
-class ModifiedGaussianMixtureModel(Model):
+class ModifiedGaussianMixtureModel(Model):    
+    """ModifiedGaussianMixtureModel (MGMM) to approximate the log_e posterior by
+    a  modified Gaussian mixture model. """
 
-    def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8,None,None,None]):
-        """ constructor setting the hyper parameters and domains of the model of the
-            MGMM which models the posterior as a group of Gaussians.
+    def __init__(self, long ndim, list domains not None, hyper_parameters=[3,1E-8,None,None,None]):        
+        """Constructor setting the hyper parameters and domains of the model
+        of the MGMM which models the posterior as a group of Gaussians.
 
         Args:
-            long ndim: The dimension of the problem to solve
-            list domains: A list of length 1 with the range of scale parameter of the
-                covariance matrix. ie the range of alpha, where, C' = alpha * C_samples,
-                and C_samples is the diagonal of the covariance in the samples in each cluster
-            hyper_parameters: A list of length 2, the first of which should be nummber of clusters
-                and the second is the regularisation parameter gamma.
-
+            long ndim: The dimension of the problem to solve.            
+            list domains: A list of length 1 with the range of scale parameter
+                of the covariance matrix, i.e. the range of alpha, where
+                C' = alpha * C_samples, and C_samples is the diagonal of the covariance in the samples in each cluster.
+            hyper_parameters: A list of length 2, the first of which should be 
+                nummber of clusters and the second is the regularisation 
+                parameter gamma.
 
         Raises:
             ValueError: If the hyper_parameters list is not length 2
@@ -1111,18 +1115,19 @@ class ModifiedGaussianMixtureModel(Model):
         return self.fitted
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
-        """set the weights of the Guassians
+        """Set the weights of the Guassians.
+        
+        The weights are the softmax of the betas.
 
         Args:
-            ndarray weights_in: 1D array containing the weights (no need to normalise)
-                with shape (nguassians)
+            ndarray weights_in: 1D array containing the weights (no need to     
+                normalise) with shape (nguassians).
 
         Raises:
-            ValueError: If the input array length is not nguassians
-            ValueError: If the input array contains a NaN
-            ValueError: If aleast one of the weights is negative
-            ValueError: If the sum of the weights is too close to zero
-
+            ValueError: If the input array length is not nguassians.
+            ValueError: If the input array contains a NaN.
+            ValueError: If at least one of the weights is negative.
+            ValueError: If the sum of the weights is too close to zero.
         """
         if weights_in.size != self.nguassians:
             raise ValueError("Weights must have length nguassians")
@@ -1141,15 +1146,16 @@ class ModifiedGaussianMixtureModel(Model):
         return
 
     def set_alphas(self, np.ndarray[double, ndim=1, mode="c"] alphas_in):
-        """set the alphas
+        """Set the alphas (i.e. scales).
 
         Args:
-            ndarray alphas_in: 1D array containing the alpha scalings with shape (nguassians)
+            ndarray alphas_in: 1D array containing the alpha scalings with 
+                shape (nguassians)
 
         Raises:
-            ValueError: If the input array length is not nguassians
-            ValueError: If the input array contains a NaN
-            ValueError: If aleast one of the alphas not positive
+            ValueError: If the input array length is not nguassians.
+            ValueError: If the input array contains a NaN.
+            ValueError: If at least one of the alphas not positive.
         """
         if alphas_in.size != self.nguassians:
             raise ValueError("alphas must have length nguassians")
@@ -1160,22 +1166,21 @@ class ModifiedGaussianMixtureModel(Model):
             if alphas_in[i_guas] <= 0.0:
                 raise ValueError("alphas must be positive")
 
-
         self.alphas = alphas_in.copy()
         return
 
     def set_centres(self, np.ndarray[double, ndim=2, mode="c"] centres_in):
-        """set the centres of the Guassians
+        """Set the centres of the Guassians.
 
         Args:
             ndarray centres_in: 2D array containing the centres
                 with shape (ndim, nguassians)
 
         Raises:
-            ValueError: If the input array is not the correct shape
-            ValueError: If the input array contains a NaN
-
+            ValueError: If the input array is not the correct shape.
+            ValueError: If the input array contains a NaN.
         """
+        
         if centres_in.shape[0] != self.nguassians or centres_in.shape[1] != self.ndim:
             raise ValueError("centres must be shape (nguassians,ndim)")
 
@@ -1189,19 +1194,19 @@ class ModifiedGaussianMixtureModel(Model):
         return
 
     def set_inv_covariance(self, np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
-        """set the inverse convarience of the Guassians
+        """Set the inverse convariance of the Guassians.
 
         Args:
             ndarray inv_covariance_in: 2D array containing the centres
                 with shape (ndim, nguassians)
 
         Raises:
-            ValueError: If the input array is not the correct shape
-            ValueError: If the input array contains a NaN
+            ValueError: If the input array is not the correct shape.
+            ValueError: If the input array contains a NaN.
             ValueError: If the input array contains a number that is 
-                not positive
-
+                not positive.
         """
+        
         if inv_covariance_in.shape[0] != self.nguassians or inv_covariance_in.shape[1] != self.ndim:
             raise ValueError("inv_covariance must be shape (nguassians,ndim)")
 
@@ -1216,22 +1221,22 @@ class ModifiedGaussianMixtureModel(Model):
 
         return
 
-    def set_centres_and_inv_covariance(self, np.ndarray[double, ndim=2, mode="c"] centres_in,\
-                                        np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
-        """set the centres and inverse convarience of the Guassians
+    def set_centres_and_inv_covariance(self, \
+        np.ndarray[double, ndim=2, mode="c"] centres_in,\
+        np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
+        """Set the centres and inverse convariance of the Guassians.
 
         Args:
             ndarray centres_in: 2D array containing the centres
-                with shape (ndim, nguassians)
+                with shape (ndim, nguassians).
             ndarray inv_covariance_in: 2D array containing the centres
-                with shape (ndim, nguassians)
+                with shape (ndim, nguassians).
 
         Raises:
-            ValueError: If the input arrays are not the correct shape
-            ValueError: If the input arrays contain a NaN
+            ValueError: If the input arrays are not the correct shape.
+            ValueError: If the input arrays contain a NaN.
             ValueError: If the input covariance contains a number that is 
-                not positive
-
+                not positive.
         """
 
         if centres_in.shape[0] != self.nguassians or centres_in.shape[1] != self.ndim:
@@ -1257,27 +1262,30 @@ class ModifiedGaussianMixtureModel(Model):
         self.centres_inv_cov_set = True
         return
 
-        # TODO: learning_rate, nbatch and max_iter inputs 
-    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, np.ndarray[double, ndim=1, mode="c"] Y):
-        """Fit the parameters of the model by:
-                if centres and inv_covariances not set
-                    1) Finding clusters using the k-means clustering from scikit learn 
-                    2) using the samples in the clusters to find the centres and covariance matricies
+    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
+            np.ndarray[double, ndim=1, mode="c"] Y):
+        """Fit the parameters of the model as follows.
                 
-                3) minimizing the objective function using the gradients and mini batch desent
+            If centres and inv_covariances not set:
+                1) Find clusters using the k-means clustering from 
+                   scikit learn.
+                2) Use the samples in the clusters to find the centres and 
+                  covariance matricies.
+            
+            Then minimize the objective function using the gradients and mini- batch stochastic descent.
 
             Args:
                 X: 2D array of samples of shape (nsamples, ndim).
-                Y: 1D array of target log_e posterior values for each sample in X 
-                    of shape (nsamples).
+                Y: 1D array of target log_e posterior values for each sample in 
+                    X of shape (nsamples).
             
             Returns:
                 Boolean specifying whether fit successful.
 
             Raises:
-                ValueError if the first dimension of X is not the same as Y
-                ValueError if the first dimension of X is not the same as Y
-                ValueError if the second dimension of X is not the same as ndim
+                ValueError if the first dimension of X is not the same as Y.
+                ValueError if the first dimension of X is not the same as Y.
+                ValueError if the second dimension of X is not the same as ndim.
         """
 
         if X.shape[0] != Y.shape[0]:
@@ -1391,7 +1399,13 @@ class ModifiedGaussianMixtureModel(Model):
         return
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """Use model to predict the hight of the posterior at point x
+        """Use model to predict the hight of the posterior at point x.
+        
+        Args: 
+            x: 1D array of sample of shape (ndim) to predict posterior value.
+
+        Return:
+            Predicted posterior value.
         """
 
         cdef np.ndarray[double, ndim=2, mode="c"] mus = self.centres
