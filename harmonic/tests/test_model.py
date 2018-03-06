@@ -174,6 +174,8 @@ def test_hyper_sphere_fit():
     X = np.random.randn(nsamples,ndim)+1.0
     Y = -np.sum((X-1.0)**2,axis=1)/2.0
 
+    del sphere
+    sphere = md.HyperSphere(ndim, domain)
     assert sphere.fit(X, Y) == True
     assert sphere.R         == pytest.approx(1.910259417)
     # 1.910259417 is the numerical value when first implemented (and tested) 
@@ -184,6 +186,8 @@ def test_hyper_sphere_fit():
     X[:,1] = X[:,1]*0.5
     Y = -X[:,0]*X[:,0]/2.0 - X[:,1]*X[:,1]/(2.0*0.25)
 
+    del sphere
+    sphere = md.HyperSphere(ndim, domain)
     assert sphere.fit(X, Y) == True
     assert sphere.R         == pytest.approx(1.910259417)
     # 1.910259417 is the numerical value when first implemented (and tested) 
