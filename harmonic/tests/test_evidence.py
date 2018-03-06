@@ -4,6 +4,7 @@ from scipy.stats import kurtosis
 import harmonic.chains as ch
 import harmonic.model as md
 import harmonic.evidence as cbe
+import harmonic.utils as utils
 
 def test_constructor():
     
@@ -101,7 +102,7 @@ def test_add_chains():
     nsamples  = 500
     ndim      = 2
 
-    # Create samples of unnormalised Gaussian    
+    # Create samples of unnormalised Gaussian
     np.random.seed(30)
     X = np.random.randn(nchains,nsamples,ndim)
     Y = -np.sum(X*X,axis=2)/2.0
@@ -112,16 +113,36 @@ def test_add_chains():
 
     # Fit the Hyper_sphere
     domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)        
-    sphere.fit(chain.samples, chain.ln_posterior)    
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fit(chain.samples, chain.ln_posterior)
 
     # Calculate evidence
     cal_ev = cbe.Evidence(nchains, sphere)
     cal_ev.add_chains(chain)
 
+    print("cal_ev.evidence_inv = {}".format(cal_ev.evidence_inv))
+
     assert cal_ev.evidence_inv              == pytest.approx(0.159438606) 
     assert cal_ev.evidence_inv_var          == pytest.approx(1.158805126e-07)
     assert cal_ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
+
+    nsamples1 = 300
+    chains1 = ch.Chains(ndim)
+    for i_chain in range(nchains):
+        chains1.add_chain(X[i_chain,:nsamples1,:], Y[i_chain,:nsamples1])
+    chains2 = ch.Chains(ndim)
+    for i_chain in range(nchains):
+        chains2.add_chain(X[i_chain,nsamples1:,:], Y[i_chain,nsamples1:])
+
+    ev = cbe.Evidence(nchains, sphere)
+    ev.set_mean_shift(cal_ev.mean_shift)
+        # Might have small numerical differences if don't use same mean_shift.
+    ev.add_chains(chains1)
+    ev.add_chains(chains2)
+
+    assert ev.evidence_inv              == pytest.approx(0.159438606)
+    assert ev.evidence_inv_var          == pytest.approx(1.158805126e-07)
+    assert ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
 
     return
 
