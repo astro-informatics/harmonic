@@ -195,7 +195,7 @@ class HyperSphere(Model):
             ValueError: If the Raises is not positive.
         """
 
-        if ~np.isfinite(R):
+        if not np.isfinite(R):
             raise ValueError("Radius is a NaN.")
         if R <= 0.0:
             raise ValueError("Radius must be positive.")
@@ -259,7 +259,7 @@ class HyperSphere(Model):
             raise ValueError("centre size is not equal ndim.")
 
         for i_dim in range(self.ndim):
-            if ~np.isfinite(centre_in[i_dim]):
+            if not np.isfinite(centre_in[i_dim]):
                 raise ValueError("NaN/Inf's in inv_covariance (may be due " + 
                                  "to a NaN in samples).")
 
@@ -298,7 +298,7 @@ class HyperSphere(Model):
             raise ValueError("inv_covariance size is not equal ndim.")
 
         for i_dim in range(self.ndim):
-            if ~np.isfinite(inv_covariance_in[i_dim]):
+            if not np.isfinite(inv_covariance_in[i_dim]):
                 raise ValueError("NaN/Inf's in inv_covariance (may be due " + 
                                  "to a NaN in samples).")
             if inv_covariance_in[i_dim] <= 0.0:
@@ -337,10 +337,10 @@ class HyperSphere(Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim.")
 
-        if ~self.centre_set:
+        if not self.centre_set:
             self.set_centre(np.mean(X, axis=0))
 
-        if ~self.inv_covariance_set:
+        if not self.inv_covariance_set:
             self.set_inv_covariance(np.std(X, axis=0)**(-2))
 
         mean_shift = np.mean(Y)

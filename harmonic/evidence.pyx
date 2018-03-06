@@ -55,7 +55,7 @@ class Evidence:
         Raises:
             ValueError: If mean_shift_in is NaN .
         """
-        if ~np.isfinite(mean_shift_in):
+        if not np.isfinite(mean_shift_in):
             raise ValueError("Mean shift must be a number")
 
         self.mean_shift = mean_shift_in
@@ -142,7 +142,7 @@ class Evidence:
         cdef long i_chains, i_samples, nchains = self.nchains
         cdef double mean_shift
 
-        if ~self.mean_shift_set:
+        if not self.mean_shift_set:
             self.set_mean_shift(np.mean(Y))
         mean_shift = self.mean_shift
 
