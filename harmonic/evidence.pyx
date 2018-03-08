@@ -2,6 +2,7 @@ import numpy as np
 cimport numpy as np
 import chains as ch
 from libc.math cimport exp
+import warnings
 
 class Evidence:
     """Compute inverse evidence values from chains, using posterior model.  
@@ -32,6 +33,7 @@ class Evidence:
 
         self.running_sum = np.zeros(nchains)
         self.nsamples_per_chain = np.zeros((nchains),dtype=long)
+        self.nsamples_eff_per_chain = np.zeros((nchains),dtype=long)
 
         self.nchains = nchains
         self.ndim = model.ndim
@@ -45,6 +47,13 @@ class Evidence:
         self.chains_added = False
         
         self.model = model
+        
+        self.lnargmax = -np.inf
+        self.lnargmin = np.inf
+        self.lnprobmax = -np.inf
+        self.lnprobmin = np.inf
+        self.lnpredictmax = -np.inf
+        self.lnpredictmin = np.inf
 
     def set_mean_shift(self, double mean_shift_in):        
         """Set the multiplicative shift of log_e posterior values to aid numerical stability (usually the geometric mean).
@@ -77,13 +86,14 @@ class Evidence:
         """
 
         cdef np.ndarray[double, ndim=1, mode="c"] running_sum = self.running_sum
-        cdef np.ndarray[long, ndim=1, mode="c"] nsamples_per_chain = self.nsamples_per_chain
+        cdef np.ndarray[long, ndim=1, mode="c"] nsamples_per_chain = \
+            self.nsamples_per_chain
 
         cdef long i_chains, nsamples=0, nchains = self.nchains
         cdef double evidence_inv=0.0, evidence_inv_var=0.0, kur=0.0, dummy, n_eff=0
 
         for i_chains in range(nchains):
-            evidence_inv             += running_sum[i_chains]
+            evidence_inv += running_sum[i_chains]
             nsamples += nsamples_per_chain[i_chains]
         evidence_inv /= nsamples
 
@@ -91,17 +101,17 @@ class Evidence:
             dummy  = running_sum[i_chains]/nsamples_per_chain[i_chains]
             dummy -= evidence_inv
             n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
-            evidence_inv_var    += nsamples_per_chain[i_chains]*dummy*dummy
-            kur     += nsamples_per_chain[i_chains]*dummy*dummy*dummy*dummy
+            evidence_inv_var += nsamples_per_chain[i_chains]*dummy*dummy
+            kur += nsamples_per_chain[i_chains]*dummy*dummy*dummy*dummy
 
         n_eff = <double>nsamples*<double>nsamples/n_eff
-        evidence_inv_var   /= nsamples
-        kur    /= nsamples
-        kur    /= evidence_inv_var*evidence_inv_var
+        evidence_inv_var /= nsamples
+        kur /= nsamples
+        kur /= evidence_inv_var*evidence_inv_var
 
         self.evidence_inv = evidence_inv*exp(-self.mean_shift)
         self.evidence_inv_var = evidence_inv_var*exp(-2*self.mean_shift)/(n_eff)
-        self.evidence_inv_var_var  = evidence_inv_var**2*exp(-4*self.mean_shift)/(n_eff*n_eff*n_eff)
+        self.evidence_inv_var_var = evidence_inv_var**2*exp(-4*self.mean_shift)/(n_eff*n_eff*n_eff)
         self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
         return
 
@@ -137,8 +147,11 @@ class Evidence:
         cdef np.ndarray[double, ndim=2, mode="c"] X = chains.samples
         cdef np.ndarray[double, ndim=1, mode="c"] Y = chains.ln_posterior
         cdef np.ndarray[double, ndim=1, mode="c"] running_sum = self.running_sum
-        cdef np.ndarray[long,   ndim=1, mode="c"] nsamples_per_chain = self.nsamples_per_chain
-
+        cdef np.ndarray[long,   ndim=1, mode="c"] \
+            nsamples_per_chain = self.nsamples_per_chain
+        cdef np.ndarray[long,   ndim=1, mode="c"] \
+            nsamples_eff_per_chain = self.nsamples_eff_per_chain
+        
         cdef long i_chains, i_samples, nchains = self.nchains
         cdef double mean_shift
 
@@ -150,15 +163,69 @@ class Evidence:
             i_samples_start = chains.start_indices[i_chains]
             i_samples_end = chains.start_indices[i_chains+1]
             for i_samples in range(i_samples_start, i_samples_end):
-                running_sum[i_chains] += exp( self.model.predict(X[i_samples,:]) \
-                    - Y[i_samples] + mean_shift )
+                
+                lnpredict = self.model.predict(X[i_samples,:])
+                lnprob = Y[i_samples]
+                lnarg = lnpredict - lnprob + mean_shift
+                term = exp(lnarg)
+                running_sum[i_chains] += term
                 nsamples_per_chain[i_chains] += 1
-
+                
+                if not lnpredict == -np.inf:
+                    nsamples_eff_per_chain[i_chains] +=1
+                    self.lnargmax = lnarg \
+                        if lnarg > self.lnargmax else self.lnargmax
+                    self.lnargmin = lnarg \
+                        if lnarg < self.lnargmin else self.lnargmin
+                    self.lnprobmax = lnprob \
+                        if lnprob > self.lnprobmax else self.lnprobmax
+                    self.lnprobmin = lnprob \
+                        if lnprob < self.lnprobmin else self.lnprobmin
+                    self.lnpredictmax = lnpredict \
+                        if lnpredict > self.lnpredictmax else self.lnpredictmax
+                    self.lnpredictmin = lnpredict \
+                        if lnpredict < self.lnpredictmin else self.lnpredictmin
+                    
         self.process_run()
         
         self.chains_added = True
+        
+        self.check_basic_diagnostic()
 
         return
+
+    def check_basic_diagnostic(self):
+        """Perform basic diagontic check on sanity of evidence calulations.
+        
+        If these tests pass it does *not* necessarily mean the evidence is
+        accurate and other tests should still be performed.
+        
+        Args:
+            None.
+            
+        Return:
+            Boolean speciying whehter diagnostic tests pass.
+            
+        Raises:
+            Warnings are raised if the diagnostic tests fail.
+        """
+        
+        NSAMPLES_EFF_WARNING_LEVEL = 30
+        LNARGMIN_WARNING_LEVEL = -10.0
+        
+        tests_pass = True
+        
+        if np.mean(self.nsamples_eff_per_chain) <= NSAMPLES_EFF_WARNING_LEVEL:
+            warnings.warn("Evidence may not be accurate due to low " + \
+                "number of effective samples (mean number of effective " + \
+                "samples per chain is {}). Use more samples."
+                .format(np.mean(self.nsamples_eff_per_chain))) 
+            tests_pass = False
+        
+        if self.lnargmin <= LNARGMIN_WARNING_LEVEL:
+            warnings.warn("Evidence may not be accurate due to low " + 
+                "minimum log of argument. Use model with smaller support.")
+            tests_pass = False
 
     def compute_evidence(self):
         """Compute evidence from the inverse evidence.
@@ -170,6 +237,8 @@ class Evidence:
             evidence: Estimate of evidence.
             evidence_std: Estimate of standard deviation of evidence.
         """
+        
+        self.check_basic_diagnostic()
         
         common_factor = 1.0 + self.evidence_inv_var/(self.evidence_inv**2)
         
@@ -189,6 +258,8 @@ class Evidence:
             ln_evidence: Estimate of log_e of evidence.
             ln_evidence_std: Estimate of log_e of standard deviation of evidence.
         """
+        
+        self.check_basic_diagnostic()
         
         common_factor = 1.0 + self.evidence_inv_var/(self.evidence_inv**2)
         
@@ -222,6 +293,9 @@ def compute_bayes_factor(ev1, ev2):
     if not ev2.chains_added:
         raise ValueError("Evidence for model 2 does not have chains added")
         
+    ev1.check_basic_diagnostic()
+    ev2.check_basic_diagnostic()
+    
     common_factor = 1.0 + ev1.evidence_inv_var/(ev1.evidence_inv**2)
 
     bf12 = ev2.evidence_inv / ev1.evidence_inv * common_factor
@@ -253,7 +327,10 @@ def compute_ln_bayes_factor(ev1, ev2):
         raise ValueError("Evidence for model 1 does not have chains added")
     if not ev2.chains_added:
         raise ValueError("Evidence for model 2 does not have chains added")
-        
+    
+    ev1.check_basic_diagnostic()
+    ev2.check_basic_diagnostic()
+    
     common_factor = 1.0 + ev1.evidence_inv_var/(ev1.evidence_inv**2)
 
     ln_bf12 = np.log(ev2.evidence_inv) - np.log(ev1.evidence_inv) \

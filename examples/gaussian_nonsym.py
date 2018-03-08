@@ -115,6 +115,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     model.fit(chains_train.samples, chains_train.ln_posterior)    
     if verbose: print("model.R = {}".format(model.R))    
     
+    model.set_R(1.0)
+    if verbose: print("model.R = {}\n".format(model.R))    
+
     # Using chains and model to compute inverse evidence.
     ev = hm.Evidence(chains_test.nchains, model)
     ev.add_chains(chains_test)
@@ -133,7 +136,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     print("|evidence_analytic - evidence| / evidence = {}"
           .format(np.exp(diff - ln_evidence)))
           
-    if verbose: print("evidence_inv_analytic = {}"
+    if verbose: print("\nevidence_inv_analytic = {}"
         .format(np.exp(-ln_evidence_analytic)))
     if verbose: print("evidence_inv = {}"
         .format(ev.evidence_inv))
@@ -144,6 +147,30 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     if verbose: 
         print("|evidence_analytic_inv - evidence_inv| / evidence_inv = {}"
             .format(np.abs(np.exp(-ln_evidence_analytic) - ev.evidence_inv)/ev.evidence_inv))
+
+    if verbose: print("\nlnargmax = {}"
+        .format(ev.lnargmax))
+    if verbose: print("lnargmin = {}"
+        .format(ev.lnargmin))
+    if verbose: print("lnprobmax = {}"
+        .format(ev.lnprobmax))
+    if verbose: print("lnprobmin = {}"
+        .format(ev.lnprobmin))
+    if verbose: print("lnpredictmax = {}"
+        .format(ev.lnpredictmax))
+    if verbose: print("lnpredictmin = {}"
+        .format(ev.lnpredictmin))
+    if verbose: print("mean_shift = {}"
+        .format(ev.mean_shift))
+    # if verbose: print("running_sum = \n{}"
+    #     .format(ev.running_sum))
+        
+    if verbose: print("\nnsamples_per_chain = \n{}"
+        .format(ev.nsamples_per_chain))
+    if verbose: print("nsamples_eff_per_chain = \n{}"
+        .format(ev.nsamples_eff_per_chain))
+
+
 
     # Create corner/triangle plot.
     if plot_corner:
@@ -291,11 +318,11 @@ if __name__ == '__main__':
     # Define parameters.
     ndim = 2
     nchains = 100
-    samples_per_chain = 5000
+    samples_per_chain = 10000
     nburn = 500     
     np.random.seed(10)
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=True, plot_surface=True, verbose=True)
+                plot_corner=False, plot_surface=False, verbose=False)
     
