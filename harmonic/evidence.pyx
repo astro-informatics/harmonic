@@ -2,14 +2,17 @@ import numpy as np
 cimport numpy as np
 import chains as ch
 from libc.math cimport exp
+from math import fsum
 import warnings
+
+MEAN_SHIFT_SIGN = 1.0
 
 class Evidence:
     """Compute inverse evidence values from chains, using posterior model.  
     
     Multiple chains can be added in sequence (to avoid having to store very long chains).    
     """
-        
+
     def __init__(self, long nchains, model not None):
         """Construct evidence class for computing inverse evidence values from set number of chains and initialised posterior model.        
 
@@ -93,8 +96,9 @@ class Evidence:
         cdef double evidence_inv=0.0, evidence_inv_var=0.0, kur=0.0, dummy, n_eff=0
 
         for i_chains in range(nchains):
-            evidence_inv += running_sum[i_chains]
+            #evidence_inv += running_sum[i_chains]
             nsamples += nsamples_per_chain[i_chains]
+        evidence_inv = fsum(running_sum)    
         evidence_inv /= nsamples
 
         for i_chains in range(nchains):
@@ -109,9 +113,9 @@ class Evidence:
         kur /= nsamples
         kur /= evidence_inv_var*evidence_inv_var
 
-        self.evidence_inv = evidence_inv*exp(-self.mean_shift)
-        self.evidence_inv_var = evidence_inv_var*exp(-2*self.mean_shift)/(n_eff)
-        self.evidence_inv_var_var = evidence_inv_var**2*exp(-4*self.mean_shift)/(n_eff*n_eff*n_eff)
+        self.evidence_inv = evidence_inv*exp(-MEAN_SHIFT_SIGN*self.mean_shift)
+        self.evidence_inv_var = evidence_inv_var*exp(-MEAN_SHIFT_SIGN*2*self.mean_shift)/(n_eff)
+        self.evidence_inv_var_var = evidence_inv_var**2*exp(-MEAN_SHIFT_SIGN*4*self.mean_shift)/(n_eff*n_eff*n_eff)
         self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
         return
 
@@ -159,16 +163,28 @@ class Evidence:
             self.set_mean_shift(np.mean(Y))
         mean_shift = self.mean_shift
 
+        # partials_all =[]
+        term_all =[]
         for i_chains in range(nchains):
             i_samples_start = chains.start_indices[i_chains]
             i_samples_end = chains.start_indices[i_chains+1]
+            
+            # partials = []  
+            ip = 0
+            term = []
             for i_samples in range(i_samples_start, i_samples_end):
                 
                 lnpredict = self.model.predict(X[i_samples,:])
                 lnprob = Y[i_samples]
-                lnarg = lnpredict - lnprob + mean_shift
-                term = exp(lnarg)
-                running_sum[i_chains] += term
+                lnarg = lnpredict - lnprob + MEAN_SHIFT_SIGN*mean_shift
+                term.append(exp(lnarg))
+                
+                
+                
+                running_sum[i_chains] += exp(lnarg)
+                
+                
+                
                 nsamples_per_chain[i_chains] += 1
                 
                 if not lnpredict == -np.inf:
@@ -185,7 +201,34 @@ class Evidence:
                         if lnpredict > self.lnpredictmax else self.lnpredictmax
                     self.lnpredictmin = lnpredict \
                         if lnpredict < self.lnpredictmin else self.lnpredictmin
+                        
+                    term_all.append(exp(lnarg))
                     
+            #running_sum[i_chains] = sum(partials, 0.0)
+            running_msum, partial = msum(term)
+            running_fsum = fsum(term)
+            
+            print("partial[{}] = {}; sum = {}; msum = {}; fsum = {}".format(i_chains, partial, running_sum[i_chains], running_msum, running_fsum))
+            # print("term[] = {}",format(np.array(term)))
+            
+            term_np = np.array(term)
+            print("min, max, mean, med = {}, {}, {}, {}".format(np.min(term_np), np.max(term_np), np.mean(term_np), np.median(term_np)))
+            print("")
+            
+            # won't work if add more chains
+            
+        msum_all, partial_all = msum(term_all)
+        
+        # np.savetxt("examples/data/partial_all.dat", np.array(partial_all))
+
+        term_all_np = np.array(term_all)
+        print("min, max, mean, med = {}, {}, {}, {}".format(np.min(term_all_np), np.max(term_all_np), np.mean(term_all_np), np.median(term_all_np)))        
+        
+        nsamples_tmp = sum(self.nsamples_per_chain)
+        print("partial = {}".format(partial_all))
+
+        print("msum_all = {}, nsamples ={}, evidence_inv2 = {}\n".format(msum_all, nsamples_tmp, msum_all/nsamples_tmp))
+        
         self.process_run()
         
         self.chains_added = True
@@ -211,7 +254,7 @@ class Evidence:
         """
         
         NSAMPLES_EFF_WARNING_LEVEL = 30
-        LNARGMIN_WARNING_LEVEL = -10.0
+        LNARG_WARNING_LEVEL = 10.0
         
         tests_pass = True
         
@@ -222,10 +265,13 @@ class Evidence:
                 .format(np.mean(self.nsamples_eff_per_chain))) 
             tests_pass = False
         
-        if self.lnargmin <= LNARGMIN_WARNING_LEVEL:
-            warnings.warn("Evidence may not be accurate due to low " + 
-                "minimum log of argument. Use model with smaller support.")
+        if (self.lnargmax - self.lnargmin) >= LNARG_WARNING_LEVEL:
+            warnings.warn("Evidence may not be accurate due to large " + 
+                "dynamic range. Use model with smaller support " +
+                "and/or better predictive accuracy.")
             tests_pass = False
+            
+        return tests_pass
 
     def compute_evidence(self):
         """Compute evidence from the inverse evidence.
@@ -343,3 +389,28 @@ def compute_ln_bayes_factor(ev1, ev2):
     
     return (ln_bf12, ln_bf12_std)
     
+    
+
+def msum(iterable):
+    "Full precision summation using multiple floats for intermediate values"
+    #From: http://code.activestate.com/recipes/393090/
+    # Rounded x+y stored in hi with the round-off stored in lo.  Together
+    # hi+lo are exactly equal to x+y.  The inner loop applies hi/lo summation
+    # to each partial so that the list of partial sums remains exact.
+    # Depends on IEEE-754 arithmetic guarantees.  See proof of correctness at:
+    # www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps
+
+    partials = []               # sorted, non-overlapping partial sums
+    for x in iterable:
+        i = 0
+        for y in partials:
+            if abs(x) < abs(y):
+                x, y = y, x
+            hi = x + y
+            lo = y - (hi - x)
+            if lo:
+                partials[i] = lo
+                i += 1
+            x = hi
+        partials[i:] = [x]
+    return sum(partials, 0.0), partials

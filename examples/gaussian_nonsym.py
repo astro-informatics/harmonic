@@ -115,11 +115,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     model.fit(chains_train.samples, chains_train.ln_posterior)    
     if verbose: print("model.R = {}".format(model.R))    
     
-    model.set_R(1.0)
+    model.set_R(4.0)
     if verbose: print("model.R = {}\n".format(model.R))    
 
     # Using chains and model to compute inverse evidence.
     ev = hm.Evidence(chains_test.nchains, model)
+    
+    
+    ev.set_mean_shift(0.0)
+    
+    
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
@@ -162,8 +167,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         .format(ev.lnpredictmin))
     if verbose: print("mean_shift = {}"
         .format(ev.mean_shift))
-    # if verbose: print("running_sum = \n{}"
-    #     .format(ev.running_sum))
+    if verbose: print("running_sum = \n{}"
+        .format(ev.running_sum))
+    if verbose: print("running_sum_total = \n{}"
+        .format(sum(ev.running_sum)))
         
     if verbose: print("\nnsamples_per_chain = \n{}"
         .format(ev.nsamples_per_chain))
@@ -316,13 +323,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 2
+    ndim = 5
     nchains = 100
-    samples_per_chain = 10000
+    samples_per_chain = 50000
     nburn = 500     
     np.random.seed(10)
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=False, plot_surface=False, verbose=False)
+                plot_corner=False, plot_surface=False, verbose=True)
     
