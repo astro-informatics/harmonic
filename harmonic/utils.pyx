@@ -114,7 +114,8 @@ def cross_validation(chains,
                      long nfold=2, 
                      modelClass = md.KernelDensityEstimate, 
                      long seed=-1, bint verbose=False):    
-    """Perform fold validation for given model using chains to be split into validation and training data.
+    """Perform fold validation for given model using chains to be split into 
+    validation and training data.
     
     First, splits data into nfold chunks. Second, fits the model using each of
     the hyper parameters given using all but one of the chunks (the validation
@@ -137,7 +138,7 @@ def cross_validation(chains,
 
     Returns:
         list validation_variances: Mean validation variance (averaged over      
-            nfoldes) for each hyperparameter.
+            nfolds) for each hyperparameter.
 
         Raises:
             ValueError: If MODEL is not one of the posible models

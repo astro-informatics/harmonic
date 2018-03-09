@@ -60,7 +60,7 @@ def init_cov(ndim):
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """Run Gaussian example with diagonal covariance matrix.
+    """Run Gaussian example with non-diagonal covariance matrix.
 
     Args: 
         ndim: Dimension of Gaussian.
@@ -88,7 +88,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Start timer.
     clock = time.clock()
 
-    # Set up and run sampler.        
+    # Set up and run sampler.
+    print("Run sampling...")
     pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))
     if verbose: print("pos.shape = {}".format(pos.shape))
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[inv_cov])
@@ -108,6 +109,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                                     training_proportion=0.05)
     
     # Fit model.
+    print("Fit model...")
     r_scale = np.sqrt(ndim-1)
     if verbose: print("r_scale = {}".format(r_scale))
     domains = [r_scale*np.array([1E-1,1E0])]
@@ -120,7 +122,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     if verbose: print("fit_success = {}".format(fit_success))    
     if verbose: print("objective = {}\n".format(objective))    
         
-    # Using chains and model to compute inverse evidence.
+    # Use chains and model to compute inverse evidence.
+    print("Compute evidence...")
     ev = hm.Evidence(chains_test.nchains, model)    
     # ev.set_mean_shift(0.0)
     ev.add_chains(chains_test)
@@ -165,7 +168,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         .format(ev.lnpredictmin))
     if verbose: print("mean_shift = {}"
         .format(ev.mean_shift))
-    if verbose: print("running_sum = \n{}"
+        
+    if verbose: print("\nrunning_sum = \n{}"
         .format(ev.running_sum))
     if verbose: print("running_sum_total = \n{}"
         .format(sum(ev.running_sum)))
@@ -187,7 +191,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         fig = corner.corner(samples.reshape((-1, ndim)), 
                             labels=labels_corner)
         if savefigs:
-            plt.savefig('corner.png', bbox_inches='tight')        
+            plt.savefig('./plots/corner.png', bbox_inches='tight')        
         
         # Plot using getdist.
         from getdist import plots, MCSamples
@@ -197,7 +201,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         g = plots.getSubplotPlotter()
         g.triangle_plot([mcsamples], filled=True)
         if savefigs:
-            plt.savefig('getdist.png', bbox_inches='tight')
+            plt.savefig('./plots/getdist.png', bbox_inches='tight')
         
         plt.show()        
         
@@ -270,7 +274,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         # Save.
         if savefigs:
-            plt.savefig('posterior_surface.png', bbox_inches='tight')
+            plt.savefig('./plots/posterior_surface.png', bbox_inches='tight')
                 
         # Create image plot of posterior.
         plt.figure()
@@ -285,7 +289,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         plt.ylabel('$x_1$')        
         # Save.
         if savefigs:
-            plt.savefig('posterior_image.png', bbox_inches='tight')        
+            plt.savefig('./plots/posterior_image.png', bbox_inches='tight')        
         
         # Create surface plot of model.
         fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
@@ -310,7 +314,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ax.set_zlim(-0.075, 0.30)
         
         if savefigs:
-            plt.savefig('model_surface.png', bbox_inches='tight')
+            plt.savefig('./plots/model_surface.png', bbox_inches='tight')
                 
         # Create image plot of model.
         plt.figure()        
@@ -321,12 +325,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         plt.xlabel('$x_0$')
         plt.ylabel('$x_1$')
         if savefigs:
-            plt.savefig('model_image.png', bbox_inches='tight')
+            plt.savefig('./plots/model_image.png', bbox_inches='tight')
                     
         plt.show()
         
     clock = time.clock() - clock
-    print("clock = {}s".format(clock))
+    print("execution_time = {}s".format(clock))
 
 if __name__ == '__main__':
     
