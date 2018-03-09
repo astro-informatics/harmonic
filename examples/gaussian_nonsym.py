@@ -3,7 +3,6 @@ import sys
 sys.path.append(".")
 import harmonic as hm
 import emcee
-#import scipy.special as sp
 import time 
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -79,6 +78,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     print("nD Guassian example")
     print("ndim = {}".format(ndim))
 
+    savefigs = False
+
     # Initialise covariance matrix.
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)    
@@ -109,22 +110,19 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Fit model.
     r_scale = np.sqrt(ndim-1)
     if verbose: print("r_scale = {}".format(r_scale))
-    domains = [r_scale*np.array([1E-1,1E1])]
+    domains = [r_scale*np.array([1E-1,1E0])]
     if verbose: print("domains = {}".format(domains))
     model = hm.model.HyperSphere(ndim, domains)
-    model.fit(chains_train.samples, chains_train.ln_posterior)    
+    fit_success, objective = model.fit(chains_train.samples, chains_train.ln_posterior)        
     if verbose: print("model.R = {}".format(model.R))    
-    
-    model.set_R(4.0)
-    if verbose: print("model.R = {}\n".format(model.R))    
-
+    # model.set_R(1.0)
+    # if verbose: print("model.R = {}\n".format(model.R))
+    if verbose: print("fit_success = {}".format(fit_success))    
+    if verbose: print("objective = {}\n".format(objective))    
+        
     # Using chains and model to compute inverse evidence.
-    ev = hm.Evidence(chains_test.nchains, model)
-    
-    
-    ev.set_mean_shift(0.0)
-    
-    
+    ev = hm.Evidence(chains_test.nchains, model)    
+    # ev.set_mean_shift(0.0)
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
@@ -177,8 +175,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     if verbose: print("nsamples_eff_per_chain = \n{}"
         .format(ev.nsamples_eff_per_chain))
 
-
-
     # Create corner/triangle plot.
     if plot_corner:
         
@@ -188,8 +184,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         # Plot using corner.
         import corner        
-        fig = corner.corner(samples.reshape((-1, ndim)), labels=labels_corner)
-        #plt.savefig('corner.png', bbox_inches='tight')        
+        fig = corner.corner(samples.reshape((-1, ndim)), 
+                            labels=labels_corner)
+        if savefigs:
+            plt.savefig('corner.png', bbox_inches='tight')        
         
         # Plot using getdist.
         from getdist import plots, MCSamples
@@ -198,138 +196,148 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                               names=names, labels=labels)        
         g = plots.getSubplotPlotter()
         g.triangle_plot([mcsamples], filled=True)
-        #plt.savefig('getdist.png', bbox_inches='tight')
+        if savefigs:
+            plt.savefig('getdist.png', bbox_inches='tight')
         
         plt.show()        
         
-    # In 2D case, plot surface and samples.    
+    # In 2D case, plot surface/image and samples.    
     if plot_surface and ndim == 2:
-        
+                
         from mpl_toolkits.mplot3d import Axes3D
+        from matplotlib.colors import LightSource
         
         # Define plot parameters.
         nx = 50
         xmin = -3.0
         xmax = 3.0
         
-        # Evaluate ln_posterior over grid.
+        # Evaluate ln_posterior and model over grid.
         x = np.linspace(xmin, xmax, nx)
         y = np.linspace(xmin, xmax, nx)
         x, y = np.meshgrid(x, y)
-        z = np.zeros((nx,nx))        
+        ln_posterior_grid = np.zeros((nx,nx))        
+        ln_model_grid = np.zeros((nx,nx))      
         for i in range(nx):
             for j in range(nx):
-                z[i,j] = ln_posterior(np.array([x[i,j],y[i,j]]), inv_cov)
+                ln_posterior_grid[i,j] = \
+                    ln_posterior(np.array([x[i,j],y[i,j]]), inv_cov)
+                ln_model_grid[i,j] = \
+                    model.predict(np.array([x[i,j],y[i,j]]))
         
-        # Set up axis.
-        fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
-        
-        # Plot surface.
-        # ls = LightSource(270, 45)
-        # To use a custom hillshading mode, override the built-in shading and pass
-        # in the rgb colors of the shaded surface calculated from "shade".
-        #rgb = ls.shade(z, cmap=cm.gist_earth, vert_exag=0.1, blend_mode='soft')
+        # Set up axis for surface plot.
+        fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))        
 
-
-        # Get lighting object for shading surface plots.
-        from matplotlib.colors import LightSource
-
-
-        # Create an instance of a LightSource and use it to illuminate the surface.
+        # Create an instance of a LightSource and use it to illuminate
+        # the surface.
         light = LightSource(60, 120)
-        illuminated_surface = light.shade(np.exp(z), cmap=cm.coolwarm)
+        rgb = np.ones((ln_posterior_grid.shape[0], 
+                       ln_posterior_grid.shape[1], 3))
+        illuminated_surface = \
+            light.shade_rgb(rgb * np.array([0,0.0,1.0]), 
+                            np.exp(ln_posterior_grid))
 
+        # Plot surface.
+        ax.plot_surface(x, y, np.exp(ln_posterior_grid), 
+                        alpha=0.3, linewidth=0, antialiased=False, 
+                        facecolors=illuminated_surface)
         
-        rgb = np.ones((z.shape[0], z.shape[1], 3))
-        illuminated_surface = light.shade_rgb(rgb * np.array([0,0.0,1.0]), np.exp(z))
-
-
-
-        ax.plot_surface(x, y, np.exp(z), alpha=0.3, linewidth=0, antialiased=False, facecolors=illuminated_surface)
-        
-        
-        
-        
-        
-        
-        cset = ax.contour(x, y, np.exp(z), zdir='z', offset=-0.5, cmap=cm.coolwarm)
-        # cset = ax.contourf(x, y, np.exp(z), zdir='z', offset=-0.5, cmap=cm.coolwarm)
-        
-        # cset = ax.contour(x, y, np.exp(z), zdir='x', offset=-4, cmap=cm.coolwarm)
-        # cset = ax.contour(x, y, np.exp(z), zdir='y', offset=4, cmap=cm.coolwarm)
-        # 
-        
+        # Plot contour.
+        cset = ax.contour(x, y, np.exp(ln_posterior_grid), 
+                          zdir='z', offset=-0.5, cmap=cm.coolwarm)        
         
         # Plot samples (for chain 0 only).
         i_chain = 0
-        xplot = samples[i_chain,:,1].reshape((-1, ndim))
-        yplot = samples[i_chain,:,0].reshape((-1, ndim))        
+        xplot = samples[i_chain,:,0].reshape((-1, ndim))
+        yplot = samples[i_chain,:,1].reshape((-1, ndim))        
         # Manually remove samples outside of plot region 
         # (since Matplotlib clipping cannot do this in 3D; see 
         # https://github.com/matplotlib/matplotlib/issues/749).
         xplot[xplot < xmin] = np.nan
         xplot[xplot > xmax] = np.nan        
         yplot[yplot < xmin] = np.nan
-        yplot[yplot > xmax] = np.nan
+        yplot[yplot > xmax] = np.nan        
+        zplot = np.exp(lnprob[i_chain,:].reshape((-1, 1)))                  
+        ax.scatter(xplot, yplot, zplot, c='r', s=5, marker='.')
         
-        zplot = np.exp(lnprob[i_chain,:].reshape((-1, 1))) 
-        
-         
-        ax.scatter(xplot,
-                   yplot,
-                   zplot, 
-                   c='r', s=5, marker='.')
-        
+        # Define additional plot settings.
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(xmin, xmax)
         ax.set_zlim(-0.5, 1.0)
-        
-        # ax.scatter(samples[0,:,0], samples[0,:,1], np.exp(lnprob[0,:]), c='r', s=5, marker='.')
-        
-        # ax.set_zlim(-4.0,0.0)
-        
-        ax.view_init(elev=15.0, azim=110.0)
-        
+        ax.view_init(elev=15.0, azim=110.0)        
         ax.set_xlabel('$x_0$')
         ax.set_ylabel('$x_1$')
         
-        plt.savefig('surface.png', bbox_inches='tight')
+        # Save.
+        if savefigs:
+            plt.savefig('posterior_surface.png', bbox_inches='tight')
+                
+        # Create image plot of posterior.
+        plt.figure()
+        plt.imshow(np.exp(ln_posterior_grid), origin='lower', 
+                   extent=[xmin, xmax, xmin, xmax])
+        plt.contour(x, y, np.exp(ln_posterior_grid), cmap=cm.coolwarm)
+        plt.plot(samples[i_chain,:,0].reshape((-1, ndim)), 
+                 samples[i_chain,:,1].reshape((-1, ndim)), 
+                 'r.', markersize=1)
+        plt.colorbar()
+        plt.xlabel('$x_0$')
+        plt.ylabel('$x_1$')        
+        # Save.
+        if savefigs:
+            plt.savefig('posterior_image.png', bbox_inches='tight')        
         
+        # Create surface plot of model.
+        fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
+        
+        illuminated_surface = \
+            light.shade_rgb(rgb * np.array([0,0.0,1.0]), 
+                            np.exp(ln_model_grid))                            
+        
+        ax.plot_surface(x, y, np.exp(ln_model_grid), 
+                        alpha=0.3, linewidth=0, antialiased=False, 
+                        facecolors=illuminated_surface)
+        
+        cset = ax.contour(x, y, np.exp(ln_model_grid), zdir='z', offset=-0.075, 
+                          cmap=cm.coolwarm)
+        
+        ax.view_init(elev=15.0, azim=110.0)        
+        ax.set_xlabel('$x_0$')
+        ax.set_ylabel('$x_1$')
+        
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(xmin, xmax)
+        ax.set_zlim(-0.075, 0.30)
+        
+        if savefigs:
+            plt.savefig('model_surface.png', bbox_inches='tight')
+                
+        # Create image plot of model.
+        plt.figure()        
+        plt.imshow(np.exp(ln_model_grid), origin='lower', 
+                   extent=[xmin, xmax, xmin, xmax])
+        plt.contour(x, y, np.exp(ln_model_grid), cmap=cm.coolwarm)
+        plt.colorbar()
+        plt.xlabel('$x_0$')
+        plt.ylabel('$x_1$')
+        if savefigs:
+            plt.savefig('model_image.png', bbox_inches='tight')
+                    
         plt.show()
         
-                    
-        # Temporary code to add more chains    
-        # sampler.reset()
-        # (pos, prob, state) = sampler.run_mcmc(pos, 10*samples_per_chain)
-        # samples = np.ascontiguousarray(sampler.chain[:,:,:])
-        # lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])
-        # 
-        # 
-        # chains2 = hm.Chains(ndim)
-        # chains2.add_chains_3d(samples, lnprob)
-        # 
-        # chains_train2, chains_test2 = hm.utils.split_data(chains2, training_proportion=0.01)
-        # 
-        # ev.add_chains(chains_test2)
-        # 
-        # 
-        # print("ln_rho_est = ", np.log(ev.evidence_inv), \
-        #     " rel error = ", np.sqrt(ev.evidence_inv_var)/ev.evidence_inv, "(in linear space)")
-                
-
     clock = time.clock() - clock
-
+    print("clock = {}s".format(clock))
 
 if __name__ == '__main__':
     
     # Define parameters.
     ndim = 5
     nchains = 100
-    samples_per_chain = 50000
+    samples_per_chain = 5000
     nburn = 500     
     np.random.seed(10)
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=False, plot_surface=False, verbose=True)
+                plot_corner=False, plot_surface=False, verbose=False)
     
