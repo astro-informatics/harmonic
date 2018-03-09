@@ -324,7 +324,8 @@ class HyperSphere(Model):
                 of shape (nsamples).
         
         Returns:
-            Boolean specifying whether fit successful.
+            success: Boolean specifying whether fit successful.
+            objective: Value of objective at optimal point.
 
         Raises:
             ValueError if the first dimension of X is not the same as Y.
@@ -353,7 +354,7 @@ class HyperSphere(Model):
 
         self.fitted = result.success
 
-        return result.success
+        return result.success, result.fun
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Use model to predict the value of log_e posterior at point x.

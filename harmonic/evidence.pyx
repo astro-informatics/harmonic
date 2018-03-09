@@ -6,6 +6,7 @@ from math import fsum
 import warnings
 from enum import Enum
 
+
 class Optimisation(Enum):
     """Enumeration to define whether to optimise for speed or accuracy.  In
     practices accuracy optimisation does not make a great deal of difference.
@@ -14,10 +15,12 @@ class Optimisation(Enum):
     SPEED = 1
     ACCURACY = 2
 
+
 OPTIMISATION = Optimisation.SPEED
 
 
 MEAN_SHIFT_SIGN = 1.0
+
 
 class Evidence:
     """Compute inverse evidence values from chains, using posterior model.
