@@ -20,10 +20,10 @@ class Chains:
         
         if ndim < 1:
             raise ValueError("ndim must be greater than 0")
-        self.nchains = 0        
+        self.nchains = 0
         self.start_indices = [0] # stores start index of each chain
         self.ndim = ndim
-        self.nsamples = 0        
+        self.nsamples = 0
         self.samples = np.empty((0, self.ndim))
         self.ln_posterior = np.empty((0))
         

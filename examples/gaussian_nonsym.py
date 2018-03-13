@@ -6,6 +6,8 @@ import emcee
 import time 
 import matplotlib.pyplot as plt
 from matplotlib import cm
+sys.path.append("examples")
+import utils
 
 def ln_analytic_evidence(ndim, cov):
     """Compute analytic evidence for nD Gaussian.
@@ -78,7 +80,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     print("nD Guassian example")
     print("ndim = {}".format(ndim))
 
-    savefigs = False
+    savefigs = True
 
     # Initialise covariance matrix.
     cov = init_cov(ndim)
@@ -182,27 +184,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Create corner/triangle plot.
     if plot_corner:
         
-        names = ["x%s"%i for i in range(ndim)]
-        labels =  ["x_%s"%i for i in range(ndim)]
-        labels_corner =  ["$x_%s$"%i for i in range(ndim)]
-        
-        # Plot using corner.
-        import corner        
-        fig = corner.corner(samples.reshape((-1, ndim)), 
-                            labels=labels_corner)
+        utils.plot_corner(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/corner.png', bbox_inches='tight')        
+            plt.savefig('./plots/gaussian_nondiag_corner.png',
+                        bbox_inches='tight')
         
-        # Plot using getdist.
-        from getdist import plots, MCSamples
-        import getdist        
-        mcsamples = MCSamples(samples=samples.reshape((-1, ndim)), 
-                              names=names, labels=labels)        
-        g = plots.getSubplotPlotter()
-        g.triangle_plot([mcsamples], filled=True)
+        utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/getdist.png', bbox_inches='tight')
-        
+            plt.savefig('./plots/gaussian_nondiag_getdist.png',
+                        bbox_inches='tight')
+                
         plt.show()        
         
     # In 2D case, plot surface/image and samples.    
@@ -327,6 +318,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         if savefigs:
             plt.savefig('./plots/model_image.png', bbox_inches='tight')
                     
+                    
+                    
+                    
+        ax = plt.axes(projection='3d')
+        s = samples.reshape((-1,ndim))
+        ax.contour3D(samples[i_chain,:,0].reshape((-1, ndim)), samples[i_chain,:,1].reshape((-1, ndim)), lnprob[i_chain,:].reshape((-1,1)), 50, cmap='binary')
+
+                    
+                    
         plt.show()
         
     clock = time.clock() - clock
@@ -335,7 +335,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 5
+    ndim = 2
     nchains = 100
     samples_per_chain = 5000
     nburn = 500     
@@ -343,5 +343,5 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=False, plot_surface=False, verbose=False)
+                plot_corner=False, plot_surface=True, verbose=False)
     
