@@ -175,12 +175,23 @@ def cross_validation(chains,
             model.fit(chains_fit.samples,chains_fit.ln_posterior)
 
             # Calculate evidence
-            cal_ev = cbe.Evidence(chains_val.nchains, model)
-            cal_ev.add_chains(chains_val)
+            ev = cbe.Evidence(chains_val.nchains, model)
+            ev.add_chains(chains_val)
 
             if verbose:
-                print(cal_ev.evidence_inv, cal_ev.evidence_inv_var, cal_ev.evidence_inv_var**0.5/cal_ev.evidence_inv, cal_ev.evidence_inv_var_var)
+                print("cross_validation: ifold = {}; hyper_parameter = {}", 
+                      i_fold, hyper_parameter)                
+                print("cross_validation: evidence_inv = {}"
+                      .format(ev.evidence_inv))
+                print("cross_validation: evidence_inv_var = {}"
+                      .format(ev.evidence_inv_var))
+                print("cross_validation: evidence_inv_var**0.5/evidence_inv = {}"
+                    .format(ev.evidence_inv_var**0.5/ev.evidence_inv))
+                print("cross_validation: evidence_inv_var_var = {}"
+                    .format(ev.evidence_inv_var**0.5/ev.evidence_inv_var_var))
+                
+                print(ev.evidence_inv, ev.evidence_inv_var, ev.evidence_inv_var**0.5/ev.evidence_inv, ev.evidence_inv_var_var)
 
-            validation_variances[i_fold,i_val] = cal_ev.evidence_inv_var
+            validation_variances[i_fold,i_val] = ev.evidence_inv_var
 
     return np.mean(validation_variances, axis=0)
