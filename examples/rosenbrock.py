@@ -169,11 +169,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx * dy
         if verbose: print("dx = {}".format(dx))
         if verbose: print("dy = {}".format(dy))
-        print("evidence_numerical_integration = {}".
+        print("evidence_numerical_integration = {}"
             .format(evidence_numerical_integration))
     
     # Display results.
-    print("evidence_numerical_integration = {}".format(evidence_numerical_integration))
+    print("evidence_numerical_integration = {}"
+        .format(evidence_numerical_integration))
     print("evidence = {}".format(np.exp(ln_evidence)))
     print("evidence_std = {}".format(np.exp(ln_evidence_std)))
     print("evidence_std / evidence = {}"
@@ -190,10 +191,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         .format(np.sqrt(ev.evidence_inv_var)))
     if verbose: print("evidence_inv_std / evidence_inv = {}"
         .format(np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-    if verbose: 
-        print("|evidence_numerical_integration_inv - evidence_inv| / evidence_inv = {}"
-            .format(np.abs(1.0/evidence_numerical_integration - ev.evidence_inv)/ev.evidence_inv))
     
+    if verbose: print(
+        "|evidence_numerical_integration_inv - evidence_inv| / evidence_inv = {}"
+        .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) 
+                / ev.evidence_inv))
+
     if verbose: print("\nlnargmax = {}"
         .format(ev.lnargmax))
     if verbose: print("lnargmin = {}"
@@ -222,10 +225,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     
     
     
-    # TODO: tidy up printing in cross validation
+    # TODO: tidy up printing in cross validation DONE
     # TODO: plotting
-    # TODO: evidence calculation by numerical integration
-    # TODO: extend to higher dimensions
+    # TODO: evidence calculation by numerical integration DONE
+    # TODO: consider uniform prior?
+    # TODO: extend to higher dimensions?
     
 
 
