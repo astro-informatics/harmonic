@@ -179,18 +179,17 @@ def cross_validation(chains,
             ev.add_chains(chains_val)
 
             if verbose:
-                print("cross_validation: ifold = {}; hyper_parameter = {}", 
-                      i_fold, hyper_parameter)                
+                print("cross_validation: ifold = {}; hyper_parameter = {}"
+                      .format(i_fold, hyper_parameter))
                 print("cross_validation: evidence_inv = {}"
                       .format(ev.evidence_inv))
                 print("cross_validation: evidence_inv_var = {}"
                       .format(ev.evidence_inv_var))
-                print("cross_validation: evidence_inv_var**0.5/evidence_inv = {}"
-                    .format(ev.evidence_inv_var**0.5/ev.evidence_inv))
+                print("cross_validation:" + 
+                      " evidence_inv_var**0.5/evidence_inv = {}"
+                      .format(ev.evidence_inv_var**0.5/ev.evidence_inv))
                 print("cross_validation: evidence_inv_var_var = {}"
-                    .format(ev.evidence_inv_var**0.5/ev.evidence_inv_var_var))
-                
-                print(ev.evidence_inv, ev.evidence_inv_var, ev.evidence_inv_var**0.5/ev.evidence_inv, ev.evidence_inv_var_var)
+                      .format(ev.evidence_inv_var_var))
 
             validation_variances[i_fold,i_val] = ev.evidence_inv_var
 
