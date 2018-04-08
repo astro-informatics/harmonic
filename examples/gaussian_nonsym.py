@@ -1,11 +1,11 @@
 import numpy as np
 import sys
-sys.path.append(".")
-import harmonic as hm
 import emcee
 import time 
 import matplotlib.pyplot as plt
 from matplotlib import cm
+sys.path.append(".")
+import harmonic as hm
 sys.path.append("examples")
 import utils
 

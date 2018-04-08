@@ -1,11 +1,11 @@
 import numpy as np
 import sys
-sys.path.append(".")
-import harmonic as hm
 import emcee
 import time 
 import matplotlib.pyplot as plt
 from functools import partial
+sys.path.append(".")
+import harmonic as hm
 sys.path.append("examples")
 import utils
 
@@ -89,7 +89,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     
     print("Rosenbrock example")
-    print("ndim = {}".format(ndim))
+    print("ndim = {}".format(ndim))    
 
     # Set parameters.
     savefigs = False
@@ -105,6 +105,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     sigma = 50.0
     if verbose: print("a, b, mu, sigma = {}, {}, {}, {}"
         .format(a, b, mu, sigma))
+    
 
     # Start timer.
     clock = time.clock()
@@ -163,14 +164,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             utils.eval_func_on_grid(ln_posterior_func, 
                                     xmin=-10.0, xmax=10.0, 
                                     ymin=-5.0, ymax=15.0, 
-                                    nx=500, ny=500)
+                                    nx=1000, ny=1000)
         dx = x_grid[0,1] - x_grid[0,0]
         dy = y_grid[1,0] - y_grid[0,0]
         evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx * dy
         if verbose: print("dx = {}".format(dx))
-        if verbose: print("dy = {}".format(dy))
-        print("evidence_numerical_integration = {}"
-            .format(evidence_numerical_integration))
+        if verbose: print("dy = {}".format(dy))        
     
     # Display results.
     print("evidence_numerical_integration = {}"
@@ -221,20 +220,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         .format(ev.nsamples_per_chain))
     if verbose: print("nsamples_eff_per_chain = \n{}"
         .format(ev.nsamples_eff_per_chain))
-    
-    
-    
-    
-    # TODO: tidy up printing in cross validation DONE
-    # TODO: plotting
-    # TODO: evidence calculation by numerical integration DONE
-    # TODO: consider uniform prior?
-    # TODO: extend to higher dimensions?
-    
-
-
 
     # Create corner/triangle plot.
+    created_plots = False
     if plot_corner:
         
         utils.plot_corner(samples.reshape((-1, ndim)))
@@ -247,83 +235,66 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             plt.savefig('./plots/rosenbrock_getdist.png',
                         bbox_inches='tight')
         
-        plt.show()  
+        plt.show(block=False)  
+        created_plots = True
             
     # In 2D case, plot surface/image and samples.    
     if plot_surface and ndim == 2:
         
-        
-        
-        # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0
-        
-        # ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid)
+        # Plot ln_posterior surface.
+        # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0 
         i_chain = 0
-        ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid, samples[i_chain,:,:].reshape((-1, ndim)), lnprob[i_chain,:].reshape((-1, 1)))
-        # ax.set_zlim(-100.0, 0.0)
-        # ax.set_zlabel('$ln L$')
+        ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid, 
+                                samples[i_chain,:,:].reshape((-1, ndim)), 
+                                lnprob[i_chain,:].reshape((-1, 1)))
+        # ax.set_zlim(-100.0, 0.0)                
+        ax.set_zlabel('$\log \mathcal{L}$')        
+        if savefigs:
+            plt.savefig('./plots/rosenbrock_lnposterior_surface.png',
+                        bbox_inches='tight')
         
-        
-        
-        
-        ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, samples.reshape((-1,ndim)))
+        # Plot posterior image.
+        ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, 
+                              samples.reshape((-1,ndim)),
+                              colorbar_label='$\mathcal{L}$')
+        # ax.set_clim(vmin=0.0, vmax=0.003)
+        if savefigs:
+            plt.savefig('./plots/rosenbrock_posterior_image.png',
+                        bbox_inches='tight')
 
-        func_eval_grid, x_grid, y_grid = \
+        # Evaluate model on grid.
+        model_grid, x_grid, y_grid = \
             utils.eval_func_on_grid(model.predict, 
-                                    xmin=-3.0, xmax=3.0, 
-                                    ymin=-2.0, ymax=12.0, 
+                                    xmin=-10.0, xmax=10.0, 
+                                    ymin=-5.0, ymax=15.0, 
                                     nx=1000, ny=1000)
-
-        ax = utils.plot_image((func_eval_grid), x_grid, y_grid)
-
-        ax = utils.plot_image(np.exp(func_eval_grid), x_grid, y_grid)
-
-
+        # model_grid[model_grid<-100.0] = -100.0 
         
+        # Plot model.
+        ax = utils.plot_image(model_grid, x_grid, y_grid, 
+                              colorbar_label='$\log \phi$') 
+        # ax.set_clim(vmin=-2.0, vmax=2.0)
+        if savefigs:
+            plt.savefig('./plots/rosenbrock_model_image.png',
+                        bbox_inches='tight')
+        
+        # Plot exponential of model.
+        ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
+                              colorbar_label='$\phi$')
+        # ax.set_clim(vmin=0.0, vmax=10.0)        
+        if savefigs:
+            plt.savefig('./plots/rosenbrock_modelexp_image.png',
+                        bbox_inches='tight')
 
-        # func_eval_grid[func_eval_grid<-100.0] = -100.0        
-
-
-
-        # func_eval_grid, x_grid, y_grid = \
-        #     utils.eval_func_on_grid(model.predict, 
-        #                             xmin=-3.0, xmax=3.0, 
-        #                             ymin=-2.0, ymax=7.0, 
-        #                             nx=500, ny=500)
-        # 
-        # ax = utils.plot_surface(func_eval_grid, x_grid, y_grid)
-        # # ax.set_zlim(-20.0, 0.0)
-        # ax.set_zlabel('$ln L$')
-        # 
-        # ax = utils.plot_image(func_eval_grid, x_grid, y_grid)
-
-        # ax.set_vmin(-10.0)
-        # ax.set_vmax(1.0)
-
-        # ax.set_clim(vmin=-3.0) 
-        # ax.set_clim(vmax=10.0) 
-
-        # 
-        plt.show()  
-
-
-    # plot_sample = False
-
-    # 
-    # print("samples drawn")
-    # 
-    # if plot_sample:
-    #     plt.plot(sampler.chain[0,:,0])
-    #     plt.plot(sampler.chain[0,:,1])
-    #     plt.show()
-    # 
-    #     import corner
-    #     fig = corner.corner(samples.reshape((-1, ndim)))
-    #     plt.show()
-
+        plt.show(block=False)  
+        created_plots = True
 
     clock = time.clock() - clock
     print("execution_time = {}s".format(clock))
 
+    if created_plots:
+        input("\nPress Enter to continue...")
+    
     return samples
 
 
@@ -338,6 +309,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=False, plot_surface=True, verbose=True)
-                
-
+                          plot_corner=False, plot_surface=False, verbose=False)

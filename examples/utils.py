@@ -42,7 +42,8 @@ def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
     return func_eval_grid, x_grid, y_grid
  
 
-def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None):
+def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
+                 contour_z_offset=None):
     # xmin, xmax, ymin, ymax, nx, ny, samples=None, ln_vals=None):
     
     # if samples is not None then ln_vals must also be not None
@@ -68,23 +69,18 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None):
                     # cmap=cm.coolwarm, 
                     facecolors=illuminated_surface)
     
-    
     # Plot contour.
-    # cset = ax.contour(x_grid, y_grid, func_eval_grid, 
-    #                   zdir='z', offset=-0.5, cmap=cm.coolwarm)  
-                
-                
-                
-                
+    if contour_z_offset is not None:
+        cset = ax.contour(x_grid, y_grid, func_eval_grid, 
+                          zdir='z', offset=contour_z_offset, cmap=cm.coolwarm)  
+
+    # Set domain.
     xmin = np.min(x_grid)
     xmax = np.max(x_grid) 
     ymin = np.min(y_grid)
     ymax = np.max(y_grid)
-                
-                
-                  
+
     # # Plot samples.
-    # i_chain = 0
     if samples is not None:
         xplot = samples[:,0]
         yplot = samples[:,1]
@@ -97,35 +93,38 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None):
         yplot[yplot > ymax] = np.nan        
         zplot = vals
         ax.scatter(xplot, yplot, zplot, c='r', s=5, marker='.')
-    # 
+    
     # Define additional plot settings.
     ax.set_xlim(xmin, xmax)
-    ax.set_ylim(ymin, ymax)
-    # ax.set_zlim(-20.0, 1.0)
+    ax.set_ylim(ymin, ymax)    
     ax.view_init(elev=15.0, azim=110.0)        
     ax.set_xlabel('$x_0$')
-    ax.set_ylabel('$x_1$')
-    # ax.set_zlabel('$ln L$')
+    ax.set_ylabel('$x_1$')   
+     
     return ax
     
     
-    
-def plot_image(func_eval_grid, x_grid, y_grid, samples=None):
+def plot_image(func_eval_grid, x_grid, y_grid, samples=None, 
+               colorbar_label=None, plot_contour=False):
 
     plt.figure()
     ax = plt.imshow(func_eval_grid, origin='lower', 
-               extent=[np.min(x_grid), np.max(x_grid), 
-                       np.min(y_grid), np.max(y_grid)])
-               # vmin=-100.0, vmax=0.0)
-    # plt.contour(x_grid, y_grid, func_eval_grid, cmap=cm.coolwarm)
+                    extent=[np.min(x_grid), np.max(x_grid), 
+                            np.min(y_grid), np.max(y_grid)])
+
+    if plot_contour:
+        plt.contour(x_grid, y_grid, func_eval_grid, cmap=cm.coolwarm)
     
     if samples is not None:
-        
         plt.plot(samples[:,0], 
                  samples[:,1], 
                  'r.', markersize=1)
                  
-    plt.colorbar()
+    if colorbar_label is not None:
+        plt.colorbar(label=colorbar_label)
+    else:
+        plt.colorbar()
+        
     plt.xlabel('$x_0$')
     plt.ylabel('$x_1$')   
     
