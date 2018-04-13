@@ -1,7 +1,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 import argparse
-import many_real_gaussian_nonsym_lowdim as results
+import gaussian_nonsym_multirealisations as results
 
 # Run by:
 # ~/Src/harmonic   review  python examples/plot_example.py examples/data/many_real_gaussian_nonsym_lowdim

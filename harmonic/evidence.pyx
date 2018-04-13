@@ -60,6 +60,7 @@ class Evidence:
         self.evidence_inv = 0.0
         self.evidence_inv_var = 0.0
         self.evidence_inv_var_var = 0.0
+        self.kurtosis = 0.0
 
         self.mean_shift_set = False
         self.mean_shift = 0.0
@@ -134,6 +135,7 @@ class Evidence:
         evidence_inv_var /= nsamples
         kur /= nsamples
         kur /= evidence_inv_var*evidence_inv_var
+        self.kurtosis = kur
 
         self.evidence_inv = evidence_inv*exp(-MEAN_SHIFT_SIGN*self.mean_shift)
         self.evidence_inv_var = \

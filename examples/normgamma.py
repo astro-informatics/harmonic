@@ -221,7 +221,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 print("Using HyperSphere")
                 model = hm.model.HyperSphere(ndim, domains_sphere, \
                     hyper_parameters=best_hyper_param_sphere)
-            model.fit(chains_train.samples, chains_train.ln_posterior)
+            fit_success = model.fit(chains_train.samples,
+                                    chains_train.ln_posterior)
+            if verbose: print("fit_success = {}".format(fit_success))    
 
             # Use chains and model to compute evidence.
             print("Compute evidence...")
@@ -266,7 +268,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 .format(np.sqrt(ev.evidence_inv_var)))
             if verbose: print("evidence_inv_std / evidence_inv = {}"
                 .format(np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-
+            if verbose: print("kurtosis = {}"
+                .format(ev.kurtosis))    
+            if verbose: print("sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var = {}"
+                .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
             if verbose: print(
                 "|evidence_inv_analytic - evidence_inv| / evidence_inv = {}"
                 .format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) 
@@ -359,4 +364,4 @@ if __name__ == '__main__':
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
                           plot_corner=False, plot_comparison=True, 
-                          verbose=False)
+                          verbose=True)

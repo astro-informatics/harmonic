@@ -190,7 +190,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         .format(np.sqrt(ev.evidence_inv_var)))
     if verbose: print("evidence_inv_std / evidence_inv = {}"
         .format(np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-    
+    if verbose: print("kurtosis = {}"
+        .format(ev.kurtosis))    
+    if verbose: print("sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var = {}"
+        .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
     if verbose: print(
         "|evidence_inv_numerical_integration - evidence_inv| / evidence_inv = {}"
         .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) 
