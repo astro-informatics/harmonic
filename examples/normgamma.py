@@ -11,19 +11,36 @@ sys.path.append("examples")
 import utils
 
 
-# To be removed...
-def ln_likelihood_original(x_info, mu, tau):
-    return -0.5*x_info[2]*tau*(x_info[1]+(x_info[0]-mu)**2) - 0.5*(x_info[2])*np.log(2*np.pi) + 0.5*(x_info[2])*np.log(tau)
-
-
-
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
+    """Compute log_e of likelihood.
+
+    Args: 
+        x_mean: Mean of simulated data.
+        x_std: Standard deviation of simulated data.
+        x_n: Number of samples of simulated data.
+        mu: Mu value for which to evaluate prior.
+        tau: Tau value for which to evaluate prior.
+        
+    Returns:
+        double: Value of log_e likelihood at specified (mu, tau) point.
+    """
     
     return -0.5 * x_n * tau * (x_std**2 + (x_mean-mu)**2) \
         - 0.5 * x_n * np.log(2 * np.pi) + 0.5 * x_n * np.log(tau)
 
 
 def ln_prior(mu, tau, prior_params):
+    """Compute log_e of prior.
+
+    Args: 
+        mu: Mu value for which to evaluate prior.
+        tau: Tau value for which to evaluate prior.
+        prior_params: Tuple of prior parameters, including (mu_0, tau_0, 
+            alpha_0, beta_0).        
+        
+    Returns:
+        double: Value of log_e prior at specified (mu, tau) point.
+    """
 
     if tau < 0:
         return -np.inf
@@ -40,6 +57,19 @@ def ln_prior(mu, tau, prior_params):
 
 
 def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
+    """Compute log_e of posterior.
+    
+    Args: 
+        theta: Position (mu, tau) at which to evaluate posterior.
+        x_mean: Mean of simulated data.
+        x_std: Standard deviation of simulated data.
+        x_n: Number of samples of simulated data.
+        prior_params: Tuple of prior parameters, including (mu_0, tau_0, 
+            alpha_0, beta_0).        
+        
+    Returns:
+        double: Value of log_e posterior at specified (mu, tau) point.
+    """
     
     mu, tau = theta
 
@@ -70,11 +100,23 @@ def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
     return ln_z
 
 
-
-
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_comparison=False):
+    """Run Normal-Gamma example.
+
+    Args: 
+        ndim: Dimension of Gaussian.
+        nchains: Number of chains.
+        samples_per_chain: Number of samples per chain.
+        nburn: Number of burn in samples.
+        plot_corner: Plot marginalised distributions if true.
+        plot_comparison: Plot accuracy for various tau priors if true.
+        verbose: If True then display intermediate results.
+        
+    Returns:
+        None.
+    """
                 
     print("Normal-Gamma example")
 
@@ -83,7 +125,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     mu_in  = 0.0
     tau_in = 1.0
     tau_array = [1E-4, 1E-3, 1E-2, 1E-1, 1E0]
-    # tau_array = [1E-4, 1E-2]
 
     savefigs = True
     
@@ -313,9 +354,9 @@ if __name__ == '__main__':
     nchains = 200
     samples_per_chain = 1500
     nburn = 500
-    np.random.seed(1)
+    np.random.seed(2)
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_comparison=True, verbose=False)
-
+                          plot_corner=False, plot_comparison=True, 
+                          verbose=False)
