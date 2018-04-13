@@ -1,58 +1,94 @@
 import numpy as np
 import sys
-sys.path.append(".")
-import harmonic as hm
 import emcee
 import scipy.special as sp
 import time 
 import matplotlib.pyplot as plt
+sys.path.append(".")
+import harmonic as hm
 
-def ln_Likelyhood(x_info, mu, tau):
+
+def ln_likelihood_original(x_info, mu, tau):
     return -0.5*x_info[2]*tau*(x_info[1]+(x_info[0]-mu)**2) - 0.5*(x_info[2])*np.log(2*np.pi) + 0.5*(x_info[2])*np.log(tau)
 
-def ln_Prior(mu, tau, prior_prams):
+
+
+def ln_likelihood(x_info, mu, tau):
+    
+    x_mean = x_info[0]
+    x_std = x_info[1]
+    x_n = x_info[2]
+    
+    return -0.5 * x_n * tau * (x_std + (x_mean-mu)**2) \
+        - 0.5 * x_n * np.log(2 * np.pi) + 0.5 * x_n * np.log(tau)
+
+
+def ln_prior(mu, tau, prior_prams):
 
     if tau < 0:
         return -np.inf
 
-    mu0, lamb, alpha, beta = prior_prams
+    mu_0, tau_0, alpha_0, beta_0 = prior_prams
 
-    ln_Prior_in =  alpha*np.log(beta) + 0.5*np.log(lamb) - sp.gammaln(alpha) - 0.5*np.log(2*np.pi)
-    ln_Prior_in += (alpha-0.5)*np.log(tau)
-    ln_Prior_in += -beta*tau
-    ln_Prior_in += -0.5*lamb*tau*(mu-mu0)**2
-    return ln_Prior_in
+    ln_pr = alpha_0 * np.log(beta_0) + 0.5 * np.log(tau_0) 
+    ln_pr += - sp.gammaln(alpha_0) - 0.5 * np.log(2*np.pi)
+    ln_pr += (alpha_0 - 0.5) * np.log(tau)
+    ln_pr += -beta_0 * tau
+    ln_pr += -0.5 * tau_0 * tau * (mu - mu_0)**2
+    
+    return ln_pr
 
-def ln_Posterior(theta, x_info, prior_prams):
+
+def ln_posterior(theta, x_info, prior_prams):
+    
     mu, tau = theta
 
-    ln_Pr = ln_Prior(mu, tau, prior_prams)
+    ln_pr = ln_prior(mu, tau, prior_prams)
 
-    if not np.isfinite(ln_Pr):
+    if not np.isfinite(ln_pr):
         return -np.inf
 
-    ln_L   = ln_Likelyhood(x_info, mu, tau)
+    ln_L = ln_likelihood(x_info, mu, tau)
  
-    return  ln_L +ln_Pr
-
-def ln_analytic_evidence(x, prior_prams):
-    mu0, lamb, alpha, beta = prior_prams
-
-    lamb_n  = lamb  + x.size
-    alpha_n = alpha + x.size/2
-    beta_n  = beta + 0.5*x.size*np.std(x) + lamb*x.size*(np.mean(x)-mu0)**2/(2*(lamb+x.size))
+    return  ln_L + ln_pr
 
 
-    ln_z  = sp.gammaln(alpha_n) - sp.gammaln(alpha)
-    ln_z += alpha*np.log(beta)  - alpha_n*np.log(beta_n)
-    ln_z += 0.5*np.log(lamb)    - 0.5*np.log(lamb_n)
-    ln_z -= 0.5*x.size*np.log(2*np.pi)
+def ln_analytic_evidence(x_info, prior_prams):
+    
+    mu_0, tau_0, alpha_0, beta_0 = prior_prams
+
+    # x_mean = np.mean(x)
+    # x_std = np.std(x)
+    # x_n = x.size
+    x_mean = x_info[0]
+    x_std = x_info[1]
+    x_n = x_info[2]
+
+    tau_n  = tau_0  + x_n
+    alpha_n = alpha_0 + x_n/2
+    beta_n  = beta_0 + 0.5 * x_n * x_std \
+        + tau_0 * x_n * (x_mean - mu_0)**2 / (2 * (tau_0 + x_n))
+
+    ln_z  = sp.gammaln(alpha_n) - sp.gammaln(alpha_0)
+    ln_z += alpha_0 * np.log(beta_0) - alpha_n * np.log(beta_n)
+    ln_z += 0.5 * np.log(tau_0) - 0.5 * np.log(tau_n)
+    ln_z -= 0.5 * x_n * np.log(2*np.pi)
 
     return ln_z
 
+
+
+
+
+np.random.seed(1)
+
 print("Norm Gamma example:")
 
-x = np.loadtxt("examples/data/norm_dist_numbers_0_1.txt")
+n_meas = 100
+mu_in  = 0.0
+tau_in = 1.0
+# x = np.loadtxt("examples/data/norm_dist_numbers_0_1.txt")
+x = np.random.normal(mu_in, np.sqrt(1/tau_in), (n_meas))
 
 x_info = [np.mean(x), np.std(x), x.size]
 
@@ -90,8 +126,9 @@ for lamb_el in lamb_array:
     for i_real in range(n_real):
         pos = [np.array([x_info[0],1.0/x_info[1]**2]) + x_info[1]*np.random.randn(ndim)/np.sqrt(x_info[2]) for i in range(nchains)]
 
-        sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior, args=(x_info, prior_prams))
-        sampler.run_mcmc(pos, samples_per_chain)
+        sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=(x_info, prior_prams))
+        rstate = np.random.get_state()
+        sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
 
         samples = np.ascontiguousarray(sampler.chain[:,burn_in:,:])
         Y = np.ascontiguousarray(sampler.lnprobability[:,burn_in:])
@@ -137,7 +174,7 @@ for lamb_el in lamb_array:
         cal_ev = hm.Evidence(chains_test.nchains, model)
         cal_ev.add_chains(chains_test)
 
-        ln_rho = -ln_analytic_evidence(x, prior_prams)
+        ln_rho = -ln_analytic_evidence(x_info, prior_prams)
         print("ln_rho = ", ln_rho)
         print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
             " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
