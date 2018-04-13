@@ -13,22 +13,18 @@ def ln_likelihood_original(x_info, mu, tau):
 
 
 
-def ln_likelihood(x_info, mu, tau):
-    
-    x_mean = x_info[0]
-    x_std = x_info[1]
-    x_n = x_info[2]
+def ln_likelihood(x_mean, x_std, x_n, mu, tau):
     
     return -0.5 * x_n * tau * (x_std + (x_mean-mu)**2) \
         - 0.5 * x_n * np.log(2 * np.pi) + 0.5 * x_n * np.log(tau)
 
 
-def ln_prior(mu, tau, prior_prams):
+def ln_prior(mu, tau, prior_params):
 
     if tau < 0:
         return -np.inf
 
-    mu_0, tau_0, alpha_0, beta_0 = prior_prams
+    mu_0, tau_0, alpha_0, beta_0 = prior_params
 
     ln_pr = alpha_0 * np.log(beta_0) + 0.5 * np.log(tau_0) 
     ln_pr += - sp.gammaln(alpha_0) - 0.5 * np.log(2*np.pi)
@@ -39,30 +35,23 @@ def ln_prior(mu, tau, prior_prams):
     return ln_pr
 
 
-def ln_posterior(theta, x_info, prior_prams):
+def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
     
     mu, tau = theta
 
-    ln_pr = ln_prior(mu, tau, prior_prams)
+    ln_pr = ln_prior(mu, tau, prior_params)
 
     if not np.isfinite(ln_pr):
         return -np.inf
 
-    ln_L = ln_likelihood(x_info, mu, tau)
+    ln_L = ln_likelihood(x_mean, x_std, x_n, mu, tau)
  
     return  ln_L + ln_pr
 
 
-def ln_analytic_evidence(x_info, prior_prams):
+def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
     
-    mu_0, tau_0, alpha_0, beta_0 = prior_prams
-
-    # x_mean = np.mean(x)
-    # x_std = np.std(x)
-    # x_n = x.size
-    x_mean = x_info[0]
-    x_std = x_info[1]
-    x_n = x_info[2]
+    mu_0, tau_0, alpha_0, beta_0 = prior_params
 
     tau_n  = tau_0  + x_n
     alpha_n = alpha_0 + x_n/2
@@ -82,7 +71,7 @@ def ln_analytic_evidence(x_info, prior_prams):
 
 np.random.seed(1)
 
-print("Norm Gamma example:")
+print("Norm Gamma example")
 
 n_meas = 100
 mu_in  = 0.0
@@ -90,7 +79,9 @@ tau_in = 1.0
 # x = np.loadtxt("examples/data/norm_dist_numbers_0_1.txt")
 x = np.random.normal(mu_in, np.sqrt(1/tau_in), (n_meas))
 
-x_info = [np.mean(x), np.std(x), x.size]
+x_mean = np.mean(x)
+x_std = np.std(x)
+x_n = x.size
 
 ndim = 2
 
@@ -120,13 +111,13 @@ domains = [max_r_prob*np.array([1E-1,1E1])]
 lamb_array = [1E-3, 1E-2, 1E-1, 1E0]
 
 for lamb_el in lamb_array:
-    prior_prams = (0.0, lamb_el, 1E-3, 1E-3)
+    prior_params = (0.0, lamb_el, 1E-3, 1E-3)
 
 
     for i_real in range(n_real):
-        pos = [np.array([x_info[0],1.0/x_info[1]**2]) + x_info[1]*np.random.randn(ndim)/np.sqrt(x_info[2]) for i in range(nchains)]
+        pos = [np.array([x_mean,1.0/x_std**2]) + x_std*np.random.randn(ndim)/np.sqrt(x_n) for i in range(nchains)]
 
-        sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=(x_info, prior_prams))
+        sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=(x_mean, x_std, x_n, prior_params))
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
 
@@ -174,7 +165,7 @@ for lamb_el in lamb_array:
         cal_ev = hm.Evidence(chains_test.nchains, model)
         cal_ev.add_chains(chains_test)
 
-        ln_rho = -ln_analytic_evidence(x_info, prior_prams)
+        ln_rho = -ln_analytic_evidence(x_mean, x_std, x_n, prior_params)
         print("ln_rho = ", ln_rho)
         print("ln_rho_est = ", np.log(cal_ev.evidence_inv), \
             " rel error = ", np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv, "(in linear space)")
