@@ -61,6 +61,7 @@ class Evidence:
         self.evidence_inv_var = 0.0
         self.evidence_inv_var_var = 0.0
         self.kurtosis = 0.0
+        self.n_eff = 0
 
         self.mean_shift_set = False
         self.mean_shift = 0.0
@@ -132,6 +133,7 @@ class Evidence:
             kur += nsamples_per_chain[i_chains]*dummy*dummy*dummy*dummy
 
         n_eff = <double>nsamples*<double>nsamples/n_eff
+        self.n_eff = n_eff
         evidence_inv_var /= nsamples
         kur /= nsamples
         kur /= evidence_inv_var*evidence_inv_var
