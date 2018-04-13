@@ -1,5 +1,4 @@
 import numpy as np
-
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import LightSource
@@ -9,6 +8,14 @@ from getdist import plots, MCSamples
 
 
 def plot_corner(samples):
+    """Plot triangle plot of marginalised distributions using corner package.
+    
+    Args:
+        samples: 2D array of shape (ndim, nsamples) containing samplesself.
+        
+    Returns:
+        None    
+    """
     
     ndim = samples.shape[1]    
     labels_corner =  ["$x_%s$"%i for i in range(ndim)]    
@@ -16,7 +23,15 @@ def plot_corner(samples):
     
     
 def plot_getdist(samples):
+    """Plot triangle plot of marginalised distributions using getdist package.
 
+    Args:
+        samples: 2D array of shape (ndim, nsamples) containing samples.
+        
+    Returns:
+        None    
+    """
+    
     ndim = samples.shape[1]    
     names = ["x%s"%i for i in range(ndim)]
     labels =  ["x_%s"%i for i in range(ndim)]    
@@ -28,7 +43,23 @@ def plot_getdist(samples):
 
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
-
+    """Evalute 2D function on a grid.
+    
+    Args:
+        func: Function to evalate.
+        xmin: Minimum x value to consider in grid domain.
+        xmax: Maximum x value to consider in grid domain.
+        ymin: Minimum y value to consider in grid domain.
+        ymax: Maximum y value to consider in grid domain.
+        nx: Number of samples to include in grid in x direction.
+        ny: Number of samples to include in grid in y direction.
+        
+    Returns:
+        func_eval_grid: Function values evaluated on the 2D grid.
+        x_grid: x values over the 2D grid.
+        y_grid: y values over the 2D grid.
+    """
+    
     # Evaluate func over grid.
     x = np.linspace(xmin, xmax, nx)
     y = np.linspace(ymin, ymax, ny)
@@ -44,11 +75,21 @@ def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
 
 def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
                  contour_z_offset=None):
-    # xmin, xmax, ymin, ymax, nx, ny, samples=None, ln_vals=None):
+    """Plot surface defined by 2D function on a grid.  Samples may also be optionally plotted.
     
-    # if samples is not None then ln_vals must also be not None
-    # also check sizes consistent
-    
+    Args:
+        func_eval_grid: Function evalated over 2D grid.
+        x_grid: x values over the 2D grid.
+        y_grid: y values over the 2D grid.
+        samples: 2D array of shape (ndim, nsamples) containing samples.
+        vals: 1D array of function values at sample locations.  Both samples 
+            and vals must be provided if they are to be plotted.
+        contour_z_offset: If not None then plot contour in plane specified by z 
+            offset.
+        
+    Returns:
+        ax: Plot axis.
+    """    
 
     # Set up axis for surface plot.
     fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
@@ -81,7 +122,7 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
     ymax = np.max(y_grid)
 
     # # Plot samples.
-    if samples is not None:
+    if samples is not None and vals is not None:
         xplot = samples[:,0]
         yplot = samples[:,1]
         # Manually remove samples outside of plot region 
@@ -106,6 +147,19 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
     
 def plot_image(func_eval_grid, x_grid, y_grid, samples=None, 
                colorbar_label=None, plot_contour=False):
+    """Plot image defined by 2D function on a grid.  Samples may also be optionally plotted.
+
+    Args:
+        func_eval_grid: Function evalated over 2D grid.
+        x_grid: x values over the 2D grid.
+        y_grid: y values over the 2D grid.
+        samples: 2D array of shape (ndim, nsamples) containing samples.
+        colorbar_label: Text label to include on colorbar.
+        
+    Returns:
+        ax: Plot axis.
+    """ 
+
 
     plt.figure()
     ax = plt.imshow(func_eval_grid, origin='lower', 
@@ -129,3 +183,4 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
     plt.ylabel('$x_1$')   
     
     return ax
+    
