@@ -19,7 +19,7 @@ def ln_likelihood_original(x_info, mu, tau):
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
     
-    return -0.5 * x_n * tau * (x_std + (x_mean-mu)**2) \
+    return -0.5 * x_n * tau * (x_std**2 + (x_mean-mu)**2) \
         - 0.5 * x_n * np.log(2 * np.pi) + 0.5 * x_n * np.log(tau)
 
 
@@ -59,7 +59,7 @@ def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
 
     tau_n  = tau_0  + x_n
     alpha_n = alpha_0 + x_n/2
-    beta_n  = beta_0 + 0.5 * x_n * x_std \
+    beta_n  = beta_0 + 0.5 * x_n * x_std**2 \
         + tau_0 * x_n * (x_mean - mu_0)**2 / (2 * (tau_0 + x_n))
 
     ln_z  = sp.gammaln(alpha_n) - sp.gammaln(alpha_0)
