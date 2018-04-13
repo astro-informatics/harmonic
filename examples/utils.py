@@ -7,26 +7,31 @@ import corner
 from getdist import plots, MCSamples
 
 
-def plot_corner(samples):
+def plot_corner(samples, labels=None):
     """Plot triangle plot of marginalised distributions using corner package.
     
     Args:
-        samples: 2D array of shape (ndim, nsamples) containing samplesself.
+        samples: 2D array of shape (ndim, nsamples) containing samples.
+        labels: Array of strings containing axis labels.
         
     Returns:
         None    
     """
     
     ndim = samples.shape[1]    
-    labels_corner =  ["$x_%s$"%i for i in range(ndim)]    
+    if labels is None:
+        labels_corner =  ["$x_%s$"%i for i in range(ndim)]    
+    else:
+        labels_corner = labels
     fig = corner.corner(samples, labels=labels_corner)
     
     
-def plot_getdist(samples):
+def plot_getdist(samples, labels=None):
     """Plot triangle plot of marginalised distributions using getdist package.
 
     Args:
         samples: 2D array of shape (ndim, nsamples) containing samples.
+        labels: Array of strings containing axis labels.
         
     Returns:
         None    
@@ -34,7 +39,8 @@ def plot_getdist(samples):
     
     ndim = samples.shape[1]    
     names = ["x%s"%i for i in range(ndim)]
-    labels =  ["x_%s"%i for i in range(ndim)]    
+    if labels is None:
+        labels =  ["x_%s"%i for i in range(ndim)]        
     
     mcsamples = MCSamples(samples=samples, 
                           names=names, labels=labels)        

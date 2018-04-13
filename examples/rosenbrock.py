@@ -106,14 +106,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     if verbose: print("a, b, mu, sigma = {}, {}, {}, {}"
         .format(a, b, mu, sigma))
     
-
     # Start timer.
     clock = time.clock()
     
     # Set up and run sampler.
     print("Run sampling...")
     pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
-    sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[a, b, mu, sigma])
+    sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, 
+                                    args=[a, b, mu, sigma])
     rstate = np.random.get_state()
     sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
     samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
@@ -150,7 +150,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
     if verbose: print("fit_success = {}".format(fit_success))    
     
-    # Use chains and model to compute inverse evidence.
+    # Use chains and model to compute evidence.
     print("Compute evidence...")
     ev = hm.Evidence(chains_test.nchains, model)    
     ev.add_chains(chains_test)
@@ -182,7 +182,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     print("|evidence_numerical_integration - evidence| / evidence = {}"
           .format(np.exp(diff - ln_evidence)))
     
-    if verbose: print("\nevidence_inv_analytic = {}"
+    if verbose: print("\nevidence_inv_numerical_integration = {}"
         .format(1.0/evidence_numerical_integration))
     if verbose: print("evidence_inv = {}"
         .format(ev.evidence_inv))
@@ -192,7 +192,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         .format(np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
     
     if verbose: print(
-        "|evidence_numerical_integration_inv - evidence_inv| / evidence_inv = {}"
+        "|evidence_inv_numerical_integration - evidence_inv| / evidence_inv = {}"
         .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) 
                 / ev.evidence_inv))
 
@@ -301,7 +301,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 2
+    ndim = 2 
     nchains = 200
     samples_per_chain = 5000
     nburn = 2000
