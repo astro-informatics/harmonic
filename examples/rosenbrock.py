@@ -253,7 +253,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                 samples[i_chain,:,:].reshape((-1, ndim)), 
                                 lnprob[i_chain,:].reshape((-1, 1)))
         # ax.set_zlim(-100.0, 0.0)                
-        ax.set_zlabel('$\log \mathcal{L}$')        
+        ax.set_zlabel(r'$\log \mathcal{L}$')        
         if savefigs:
             plt.savefig('./plots/rosenbrock_lnposterior_surface.png',
                         bbox_inches='tight')
@@ -261,7 +261,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Plot posterior image.
         ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, 
                               samples.reshape((-1,ndim)),
-                              colorbar_label='$\mathcal{L}$')
+                              colorbar_label=r'$\mathcal{L}$')
         # ax.set_clim(vmin=0.0, vmax=0.003)
         if savefigs:
             plt.savefig('./plots/rosenbrock_posterior_image.png',
@@ -277,7 +277,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         # Plot model.
         ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                              colorbar_label='$\log \phi$') 
+                              colorbar_label=r'$\log \varphi$') 
         # ax.set_clim(vmin=-2.0, vmax=2.0)
         if savefigs:
             plt.savefig('./plots/rosenbrock_model_image.png',
@@ -285,7 +285,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         # Plot exponential of model.
         ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                              colorbar_label='$\phi$')
+                              colorbar_label=r'$\varphi$')
         # ax.set_clim(vmin=0.0, vmax=10.0)        
         if savefigs:
             plt.savefig('./plots/rosenbrock_modelexp_image.png',

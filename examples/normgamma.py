@@ -5,6 +5,8 @@ import scipy.special as sp
 import time 
 import matplotlib
 import matplotlib.pyplot as plt
+from functools import partial
+
 sys.path.append(".")
 import harmonic as hm
 sys.path.append("examples")
@@ -102,7 +104,8 @@ def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
-                plot_corner=False, plot_comparison=False):
+                plot_corner=False, plot_surface=False,
+                plot_comparison=False):
     """Run Normal-Gamma example.
 
     Args: 
@@ -111,7 +114,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         samples_per_chain: Number of samples per chain.
         nburn: Number of burn in samples.
         plot_corner: Plot marginalised distributions if true.
-        plot_comparison: Plot accuracy for various tau priors if true.
+        plot_surface: Plot surface and samples if true.
+        plot_comparison: Plot accuracy for various tau priors if
+            true.
         verbose: If True then display intermediate results.
         
     Returns:
@@ -311,7 +316,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 labels = [r'$\mu$', r'$\tau$']
                 utils.plot_corner(samples.reshape((-1, ndim)), labels)
                 if savefigs:
-                    plt.savefig('./plots/normgamma_corner_tau' + 
+                    plt.savefig('./plots/normalgamma_corner_tau' + 
                                 str(tau_prior) +
                                 '.pdf',
                                 bbox_inches='tight')
@@ -319,13 +324,68 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 labels = [r'\mu', r'\tau']
                 utils.plot_getdist(samples.reshape((-1, ndim)), labels)
                 if savefigs:
-                    plt.savefig('./plots/normgamma_getdist_tau' + 
+                    plt.savefig('./plots/normalgamma_getdist_tau' + 
                                 str(tau_prior) +
                                 '.pdf',
                                 bbox_inches='tight')
                 
                 plt.show(block=False)  
                 created_plots = True
+                
+            if plot_surface:
+                
+                # Evaluate posterior on grid.
+                ln_posterior_func = partial(ln_posterior, 
+                    x_mean=x_mean, x_std=x_std, x_n=x_n, 
+                    prior_params=prior_params)                                
+                ln_posterior_grid, x_grid, y_grid = \
+                    utils.eval_func_on_grid(ln_posterior_func, 
+                                            xmin=-0.6, xmax=0.6, 
+                                            ymin=0.4, ymax=1.8, 
+                                            nx=500, ny=500)
+                
+                # Plot posterior image.
+                ax = utils.plot_image(np.exp(ln_posterior_grid), 
+                                      x_grid, y_grid, 
+                                      samples=None,
+                                      #samples.reshape((-1,ndim)),
+                                      colorbar_label=r'$\mathcal{L}$')
+                # ax.set_clim(vmin=0.0, vmax=0.003)
+                if savefigs:
+                    plt.savefig('./plots/' + 
+                                'normalgamma_posterior_image' +
+                                str(tau_prior) + '.png',
+                                bbox_inches='tight')
+                        
+                # Evaluate model on grid.
+                model_grid, x_grid, y_grid = \
+                    utils.eval_func_on_grid(model.predict, 
+                                            xmin=-0.6, xmax=0.6, 
+                                            ymin=0.4, ymax=1.8, 
+                                            nx=500, ny=500)                
+                
+                # Plot model.
+                ax = utils.plot_image(model_grid, x_grid, y_grid, 
+                    colorbar_label=r'$\log \varphi$') 
+                # ax.set_clim(vmin=-2.0, vmax=2.0)
+                if savefigs:
+                    plt.savefig('./plots/' +
+                                'normalgamma_model_image' +
+                                str(tau_prior) +
+                                '.png',
+                                bbox_inches='tight')
+                
+                # Plot exponential of model.
+                ax = utils.plot_image(np.exp(model_grid), 
+                                      x_grid, y_grid,
+                                      colorbar_label=r'$\varphi$')
+                # ax.set_clim(vmin=0.0, vmax=10.0)        
+                if savefigs:
+                    plt.savefig('./plots/' +
+                                'normalgamma_modelexp_image' +
+                                str(tau_prior) +
+                                '.png',
+                                bbox_inches='tight')                     
                 
     # Display summary results.    
     print("tau_prior | ln_evidence_analytic | ln_evidence =")
@@ -347,7 +407,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             yerr=np.exp(summary[:,3])/np.exp(summary[:,1]), 
             fmt='b.', capsize=4, capthick=2, elinewidth=2)
         if savefigs:
-            plt.savefig('./plots/normgamma_comparison.pdf',
+            plt.savefig('./plots/normalgamma_comparison.pdf',
                         bbox_inches='tight')                        
         plt.show(block=False)   
            
@@ -366,5 +426,6 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_comparison=True, 
+                          plot_corner=False, plot_surface=True,
+                          plot_comparison=True, 
                           verbose=True)
