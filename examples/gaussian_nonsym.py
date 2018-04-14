@@ -273,7 +273,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         # Save.
         if savefigs:
-            plt.savefig('./plots/posterior_surface.png', bbox_inches='tight')
+            plt.savefig('./plots/gaussian_nondiagcovposterior_surface.png', bbox_inches='tight')
                 
         # Create image plot of posterior.
         plt.figure()
@@ -285,10 +285,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                  'r.', markersize=1)
         plt.colorbar()
         plt.xlabel('$x_0$')
-        plt.ylabel('$x_1$')        
-        # Save.
+        plt.ylabel('$x_1$')     
+                   
         if savefigs:
-            plt.savefig('./plots/posterior_image.png', bbox_inches='tight')        
+            plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png', bbox_inches='tight')        
         
         # Create surface plot of model.
         fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
@@ -313,7 +313,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ax.set_zlim(-0.075, 0.30)
         
         if savefigs:
-            plt.savefig('./plots/model_surface.png', bbox_inches='tight')
+            plt.savefig('./plots/gaussian_nondiagcov_surface.png', bbox_inches='tight')
                 
         # Create image plot of model.
         plt.figure()        
@@ -324,21 +324,18 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         plt.xlabel('$x_0$')
         plt.ylabel('$x_1$')
         if savefigs:
-            plt.savefig('./plots/model_image.png', bbox_inches='tight')
+            plt.savefig('./plots/gaussian_nondiagcov_image.png', 
+                        bbox_inches='tight')
                     
-                    
-                    
-                    
-        ax = plt.axes(projection='3d')
-        s = samples.reshape((-1,ndim))
-        ax.contour3D(samples[i_chain,:,0].reshape((-1, ndim)), samples[i_chain,:,1].reshape((-1, ndim)), lnprob[i_chain,:].reshape((-1,1)), 50, cmap='binary')
-
-                    
-                    
-        plt.show()
+        plt.show(block=False)
         
     clock = time.clock() - clock
     print("execution_time = {}s".format(clock))
+    
+    created_plots = True
+    if created_plots:
+        input("\nPress Enter to continue...")
+        
 
 if __name__ == '__main__':
     
