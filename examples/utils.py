@@ -165,8 +165,7 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
     Returns:
         ax: Plot axis.
     """ 
-
-
+    
     plt.figure()
     ax = plt.imshow(func_eval_grid, origin='lower', 
                     extent=[np.min(x_grid), np.max(x_grid), 
@@ -187,6 +186,59 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
         
     plt.xlabel('$x_0$')
     plt.ylabel('$x_1$')   
+    
+    return ax
+    
+    
+def plot_realisations(mc_estimates, std_estimated, 
+                      analytic_val=None, analytic_text=None):
+    """Violin plot of estimated quantity from Monte Carlo (MC) 
+    simulations, compared with error bar from estimated standard deviation. 
+    Also plot analytic value if specified.
+        
+    Args:
+        mc_estimates: 1D array of quanties estimate many times by MC 
+            simulation.
+        std_estimate: Standard deviation estimate to be compared with 
+            standard deviation from MC simulations.
+        analytic_val: Plot horizonal line if analytic value of quantity 
+            estimated is provided.
+        analytic_text: Text to include next to line specifying analytic 
+            value, if provided.
+        
+    Returns:
+        ax: Plot axis.
+    """ 
+
+    mean = np.mean(mc_estimates)
+    std_measured = np.std(mc_estimates)
+    
+    plot_aspect_ratio = 1.33
+    plot_x_size = 9
+
+    fig, ax = plt.subplots(figsize=(plot_x_size, 
+                                    plot_x_size/plot_aspect_ratio))
+    
+    ax.violinplot(mc_estimates, showmeans=False, showmedians=False,
+            showextrema=True, bw_method=1.0)
+    
+    if analytic_val is not None:
+        plt.plot(np.arange(4),np.zeros(4)+analytic_val, 'r--')     
+        ax.text(1.8, analytic_val+0.00003, analytic_text, color='red')
+        
+    plt.errorbar(np.zeros(1)+1.0, mean, yerr=std_measured, 
+        fmt='--o', color='C4', capsize=7, capthick=3, 
+        linewidth=3, elinewidth=3)  
+    plt.errorbar(np.zeros(1)+1.5, mean, yerr=std_estimated, 
+        fmt='--o', color='C2', capsize=7, capthick=3, 
+        linewidth=3, elinewidth=3)
+
+    ax.get_xaxis().set_tick_params(direction='out')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.set_xticks([1.0, 1.5])
+    ax.set_xticklabels(['Measured', 'Estimated'])
+    
+    ax.set_xlim([0.5, 2.0])
     
     return ax
     
