@@ -10,7 +10,27 @@ sys.path.append("examples")
 import utils
 
 
-def ln_prior(x, mu=1.0, sigma=5.):
+def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
+    """Compute log_e of uniform prior.
+
+    Args: 
+        x: Position at which to evaluate prior.
+        xmin: Uniform prior minimum x edge (first dimension).
+        xmax: Uniform prior maximum x edge (first dimension).
+        ymin: Uniform prior minimum y edge (second dimension).
+        ymax: Uniform prior maximum y edge (second dimension).             
+        
+    Returns:
+        double: Value of prior at specified point.
+    """
+        
+    if x[0] >= xmin and x[0] <= xmax and x[1] >= ymin and x[1] <= ymax:        
+        return 1.0 / ( (xmax - xmin) * (ymax - ymin) )
+    else:
+        return 0.0
+        
+        
+def ln_prior_gaussian(x, mu=1.0, sigma=5.):
     """Compute log_e of Gaussian prior.
 
     Args: 
@@ -21,7 +41,7 @@ def ln_prior(x, mu=1.0, sigma=5.):
     Returns:
         double: Value of prior at specified point.
     """
-    
+        
     return - 0.5 * np.dot(x-mu, x-mu) / sigma**2 \
            - 0.5 * x.size * np.log(2 * np.pi * sigma)
 
@@ -48,15 +68,14 @@ def ln_likelihood(x, a=1.0, b=100.0):
     return -f
 
 
-def ln_posterior(x, a=1.0, b=100.0, mu=1.0, sigma=50.):
+def ln_posterior(x, ln_prior, a=1.0, b=100.0):
     """Compute log_e of posterior.
     
     Args: 
         x: Position at which to evaluate posterior.
         a: First parameter of Rosenbrock function.   
         b: First parameter of Rosenbrock function.
-        mu: Mean (centre) of the prior.
-        sigma: Standard deviation of prior.
+        ln_prior: Prior function.
         
     Returns:
         double: Posterior at specified point.
@@ -67,7 +86,7 @@ def ln_posterior(x, a=1.0, b=100.0, mu=1.0, sigma=50.):
     if not np.isfinite(ln_L):
         return -np.inf
     else:
-        return ln_prior(x, mu=mu, sigma=sigma) + ln_L
+        return ln_prior(x) + ln_L
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
@@ -76,7 +95,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """Run Rosenbrock example.
 
     Args: 
-        ndim: Dimension of Gaussian.
+        ndim: Dimension.
         nchains: Number of chains.
         samples_per_chain: Number of samples per chain.
         nburn: Number of burn in samples.
@@ -90,6 +109,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     
     print("Rosenbrock example")
     print("ndim = {}".format(ndim))    
+    if ndim != 2:
+        raise ValueError("Only ndim=2 is supported (ndim={} specified)"
+            .format(ndim))
 
     # Set parameters.
     savefigs = False
@@ -101,19 +123,33 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     if verbose: print("hyper_parameters = {}".format(hyper_parameters))
     a = 1.0
     b = 100.0
-    mu = 1.0
-    sigma = 50.0
-    if verbose: print("a, b, mu, sigma = {}, {}, {}, {}"
-        .format(a, b, mu, sigma))
+    
+    # Set prior parameters.
+    use_uniform_prior = True
+    if use_uniform_prior:        
+        xmin = -10.0
+        xmax = 10.0
+        ymin = -5.0
+        ymax = 15.0
+        if verbose: print("xmin, xmax, ymin, ymax = {}, {}, {}, {}"
+            .format(xmin, xmax, ymin, ymax))   
+        ln_prior = partial(ln_prior_uniform, xmin=xmin, xmax=xmax, 
+                           ymin=ymin, ymax=ymax)     
+    else: # Use Gaussian prior
+        mu = 1.0
+        sigma = 50.0
+        if verbose: print("a, b, mu, sigma = {}, {}, {}, {}"
+            .format(a, b, mu, sigma))   
+        ln_prior = partial(ln_prior_gaussian, mu=mu, sigma=sigma)
     
     # Start timer.
     clock = time.clock()
     
     # Set up and run sampler.
     print("Run sampling...")
-    pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
+    pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1    
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, 
-                                    args=[a, b, mu, sigma])
+                                    args=[ln_prior, a, b])
     rstate = np.random.get_state()
     sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
     samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
@@ -159,7 +195,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Compute analytic evidence.
     if ndim == 2:
         print("Compute evidence by high-resolution numerical integration...")
-        ln_posterior_func = partial(ln_posterior, a=a, b=b, mu=mu, sigma=sigma)
+        ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior, a=a, b=b)
         ln_posterior_grid, x_grid, y_grid = \
             utils.eval_func_on_grid(ln_posterior_func, 
                                     xmin=-10.0, xmax=10.0, 
@@ -314,4 +350,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False, verbose=True)
+                          plot_corner=False, plot_surface=True, verbose=False)

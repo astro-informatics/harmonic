@@ -125,6 +125,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 
     print("Normal-Gamma example")
 
+    if ndim != 2:
+        raise ValueError("Only ndim=2 is supported (ndim={} specified)"
+            .format(ndim))
+        
     # Set parameters.
     n_meas = 100
     mu_in  = 0.0

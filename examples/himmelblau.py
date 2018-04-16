@@ -24,11 +24,6 @@ def ln_prior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
         double: Value of prior at specified point.
     """        
     
-    xmin = -5.0
-    xmax = 5.0
-    ymin = -5.0
-    ymax = 5.0
-    
     if x[0] >= xmin and x[0] <= xmax and x[1] >= ymin and x[1] <= ymax:        
         return 1.0 / ( (xmax - xmin) * (ymax - ymin) )
     else:
@@ -92,8 +87,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     
     print("Himmelblau example")
-    print("ndim = {}".format(ndim))    
-    
+    print("ndim = {}".format(ndim))        
     if ndim != 2:
         raise ValueError("Only ndim=2 is supported (ndim={} specified)"
             .format(ndim))
@@ -106,7 +100,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     domain = []
     hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
     if verbose: print("hyper_parameters = {}".format(hyper_parameters))
-    xmin =-5.0
+    xmin = -5.0
     xmax = 5.0
     ymin = -5.0
     ymax = 5.0    
