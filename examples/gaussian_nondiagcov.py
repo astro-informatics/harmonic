@@ -92,7 +92,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
     
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 10
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
         
