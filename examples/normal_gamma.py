@@ -109,7 +109,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """Run Normal-Gamma example.
 
     Args: 
-        ndim: Dimension of Gaussian.
+        ndim: Dimension.
         nchains: Number of chains.
         samples_per_chain: Number of samples per chain.
         nburn: Number of burn in samples.

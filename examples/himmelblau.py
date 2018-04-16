@@ -1,4 +1,4 @@
-himmelblauimport numpy as np
+import numpy as np
 import sys
 import emcee
 import time 
@@ -10,25 +10,19 @@ sys.path.append("examples")
 import utils
 
 
-def ln_prior(x, mu=1.0, sigma=5.):
+def ln_prior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
     """Compute log_e of uniform prior.
 
     Args: 
         x: Position at which to evaluate prior.
-        
-        
-    
-        mu: Mean (centre) of the prior.
-        sigma: Standard deviation of prior.   
+        xmin: Uniform prior minimum x edge (first dimension).
+        xmax: Uniform prior maximum x edge (first dimension).
+        ymin: Uniform prior minimum y edge (second dimension).
+        ymax: Uniform prior maximum y edge (second dimension).            
         
     Returns:
         double: Value of prior at specified point.
-    """
-        
-    # xmin = 0.0
-    # xmax = 10.0 * np.pi
-    # ymin = 0.0
-    # ymax = 10.0 * np.pi
+    """        
     
     xmin = -5.0
     xmax = 5.0
@@ -40,47 +34,32 @@ def ln_prior(x, mu=1.0, sigma=5.):
     else:
         return 0.0
         
-def ln_prior_gaussian(x, mu=1.0, sigma=5.):
-    """Compute log_e of Gaussian prior.
-
-    Args: 
-        x: Position at which to evaluate prior.
-        mu: Mean (centre) of the prior.
-        sigma: Standard deviation of prior.   
-        
-    Returns:
-        double: Value of prior at specified point.
-    """
-    
-    return - 0.5 * np.dot(x-mu, x-mu) / sigma**2 \
-           - 0.5 * x.size * np.log(2 * np.pi * sigma)
-
 
 def ln_likelihood(x):
-    """Compute log_e of likelihood defined by Eggbox function.
+    """Compute log_e of likelihood defined by Himmelblau function.
     
     Args: 
         x: Position at which to evaluate likelihood.
         
     Returns:
-        double: Value of Eggbox at specified point.
+        double: Value of Himmelblau function at specified point.
     """
     
-    # f = -(2 + np.cos(x[0]/2.0) * np.cos(x[1]/2.0))**5
-
-    f = (x[0]**2 + x[1] -11)**2 + (x[0] + x[1]**2 - 7)**2
+    f = (x[0]**2 + x[1] - 11.0)**2 + (x[0] + x[1]**2 - 7.0)**2
 
 
     return -f
 
 
-def ln_posterior(x, mu=1.0, sigma=50.):
+def ln_posterior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
     """Compute log_e of posterior.
     
     Args: 
         x: Position at which to evaluate posterior.        
-        mu: Mean (centre) of the prior.
-        sigma: Standard deviation of prior.
+        xmin: Uniform prior minimum x edge (first dimension).
+        xmax: Uniform prior maximum x edge (first dimension).
+        ymin: Uniform prior minimum y edge (second dimension).
+        ymax: Uniform prior maximum y edge (second dimension).  
         
     Returns:
         double: Posterior at specified point.
@@ -91,16 +70,16 @@ def ln_posterior(x, mu=1.0, sigma=50.):
     if not np.isfinite(ln_L):
         return -np.inf
     else:
-        return ln_prior(x, mu=mu, sigma=sigma) + ln_L
+        return ln_prior(x, xmin, xmax, ymin, ymax) + ln_L
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """Run Rosenbrock example.
+    """Run Himmelblau example.
 
     Args: 
-        ndim: Dimension of Gaussian.
+        ndim: Dimension.
         nchains: Number of chains.
         samples_per_chain: Number of samples per chain.
         nburn: Number of burn in samples.
@@ -112,8 +91,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         None.
     """
     
-    print("Eggbox example")
+    print("Himmelblau example")
     print("ndim = {}".format(ndim))    
+    
+    if ndim != 2:
+        raise ValueError("Only ndim=2 is supported (ndim={} specified)"
+            .format(ndim))
 
     # Set parameters.
     savefigs = True
@@ -123,10 +106,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     domain = []
     hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
     if verbose: print("hyper_parameters = {}".format(hyper_parameters))
-    mu = 1.0
-    sigma = 50.0
-    if verbose: print("mu, sigma = {}, {}"
-        .format(mu, sigma))
+    xmin =-5.0
+    xmax = 5.0
+    ymin = -5.0
+    ymax = 5.0    
+    if verbose: print("xmin, xmax, ymin, ymax = {}, {}, {}, {}"
+        .format(xmin, xmax, ymin, ymax))
     
     # Start timer.
     clock = time.clock()
@@ -134,9 +119,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Set up and run sampler.
     print("Run sampling...")
     pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 10.0 - 5.0
-    
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, 
-                                    args=[mu, sigma])
+                                    args=[xmin, xmax, ymin, ymax])
     rstate = np.random.get_state()
     sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
     samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
@@ -182,11 +166,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Compute analytic evidence.
     if ndim == 2:
         print("Compute evidence by high-resolution numerical integration...")
-        ln_posterior_func = partial(ln_posterior, mu=mu, sigma=sigma)
+        ln_posterior_func = partial(ln_posterior, xmin=xmin, xmax=xmax, 
+                                    ymin=ymin, ymax=ymax)
         ln_posterior_grid, x_grid, y_grid = \
             utils.eval_func_on_grid(ln_posterior_func, 
-                                    xmin=-5.0, xmax=5.0, 
-                                    ymin=-5.0, ymax=5.0, 
+                                    xmin=xmin, xmax=xmax, 
+                                    ymin=ymin, ymax=ymax, 
                                     nx=1000, ny=1000)
         dx = x_grid[0,1] - x_grid[0,0]
         dy = y_grid[1,0] - y_grid[0,0]
@@ -292,8 +277,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Evaluate model on grid.
         model_grid, x_grid, y_grid = \
             utils.eval_func_on_grid(model.predict, 
-                                    xmin=-5.0, xmax=5.0, 
-                                    ymin=-5.0, ymax=5.0, 
+                                    xmin=xmin, xmax=xmax, 
+                                    ymin=ymin, ymax=ymax, 
                                     nx=1000, ny=1000)
         
         # Plot model.
@@ -327,7 +312,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 2 
+    ndim = 2
     nchains = 200
     samples_per_chain = 5000
     nburn = 2000
