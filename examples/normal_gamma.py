@@ -3,10 +3,8 @@ import sys
 import emcee
 import scipy.special as sp
 import time 
-import matplotlib
 import matplotlib.pyplot as plt
 from functools import partial
-
 sys.path.append(".")
 import harmonic as hm
 sys.path.append("examples")
@@ -76,7 +74,7 @@ def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
     mu, tau = theta
 
     ln_pr = ln_prior(mu, tau, prior_params)
-
+    
     if not np.isfinite(ln_pr):
         return -np.inf
 
@@ -399,7 +397,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     if plot_comparison:
         created_plots = True        
             
-        matplotlib.rcParams.update({'font.size': 15})
+        plt.rcParams.update({'font.size': 15})
         fig, ax = plt.subplots()
         ax.plot(np.array([1E-5, 1E1]), np.ones(2), 'r', linewidth=2)
         ax.set_xlim([1E-5, 1E1])
