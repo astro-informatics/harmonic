@@ -1117,10 +1117,12 @@ class ModifiedGaussianMixtureModel(Model):
             long ndim: Dimension of the problem to solve.
             list domains: A list of length 1 with the range of scale parameter
                 of the covariance matrix, i.e. the range of alpha, where
-                C' = alpha * C_samples, and C_samples is the diagonal of the covariance in the samples in each cluster.
-            hyper_parameters: A list of length 2, the first of which should be 
-                nummber of clusters and the second is the regularisation 
-                parameter gamma.
+                C' = alpha * C_samples, and C_samples is the diagonal of the 
+                covariance in the samples in each cluster.
+            hyper_parameters: A list of length 5, the first of which should be 
+                nummber of clusters, the second is the regularisation 
+                parameter gamma, the third is the learning rate, the fourth is 
+                the maximum number of terations and the fifth is the batch size.
 
         Raises:
             ValueError: If the hyper_parameters list is not length 5.
