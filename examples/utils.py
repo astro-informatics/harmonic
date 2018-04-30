@@ -167,7 +167,7 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
     """ 
     
     plt.figure()
-    ax = plt.imshow(func_eval_grid, origin='lower', 
+    ax = plt.imshow(func_eval_grid, origin='lower', aspect='auto',
                     extent=[np.min(x_grid), np.max(x_grid), 
                             np.min(y_grid), np.max(y_grid)])
 
