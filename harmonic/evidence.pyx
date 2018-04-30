@@ -5,7 +5,7 @@ from libc.math cimport exp
 from math import fsum
 import warnings
 from enum import Enum
-
+import scipy.special as sp
 
 class Optimisation(Enum):
     """Enumeration to define whether to optimise for speed or accuracy.  In
@@ -16,10 +16,10 @@ class Optimisation(Enum):
     ACCURACY = 2
 
 
-OPTIMISATION = Optimisation.SPEED
+OPTIMISATION = Optimisation.ACCURACY
 
 
-MEAN_SHIFT_SIGN = 1.0
+MEAN_SHIFT_SIGN = 0.0
 
 
 class Evidence:
@@ -123,6 +123,11 @@ class Evidence:
             nsamples += nsamples_per_chain[i_chains]
         if OPTIMISATION == Optimisation.ACCURACY:
             evidence_inv += fsum(running_sum)
+            
+            
+        evidence_inv 
+            
+            
         evidence_inv /= nsamples
 
         for i_chains in range(nchains):
@@ -197,14 +202,17 @@ class Evidence:
             i_samples_start = chains.start_indices[i_chains]
             i_samples_end = chains.start_indices[i_chains+1]
 
-            terms =[]
-            # TODO: replace terms by numpy array, set size here
+            terms =[]  # TODO: replace terms by numpy array, set size here
+            
+            terms_ln =np.zeros(i_samples_end - i_samples_start)
+            
 
-            for i_samples in range(i_samples_start, i_samples_end):
+            for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
 
                 lnpredict = self.model.predict(X[i_samples,:])
                 lnprob = Y[i_samples]
-                lnarg = lnpredict - lnprob + MEAN_SHIFT_SIGN*mean_shift
+                lnarg = lnpredict - lnprob
+                lnarg += MEAN_SHIFT_SIGN*mean_shift
                 term = exp(lnarg)
 
                 nsamples_per_chain[i_chains] += 1
@@ -221,6 +229,7 @@ class Evidence:
                     elif OPTIMISATION == Optimisation.ACCURACY:
                         # Store all contributions in list to then be added.
                         terms.append(term)
+                        terms_ln[i] = lnarg
 
                     # Log diagnostic terms.
                     self.lnargmax = lnarg \
@@ -235,7 +244,7 @@ class Evidence:
                         if lnpredict > self.lnpredictmax else self.lnpredictmax
                     self.lnpredictmin = lnpredict \
                         if lnpredict < self.lnpredictmin else self.lnpredictmin
-
+            
             if OPTIMISATION == Optimisation.ACCURACY:
                 # Sum all terms at once (fsum) to get track of partial terms.
                 # Could extend this approach to compute final sums with fsum but
@@ -246,7 +255,27 @@ class Evidence:
                 # make much difference.  Recommended approach is to optimise for
                 # speed rather than acuracy since accuracy optimisation doesn't
                 # make much difference.
-                running_sum[i_chains] += fsum(terms)
+                
+                # running_sum[i_chains] += fsum(terms)
+                
+                #running_sum[i_chains] = fsum(terms)
+                
+                # running_sum[i_chains] = exp(sp.logsumexp(terms_ln))
+                # running_sum[i_chains] = (sp.logsumexp(terms_ln))
+                # running_sum[i_chains] += sp.logsumexp(terms_ln)
+                
+                
+                           
+                if np.amax(np.absolute(terms_ln)) > np.amax(terms_ln):
+                    offset = np.amin(terms_ln)
+                else:
+                    offset = np.amax(terms_ln)
+                
+                running_sum[i_chains] = np.log(np.sum(np.exp(terms_ln - offset)))
+                running_sum[i_chains] += offset
+                running_sum[i_chains] -= np.log(i_samples_end - i_samples_start)
+                
+                
 
         self.process_run()
 
