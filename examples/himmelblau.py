@@ -314,10 +314,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                    "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
-        evidence_inv_analytic_summary[0] = evidence_numerical_integration
+        evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
         np.savetxt("examples/data/himmelblau_evidence_inv" +
                    "_analytic.dat",
-                   1.0 / evidence_inv_analytic_summary)
+                   evidence_inv_analytic_summary)
 
     if created_plots:
         input("\nPress Enter to continue...")
