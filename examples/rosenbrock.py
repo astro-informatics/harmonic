@@ -146,11 +146,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
 
     # Run multiple realisations.
-    n_realisations = 5
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
-        if n_realisations > 0:
+        if n_realisations > 1:
             print("**** i_realisation = {} ****".format(i_realisation))
 
         # Set up and run sampler.
@@ -274,14 +274,20 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         created_plots = False
         if plot_corner and i_realisation == 0:
 
-            utils.plot_corner(samples.reshape((-1, ndim)))
+            labels = [r'$\theta_0$', r'$\theta_1$']
+            utils.plot_corner(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig('./plots/rosenbrock_corner.png',
                             bbox_inches='tight')
+                plt.savefig('./plots/rosenbrock_corner.pdf',
+                            bbox_inches='tight')
 
-            utils.plot_getdist(samples.reshape((-1, ndim)))
+            labels = [r'\theta_0', r'\theta_1']
+            utils.plot_getdist(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig('./plots/rosenbrock_getdist.png',
+                            bbox_inches='tight')
+                plt.savefig('./plots/rosenbrock_getdist.pdf',
                             bbox_inches='tight')
 
             plt.show(block=False)
@@ -293,22 +299,35 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Plot ln_posterior surface.
             # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0
             i_chain = 0
+            # ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid,
+            #                         samples[i_chain,:,:].reshape((-1, ndim)),
+            #                         lnprob[i_chain,:].reshape((-1, 1)))
             ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid,
-                                    samples[i_chain,:,:].reshape((-1, ndim)),
-                                    lnprob[i_chain,:].reshape((-1, 1)))
+                                    contour_z_offset=-1000000,
+                                    contours=[-1000 -500 -200, -100, -50])
             # ax.set_zlim(-100.0, 0.0)
+            ax.set_xlabel(r'$\theta_0$')
+            ax.set_ylabel(r'$\theta_1$')
             ax.set_zlabel(r'$\log \mathcal{L}$')
             if savefigs:
                 plt.savefig('./plots/rosenbrock_lnposterior_surface.png',
                             bbox_inches='tight')
+                plt.savefig('./plots/rosenbrock_lnposterior_surface.pdf',
+                            bbox_inches='tight')
 
             # Plot posterior image.
+            # ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid,
+            #                       samples.reshape((-1,ndim)),
+            #                       colorbar_label=r'$\mathcal{L}$')
             ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid,
-                                  samples.reshape((-1,ndim)),
                                   colorbar_label=r'$\mathcal{L}$')
             # ax.set_clim(vmin=0.0, vmax=0.003)
+            plt.xlabel(r'$\theta_0$')
+            plt.ylabel(r'$\theta_1$')
             if savefigs:
                 plt.savefig('./plots/rosenbrock_posterior_image.png',
+                            bbox_inches='tight')
+                plt.savefig('./plots/rosenbrock_posterior_image.pdf',
                             bbox_inches='tight')
 
             # Evaluate model on grid.
@@ -323,15 +342,23 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             ax = utils.plot_image(model_grid, x_grid, y_grid,
                                   colorbar_label=r'$\log \varphi$')
             # ax.set_clim(vmin=-2.0, vmax=2.0)
+            plt.xlabel(r'$\theta_0$')
+            plt.ylabel(r'$\theta_1$')
             if savefigs:
                 plt.savefig('./plots/rosenbrock_model_image.png',
+                            bbox_inches='tight')
+                plt.savefig('./plots/rosenbrock_model_image.pdf',
                             bbox_inches='tight')
 
             # Plot exponential of model.
             ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
                                   colorbar_label=r'$\varphi$')
             # ax.set_clim(vmin=0.0, vmax=10.0)
+            plt.xlabel(r'$\theta_0$')
+            plt.ylabel(r'$\theta_1$')
             if savefigs:
+                plt.savefig('./plots/rosenbrock_modelexp_image.png',
+                            bbox_inches='tight')
                 plt.savefig('./plots/rosenbrock_modelexp_image.png',
                             bbox_inches='tight')
 
