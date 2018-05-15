@@ -96,7 +96,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
-        if n_realisations > 0:
+        if n_realisations > 1:
             print("**** i_realisation = {} ****".format(i_realisation))
 
         # Set up and run sampler.
