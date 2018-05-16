@@ -236,7 +236,8 @@ def plot_realisations(mc_estimates, std_estimated,
 
     if analytic_val is not None:
         plt.plot(np.arange(4),np.zeros(4)+analytic_val, 'r--')
-        ax.text(1.8, analytic_val+0.00003, analytic_text, color='red')
+        ymin, ymax = ax.get_ylim()
+        ax.text(1.8, analytic_val+(ymax-ymin)*0.03, analytic_text, color='red')
 
     plt.errorbar(np.zeros(1)+1.0, mean, yerr=std_measured,
         fmt='--o', color='C4', capsize=7, capthick=3,
@@ -244,6 +245,12 @@ def plot_realisations(mc_estimates, std_estimated,
     plt.errorbar(np.zeros(1)+1.5, mean, yerr=std_estimated,
         fmt='--o', color='C2', capsize=7, capthick=3,
         linewidth=3, elinewidth=3)
+
+    ymin, ymax = ax.get_ylim()
+    print("ymim = {}, ymax = {}".format(ymin, ymax))
+    if ymin < 0:
+        ymin = 0
+    ax.set_ylim([ymin, ymax])
 
     ax.get_xaxis().set_tick_params(direction='out')
     ax.xaxis.set_ticks_position('bottom')
