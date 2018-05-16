@@ -393,7 +393,7 @@ if __name__ == '__main__':
     # Define parameters.
     ndim = 2
     nchains = 200
-    samples_per_chain = 5000
+    samples_per_chain = 10000
     nburn = 2000
     np.random.seed(20)
 
