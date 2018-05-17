@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import emcee
 import scipy.special as sp
-import time 
+import time
 import matplotlib.pyplot as plt
 from functools import partial
 sys.path.append(".")
@@ -14,17 +14,17 @@ import utils
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
     """Compute log_e of likelihood.
 
-    Args: 
+    Args:
         x_mean: Mean of simulated data.
         x_std: Standard deviation of simulated data.
         x_n: Number of samples of simulated data.
         mu: Mu value for which to evaluate prior.
         tau: Tau value for which to evaluate prior.
-        
+
     Returns:
         double: Value of log_e likelihood at specified (mu, tau) point.
     """
-    
+
     return -0.5 * x_n * tau * (x_std**2 + (x_mean-mu)**2) \
         - 0.5 * x_n * np.log(2 * np.pi) + 0.5 * x_n * np.log(tau)
 
@@ -32,12 +32,12 @@ def ln_likelihood(x_mean, x_std, x_n, mu, tau):
 def ln_prior(mu, tau, prior_params):
     """Compute log_e of prior.
 
-    Args: 
+    Args:
         mu: Mu value for which to evaluate prior.
         tau: Tau value for which to evaluate prior.
-        prior_params: Tuple of prior parameters, including (mu_0, tau_0, 
-            alpha_0, beta_0).        
-        
+        prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+            alpha_0, beta_0).
+
     Returns:
         double: Value of log_e prior at specified (mu, tau) point.
     """
@@ -47,44 +47,44 @@ def ln_prior(mu, tau, prior_params):
 
     mu_0, tau_0, alpha_0, beta_0 = prior_params
 
-    ln_pr = alpha_0 * np.log(beta_0) + 0.5 * np.log(tau_0) 
+    ln_pr = alpha_0 * np.log(beta_0) + 0.5 * np.log(tau_0)
     ln_pr += - sp.gammaln(alpha_0) - 0.5 * np.log(2*np.pi)
     ln_pr += (alpha_0 - 0.5) * np.log(tau)
     ln_pr += -beta_0 * tau
     ln_pr += -0.5 * tau_0 * tau * (mu - mu_0)**2
-    
+
     return ln_pr
 
 
 def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
     """Compute log_e of posterior.
-    
-    Args: 
+
+    Args:
         theta: Position (mu, tau) at which to evaluate posterior.
         x_mean: Mean of simulated data.
         x_std: Standard deviation of simulated data.
         x_n: Number of samples of simulated data.
-        prior_params: Tuple of prior parameters, including (mu_0, tau_0, 
-            alpha_0, beta_0).        
-        
+        prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+            alpha_0, beta_0).
+
     Returns:
         double: Value of log_e posterior at specified (mu, tau) point.
     """
-    
+
     mu, tau = theta
 
     ln_pr = ln_prior(mu, tau, prior_params)
-    
+
     if not np.isfinite(ln_pr):
         return -np.inf
 
     ln_L = ln_likelihood(x_mean, x_std, x_n, mu, tau)
- 
+
     return  ln_L + ln_pr
 
 
 def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
-    
+
     mu_0, tau_0, alpha_0, beta_0 = prior_params
 
     tau_n  = tau_0  + x_n
@@ -100,13 +100,13 @@ def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
     return ln_z
 
 
-def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, verbose=True, 
+def run_example(ndim=2, nchains=100, samples_per_chain=1000,
+                nburn=500, verbose=True,
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
     """Run Normal-Gamma example.
 
-    Args: 
+    Args:
         ndim: Dimension.
         nchains: Number of chains.
         samples_per_chain: Number of samples per chain.
@@ -116,17 +116,17 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         plot_comparison: Plot accuracy for various tau priors if
             true.
         verbose: If True then display intermediate results.
-        
+
     Returns:
         None.
     """
-                
+
     print("Normal-Gamma example")
 
     if ndim != 2:
         raise ValueError("Only ndim=2 is supported (ndim={} specified)"
             .format(ndim))
-        
+
     # Set parameters.
     n_meas = 100
     mu_in  = 0.0
@@ -134,7 +134,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     tau_array = [1E-4, 1E-3, 1E-2, 1E-1, 1E0]
 
     savefigs = True
-    
+
     nfold = 3
     training_proportion = 0.25
     hyper_parameters_MGMM = [[1, 1E-8, 0.1, 6, 10],\
@@ -158,13 +158,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     summary = np.empty((len(tau_array), 4), dtype=float)
     created_plots = False
     for i_tau, tau_prior in enumerate(tau_array):
-        
+
         print("Considering tau = {}...".format(tau_prior))
-        
+
         prior_params = (0.0, tau_prior, 1E-3, 1E-3)
 
         for i_real in range(n_realisations):
-            
+
             # Set up and run sampler.
             pos = [np.array([x_mean, 1.0/x_std**2]) \
                    + x_std * np.random.randn(ndim) / np.sqrt(x_n) \
@@ -186,14 +186,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Perform cross-validation.
             print("Perform cross-validation...")
-            
+
             validation_variances_MGMM = \
-                hm.utils.cross_validation(chains_train, 
+                hm.utils.cross_validation(chains_train,
                     domains_MGMM, \
                     hyper_parameters_MGMM, \
-                    nfold=nfold, 
+                    nfold=nfold,
                     modelClass=hm.model.ModifiedGaussianMixtureModel, \
-                    verbose=verbose, seed=0)                
+                    verbose=verbose, seed=0)
             if verbose: print("validation_variances_MGMM = {}"
                 .format(validation_variances_MGMM))
             best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
@@ -201,10 +201,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 hyper_parameters_MGMM[best_hyper_param_MGMM_ind]
 
             validation_variances_sphere = \
-                hm.utils.cross_validation(chains_train, 
+                hm.utils.cross_validation(chains_train,
                     domains_sphere, \
-                    hyper_parameters_sphere, nfold=nfold, 
-                    modelClass=hm.model.HyperSphere, 
+                    hyper_parameters_sphere, nfold=nfold,
+                    modelClass=hm.model.HyperSphere,
                     verbose=verbose, seed=0)
             if verbose: print("validation_variances_sphere = {}"
                 .format(validation_variances_sphere))
@@ -218,9 +218,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 validation_variances_MGMM[best_hyper_param_MGMM_ind]
             best_var_sphere = \
                 validation_variances_sphere[best_hyper_param_sphere_ind]
-            if best_var_MGMM < best_var_sphere:            
+            if best_var_MGMM < best_var_sphere:
                 print("Using MGMM with hyper_parameters = {}"
-                    .format(best_hyper_param_MGMM))                
+                    .format(best_hyper_param_MGMM))
                 model = hm.model.ModifiedGaussianMixtureModel(ndim, \
                     domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
                 model.verbose=False
@@ -230,7 +230,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     hyper_parameters=best_hyper_param_sphere)
             fit_success = model.fit(chains_train.samples,
                                     chains_train.ln_posterior)
-            if verbose: print("fit_success = {}".format(fit_success))    
+            if verbose: print("fit_success = {}".format(fit_success))
 
             # Use chains and model to compute evidence.
             print("Compute evidence...")
@@ -242,17 +242,17 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             ln_evidence_analytic = ln_analytic_evidence(x_mean, \
                 x_std, x_n, prior_params)
             evidence_analytic = np.exp(ln_evidence_analytic)
-            
+
             # Collate values.
             summary[i_tau, 0] = tau_prior
             summary[i_tau, 1] = ln_evidence_analytic
             summary[i_tau, 2] = ln_evidence
             summary[i_tau, 3] = ln_evidence_std
-            
-            # Display results.            
+
+            # Display results.
             print("ln_evidence_analytic = {}"
                 .format(ln_evidence_analytic))
-            print("ln_evidence = {}".format(ln_evidence))            
+            print("ln_evidence = {}".format(ln_evidence))
             diff = np.abs(ln_evidence_analytic - ln_evidence)
             print("|ln_evidence_analytic - ln_evidence| / ln_evidence = {}\n"
                   .format(diff/ln_evidence))
@@ -276,15 +276,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             if verbose: print("evidence_inv_std / evidence_inv = {}"
                 .format(np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
             if verbose: print("kurtosis = {}"
-                .format(ev.kurtosis))    
+                .format(ev.kurtosis))
             if verbose: print("sqrt(2/(n_eff-1)) = {}"
                 .format(np.sqrt(2.0/(ev.n_eff-1))))
-            if verbose: 
+            if verbose:
                 print("sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var = {}"
                 .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
             if verbose: print(
                 "|evidence_inv_analytic - evidence_inv| / evidence_inv = {}"
-                .format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) 
+                .format(np.abs(1.0 / evidence_analytic - ev.evidence_inv)
                         / ev.evidence_inv))
 
             if verbose: print("\nlnargmax = {}"
@@ -314,61 +314,61 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Create corner/triangle plot.
             if plot_corner:
-                
+
                 labels = [r'$\mu$', r'$\tau$']
                 utils.plot_corner(samples.reshape((-1, ndim)), labels)
                 if savefigs:
-                    plt.savefig('./plots/normalgamma_corner_tau' + 
+                    plt.savefig('./plots/normalgamma_corner_tau' +
                                 str(tau_prior) +
                                 '.pdf',
                                 bbox_inches='tight')
-                                
+
                 labels = [r'\mu', r'\tau']
                 utils.plot_getdist(samples.reshape((-1, ndim)), labels)
                 if savefigs:
-                    plt.savefig('./plots/normalgamma_getdist_tau' + 
+                    plt.savefig('./plots/normalgamma_getdist_tau' +
                                 str(tau_prior) +
                                 '.pdf',
                                 bbox_inches='tight')
-                
-                plt.show(block=False)  
+
+                plt.show(block=False)
                 created_plots = True
-                
+
             if plot_surface:
-                
+
                 # Evaluate posterior on grid.
-                ln_posterior_func = partial(ln_posterior, 
-                    x_mean=x_mean, x_std=x_std, x_n=x_n, 
-                    prior_params=prior_params)                                
+                ln_posterior_func = partial(ln_posterior,
+                    x_mean=x_mean, x_std=x_std, x_n=x_n,
+                    prior_params=prior_params)
                 ln_posterior_grid, x_grid, y_grid = \
-                    utils.eval_func_on_grid(ln_posterior_func, 
-                                            xmin=-0.6, xmax=0.6, 
-                                            ymin=0.4, ymax=1.8, 
+                    utils.eval_func_on_grid(ln_posterior_func,
+                                            xmin=-0.6, xmax=0.6,
+                                            ymin=0.4, ymax=1.8,
                                             nx=500, ny=500)
-                
+
                 # Plot posterior image.
-                ax = utils.plot_image(np.exp(ln_posterior_grid), 
-                                      x_grid, y_grid, 
+                ax = utils.plot_image(np.exp(ln_posterior_grid),
+                                      x_grid, y_grid,
                                       samples=None,
                                       #samples.reshape((-1,ndim)),
                                       colorbar_label=r'$\mathcal{L}$')
                 # ax.set_clim(vmin=0.0, vmax=0.003)
                 if savefigs:
-                    plt.savefig('./plots/' + 
+                    plt.savefig('./plots/' +
                                 'normalgamma_posterior_image' +
                                 str(tau_prior) + '.png',
                                 bbox_inches='tight')
-                        
+
                 # Evaluate model on grid.
                 model_grid, x_grid, y_grid = \
-                    utils.eval_func_on_grid(model.predict, 
-                                            xmin=-0.6, xmax=0.6, 
-                                            ymin=0.4, ymax=1.8, 
-                                            nx=500, ny=500)                
-                
+                    utils.eval_func_on_grid(model.predict,
+                                            xmin=-0.6, xmax=0.6,
+                                            ymin=0.4, ymax=1.8,
+                                            nx=500, ny=500)
+
                 # Plot model.
-                ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                    colorbar_label=r'$\log \varphi$') 
+                ax = utils.plot_image(model_grid, x_grid, y_grid,
+                    colorbar_label=r'$\log \varphi$')
                 # ax.set_clim(vmin=-2.0, vmax=2.0)
                 if savefigs:
                     plt.savefig('./plots/' +
@@ -376,27 +376,27 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                 str(tau_prior) +
                                 '.png',
                                 bbox_inches='tight')
-                
+
                 # Plot exponential of model.
-                ax = utils.plot_image(np.exp(model_grid), 
+                ax = utils.plot_image(np.exp(model_grid),
                                       x_grid, y_grid,
                                       colorbar_label=r'$\varphi$')
-                # ax.set_clim(vmin=0.0, vmax=10.0)        
+                # ax.set_clim(vmin=0.0, vmax=10.0)
                 if savefigs:
                     plt.savefig('./plots/' +
                                 'normalgamma_modelexp_image' +
                                 str(tau_prior) +
                                 '.png',
-                                bbox_inches='tight')                     
-                
-    # Display summary results.    
+                                bbox_inches='tight')
+
+    # Display summary results.
     print("tau_prior | ln_evidence_analytic | ln_evidence =")
-    print("{}".format(summary[:,:-1]))        
-                
+    print("{}".format(summary[:,:-1]))
+
     # Plot evidence values for different tau priors.
     if plot_comparison:
-        created_plots = True        
-            
+        created_plots = True
+
         plt.rcParams.update({'font.size': 15})
         fig, ax = plt.subplots()
         ax.plot(np.array([1E-5, 1E1]), np.ones(2), 'r', linewidth=2)
@@ -404,30 +404,30 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ax.set_ylim([0.990, 1.010])
         ax.set_xscale("log")
         ax.set_xlabel(r"Prior size ($\tau_0$)")
-        ax.set_ylabel(r"Relative accuracy ($z_{\rm estimated}/z_{\rm analytic}$)")        
-        ax.errorbar(tau_array, np.exp(summary[:,2])/np.exp(summary[:,1]), 
-            yerr=np.exp(summary[:,3])/np.exp(summary[:,1]), 
+        ax.set_ylabel(r"Relative accuracy ($z_{\rm estimated}/z_{\rm analytic}$)")
+        ax.errorbar(tau_array, np.exp(summary[:,2])/np.exp(summary[:,1]),
+            yerr=np.exp(summary[:,3])/np.exp(summary[:,1]),
             fmt='b.', capsize=4, capthick=2, elinewidth=2)
         if savefigs:
             plt.savefig('./plots/normalgamma_comparison.pdf',
-                        bbox_inches='tight')                        
-        plt.show(block=False)   
-           
+                        bbox_inches='tight')
+        plt.show(block=False)
+
     if created_plots:
         input("\nPress Enter to continue...")
 
 
 if __name__ == '__main__':
-    
+
     # Define parameters.
     ndim = 2 # Only 2 dimensional case supported.
     nchains = 200
     samples_per_chain = 1500
     nburn = 500
     np.random.seed(2)
-    
+
     # Run example.
-    samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=True,
-                          plot_comparison=True, 
+    samples = run_example(ndim, nchains, samples_per_chain, nburn,
+                          plot_corner=True, plot_surface=True,
+                          plot_comparison=True,
                           verbose=True)
