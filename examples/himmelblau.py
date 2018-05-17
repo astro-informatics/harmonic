@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import emcee
 import time
+import matplotlib
 import matplotlib.pyplot as plt
 from functools import partial
 sys.path.append(".")
@@ -111,7 +112,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
 
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -238,6 +239,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         # Create corner/triangle plot.
         created_plots = False
+        matplotlib.rc('text', usetex=True)
+        matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
         if plot_corner and i_realisation == 0:
 
             labels = [r'$\theta_0$', r'$\theta_1$']
@@ -273,7 +276,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # ax.set_zlim(-100.0, 0.0)
             ax.set_xlabel(r'$\theta_0$')
             ax.set_ylabel(r'$\theta_1$')
-            ax.set_zlabel(r'$\log \mathcal{L}$')
+            ax.set_zlabel(r'$\log \text{P}(\theta \, \vert \,\boldsymbol{y})$')
             if savefigs:
                 plt.savefig('./plots/himmelblau_lnposterior_surface.png',
                             bbox_inches='tight')
@@ -285,7 +288,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             #                       samples.reshape((-1,ndim)),
             #                       colorbar_label=r'$\mathcal{L}$')
             ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid,
-                                  colorbar_label=r'$\mathcal{L}$')
+                                  colorbar_label=r'$\text{P}(\theta \, \vert \, \boldsymbol{y})$')
             # ax.set_clim(vmin=0.0, vmax=0.003)
             plt.xlabel(r'$\theta_0$')
             plt.ylabel(r'$\theta_1$')
@@ -357,9 +360,9 @@ if __name__ == '__main__':
     # Define parameters.
     ndim = 2
     nchains = 200
-    samples_per_chain = 5000
+    samples_per_chain = 10000
     nburn = 2000
-    np.random.seed(20)
+    np.random.seed(17)
 
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn,

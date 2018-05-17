@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import emcee
 import time
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import cm
 sys.path.append(".")
@@ -92,7 +93,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
 
     # Run multiple realisations.
-    n_realisations = 10
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -199,19 +200,26 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             .format(ev.nsamples_eff_per_chain))
 
         # Create corner/triangle plot.
+        matplotlib.rc('text', usetex=True)
+        matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
         if plot_corner and i_realisation == 0:
 
-            utils.plot_corner(samples.reshape((-1, ndim)))
+            labels = [r'$\theta_0$', r'$\theta_1$']
+            utils.plot_corner(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig('./plots/gaussian_nondiagcov_corner.png',
                             bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_corner.pdf',
+                            bbox_inches='tight')
 
-            utils.plot_getdist(samples.reshape((-1, ndim)))
+            labels = [r'\theta_0', r'\theta_1']
+            utils.plot_getdist(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig('./plots/gaussian_nondiagcov_getdist.png',
                             bbox_inches='tight')
-
-            plt.show()
+                plt.savefig('./plots/gaussian_nondiagcov_getdist.pdf',
+                            bbox_inches='tight')
+            plt.show(block=False)
 
         # In 2D case, plot surface/image and samples.
         if plot_surface and ndim == 2 and i_realisation == 0:
@@ -220,7 +228,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             from matplotlib.colors import LightSource
 
             # Define plot parameters.
-            nx = 50
+            nx = 1000
             xmin = -3.0
             xmax = 3.0
 
@@ -270,34 +278,45 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             yplot[yplot < xmin] = np.nan
             yplot[yplot > xmax] = np.nan
             zplot = np.exp(lnprob[i_chain,:].reshape((-1, 1)))
-            ax.scatter(xplot, yplot, zplot, c='r', s=5, marker='.')
+            # ax.scatter(xplot, yplot, zplot, c='r', s=5, marker='.')
 
             # Define additional plot settings.
             ax.set_xlim(xmin, xmax)
             ax.set_ylim(xmin, xmax)
             ax.set_zlim(-0.5, 1.0)
             ax.view_init(elev=15.0, azim=110.0)
-            ax.set_xlabel('$x_0$')
-            ax.set_ylabel('$x_1$')
+            # ax.set_xlabel('$x_0$')
+            # ax.set_ylabel('$x_1$')
+            ax.set_xlabel(r'$\theta_0$')
+            ax.set_ylabel(r'$\theta_1$')
+            ax.set_zlabel(r'$\text{P}(\theta \, \vert \,\boldsymbol{y})$')
 
             # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png', bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png',
+                            bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.pdf',
+                            bbox_inches='tight')
 
             # Create image plot of posterior.
             plt.figure()
             plt.imshow(np.exp(ln_posterior_grid), origin='lower',
                        extent=[xmin, xmax, xmin, xmax])
-            plt.contour(x, y, np.exp(ln_posterior_grid), cmap=cm.coolwarm)
-            plt.plot(samples[i_chain,:,0].reshape((-1, ndim)),
-                     samples[i_chain,:,1].reshape((-1, ndim)),
-                     'r.', markersize=1)
-            plt.colorbar()
-            plt.xlabel('$x_0$')
-            plt.ylabel('$x_1$')
+            # plt.contour(x, y, np.exp(ln_posterior_grid), cmap=cm.coolwarm)
+            # plt.plot(samples[i_chain,:,0].reshape((-1, ndim)),
+            #          samples[i_chain,:,1].reshape((-1, ndim)),
+            #          'r.', markersize=1)
+            plt.colorbar(label=r'$\text{P}(\theta \, \vert \, \boldsymbol{y})$')
+            # plt.xlabel('$x_0$')
+            # plt.ylabel('$x_1$')
+            ax.set_xlabel(r'$\theta_0$')
+            ax.set_ylabel(r'$\theta_1$')
 
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png', bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png',
+                            bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.pdf',
+                            bbox_inches='tight')
 
             # Create surface plot of model.
             fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
@@ -310,31 +329,57 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                             alpha=0.3, linewidth=0, antialiased=False,
                             facecolors=illuminated_surface)
 
-            cset = ax.contour(x, y, np.exp(ln_model_grid), zdir='z', offset=-0.075,
-                              cmap=cm.coolwarm)
+            # cset = ax.contour(x, y, np.exp(ln_model_grid), zdir='z', offset=-0.075,
+            #                   cmap=cm.coolwarm)
 
             ax.view_init(elev=15.0, azim=110.0)
-            ax.set_xlabel('$x_0$')
-            ax.set_ylabel('$x_1$')
+            # ax.set_xlabel('$x_0$')
+            # ax.set_ylabel('$x_1$')
+            ax.set_xlabel(r'$\theta_0$')
+            ax.set_ylabel(r'$\theta_1$')
+            ax.set_zlabel(r'$\varphi$')
 
             ax.set_xlim(xmin, xmax)
             ax.set_ylim(xmin, xmax)
             ax.set_zlim(-0.075, 0.30)
 
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_surface.png', bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_modelexp_surface.png',
+                            bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_modelexp_surface.pdf',
+                            bbox_inches='tight')
 
             # Create image plot of model.
             plt.figure()
             plt.imshow(np.exp(ln_model_grid), origin='lower',
                        extent=[xmin, xmax, xmin, xmax])
-            plt.contour(x, y, np.exp(ln_model_grid), cmap=cm.coolwarm)
-            plt.colorbar()
-            plt.xlabel('$x_0$')
-            plt.ylabel('$x_1$')
+            # plt.contour(x, y, np.exp(ln_model_grid), cmap=cm.coolwarm)
+            plt.colorbar(label=r'$\varphi$')
+            # plt.xlabel('$x_0$')
+            # plt.ylabel('$x_1$')
+            ax.set_xlabel(r'$\theta_0$')
+            ax.set_ylabel(r'$\theta_1$')
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_image.png',
+                plt.savefig('./plots/gaussian_nondiagcov_modelexp_image.png',
                             bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_modelexp_image.pdf',
+                            bbox_inches='tight')
+
+            plt.figure()
+            plt.imshow((ln_model_grid), origin='lower',
+                       extent=[xmin, xmax, xmin, xmax])
+            # plt.contour(x, y, np.exp(ln_model_grid), cmap=cm.coolwarm)
+            plt.colorbar(label=r'$\log\varphi$')
+            # plt.xlabel('$x_0$')
+            # plt.ylabel('$x_1$')
+            ax.set_xlabel(r'$\theta_0$')
+            ax.set_ylabel(r'$\theta_1$')
+            if savefigs:
+                plt.savefig('./plots/gaussian_nondiagcov_model_image.png',
+                            bbox_inches='tight')
+                plt.savefig('./plots/gaussian_nondiagcov_model_image.pdf',
+                            bbox_inches='tight')
+
 
             plt.show(block=False)
 
