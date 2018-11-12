@@ -10,9 +10,8 @@ sys.path.append("examples")
 import utils
 
 # Import Logging config
-import logging
-import harmonic.harmonic_logs as lg 
-lg.setup_logging()
+from harmonic import logs as log
+log.setup_logging()
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
     """Compute log_e of uniform prior.
@@ -111,9 +110,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         None.
     """
     
-    lg.Harmonic_high_log('Rosenbrock example')
-    lg.Harmonic_high_log('Dimensionality = {}'.format(ndim)) 
-    lg.Harmonic_low_log('---------------------------------')   
+    log.high_log('Rosenbrock example')
+    log.high_log('Dimensionality = {}'.format(ndim)) 
+    log.low_log('---------------------------------')   
     if ndim != 2:
         raise ValueError("Only ndim=2 is supported (ndim={} specified)"
             .format(ndim))
@@ -125,7 +124,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     step = -2
     domain = []
     hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
-    lg.Harmonic_low_log('Hyper-parameters = {}'.format(hyper_parameters))
+    log.low_log('Hyper-parameters = {}'.format(hyper_parameters))
     a = 1.0
     b = 100.0
     
@@ -136,22 +135,22 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         xmax = 10.0
         ymin = -5.0
         ymax = 15.0
-        lg.Harmonic_low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
+        log.low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
             .format(xmin, xmax, ymin, ymax))   
         ln_prior = partial(ln_prior_uniform, xmin=xmin, xmax=xmax, 
                            ymin=ymin, ymax=ymax)     
     else: # Use Gaussian prior
         mu = 1.0
         sigma = 50.0
-        lg.Harmonic_low_log('a, b, mu, sigma = {}, {}, {}, {}'
+        log.low_log('a, b, mu, sigma = {}, {}, {}, {}'
             .format(a, b, mu, sigma))   
         ln_prior = partial(ln_prior_gaussian, mu=mu, sigma=sigma)
-    lg.Harmonic_low_log('---------------------------------')
+    log.low_log('---------------------------------')
     # Start timer.
     clock = time.clock()
     
     # Set up and run sampler.
-    lg.Harmonic_high_log('Run sampling...')
+    log.high_log('Run sampling...')
     pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1    
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, 
                                     args=[ln_prior, a, b])
@@ -169,8 +168,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                                     training_proportion=0.5)
     
     # Perform cross-validation.
-    lg.Harmonic_high_log('Perform cross-validation...')
-    lg.Harmonic_low_log('---------------------------------')
+    log.high_log('Perform cross-validation...')
+    log.low_log('---------------------------------')
     validation_variances = \
         hm.utils.cross_validation(chains_train, \
                                   domain, \
@@ -179,32 +178,32 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   modelClass=hm.model.KernelDensityEstimate, \
                                   verbose=verbose, \
                                   seed=0)
-    lg.Harmonic_low_log('validation_variances = {}'.format(validation_variances))
+    log.low_log('validation_variances = {}'.format(validation_variances))
     best_hyper_param_ind = np.argmin(validation_variances)
     best_hyper_param = hyper_parameters[best_hyper_param_ind]
-    lg.Harmonic_low_log('Best hyper-parameter = {}'.format(best_hyper_param))
-    lg.Harmonic_low_log('---------------------------------')
+    log.low_log('Best hyper-parameter = {}'.format(best_hyper_param))
+    log.low_log('---------------------------------')
 
     # Fit model.
-    lg.Harmonic_high_log('Fit model...')
-    lg.Harmonic_low_log('---------------------------------')
+    log.high_log('Fit model...')
+    log.low_log('---------------------------------')
     model = hm.model.KernelDensityEstimate(ndim, 
                                            domain, 
                                            hyper_parameters=best_hyper_param)
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-    lg.Harmonic_low_log('Fit success = {}'.format(fit_success))    
-    lg.Harmonic_low_log('---------------------------------')
+    log.low_log('Fit success = {}'.format(fit_success))    
+    log.low_log('---------------------------------')
 
     # Use chains and model to compute evidence.
-    lg.Harmonic_high_log('Compute evidence...')
+    log.high_log('Compute evidence...')
     ev = hm.Evidence(chains_test.nchains, model)    
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
     
     # Compute analytic evidence.
     if ndim == 2:
-        lg.Harmonic_high_log('Compute evidence by high-resolution numerical integration...')
-        lg.Harmonic_low_log('---------------------------------')
+        log.high_log('Compute evidence by high-resolution numerical integration...')
+        log.low_log('---------------------------------')
         ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior, a=a, b=b)
         ln_posterior_grid, x_grid, y_grid = \
             utils.eval_func_on_grid(ln_posterior_func, 
@@ -214,54 +213,54 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         dx = x_grid[0,1] - x_grid[0,0]
         dy = y_grid[1,0] - y_grid[0,0]
         evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx * dy
-        lg.Harmonic_low_log('dx = {}'.format(dx))
-        lg.Harmonic_low_log('dy = {}'.format(dy))    
+        log.low_log('dx = {}'.format(dx))
+        log.low_log('dy = {}'.format(dy))    
     
     # ===============================================================================
     # Display evidence computation results.
     # ===============================================================================
-    lg.Harmonic_low_log('---------------------------------')
-    lg.Harmonic_low_log('Evidence: numerical = {}, estimate = {}'
+    log.low_log('---------------------------------')
+    log.low_log('Evidence: numerical = {}, estimate = {}'
         .format(evidence_numerical_integration, np.exp(ln_evidence)))
-    lg.Harmonic_low_log('Evidence: std = {}, std / estimate = {}'
+    log.low_log('Evidence: std = {}, std / estimate = {}'
         .format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
     diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
-    lg.Harmonic_high_log('Evidence: |numerical - estimate| / estimate = {}'
+    log.high_log('Evidence: |numerical - estimate| / estimate = {}'
         .format(np.exp(diff - ln_evidence)))
     # ===============================================================================
     # Display inverse evidence computation results.
     # ===============================================================================
-    lg.Harmonic_low_log('---------------------------------')
-    lg.Harmonic_low_log('Inv Evidence: numerical = {}, estimate = {}'
+    log.low_log('---------------------------------')
+    log.low_log('Inv Evidence: numerical = {}, estimate = {}'
         .format(1.0/evidence_numerical_integration, ev.evidence_inv))
-    lg.Harmonic_low_log('Inv Evidence: std = {}, std / estimate = {}'
+    log.low_log('Inv Evidence: std = {}, std / estimate = {}'
         .format(np.sqrt(ev.evidence_inv_var), np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-    lg.Harmonic_low_log('Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+    log.low_log('Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
         .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
-    lg.Harmonic_low_log('Inv Evidence: sqrt( var(var) )/ var = {}'
+    log.low_log('Inv Evidence: sqrt( var(var) )/ var = {}'
         .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
-    lg.Harmonic_high_log('Inv Evidence: |numerical - estimate| / estimate = {}'
+    log.high_log('Inv Evidence: |numerical - estimate| / estimate = {}'
         .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) / ev.evidence_inv))
     # ===============================================================================
     # Display more technical details for ln evidence.
     # ===============================================================================
-    lg.Harmonic_low_log('---------------------------------')
-    lg.Harmonic_low_log('lnargmax = {}, lnargmin = {}'
+    log.low_log('---------------------------------')
+    log.low_log('lnargmax = {}, lnargmin = {}'
         .format(ev.lnargmax, ev.lnargmin))
-    lg.Harmonic_low_log('lnprobmax = {}, lnprobmin = {}'
+    log.low_log('lnprobmax = {}, lnprobmin = {}'
         .format(ev.lnprobmax, ev.lnprobmin))
-    lg.Harmonic_low_log('lnpredictmax = {}, lnpredictmin = {}'
+    log.low_log('lnpredictmax = {}, lnpredictmin = {}'
         .format(ev.lnpredictmax, ev.lnpredictmin))
-    lg.Harmonic_low_log('---------------------------------')
-    lg.Harmonic_low_log('mean shift = {}, running sum total = {}'
+    log.low_log('---------------------------------')
+    log.low_log('mean shift = {}, running sum total = {}'
         .format(ev.mean_shift, sum(ev.running_sum)))
-    lg.Harmonic_low_log('running sum = \n{}'
+    log.low_log('running sum = \n{}'
         .format(ev.running_sum))
-    lg.Harmonic_low_log('nsamples per chain = \n{}'
+    log.low_log('nsamples per chain = \n{}'
         .format(ev.nsamples_per_chain))
-    lg.Harmonic_low_log('nsamples eff per chain = \n{}'
+    log.low_log('nsamples eff per chain = \n{}'
         .format(ev.nsamples_eff_per_chain))
-    lg.Harmonic_low_log('===============================')
+    log.low_log('===============================')
 
     # Create corner/triangle plot.
     created_plots = False
@@ -332,7 +331,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         created_plots = True
 
     clock = time.clock() - clock
-    lg.Harmonic_high_log('Execution time = {}s'.format(clock))
+    log.high_log('Execution time = {}s'.format(clock))
 
     if created_plots:
         input("\nPress Enter to continue...")

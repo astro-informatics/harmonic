@@ -2,11 +2,12 @@ import os
 import logging.config
 import logging
 import yaml
+import harmonic
+import os
 
 
 def setup_logging(
 
-    default_path='/Users/matt/Downloads/Software/src_harmonic/logs/logging.yaml',
     default_level=logging.DEBUG,
     env_key='LOG_CFG'
 ):
@@ -14,7 +15,6 @@ def setup_logging(
     the desired logging level.
 
     Args:
-        os path: Directory location of .yaml configure file.
         int: logging level at which to configure.
         string: Environment key. Do not touch this.
 
@@ -24,13 +24,15 @@ def setup_logging(
     Raises:
         None.
     """
-    path = default_path
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__))) + '/logs/logging.yaml')
     value = os.getenv(env_key, None)
     if value:
         path = value
     if os.path.exists(path):
         with open(path, 'rt') as f:
             config = yaml.safe_load(f.read())
+        config['handlers']['info_file_handler']['filename'] = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__))) + '/logs/info.log')
+        config['handlers']['error_file_handler']['filename'] = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__))) + '/logs/errors.log')
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
@@ -39,7 +41,7 @@ def setup_logging(
 Custom low-level logger for Harmonic: (Cyan) Use for standard debug prints.
 
 """
-def Harmonic_low_log(message):
+def low_log(message):
     """Custom low-level logger for Harmonic
 
     Args:
@@ -55,7 +57,7 @@ def Harmonic_low_log(message):
     logger.debug('\033[0;36;40m' + message + '\033[0;0m')
 
 
-def Harmonic_high_log(message):
+def high_log(message):
     """Custom high-level logger for Harmonic
 
     Args:
@@ -71,15 +73,14 @@ def Harmonic_high_log(message):
     logger.critical('\033[1;31;40m' + message + '\033[0;0m')
 
 """ 
-In main code, call lines (1) and (3) to create and initialize the logger:
+In main code, call lines (1) and (2) to create and initialize the logger:
 
-(1) import logging
-(2) import harmonic.harmonic_logs as lg 
-(3) lg.setup_logging(default_level=[level that you want to log at e.g. logging.DEBUG])
+(1) from harmonic import logs as log
+(2) log.setup_logging(default_level=[level that you want to log at e.g. logging.DEBUG])
 
 examples of use:
-        lg.Harmonic_low_log('a debug level message')
-        lg.Harmonic_high_log('a critical level message')
+        log.Harmonic_low_log('a debug level message')
+        log.Harmonic_high_log('a critical level message')
 """
 
 
