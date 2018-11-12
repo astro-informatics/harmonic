@@ -16,10 +16,10 @@ class Optimisation(Enum):
     ACCURACY = 2
 
 
-OPTIMISATION = Optimisation.ACCURACY
+OPTIMISATION = Optimisation.SPEED
 
 
-MEAN_SHIFT_SIGN = 0.0
+MEAN_SHIFT_SIGN = -1.0
 
 
 class Evidence:
