@@ -14,7 +14,7 @@ import logging
 import harmonic.harmonic_logs as lg 
 lg.setup_logging()
 
-def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
+def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
     """Compute log_e of uniform prior.
 
     Args: 
@@ -33,59 +33,40 @@ def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
     else:
         return 0.0
         
-        
-def ln_prior_gaussian(x, mu=1.0, sigma=5.):
-    """Compute log_e of Gaussian prior.
-
-    Args: 
-        x: Position at which to evaluate prior.
-        mu: Mean (centre) of the prior.
-        sigma: Standard deviation of prior.   
-        
-    Returns:
-        double: Value of prior at specified point.
-    """
-        
-    return - 0.5 * np.dot(x-mu, x-mu) / sigma**2 \
-           - 0.5 * x.size * np.log(2 * np.pi * sigma)
 
 
-def ln_likelihood(x, a=1.0, b=100.0):
-    """Compute log_e of likelihood defined by Rosenbrock function.
+def ln_likelihood(x):
+    """Compute log_e of likelihood defined by Rastrigin function.
     
     Args: 
         x: Position at which to evaluate likelihood.
-        a: First parameter of Rosenbrock function.   
-        b: First parameter of Rosenbrock function.
         
     Returns:
-        double: Value of Rosenbrock at specified point.
+        double: Value of Rastrigin at specified point.
     """
     
     ndim = x.size
 
-    f = 0.0
+    f = 10.0 * ndim
 
-    for i_dim in range(ndim-1):
-        f += b*(x[i_dim+1]-x[i_dim]**2)**2 + (a-x[i_dim])**2
+    for i_dim in range(ndim):
+        f += x[i_dim]**2 - 10.0 * np.cos( 2.0 * np.pi * x[i_dim] )
 
     return -f
 
 
-def ln_posterior(x, ln_prior, a=1.0, b=100.0):
+def ln_posterior(x, ln_prior):
     """Compute log_e of posterior.
     
     Args: 
         x: Position at which to evaluate posterior.
-        a: First parameter of Rosenbrock function.   
-        b: First parameter of Rosenbrock function.
         ln_prior: Prior function.
         
     Returns:
         double: Posterior at specified point.
     """
     
-    ln_L = ln_likelihood(x, a=a, b=b)
+    ln_L = ln_likelihood(x)
 
     if not np.isfinite(ln_L):
         return -np.inf
@@ -93,10 +74,11 @@ def ln_posterior(x, ln_prior, a=1.0, b=100.0):
         return ln_prior(x) + ln_L
 
 
+
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """Run Rosenbrock example.
+    """Run Rastrigin example.
 
     Args: 
         ndim: Dimension.
@@ -110,8 +92,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Returns:
         None.
     """
-    
-    lg.Harmonic_high_log('Rosenbrock example')
+
+    lg.Harmonic_high_log('Rastrigin example')
     lg.Harmonic_high_log('Dimensionality = {}'.format(ndim)) 
     lg.Harmonic_low_log('---------------------------------')   
     if ndim != 2:
@@ -126,35 +108,27 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     domain = []
     hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
     lg.Harmonic_low_log('Hyper-parameters = {}'.format(hyper_parameters))
-    a = 1.0
-    b = 100.0
-    
+
     # Set prior parameters.
     use_uniform_prior = True
     if use_uniform_prior:        
-        xmin = -10.0
-        xmax = 10.0
-        ymin = -5.0
-        ymax = 15.0
+        xmin = -6.0
+        xmax = 6.0
+        ymin = -6.0
+        ymax = 6.0
         lg.Harmonic_low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
             .format(xmin, xmax, ymin, ymax))   
-        ln_prior = partial(ln_prior_uniform, xmin=xmin, xmax=xmax, 
-                           ymin=ymin, ymax=ymax)     
-    else: # Use Gaussian prior
-        mu = 1.0
-        sigma = 50.0
-        lg.Harmonic_low_log('a, b, mu, sigma = {}, {}, {}, {}'
-            .format(a, b, mu, sigma))   
-        ln_prior = partial(ln_prior_gaussian, mu=mu, sigma=sigma)
-    lg.Harmonic_low_log('---------------------------------')
+        ln_prior = partial(ln_prior_uniform, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
+
+	lg.Harmonic_low_log('---------------------------------')
     # Start timer.
-    clock = time.clock()
-    
+    clock = time.clock() 
+
     # Set up and run sampler.
+    
     lg.Harmonic_high_log('Run sampling...')
-    pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1    
-    sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, 
-                                    args=[ln_prior, a, b])
+    pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
+    sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[ln_prior])
     rstate = np.random.get_state()
     sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
     samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
@@ -165,9 +139,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Set up chains.
     chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, lnprob)
-    chains_train, chains_test = hm.utils.split_data(chains, 
-                                                    training_proportion=0.5)
-    
+    chains_train, chains_test = hm.utils.split_data(chains, training_proportion=0.5)
+
     # Perform cross-validation.
     lg.Harmonic_high_log('Perform cross-validation...')
     lg.Harmonic_low_log('---------------------------------')
@@ -179,7 +152,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   modelClass=hm.model.KernelDensityEstimate, \
                                   verbose=verbose, \
                                   seed=0)
-    lg.Harmonic_low_log('validation_variances = {}'.format(validation_variances))
+    lg.Harmonic_low_log('Validation variances = {}'.format(validation_variances))
     best_hyper_param_ind = np.argmin(validation_variances)
     best_hyper_param = hyper_parameters[best_hyper_param_ind]
     lg.Harmonic_low_log('Best hyper-parameter = {}'.format(best_hyper_param))
@@ -200,23 +173,23 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     ev = hm.Evidence(chains_test.nchains, model)    
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-    
+
     # Compute analytic evidence.
     if ndim == 2:
         lg.Harmonic_high_log('Compute evidence by high-resolution numerical integration...')
         lg.Harmonic_low_log('---------------------------------')
-        ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior, a=a, b=b)
+        ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior)
         ln_posterior_grid, x_grid, y_grid = \
             utils.eval_func_on_grid(ln_posterior_func, 
-                                    xmin=-10.0, xmax=10.0, 
-                                    ymin=-5.0, ymax=15.0, 
+                                    xmin=-6.0, xmax=6.0, 
+                                    ymin=-6.0, ymax=6.0, 
                                     nx=1000, ny=1000)
         dx = x_grid[0,1] - x_grid[0,0]
         dy = y_grid[1,0] - y_grid[0,0]
         evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx * dy
         lg.Harmonic_low_log('dx = {}'.format(dx))
         lg.Harmonic_low_log('dy = {}'.format(dy))    
-    
+
     # ===============================================================================
     # Display evidence computation results.
     # ===============================================================================
@@ -263,18 +236,19 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         .format(ev.nsamples_eff_per_chain))
     lg.Harmonic_low_log('===============================')
 
+
     # Create corner/triangle plot.
     created_plots = False
     if plot_corner:
         
         utils.plot_corner(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/rosenbrock_corner.png',
+            plt.savefig('./plots/rastrigin_corner.png',
                         bbox_inches='tight')
         
         utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/rosenbrock_getdist.png',
+            plt.savefig('./plots/rastrigin_getdist.png',
                         bbox_inches='tight')
         
         plt.show(block=False)  
@@ -292,7 +266,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ax.set_zlim(-100.0, 0.0)                
         ax.set_zlabel(r'$\log \mathcal{L}$')        
         if savefigs:
-            plt.savefig('./plots/rosenbrock_lnposterior_surface.png',
+            plt.savefig('./plots/rastrigin_lnposterior_surface.png',
                         bbox_inches='tight')
         
         # Plot posterior image.
@@ -301,14 +275,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                               colorbar_label=r'$\mathcal{L}$')
         # ax.set_clim(vmin=0.0, vmax=0.003)
         if savefigs:
-            plt.savefig('./plots/rosenbrock_posterior_image.png',
+            plt.savefig('./plots/rastrigin_posterior_image.png',
                         bbox_inches='tight')
 
         # Evaluate model on grid.
         model_grid, x_grid, y_grid = \
             utils.eval_func_on_grid(model.predict, 
-                                    xmin=-10.0, xmax=10.0, 
-                                    ymin=-5.0, ymax=15.0, 
+                                    xmin=-6.0, xmax=6.0, 
+                                    ymin=-6.0, ymax=6.0, 
                                     nx=1000, ny=1000)
         # model_grid[model_grid<-100.0] = -100.0 
         
@@ -317,15 +291,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                               colorbar_label=r'$\log \varphi$') 
         # ax.set_clim(vmin=-2.0, vmax=2.0)
         if savefigs:
-            plt.savefig('./plots/rosenbrock_model_image.png',
+            plt.savefig('./plots/rastrigin_model_image.png',
                         bbox_inches='tight')
         
         # Plot exponential of model.
         ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
                               colorbar_label=r'$\varphi$')
-        # ax.set_clim(vmin=0.0, vmax=10.0)        
+        # ax.set_clim(vmin=0.0, vmax=6.0)        
         if savefigs:
-            plt.savefig('./plots/rosenbrock_modelexp_image.png',
+            plt.savefig('./plots/rastrigin_modelexp_image.png',
                         bbox_inches='tight')
 
         plt.show(block=False)  
@@ -352,3 +326,7 @@ if __name__ == '__main__':
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
                           plot_corner=False, plot_surface=True, verbose=False)
+    
+
+
+
