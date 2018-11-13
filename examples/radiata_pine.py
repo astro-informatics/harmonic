@@ -165,14 +165,20 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     # if verbose: print("hyper_parameters = {}".format(hyper_parameters))
     
     
-    # Set prior parameters.    
+    #=========================================================
+    # Set-up Priors
+    #=========================================================  
+    # Define prior variables
     mu_0 = np.array([[3000.0], [185.0]])    
     r_0 = 0.06
     s_0 = 6.0
     a_0 = 3.0
     b_0 = 2.0 * 300**2
     
+    #=========================================================
     # Load Radiata Pine data.
+    #=========================================================
+    # Imports data file
     data = np.loadtxt('examples/data/RadiataPine.dat')
     id = data[:,0]
     y = data[:,1]
@@ -190,18 +196,16 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     z = z - np.mean(z)
 
     # Set up and run sampler.
-    
-
     tau_prior_mean = a_0 / b_0
     tau_prior_std = np.sqrt(a_0) / b_0
-    pos_alpha = mu_0[0,0] + \
-        1.0 / np.sqrt(tau_prior_mean * r_0) * np.random.randn(nchains)        
-    pos_beta = mu_0[1,0] + \
-        1.0 / np.sqrt(tau_prior_mean * s_0) * np.random.randn(nchains)    
-    # pos_tau = tau_prior_mean + \
-    #     tau_prior_std * np.random.randn(nchains)            
-    pos_tau = tau_prior_mean + \
-        2.0 * tau_prior_std * 2.0 * (np.random.rand(nchains) - 0.5)  # avoid negative tau
+
+    #=========================================================
+    # Compute random positions to draw from for emcee sampler.
+    #=========================================================
+    pos_alpha = mu_0[0,0] + 1.0 / np.sqrt(tau_prior_mean * r_0) * np.random.randn(nchains)  
+    pos_beta = mu_0[1,0] + 1.0 / np.sqrt(tau_prior_mean * s_0) * np.random.randn(nchains)    
+    # pos_tau = tau_prior_mean + tau_prior_std * np.random.randn(nchains)            
+    pos_tau = tau_prior_mean + 2.0 * tau_prior_std * 2.0 * (np.random.rand(nchains) - 0.5)  # avoid negative tau
         
     pos = np.c_[pos_alpha, pos_beta, pos_tau]
            
