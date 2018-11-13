@@ -3,6 +3,7 @@ import sys
 import emcee
 import time 
 import matplotlib.pyplot as plt
+from functools import partial
 from matplotlib import cm
 sys.path.append(".")
 import harmonic as hm
@@ -93,7 +94,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
     
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
         
@@ -195,7 +196,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('===============================')
         # ===============================================================================
 
+        # ===============================================================================
         # Create corner/triangle plot.
+        # ===============================================================================
         if plot_corner and i_realisation == 0:
             
             utils.plot_corner(samples.reshape((-1, ndim)))
@@ -210,130 +213,95 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     
             plt.show()        
             
-        # In 2D case, plot surface/image and samples.    
+        # ===============================================================================
+        # In 2D case, plot surface/image and samples.  
+        # =============================================================================== 
         if plot_surface and ndim == 2 and i_realisation == 0:
                     
-            from mpl_toolkits.mplot3d import Axes3D
-            from matplotlib.colors import LightSource
-            
-            # Define plot parameters.
+            # ===============================================================================
+            # Define plot parameters.  
+            # =============================================================================== 
             nx = 50
             xmin = -3.0
             xmax = 3.0
-            
-            # Evaluate ln_posterior and model over grid.
-            x = np.linspace(xmin, xmax, nx)
-            y = np.linspace(xmin, xmax, nx)
-            x, y = np.meshgrid(x, y)
-            ln_posterior_grid = np.zeros((nx,nx))        
-            ln_model_grid = np.zeros((nx,nx))      
-            for i in range(nx):
-                for j in range(nx):
-                    ln_posterior_grid[i,j] = \
-                        ln_posterior(np.array([x[i,j],y[i,j]]), inv_cov)
-                    ln_model_grid[i,j] = \
-                        model.predict(np.array([x[i,j],y[i,j]]))
-            
-            # Set up axis for surface plot.
-            fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))        
 
-            # Create an instance of a LightSource and use it to illuminate
-            # the surface.
-            light = LightSource(60, 120)
-            rgb = np.ones((ln_posterior_grid.shape[0], 
-                           ln_posterior_grid.shape[1], 3))
-            illuminated_surface = \
-                light.shade_rgb(rgb * np.array([0,0.0,1.0]), 
-                                np.exp(ln_posterior_grid))
-
-            # Plot surface.
-            ax.plot_surface(x, y, np.exp(ln_posterior_grid), 
-                            alpha=0.3, linewidth=0, antialiased=False, 
-                            facecolors=illuminated_surface)
-            
-            # Plot contour.
-            cset = ax.contour(x, y, np.exp(ln_posterior_grid), 
-                              zdir='z', offset=-0.5, cmap=cm.coolwarm)        
-            
-            # Plot samples (for chain 0 only).
+            # ===============================================================================
+            # 2D surface plot of posterior. 
+            # =============================================================================== 
+            ln_posterior_func = partial(ln_posterior, inv_cov=inv_cov)
+            ln_posterior_grid, x_grid, y_grid = \
+                utils.eval_func_on_grid(ln_posterior_func, 
+                                        xmin=xmin, xmax=xmax, 
+                                        ymin=xmin, ymax=xmax, 
+                                        nx=nx, ny=nx)
             i_chain = 0
-            xplot = samples[i_chain,:,0].reshape((-1, ndim))
-            yplot = samples[i_chain,:,1].reshape((-1, ndim))        
-            # Manually remove samples outside of plot region 
-            # (since Matplotlib clipping cannot do this in 3D; see 
-            # https://github.com/matplotlib/matplotlib/issues/749).
-            xplot[xplot < xmin] = np.nan
-            xplot[xplot > xmax] = np.nan        
-            yplot[yplot < xmin] = np.nan
-            yplot[yplot > xmax] = np.nan        
-            zplot = np.exp(lnprob[i_chain,:].reshape((-1, 1)))                  
-            ax.scatter(xplot, yplot, zplot, c='r', s=5, marker='.')
-            
-            # Define additional plot settings.
-            ax.set_xlim(xmin, xmax)
-            ax.set_ylim(xmin, xmax)
-            ax.set_zlim(-0.5, 1.0)
-            ax.view_init(elev=15.0, azim=110.0)        
-            ax.set_xlabel('$x_0$')
-            ax.set_ylabel('$x_1$')
-            
+            ax = utils.plot_surface(np.exp(ln_posterior_grid), x_grid, y_grid, 
+                                    samples[i_chain,:,:].reshape((-1, ndim)), 
+                                    np.exp(lnprob[i_chain,:].reshape((-1, 1))),
+                                    contour_z_offset=-0.5)
+            # ax.set_zlim(-100.0, 0.0)                
+            ax.set_zlabel(r'$\mathcal{L}$') 
+
             # Save.
             if savefigs:
                 plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png', bbox_inches='tight')
-                    
-            # Create image plot of posterior.
-            plt.figure()
-            plt.imshow(np.exp(ln_posterior_grid), origin='lower', 
-                       extent=[xmin, xmax, xmin, xmax])
-            plt.contour(x, y, np.exp(ln_posterior_grid), cmap=cm.coolwarm)
-            plt.plot(samples[i_chain,:,0].reshape((-1, ndim)), 
-                     samples[i_chain,:,1].reshape((-1, ndim)), 
-                     'r.', markersize=1)
-            plt.colorbar()
-            plt.xlabel('$x_0$')
-            plt.ylabel('$x_1$')     
-                       
+
+            plt.show(block=False)
+
+            # ===============================================================================
+            # Image of posterior samples overlayed with contour plot.
+            # =============================================================================== 
+            # Plot posterior image.
+            ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, 
+                                  samples[i_chain].reshape((-1, ndim)),
+                                  colorbar_label='$\mathcal{L}$',
+                                  plot_contour=True)
+            # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png', bbox_inches='tight')        
-            
-            # Create surface plot of model.
-            fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
-            
-            illuminated_surface = \
-                light.shade_rgb(rgb * np.array([0,0.0,1.0]), 
-                                np.exp(ln_model_grid))                            
-            
-            ax.plot_surface(x, y, np.exp(ln_model_grid), 
-                            alpha=0.3, linewidth=0, antialiased=False, 
-                            facecolors=illuminated_surface)
-            
-            cset = ax.contour(x, y, np.exp(ln_model_grid), zdir='z', offset=-0.075, 
-                              cmap=cm.coolwarm)
-            
-            ax.view_init(elev=15.0, azim=110.0)        
-            ax.set_xlabel('$x_0$')
-            ax.set_ylabel('$x_1$')
-            
-            ax.set_xlim(xmin, xmax)
-            ax.set_ylim(xmin, xmax)
-            ax.set_zlim(-0.075, 0.30)
-            
+                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png', bbox_inches='tight')
+
+            plt.show(block=False) 
+        
+            # ===============================================================================
+            # Learnt model of the posterior 
+            # =============================================================================== 
+            # Evaluate ln_posterior and model over grid.
+            x = np.linspace(xmin, xmax, nx); y = np.linspace(xmin, xmax, nx)
+            x, y = np.meshgrid(x, y)     
+            ln_model_grid = np.zeros((nx,nx))      
+            for i in range(nx):
+                for j in range(nx):
+                    ln_model_grid[i,j] = model.predict(np.array([x[i,j],y[i,j]]))
+
+            i_chain = 0
+            ax = utils.plot_surface(np.exp(ln_model_grid), x_grid, y_grid, 
+                                    # samples[i_chain,:,:].reshape((-1, ndim)), 
+                                    # np.exp(lnprob[i_chain,:].reshape((-1, 1))),
+                                    contour_z_offset=-0.075)
+            # ax.set_zlim(-100.0, 0.0)                
+            ax.set_zlabel(r'$\mathcal{L}$') 
+
+            # Save.
             if savefigs:
                 plt.savefig('./plots/gaussian_nondiagcov_surface.png', bbox_inches='tight')
-                    
-            # Create image plot of model.
-            plt.figure()        
-            plt.imshow(np.exp(ln_model_grid), origin='lower', 
-                       extent=[xmin, xmax, xmin, xmax])
-            plt.contour(x, y, np.exp(ln_model_grid), cmap=cm.coolwarm)
-            plt.colorbar()
-            plt.xlabel('$x_0$')
-            plt.ylabel('$x_1$')
+
+            plt.show(block=False)
+
+            # ===============================================================================
+            # Projection of posteior onto x1,x2 plane with contours.
+            # =============================================================================== 
+            # Plot posterior image.
+            ax = utils.plot_image(np.exp(ln_model_grid), x_grid, y_grid, 
+                                  # samples[i_chain].reshape((-1, ndim)),
+                                  colorbar_label='$\mathcal{L}$',
+                                  plot_contour=True)
+            # Save.
             if savefigs:
                 plt.savefig('./plots/gaussian_nondiagcov_image.png', 
                             bbox_inches='tight')
-                        
-            plt.show(block=False)
+
+            plt.show(block=False) 
+            # =============================================================================== 
         
         evidence_inv_summary[i_realisation,0] = ev.evidence_inv
         evidence_inv_summary[i_realisation,1] = ev.evidence_inv_var
@@ -368,4 +336,4 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=False, plot_surface=False, verbose=False)
+                plot_corner=False, plot_surface=True, verbose=False)

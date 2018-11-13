@@ -140,7 +140,7 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
 
     # Plot surface.
     ax.plot_surface(x_grid, y_grid, func_eval_grid,
-                    alpha=0.5, linewidth=0, antialiased=False,
+                    alpha=0.3, linewidth=0, antialiased=False,
                     # cmap=cm.coolwarm,
                     facecolors=illuminated_surface)
 
@@ -154,11 +154,13 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
             cset = ax.contour(x_grid, y_grid, func_eval_grid,
                               zdir='z', offset=contour_z_offset,
                               cmap=cm.coolwarm)
+
     # Set domain.
     xmin = np.min(x_grid)
     xmax = np.max(x_grid)
     ymin = np.min(y_grid)
     ymax = np.max(y_grid)
+
 
     # # Plot samples.
     if samples is not None and vals is not None:
@@ -180,6 +182,7 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
     ax.view_init(elev=15.0, azim=110.0)
     ax.set_xlabel('$x_0$')
     ax.set_ylabel('$x_1$')
+    ax.set_zlim(zmin=contour_z_offset)
 
     return ax
 
@@ -220,10 +223,11 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
                         cmap=cm.coolwarm)
         else:
             plt.contour(x_grid, y_grid, func_eval_grid, cmap=cm.coolwarm)
+
     if samples is not None:
         plt.plot(samples[:,0],
                  samples[:,1],
-                 'r.', markersize=0.1)
+                 'r.', markersize=1)
 
     if colorbar_label is not None:
         plt.colorbar(label=colorbar_label)
