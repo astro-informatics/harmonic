@@ -11,18 +11,20 @@ def setup_logging(
     default_level=logging.DEBUG,
     env_key='LOG_CFG'
 ):
-    """Call at the begining of code to initialize and configure
-    the desired logging level.
+    """
+    .. note:: Call at the begining of code to initialize and configure
+              the desired logging level.
 
     Args:
-        int: logging level at which to configure.
-        string: Environment key. Do not touch this.
-
-    Returns:
-        None.
+        - int: 
+            logging level at which to configure.
+        - string:  
+            Environment key. Do not touch this.
 
     Raises:
-        None.
+        - ValueError:
+            Raised if logging.yaml is not in src_harmonic/logs/ directory.
+        
     """
     path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__))) + '/logs/logging.yaml')
     value = os.getenv(env_key, None)
@@ -36,38 +38,30 @@ def setup_logging(
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
+        raise ValueError("Logging config pathway incorrect.")
 
-"""
-Custom low-level logger for Harmonic: (Cyan) Use for standard debug prints.
 
-"""
 def low_log(message):
-    """Custom low-level logger for Harmonic
+    """
+    .. note:: Custom low-level logger for Harmonic
 
     Args:
-        string: message which should be logged.
+        - string: 
+            message which should be logged.
 
-    Returns:
-        None.
-
-    Raises:
-        None.
     """
     logger = logging.getLogger('Harmonic')
     logger.debug('\033[0;36;40m' + message + '\033[0;0m')
 
 
 def high_log(message):
-    """Custom high-level logger for Harmonic
+    """
+    .. note:: Custom high-level logger for Harmonic
 
     Args:
-        string: message which should be logged.
+        - string: 
+            message which should be logged.
 
-    Returns:
-        None.
-
-    Raises:
-        None.
     """
     logger = logging.getLogger('Harmonic')
     logger.critical('\033[1;31;40m' + message + '\033[0;0m')

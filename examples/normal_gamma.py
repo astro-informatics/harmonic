@@ -10,9 +10,8 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-# Import Logging config
-from harmonic import logs as log
-log.setup_logging()
+# Setup Logging config
+hm.logs.setup_logging()
 
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
@@ -125,7 +124,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         None.
     """
 
-    log.high_log('Normal-Gamma example')
+    hm.logs.high_log('Normal-Gamma example')
 
     if ndim != 2:
         raise ValueError("Only ndim=2 is supported (ndim={} specified)"
@@ -150,18 +149,18 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     n_realisations = 1
 
     # Generate simulations.
-    log.high_log('Simulate data...')
+    hm.logs.high_log('Simulate data...')
     x = np.random.normal(mu_in, np.sqrt(1/tau_in), (n_meas))
     x_mean = np.mean(x)
     x_std = np.std(x)
     x_n = x.size
-    log.low_log('x: mean = {}, std = {}, n = {}'.format(x_mean, x_std, x_n))
+    hm.logs.low_log('x: mean = {}, std = {}, n = {}'.format(x_mean, x_std, x_n))
 
     summary = np.empty((len(tau_array), 4), dtype=float)
     created_plots = False
     for i_tau, tau_prior in enumerate(tau_array):
 
-        log.high_log('Considering tau = {}...'.format(tau_prior))
+        hm.logs.high_log('Considering tau = {}...'.format(tau_prior))
 
         prior_params = (0.0, tau_prior, 1E-3, 1E-3)
 
@@ -187,7 +186,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 training_proportion=training_proportion)
 
             # Perform cross-validation.
-            log.high_log('Perform cross-validation...')
+            hm.logs.high_log('Perform cross-validation...')
 
             validation_variances_MGMM = \
                 hm.utils.cross_validation(chains_train,
@@ -196,7 +195,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     nfold=nfold,
                     modelClass=hm.model.ModifiedGaussianMixtureModel, \
                     verbose=False, seed=0)
-            log.low_log('validation_variances_MGMM = {}'
+            hm.logs.low_log('validation_variances_MGMM = {}'
                 .format(validation_variances_MGMM))
             best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
             best_hyper_param_MGMM = \
@@ -208,34 +207,34 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     hyper_parameters_sphere, nfold=nfold,
                     modelClass=hm.model.HyperSphere,
                     verbose=False, seed=0)
-            log.low_log('validation_variances_sphere = {}'
+            hm.logs.low_log('validation_variances_sphere = {}'
                 .format(validation_variances_sphere))
             best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
             best_hyper_param_sphere = \
                 hyper_parameters_sphere[best_hyper_param_sphere_ind]
 
             # Fit model.
-            log.high_log('Fit model...')
+            hm.logs.high_log('Fit model...')
             best_var_MGMM = \
                 validation_variances_MGMM[best_hyper_param_MGMM_ind]
             best_var_sphere = \
                 validation_variances_sphere[best_hyper_param_sphere_ind]
             if best_var_MGMM < best_var_sphere:
-                log.low_log('Using MGMM with hyper_parameters = {}'
+                hm.logs.low_log('Using MGMM with hyper_parameters = {}'
                     .format(best_hyper_param_MGMM))
                 model = hm.model.ModifiedGaussianMixtureModel(ndim, \
                     domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
                 model.verbose=False
             else:
-                log.low_log('Using HyperSphere')
+                hm.logs.low_log('Using HyperSphere')
                 model = hm.model.HyperSphere(ndim, domains_sphere, \
                     hyper_parameters=best_hyper_param_sphere)
             fit_success = model.fit(chains_train.samples,
                                     chains_train.ln_posterior)
-            log.low_log('Fit success = {}'.format(fit_success))
+            hm.logs.low_log('Fit success = {}'.format(fit_success))
 
             # Use chains and model to compute evidence.
-            log.high_log('Compute evidence...')
+            hm.logs.high_log('Compute evidence...')
             ev = hm.Evidence(chains_test.nchains, model)
             ev.add_chains(chains_test)
             ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
@@ -254,44 +253,44 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # ===============================================================================
             # Display logarithmic evidence computation results.
             # ===============================================================================
-            log.low_log('Ln Evidence: analytic = {}, estimated = {}'.format(ln_evidence_analytic, ln_evidence))
+            hm.logs.low_log('Ln Evidence: analytic = {}, estimated = {}'.format(ln_evidence_analytic, ln_evidence))
             diff = np.abs(ln_evidence_analytic - ln_evidence)
-            log.high_log('Ln Evidence: |analytic - estimated| / estimated = {}'.format(diff/ln_evidence))
+            hm.logs.high_log('Ln Evidence: |analytic - estimated| / estimated = {}'.format(diff/ln_evidence))
             # ===============================================================================
             # Display evidence computation results.
             # ===============================================================================
-            log.low_log('Evidence: analytic = {}, estimated = {}'.format(evidence_analytic, np.exp(ln_evidence)))
-            log.low_log('Evidence: std = {}, std / estimated = {}'.format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
+            hm.logs.low_log('Evidence: analytic = {}, estimated = {}'.format(evidence_analytic, np.exp(ln_evidence)))
+            hm.logs.low_log('Evidence: std = {}, std / estimated = {}'.format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
             diff = np.log(np.abs(evidence_analytic - np.exp(ln_evidence)))
-            log.high_log('Evidence: |analytic - estimated| / estimated = {}'.format(np.exp(diff - ln_evidence)))
+            hm.logs.high_log('Evidence: |analytic - estimated| / estimated = {}'.format(np.exp(diff - ln_evidence)))
             # ===============================================================================
             # Display inverse evidence computation results.
             # ===============================================================================
-            log.low_log('Evidence inv: analytic = {}, estimated = {}'
+            hm.logs.low_log('Evidence inv: analytic = {}, estimated = {}'
                 .format(1.0/evidence_analytic, ev.evidence_inv))
-            log.low_log('Evidence inv: std = {}, std / estimated = {}'
+            hm.logs.low_log('Evidence inv: std = {}, std / estimated = {}'
                 .format(np.sqrt(ev.evidence_inv_var), np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-            log.low_log('Evidence inv: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+            hm.logs.low_log('Evidence inv: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
                 .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))
-            log.low_log('Evidence inv: sqrt( var( var ) )/ var = {}'
+            hm.logs.low_log('Evidence inv: sqrt( var( var ) )/ var = {}'
                 .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
-            log.high_log('Evidence inv: |analytic - estimated| / estimated = {}'.format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) / ev.evidence_inv))
+            hm.logs.high_log('Evidence inv: |analytic - estimated| / estimated = {}'.format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) / ev.evidence_inv))
             # ===============================================================================
             # Display more technical details for ln evidence.
             # ===============================================================================
-            log.low_log('lnargmax = {}, lnargmin = {}'
+            hm.logs.low_log('lnargmax = {}, lnargmin = {}'
                 .format(ev.lnargmax, ev.lnargmin))
-            log.low_log('lnprobmax = {}, lnprobmin = {}'
+            hm.logs.low_log('lnprobmax = {}, lnprobmin = {}'
                 .format(ev.lnprobmax, ev.lnprobmin))
-            log.low_log('lnpredictmax = {}, lnpredictmin = {}'
+            hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
                 .format(ev.lnpredictmax, ev.lnpredictmin))
-            log.low_log('mean_shift = {}, running_sum_total = {}'
+            hm.logs.low_log('mean_shift = {}, running_sum_total = {}'
                 .format(ev.mean_shift, sum(ev.running_sum)))
-            log.low_log('running_sum = \n{}'
+            hm.logs.low_log('running_sum = \n{}'
                 .format(ev.running_sum))
-            log.low_log('nsamples_per_chain = \n{}'
+            hm.logs.low_log('nsamples_per_chain = \n{}'
                 .format(ev.nsamples_per_chain))
-            log.low_log('nsamples_eff_per_chain = \n{}\n'
+            hm.logs.low_log('nsamples_eff_per_chain = \n{}\n'
                 .format(ev.nsamples_eff_per_chain))
 
             # Create corner/triangle plot.
@@ -372,8 +371,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                 bbox_inches='tight')
 
     # Display summary results.
-    log.high_log('tau_prior | ln_evidence_analytic | ln_evidence =')
-    log.high_log('{}'.format(summary[:,:-1]))
+    hm.logs.high_log('tau_prior | ln_evidence_analytic | ln_evidence =')
+    hm.logs.high_log('{}'.format(summary[:,:-1]))
 
     # Plot evidence values for different tau priors.
     if plot_comparison:

@@ -9,9 +9,8 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-# Import Logging config
-from harmonic import logs as log
-log.setup_logging()
+# Setup Logging config
+hm.logs.setup_logging()
 
 
 def ln_analytic_evidence(ndim, cov):
@@ -80,16 +79,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         None.
     """
     
-    log.high_log('nD Guassian example')
-    log.high_log('Dimensionality = {}'.format(ndim)) #TODO: make this print out neater.
-    log.low_log('---------------------------------')
+    hm.logs.high_log('nD Guassian example')
+    hm.logs.high_log('Dimensionality = {}'.format(ndim)) #TODO: make this print out neater.
+    hm.logs.low_log('---------------------------------')
     savefigs = True
 
     # Initialise covariance matrix.
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)    
-    log.low_log('Covariance matrix = {}'.format(cov))
-    log.low_log('---------------------------------')
+    hm.logs.low_log('Covariance matrix = {}'.format(cov))
+    hm.logs.low_log('---------------------------------')
     # Start timer.
     clock = time.clock()
     
@@ -99,13 +98,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     for i_realisation in range(n_realisations):
         
         if n_realisations > 0:
-            log.high_log('Realisation = {}/{}'.format(i_realisation, n_realisations))
+            hm.logs.high_log('Realisation = {}/{}'.format(i_realisation, n_realisations))
 
         # Set up and run sampler.
-        log.high_log('Run sampling...')
-        log.low_log('---------------------------------')
+        hm.logs.high_log('Run sampling...')
+        hm.logs.low_log('---------------------------------')
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))
-        log.low_log('pos.shape = {}'.format(pos.shape))
+        hm.logs.low_log('pos.shape = {}'.format(pos.shape))
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[inv_cov])
         rstate = np.random.get_state() # Set random state to repeatable 
                                        # across calls.
@@ -121,25 +120,25 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         chains.add_chains_3d(samples, lnprob)
         chains_train, chains_test = hm.utils.split_data(chains, 
                                                         training_proportion=0.05)
-        log.low_log('---------------------------------')
+        hm.logs.low_log('---------------------------------')
         
         # Fit model.
-        log.high_log('Fit model...')
-        log.low_log('---------------------------------')
+        hm.logs.high_log('Fit model...')
+        hm.logs.low_log('---------------------------------')
         r_scale = np.sqrt(ndim-1)
-        log.low_log('r scale = {}'.format(r_scale))
+        hm.logs.low_log('r scale = {}'.format(r_scale))
         domains = [r_scale*np.array([1E-1,1E0])]
-        log.low_log('Domain = {}'.format(domains))
+        hm.logs.low_log('Domain = {}'.format(domains))
         model = hm.model.HyperSphere(ndim, domains)
         fit_success, objective = model.fit(chains_train.samples, chains_train.ln_posterior)        
-        log.low_log('model.R = {}'.format(model.R))    
+        hm.logs.low_log('model.R = {}'.format(model.R))    
         # model.set_R(1.0)
         # if verbose: print("model.R = {}\n".format(model.R))
-        log.low_log('Fit success = {}'.format(fit_success))    
-        log.low_log('Objective = {}'.format(objective))    
-        log.low_log('---------------------------------')
+        hm.logs.low_log('Fit success = {}'.format(fit_success))    
+        hm.logs.low_log('Objective = {}'.format(objective))    
+        hm.logs.low_log('---------------------------------')
         # Use chains and model to compute inverse evidence.
-        log.high_log('Compute evidence...')
+        hm.logs.high_log('Compute evidence...')
         ev = hm.Evidence(chains_test.nchains, model)    
         # ev.set_mean_shift(0.0)
         ev.add_chains(chains_test)
@@ -152,48 +151,48 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ===============================================================================
         # Display evidence computation results.
         # ===============================================================================
-        log.low_log('---------------------------------')
-        log.low_log('Evidence: analytic = {}, estimated = {}'
+        hm.logs.low_log('---------------------------------')
+        hm.logs.low_log('Evidence: analytic = {}, estimated = {}'
             .format(np.exp(ln_evidence_analytic), np.exp(ln_evidence)))
-        log.low_log('Evidence: std = {}, std / estimate = {}'
+        hm.logs.low_log('Evidence: std = {}, std / estimate = {}'
             .format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
         diff = np.log(np.abs(np.exp(ln_evidence_analytic) - np.exp(ln_evidence)))
-        log.high_log("Evidence: |analytic - estimate| / estimate = {}"
+        hm.logs.high_log("Evidence: |analytic - estimate| / estimate = {}"
             .format(np.exp(diff - ln_evidence)))
         # ===============================================================================
         # Display inverse evidence computation results.
         # ===============================================================================
-        log.low_log('---------------------------------')
-        log.low_log('Inv Evidence: analytic = {}, estimate = {}'
+        hm.logs.low_log('---------------------------------')
+        hm.logs.low_log('Inv Evidence: analytic = {}, estimate = {}'
             .format(np.exp(-ln_evidence_analytic), ev.evidence_inv))
-        log.low_log('Inv Evidence: std = {}, std / estimate = {}'
+        hm.logs.low_log('Inv Evidence: std = {}, std / estimate = {}'
             .format(np.sqrt(ev.evidence_inv_var), np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-        log.low_log('Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+        hm.logs.low_log('Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
             .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))     
-        log.low_log('Inv Evidence: sqrt( var(var) ) / var = {}'
+        hm.logs.low_log('Inv Evidence: sqrt( var(var) ) / var = {}'
             .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))        
-        log.high_log('Inv Evidence: |analytic - estimate| / estimate = {}'
+        hm.logs.high_log('Inv Evidence: |analytic - estimate| / estimate = {}'
             .format(np.abs(np.exp(-ln_evidence_analytic) - ev.evidence_inv)/ev.evidence_inv))
         # ===============================================================================
         # Display more technical details for ln evidence.
         # ===============================================================================
-        log.low_log('---------------------------------')
-        log.low_log('lnargmax = {}, lnargmin = {}'
+        hm.logs.low_log('---------------------------------')
+        hm.logs.low_log('lnargmax = {}, lnargmin = {}'
             .format(ev.lnargmax, ev.lnargmin))
-        log.low_log('lnprobmax = {}, lnprobmin = {}'
+        hm.logs.low_log('lnprobmax = {}, lnprobmin = {}'
             .format(ev.lnprobmax, ev.lnprobmin))
-        log.low_log('lnpredictmax = {}, lnpredictmin = {}'
+        hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
-        log.low_log('---------------------------------')
-        log.low_log('running_sum_total = {}, mean_shift = {}'
+        hm.logs.low_log('---------------------------------')
+        hm.logs.low_log('running_sum_total = {}, mean_shift = {}'
             .format(sum(ev.running_sum), ev.mean_shift))   
-        log.low_log('running_sum = \n{}'
+        hm.logs.low_log('running_sum = \n{}'
             .format(ev.running_sum))
-        log.low_log('nsamples_per_chain = \n{}'
+        hm.logs.low_log('nsamples_per_chain = \n{}'
             .format(ev.nsamples_per_chain))
-        log.low_log('nsamples_eff_per_chain = \n{}'
+        hm.logs.low_log('nsamples_eff_per_chain = \n{}'
             .format(ev.nsamples_eff_per_chain))
-        log.low_log('===============================')
+        hm.logs.low_log('===============================')
         # ===============================================================================
 
         # Create corner/triangle plot.
@@ -341,7 +340,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         evidence_inv_summary[i_realisation,2] = ev.evidence_inv_var_var
         
     clock = time.clock() - clock
-    log.high_log('Execution_time = {}s'.format(clock))
+    hm.logs.high_log('Execution_time = {}s'.format(clock))
 
     if n_realisations > 1:
         np.savetxt("examples/data/gaussian_nondiagcov_evidence_inv" +
