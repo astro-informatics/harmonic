@@ -6,27 +6,26 @@ import harmonic
 import os
 
 
-def setup_logging(
-    custom_yaml_path=None,
-    default_level=logging.DEBUG,
-    env_key='LOG_CFG'
-):
+def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
     """
-    .. note:: Call at the begining of code to initialize and configure
-              the desired logging level.
+    .. note:: Initialize and configure logging.
+              Should be called at the beginning of code to 
+              initialize and configure the desired logging level.
 
     Args:
-        -string: 
-            complete pathname of desired yaml logging configuration.
-            if empty will provide Harmonics default logging config.
-        - int: 
-            logging level at which to configure.
-        - string:  
-            Environment key. Do not touch this.
+        - String: 
+            Complete pathname of desired yaml logging configuration.
+            If empty will provide Harmonics default logging config.
+        - Int: 
+            Logging level at which to configure.
+            Logging levels can be ints in [0,50] where 10 is debug logging
+            and 50 is critical logging.
+            Alternatively one can pass logging.DEBUG or logging.CRITICAL
+            which will return the values 10 and 50 respectively.
 
     Raises:
         - ValueError:
-            Raised if logging.yaml is not in src_harmonic/logs/ directory.
+            Raised if Harmonic's logging.yaml is not in src_harmonic/logs/ directory.
         
     """
     if custom_yaml_path == None:
@@ -51,11 +50,11 @@ def setup_logging(
 
 def low_log(message):
     """
-    .. note:: Custom low-level logger for Harmonic
+    .. note:: Log low-level (DEBUG) message. 
 
     Args:
-        - string: 
-            message which should be logged.
+        - String: 
+            Message to log.
 
     """
     logger = logging.getLogger('Harmonic')
@@ -64,11 +63,11 @@ def low_log(message):
 
 def high_log(message):
     """
-    .. note:: Custom high-level logger for Harmonic
+    .. note:: Log high-level (CRITICAL) message
 
     Args:
-        - string: 
-            message which should be logged.
+        - String: 
+            Message to log.
 
     """
     logger = logging.getLogger('Harmonic')
@@ -84,8 +83,8 @@ In main code, call lines (1) and (2) to create and initialize the logger:
 yaml as the argument to setup_logging('pathname').
 
 examples of use:
-        log.Harmonic_low_log('a debug level message')
-        log.Harmonic_high_log('a critical level message')
+        hm.logs.low_log('a debug level message')
+        hm.logs.high_log('a critical level message')
 """
 
 
