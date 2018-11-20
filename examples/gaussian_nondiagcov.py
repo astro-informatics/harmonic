@@ -15,14 +15,18 @@ hm.logs.setup_logging()
 
 
 def ln_analytic_evidence(ndim, cov):
-    """Compute analytic evidence for nD Gaussian.
+    """
+    .. note:: Compute analytic evidence for nD Gaussian.
     
     Args:
-        ndim: Dimension of Gaussian.
-        cov: Covariance matrix.
+        - ndim: 
+            Dimension of Gaussian.
+        - cov: 
+            Covariance matrix.
     
     Returns:
-        double: Analytic evidence.
+        - double:
+            Analytic evidence.
     """
     
     ln_norm_lik = 0.5*ndim*np.log(2*np.pi) + 0.5*np.log(np.linalg.det(cov))
@@ -30,26 +34,33 @@ def ln_analytic_evidence(ndim, cov):
 
 
 def ln_posterior(x, inv_cov):
-    """Compute log_e of posterior.
+    """
+    .. note:: Compute log_e of posterior.
     
     Args: 
-        x: Position at which to evaluate posterior.
-        inv_cov: Inverse covariance matrix.    
+        - x: 
+            Position at which to evaluate posterior.
+        - inv_cov: 
+            Inverse covariance matrix.    
         
     Returns:
-        double: Value of Gaussian at specified point.
+        - double: 
+            Value of Gaussian at specified point.
     """
     
     return -np.dot(x,np.dot(inv_cov,x))/2.0
 
 
 def init_cov(ndim):
-    """Initialise random non-diagonal covariance matrix covariance matrix.
+    """
+    .. note:: Initialise random non-diagonal covariance matrix.
     Args: 
-        ndim: Dimension of Gaussian.        
+        - ndim: 
+            Dimension of Gaussian.        
         
     Returns:
-        cov: Covariance matrix of shape (ndim,ndim).
+        - cov: 
+            Covariance matrix of shape (ndim,ndim).
     """
     
     cov = np.zeros((ndim,ndim))
@@ -66,21 +77,29 @@ def init_cov(ndim):
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """Run Gaussian example with non-diagonal covariance matrix.
+    """
+    .. not:: Run Gaussian example with non-diagonal covariance matrix.
     Args: 
-        ndim: Dimension of Gaussian.
-        nchains: Number of chains.
-        samples_per_chain: Number of samples per chain.
-        nburn: Number of burn in samples.
-        plot_corner: Plot marginalised distributions if true.
-        plot_surface: Plot surface and samples if true.
-        verbose: If True then display intermediate results.
+        - ndim: 
+            Dimension of Gaussian.
+        - nchains: 
+            Number of chains.
+        - samples_per_chain: 
+            Number of samples per chain.
+        - nburn: 
+            Number of burn in samples.
+        - plot_corner: 
+            Plot marginalised distributions if true.
+        - plot_surface: 
+            Plot surface and samples if true.
+        - verbose: 
+            If True then display intermediate results.
         
     Returns:
-        None.
+        - None.
     """
     
-    hm.logs.high_log('nD Guassian example')
+    hm.logs.high_log('Non-diagonal Covariance Guassian example')
     hm.logs.high_log('Dimensionality = {}'.format(ndim)) #TODO: make this print out neater.
     hm.logs.low_log('---------------------------------')
     savefigs = True
@@ -94,7 +113,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
     
     # Run multiple realisations.
-    n_realisations = 1
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
         
@@ -311,12 +330,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     hm.logs.high_log('Execution_time = {}s'.format(clock))
 
     if n_realisations > 1:
-        np.savetxt("examples/data/gaussian_nondiagcov_evidence_inv" +
+        np.savetxt("./data/gaussian_nondiagcov_evidence_inv" +
                    "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = np.exp(-ln_evidence_analytic)
-        np.savetxt("examples/data/gaussian_nondiagcov_evidence_inv" +
+        np.savetxt("./data/gaussian_nondiagcov_evidence_inv" +
                    "_analytic.dat",
                    evidence_inv_analytic_summary)
     
@@ -336,4 +355,4 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=False, plot_surface=True, verbose=False)
+                plot_corner=True, plot_surface=True, verbose=False)

@@ -17,6 +17,7 @@ class Optimisation(Enum):
     ACCURACY = 2
 
 
+# OPTIMISATION = Optimisation.ACCURACY
 OPTIMISATION = Optimisation.SPEED
 
 

@@ -64,15 +64,15 @@ def test_process_run():
     rho = cbe.Evidence(nchains, sphere)
 
     np.random.seed(1)
-    samples   = np.random.randn(nchains,n_samples)
-    rho.running_sum       = np.sum(samples,axis=1)
+    samples                = np.random.randn(nchains,n_samples)
+    rho.running_sum        = np.sum(samples,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
     rho.process_run()
 
     evidence_inv  = np.mean(samples)
     evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
     # print(np.std(np.sum(samples,axis=1)/n_samples)**2, nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2/(nchains-1))/nchains
+    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
 
     assert rho.evidence_inv == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
@@ -85,7 +85,7 @@ def test_process_run():
     samples_scaled = samples*np.exp(mean_shift)
     rho.running_sum        = np.sum(samples_scaled,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
-    rho.mean_shift = mean_shift
+    rho.mean_shift = -1.0 * mean_shift
     rho.process_run()
 
     evidence_inv  = np.mean(samples)

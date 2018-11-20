@@ -13,17 +13,24 @@ import utils
 hm.logs.setup_logging()
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
-    """Compute log_e of uniform prior.
+    """
+    .. note:: Compute log_e of uniform prior.
 
     Args: 
-        x: Position at which to evaluate prior.
-        xmin: Uniform prior minimum x edge (first dimension).
-        xmax: Uniform prior maximum x edge (first dimension).
-        ymin: Uniform prior minimum y edge (second dimension).
-        ymax: Uniform prior maximum y edge (second dimension).             
+        - x: 
+            Position at which to evaluate prior.
+        - xmin: 
+            Uniform prior minimum x edge (first dimension).
+        - xmax: 
+            Uniform prior maximum x edge (first dimension).
+        - ymin: 
+            Uniform prior minimum y edge (second dimension).
+        - ymax: 
+            Uniform prior maximum y edge (second dimension).             
         
     Returns:
-        double: Value of prior at specified point.
+        - double: 
+            Value of prior at specified point.
     """
         
     if x[0] >= xmin and x[0] <= xmax and x[1] >= ymin and x[1] <= ymax:        
@@ -34,13 +41,16 @@ def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
 
 
 def ln_likelihood(x):
-    """Compute log_e of likelihood defined by Rastrigin function.
+    """
+    .. note:: Compute log_e of likelihood defined by Rastrigin function.
     
     Args: 
-        x: Position at which to evaluate likelihood.
+        - x: 
+            Position at which to evaluate likelihood.
         
     Returns:
-        double: Value of Rastrigin at specified point.
+        - double: 
+            Value of Rastrigin at specified point.
     """
     
     ndim = x.size
@@ -54,14 +64,18 @@ def ln_likelihood(x):
 
 
 def ln_posterior(x, ln_prior):
-    """Compute log_e of posterior.
+    """
+    .. note:: Compute log_e of posterior.
     
     Args: 
-        x: Position at which to evaluate posterior.
-        ln_prior: Prior function.
+        - x: 
+            Position at which to evaluate posterior.
+        - ln_prior: 
+            Prior function.
         
     Returns:
-        double: Posterior at specified point.
+        - double: 
+            Posterior at specified point.
     """
     
     ln_L = ln_likelihood(x)
@@ -76,19 +90,27 @@ def ln_posterior(x, ln_prior):
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """Run Rastrigin example.
+    """
+    .. note:: Run Rastrigin example.
 
     Args: 
-        ndim: Dimension.
-        nchains: Number of chains.
-        samples_per_chain: Number of samples per chain.
-        nburn: Number of burn in samples.
-        plot_corner: Plot marginalised distributions if true.
-        plot_surface: Plot surface and samples if true.
-        verbose: If True then display intermediate results.
+        - ndim: 
+            Dimension.
+        - nchains: 
+            Number of chains.
+        - samples_per_chain: 
+            Number of samples per chain.
+        - nburn: 
+            Number of burn in samples.
+        - plot_corner: 
+            Plot marginalised distributions if true.
+        - plot_surface: 
+            Plot surface and samples if true.
+        - verbose: 
+            If True then display intermediate results.
         
     Returns:
-        None.
+        - None.
     """
 
     hm.logs.high_log('Rastrigin example')
@@ -123,7 +145,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock() 
 
     # Set up and run multiple simulations
-    n_realisations = 50
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -243,7 +265,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         # Create corner/triangle plot.
         created_plots = False
-        if plot_corner:
+        if plot_corner and i_realisation == 0:
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
@@ -259,7 +281,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             created_plots = True
                 
         # In 2D case, plot surface/image and samples.    
-        if plot_surface and ndim == 2:
+        if plot_surface and ndim == 2 and i_realisation == 0:
             
             # Plot ln_posterior surface.
             # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0 
@@ -344,7 +366,7 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False, verbose=False)
+                          plot_corner=True, plot_surface=True, verbose=False)
     
 
 

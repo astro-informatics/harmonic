@@ -100,14 +100,17 @@ def ln_prior(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
         
 
 def ln_posterior(theta, y, x, n, mu_0, r_0, s_0, a_0, b_0):
-    """Compute log_e of posterior.
+    """
+    .. note:: Compute log_e of posterior.
     
     Args: 
-        theta: Position (alpha, beta, tau) at which to evaluate posterior.
+        - theta: 
+            Position (alpha, beta, tau) at which to evaluate posterior.
         ... 
         
     Returns:
-        double: Value of log_e posterior at specified (alpha, beta, tau) point.
+        - double: 
+            Value of log_e posterior at specified (alpha, beta, tau) point.
     """
     
     alpha, beta, tau = theta
