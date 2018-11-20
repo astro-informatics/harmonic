@@ -20,7 +20,7 @@ class Optimisation(Enum):
 OPTIMISATION = Optimisation.SPEED
 
 
-MEAN_SHIFT_SIGN = -1.0
+MEAN_SHIFT_SIGN = 1.0
 
 
 class Evidence:
