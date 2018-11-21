@@ -511,7 +511,7 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
                               double radius_squared, long *count):
     """
     Examines all samples that are in the current pixel and counts how many of
-              those position x falls inside
+    those position x falls inside
 
     Args:
         - long index: 
@@ -1520,8 +1520,9 @@ class ModifiedGaussianMixtureModel(Model):
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
             np.ndarray[double, ndim=1, mode="c"] Y):
         """
-        Fit the parameters of the model as follows. If centres and 
-        inv_covariances not set:
+        Fit the parameters of the model as follows. 
+
+        If centres and inv_covariances not set:
 
         - Find clusters using the k-means clustering from scikit learn.
 

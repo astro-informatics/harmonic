@@ -125,8 +125,9 @@ class Chains:
                            not None, 
                            long nchains_in, list chain_indexes):        
         """
-        Adds a number of chains to the chain class. Uses a list of indexes to 
-        understand where each chain starts and stops.
+        Adds a number of chains to the chain class. 
+
+        Uses a list of indexes to understand where each chain starts and stops.
             
         Args:
             - samples: 
@@ -258,9 +259,10 @@ class Chains:
 
     def get_chain_indices(self, long i):
         """
-        Gets the start and end index of samples from a chain. The end index 
-        specifies the index one passed the end of the chain, i.e. the chain 
-        samples can be accessed by self.samples[start:end,:].
+        Gets the start and end index of samples from a chain. 
+
+        The end index specifies the index one passed the end of the chain, i.e. 
+        the chain samples can be accessed by self.samples[start:end,:].
         
         Args:
             - i: 

@@ -9,8 +9,9 @@ import scipy.special as sp
 
 class Optimisation(Enum):
     """
-    Enumeration to define whether to optimise for speed or accuracy.  In 
-    practice accuracy optimisation does not make a great deal of difference.
+    Enumeration to define whether to optimise for speed or accuracy.  
+
+    In practice accuracy optimisation does not make a great deal of difference.
     """
 
     SPEED = 1
@@ -25,8 +26,10 @@ MEAN_SHIFT_SIGN = 1.0
 
 class Evidence:
     """
-    Compute inverse evidence values from chains, using posterior model. Multiple
-    chains can be added in sequence (to avoid having to store very long chains).
+    Compute inverse evidence values from chains, using posterior model. 
+
+    Multiple chains can be added in sequence (to avoid having to store very 
+    long chains).
     """
 
     def __init__(self, long nchains, model not None):
@@ -107,8 +110,10 @@ class Evidence:
         """
         Use the running totals of running_sum and nsamples_per_chain to 
         calculate an estimate of the inverse evidence, its variance, and the 
-        variance of the variance. This method is ran each time chains are added 
-        to update the inverse variance estimates from the running totals.
+        variance of the variance. 
+
+        This method is ran each time chains are added to update the inverse 
+        variance estimates from the running totals.
 
         """
 
@@ -159,12 +164,14 @@ class Evidence:
     def add_chains(self, chains not None):
         """
         Add new chains and calculate an estimate of the inverse evidence, its 
-        variance, and the variance of the variance. Calculations are performed 
-        by using running averages of the totals for each chain. Consequently, 
-        the method can be called many times with new samples for each chain so 
-        that the evidence estimate will improve.  The rationale is that not all 
-        samples need to be stored in memory for high-dimensional problems. Note 
-        that the same number of chains needs to be considered for each call.
+        variance, and the variance of the variance. 
+
+        Calculations are performed by using running averages of the totals for 
+        each chain. Consequently, the method can be called many times with new 
+        samples for each chain so that the evidence estimate will improve.  The 
+        rationale is that not all samples need to be stored in memory for 
+        high-dimensional problems. Note that the same number of chains needs to 
+        be considered for each call.
 
         Args:
             - chains: 
@@ -465,7 +472,8 @@ def compute_ln_bayes_factor(ev1, ev2):
 
 def msum(iterable):
     """
-    "Full precision summation using multiple floats for intermediate values" 
+    "Full precision summation using multiple floats for intermediate values".
+    
     From: http://code.activestate.com/recipes/393090/ Rounded x+y stored in hi 
     with the round-off stored in lo. Together hi+lo are exactly equal to x+y.The
     inner loop applies hi/lo summation to each partial so that the list of 
