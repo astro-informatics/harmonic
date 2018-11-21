@@ -114,8 +114,8 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
         indexes_fit = indexes[:i_fold*nchains_in_val_set] \
             + indexes[(i_fold+1)*nchains_in_val_set:]
     else:
-        indexes_val = indexes[(i_fold)*nchains_in_val_set:] # ensures all the 
-        chains get used even if nchains % nfold != 0
+        indexes_val = indexes[(i_fold)*nchains_in_val_set:] 
+        # ensures all the chains get used even if nchains % nfold != 0
         indexes_fit = indexes[:i_fold*nchains_in_val_set]
 
     return indexes_val, indexes_fit
