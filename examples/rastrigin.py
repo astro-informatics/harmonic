@@ -116,7 +116,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ymax = 6.0
         hm.logs.low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
             .format(xmin, xmax, ymin, ymax))   
-        ln_prior = partial(ln_prior_uniform, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
+        ln_prior = partial(ln_prior_uniform, 
+            xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
 
 	hm.logs.low_log('---------------------------------')
     # Start timer.
@@ -126,7 +127,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     
     hm.logs.high_log('Run sampling...')
     pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
-    sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[ln_prior])
+    sampler = emcee.EnsembleSampler(nchains, ndim, 
+                                    ln_posterior, args=[ln_prior])
     rstate = np.random.get_state()
     sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
     samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
@@ -137,7 +139,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Set up chains.
     chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, lnprob)
-    chains_train, chains_test = hm.utils.split_data(chains, training_proportion=0.5)
+    chains_train, chains_test = hm.utils.split_data(chains, 
+                                                    training_proportion=0.5)
 
     # Perform cross-validation.
     hm.logs.high_log('Perform cross-validation...')
@@ -174,7 +177,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     # Compute analytic evidence.
     if ndim == 2:
-        hm.logs.high_log('Compute evidence by high-resolution numerical integration...')
+        hm.logs.high_log('Compute evidence by numerical integration...')
         hm.logs.low_log('---------------------------------')
         ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior)
         ln_posterior_grid, x_grid, y_grid = \
@@ -184,13 +187,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                     nx=1000, ny=1000)
         dx = x_grid[0,1] - x_grid[0,0]
         dy = y_grid[1,0] - y_grid[0,0]
-        evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx * dy
+        evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx\
+                                                                           * dy
         hm.logs.low_log('dx = {}'.format(dx))
         hm.logs.low_log('dy = {}'.format(dy))    
 
-    # ===============================================================================
+    # ==========================================================================
     # Display evidence computation results.
-    # ===============================================================================
+    # ==========================================================================
     hm.logs.low_log('---------------------------------')
     hm.logs.low_log('Evidence: numerical = {}, estimate = {}'
         .format(evidence_numerical_integration, np.exp(ln_evidence)))
@@ -199,23 +203,25 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
     hm.logs.high_log('Evidence: |numerical - estimate| / estimate = {}'
         .format(np.exp(diff - ln_evidence)))
-    # ===============================================================================
+    # ==========================================================================
     # Display inverse evidence computation results.
-    # ===============================================================================
+    # ==========================================================================
     hm.logs.low_log('---------------------------------')
     hm.logs.low_log('Inv Evidence: numerical = {}, estimate = {}'
         .format(1.0/evidence_numerical_integration, ev.evidence_inv))
     hm.logs.low_log('Inv Evidence: std = {}, std / estimate = {}'
-        .format(np.sqrt(ev.evidence_inv_var), np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
+        .format(np.sqrt(ev.evidence_inv_var), 
+            np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
     hm.logs.low_log('Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
         .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
     hm.logs.low_log('Inv Evidence: sqrt( var(var) )/ var = {}'
         .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
     hm.logs.high_log('Inv Evidence: |numerical - estimate| / estimate = {}'
-        .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) / ev.evidence_inv))
-    # ===============================================================================
+        .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) \
+         / ev.evidence_inv))
+    # ==========================================================================
     # Display more technical details for ln evidence.
-    # ===============================================================================
+    # ==========================================================================
     hm.logs.low_log('---------------------------------')
     hm.logs.low_log('lnargmax = {}, lnargmin = {}'
         .format(ev.lnargmax, ev.lnargmin))

@@ -7,32 +7,30 @@ import evidence as cbe
 
 def split_data(chains not None, double training_proportion=0.5):    
     """
-    .. note:: Split the data in a chains instance into two (e.g. training and test
-              sets) so that the new chains instances can be used for training and
-              calculationg the evidence on the "test" set.
+    Split the data in a chains instance into two (e.g. training and test sets) 
+    so that the new chains instances can be used for training and calculationg 
+    the evidence on the "test" set.
 
-              Chains are split so that the first chains in the original chains object go 
-              into the training set and the following go into the test set.
+    Chains are split so that the first chains in the original chains object go 
+    into the training set and the following go into the test set.
 
     Args:
         - chains: 
             Instance of a chains class containing the data to be split.
         - training_proportion: 
-            The ratio of the data to be used in training 
-            (default=0.5)
+            The ratio of the data to be used in training (default=0.5)
 
     Returns: (chains_train, chains_test)
         - chains_train: 
-            Instance of a chains class containing chains to be used 
-            to fit the model (e.g. training).
+            Instance of a chains class containing chains to be used to fit the 
+            model (e.g. training).
         - chains_test: 
-            Instance of a chains class containing chains to be used
-            to calculate the evidence (e.g. testing).
+            Instance of a chains class containing chains to be used to calculate
+            the evidence (e.g. testing).
 
     Raises:
         - ValueError: 
-            Raised if training_proportion is not strictly between 0
-            and 1.
+            Raised if training_proportion is not strictly between 0 and 1.
         - ValueError: 
             Raised if resulting nchains in training set is less than 1.
         - ValueError: 
@@ -76,20 +74,19 @@ def split_data(chains not None, double training_proportion=0.5):
 def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
                            list indexes):
     """
-    .. note:: Pull out the correct indexes for the chains of the validation and 
-              training sets.
+    Pull out the correct indexes for the chains of the validation and training 
+    sets.
 
     Args:
         - long i_fold: 
             Cross validation iteration to perform.
         - long nchains_in_val_set: 
-            The number of chains that will go in each 
-            validation set
+            The number of chains that will go in each validation set
         - long nfold: 
             Number of fold validation sets to be made.
         - list indexes: 
-            List of the chains to be used in fold validation
-            that need to be split.
+            List of the chains to be used in fold validation that need to be 
+            split.
 
     Returns:
         - list indexes_val: 
@@ -99,8 +96,7 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
 
     Raises:
         - ValueError: 
-            Raised if the value of i_fold does not fall between 0 and 
-            nfold-1.
+            Raised if the value of i_fold does not fall between 0 and nfold-1.
     """
 
     if i_fold < 0 or i_fold >= nfold:
@@ -118,7 +114,8 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
         indexes_fit = indexes[:i_fold*nchains_in_val_set] \
             + indexes[(i_fold+1)*nchains_in_val_set:]
     else:
-        indexes_val = indexes[(i_fold)*nchains_in_val_set:] # ensures all the chains get used even if nchains % nfold != 0
+        indexes_val = indexes[(i_fold)*nchains_in_val_set:] # ensures all the 
+        chains get used even if nchains % nfold != 0
         indexes_fit = indexes[:i_fold*nchains_in_val_set]
 
     return indexes_val, indexes_fit
@@ -131,14 +128,14 @@ def cross_validation(chains,
                      modelClass = md.KernelDensityEstimate, 
                      long seed=-1, bint verbose=False):    
     """
-    .. note:: Perform fold validation for given model using chains to be split into 
-              validation and training data.
+    Perform fold validation for given model using chains to be split into 
+    validation and training data.
     
-              First, splits data into nfold chunks. Second, fits the model using each of
-              the hyper parameters given using all but one of the chunks (the validation
-              chunk). This procedure is performed for all the chunks and the average
-              (mean) variance from all the chunks is computed and return.  This can be
-              used to decide which hyper parameters list was better.
+    First, splits data into nfold chunks. Second, fits the model using each of 
+    the hyper parameters given using all but one of the chunks (the validation 
+    chunk). This procedure is performed for all the chunks and the average 
+    (mean) variance from all the chunks is computed and return.  This can be 
+    used to decide which hyper parameters list was better.
 
     Args:
         - chains: 
@@ -147,22 +144,22 @@ def cross_validation(chains,
         - list domains: 
             Domains of the model's parameters.
         - list hyper_parameters: 
-            List of hyper_parameters where each entry is a 
-            hyper_parameter list to be considered.        
+            List of hyper_parameters where each entry is a hyper_parameter list 
+            to be considered.        
         - Model modelClass: 
-            Class of model that is being cross validated          
-            (default = KernelDensityEstimate).            
+            Class of model that is being cross validated (default = 
+            KernelDensityEstimate).            
         - long seed: 
-            Seed for random number when drawing the chains
-            (if this is negative the seed is not set).
+            Seed for random number when drawing the chains (if this is negative 
+            the seed is not set).
         - bool verbose: 
-            Set to True to print results from cross validation
-            evidence calculations (default=False).
+            Set to True to print results from cross validation evidence 
+            calculations (default=False).
 
     Returns:
         - list validation_variances: 
-            Mean validation variance (averaged over      
-            nfolds) for each hyperparameter.
+            Mean validation variance (averaged over nfolds) for each 
+            hyperparameter.
 
     Raises:
         - ValueError: 
@@ -173,7 +170,8 @@ def cross_validation(chains,
     cdef set posible_models
     cdef list indexes, indexes_val, indexes_fit, hyper_parameter
 
-    cdef np.ndarray[double, ndim=2, mode='c'] validation_variances = np.zeros((nfold,len(hyper_parameters)))
+    cdef np.ndarray[double, ndim=2, mode='c'] validation_variances = \
+            np.zeros((nfold,len(hyper_parameters)))
 
     if seed > 0:
         np.random.seed(seed)
