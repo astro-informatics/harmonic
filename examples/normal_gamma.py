@@ -278,42 +278,57 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             summary[i_tau, 2] = ln_evidence
             summary[i_tau, 3] = ln_evidence_std
 
-            # ===============================================================================
+            # ==================================================================
             # Display logarithmic evidence computation results.
-            # ===============================================================================
-            hm.logs.low_log('Ln Evidence: analytic = {}, estimated = {}'.format(ln_evidence_analytic, ln_evidence))
+            # ==================================================================
+            hm.logs.low_log('Ln Evidence: analytic = {}, estimated = {}'
+                .format(ln_evidence_analytic, ln_evidence))
             diff = np.abs(ln_evidence_analytic - ln_evidence)
-            hm.logs.high_log('Ln Evidence: |analytic - estimated| / estimated = {}'.format(diff/ln_evidence))
-            # ===============================================================================
+            hm.logs.high_log('Ln Evidence: \
+                              100 * |analytic - estimated| / estimated = {}%'
+                              .format(diff/ln_evidence))
+            # ==================================================================
             # Display evidence computation results.
-            # ===============================================================================
-            hm.logs.low_log('Evidence: analytic = {}, estimated = {}'.format(evidence_analytic, np.exp(ln_evidence)))
-            hm.logs.low_log('Evidence: std = {}, std / estimated = {}'.format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
+            # ==================================================================
+            hm.logs.low_log('Evidence: analytic = {}, estimated = {}'
+                .format(evidence_analytic, np.exp(ln_evidence)))
+            hm.logs.low_log('Evidence: std = {}, std / estimated = {}'
+                .format(np.exp(ln_evidence_std), \
+                        np.exp(ln_evidence_std - ln_evidence)))
             diff = np.log(np.abs(evidence_analytic - np.exp(ln_evidence)))
-            hm.logs.high_log('Evidence: |analytic - estimated| / estimated = {}'.format(np.exp(diff - ln_evidence)))
-            # ===============================================================================
+            hm.logs.high_log('Evidence: \
+                              100 * |analytic - estimated| / estimated = {}%'
+                .format(100.0 * np.exp(diff - ln_evidence)))
+            # ==================================================================
             # Display inverse evidence computation results.
-            # ===============================================================================
+            # ==================================================================
             hm.logs.low_log('Evidence inv: analytic = {}, estimated = {}'
                 .format(1.0/evidence_analytic, ev.evidence_inv))
             hm.logs.low_log('Evidence inv: std = {}, std / estimated = {}'
-                .format(np.sqrt(ev.evidence_inv_var), np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-            hm.logs.low_log('Evidence inv: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+                .format(np.sqrt(ev.evidence_inv_var), \
+                        np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
+            hm.logs.low_log('Evidence inv: kurtosis = {}, \
+                             sqrt( 2 / ( n_eff - 1 ) ) = {}'
                 .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))
             hm.logs.low_log('Evidence inv: sqrt( var( var ) )/ var = {}'
                 .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
-            hm.logs.high_log('Evidence inv: |analytic - estimated| / estimated = {}'.format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) / ev.evidence_inv))
-            # ===============================================================================
+            hm.logs.high_log('Evidence inv: \
+                              100 * |analytic - estimated| / estimated = {}%'
+                              .format(100.0 * np.abs(1.0 / evidence_analytic \
+                                          - ev.evidence_inv) / ev.evidence_inv))
+            # ==================================================================
             # Display more technical details for ln evidence.
-            # ===============================================================================
+            # ==================================================================
             hm.logs.low_log('lnargmax = {}, lnargmin = {}'
                 .format(ev.lnargmax, ev.lnargmin))
             hm.logs.low_log('lnprobmax = {}, lnprobmin = {}'
                 .format(ev.lnprobmax, ev.lnprobmin))
             hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
                 .format(ev.lnpredictmax, ev.lnpredictmin))
-            hm.logs.low_log('mean_shift = {}, running_sum_total = {}'
-                .format(ev.mean_shift, sum(ev.running_sum)))
+            hm.logs.low_log('mean shift = {}, max shift = {}'
+                .format(ev.mean_shift, ev.max_shift))
+            hm.logs.low_log('running sum total = {}'
+                .format(sum(ev.running_sum)))
             hm.logs.low_log('running_sum = \n{}'
                 .format(ev.running_sum))
             hm.logs.low_log('nsamples_per_chain = \n{}'
@@ -413,7 +428,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ax.set_ylim([0.990, 1.010])
         ax.set_xscale("log")
         ax.set_xlabel(r"Prior size ($\tau_0$)")
-        ax.set_ylabel(r"Relative accuracy ($z_{\rm estimated}/z_{\rm analytic}$)")
+        ax.set_ylabel(r"Relative accuracy \
+                     ($z_{\rm estimated}/z_{\rm analytic}$)")
         ax.errorbar(tau_array, np.exp(summary[:,2])/np.exp(summary[:,1]),
             yerr=np.exp(summary[:,3])/np.exp(summary[:,1]),
             fmt='b.', capsize=4, capthick=2, elinewidth=2)

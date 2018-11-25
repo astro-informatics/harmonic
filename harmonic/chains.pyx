@@ -4,16 +4,17 @@ import copy
 
 class Chains:
     """
-    .. note:: Class to store samples from multiple MCMC chains.    
+    Class to store samples from multiple MCMC chains.    
     """
         
     def __init__(self, long ndim):   
-        """Construct empty Chains for parameter space of dimension ndim.
+        """
+        Construct empty Chains for parameter space of dimension ndim.
         
-        Constructor simply sets ndim.  Chain samples are added by the
-        add_chain* methods since we want to support setting up data for chains
-        from different input data formats (e.g. data from a single chain or
-        multiple chains at once).
+        Constructor simply sets ndim.  Chain samples are added by the add_chain* 
+        methods since we want to support setting up data for chains from 
+        different input data formats (e.g. data from a single chain or multiple 
+        chains at once).
         
         Args:
             ndim: Dimension of the parameter space.
@@ -31,20 +32,19 @@ class Chains:
     def add_chain(self, np.ndarray[double,ndim=2,mode="c"] samples not None, 
                   np.ndarray[double,ndim=1,mode="c"] ln_posterior not None):
         """
-        .. note:: Add a single chain to a Chains object.
+        Add a single chain to a Chains object.
         
         Args:
             - samples: 
-                2D numpy.ndarray containing the samples of a single chain 
-                with shape (nsamples_in, ndim_in) and dtype double.
+                2D numpy.ndarray containing the samples of a single chain with 
+                shape (nsamples_in, ndim_in) and dtype double.
             - ln_posterior:  
-                1D numpy.ndarray containing the log_e posterior 
-                values with shape (n_new_samples) and dtype double.
+                1D numpy.ndarray containing the log_e posterior values with 
+                shape (n_new_samples) and dtype double.
         
         Raises:
             - ValueError: 
-                Raised when ndim of new chain does not match previous 
-                chains.
+                Raised when ndim of new chain does not match previous chains.
         """
                         
         nsamples_in = samples.shape[0]
@@ -71,29 +71,27 @@ class Chains:
                       np.ndarray[double,ndim=1,mode="c"] ln_posterior not None, 
                       long nchains_in):
         """
-        .. note::  Adds a number of chains to the chain class assumes all the 
-                   chains are of the same length.
+        Adds a number of chains to the chain class assumes all the chains are 
+        of the same length.
             
         Args:
             - samples: 
-                2D numpy.ndarray containing the samples with shape 
-                (nsamples_in * nchains_in, ndim) and dtype double.            
+                2D numpy.ndarray containing the samples with shape (nsamples_in 
+                * nchains_in, ndim) and dtype double.            
             - ln_posterior: 
-                1D numpy.ndarray containing the log_e posterior
-                values with shape (nsamples_in * nchains_in) and dtype double.
+                1D numpy.ndarray containing the log_e posterior values with 
+                shape (nsamples_in * nchains_in) and dtype double.
             - long nchains_in: 
                 Number of chains to be added.
         
         Raises:
             - ValueError: 
-                Raised when number of samples is not multiple of the   
-                number of chains.
-            - ValueError: 
-                Raised when ndim of new chains does not match previous 
+                Raised when number of samples is not multiple of the number of 
                 chains.
             - ValueError: 
-                Raised when posterior and samples first length are 
-                different.
+                Raised when ndim of new chains does not match previous chains.
+            - ValueError: 
+                Raised when posterior and samples first length are different.
         """
 
         if (samples.shape[0] % nchains_in) != 0:
@@ -127,16 +125,16 @@ class Chains:
                            not None, 
                            long nchains_in, list chain_indexes):        
         """
-        .. note:: Adds a number of chains to the chain class. Uses a list of indexes to
-                  understand where each chain starts and stops.
+        Adds a number of chains to the chain class. Uses a list of indexes to
+        understand where each chain starts and stops.
             
         Args:
             - samples: 
-                2D numpy.ndarray containing the samples with shape 
-                (nsamples_in * nchains_in, ndim) and dtype double.            
+                2D numpy.ndarray containing the samples with shape (nsamples_in 
+                * nchains_in, ndim) and dtype double.            
             - ln_posterior: 
-                1D numpy.ndarray containing the log_e posterior
-                values with shape (nsamples_in * nchains_in) and dtype double.
+                1D numpy.ndarray containing the log_e posterior values with 
+                shape (nsamples_in * nchains_in) and dtype double.
             - long nchains_in: 
                 Number of chains to be added.
             - list chain_indexes: 
@@ -144,14 +142,11 @@ class Chains:
         
         Raises:
             - ValueError: 
-                Raised when ndim of new chains does not match previous 
-                chains.
+                Raised when ndim of new chains does not match previous chains.
             - ValueError: 
-                Raised when posterior and samples first length are 
-                different.
+                Raised when posterior and samples first length are different.
             - ValueError: 
-                Raised when the length of the list is not 
-                nchains_in + 1.
+                Raised when the length of the list is not nchains_in + 1.
         """
 
         nsamples_in = samples.shape[0]
@@ -171,7 +166,7 @@ class Chains:
         cdef long i_chain, samples_per_chain
 
         for i_chain in range(nchains_in):
-            samples_per_chain = chain_indexes[i_chain+1] - chain_indexes[i_chain]
+            samples_per_chain = chain_indexes[i_chain+1] -chain_indexes[i_chain]
             self.add_chain(
                 samples[i_chain*samples_per_chain:
                         (i_chain+1)*samples_per_chain, :],
@@ -184,25 +179,24 @@ class Chains:
                       not None, 
                       np.ndarray[double,ndim=2,mode="c"] ln_posterior not None):
         """
-        .. note:: Adds a number of chains to the chain class assumes all the chains 
-                  from 3D array.
+        Adds a number of chains to the chain class assumes all the chains from 
+        3D array.
 
         Args:
             - samples: 
-                3D numpy.ndarray containing the samples with shape 
-                (nchains_in, nsamples_in, ndim) and dtype double.
+                3D numpy.ndarray containing the samples with shape (nchains_in, 
+                nsamples_in, ndim) and dtype double.
             - ln_posterior: 
-                2D numpy.ndarray containing the log_e posterior
-                values with shape (nchains_in, nsamples_in) and dtype double. 
-                nchains_in specifies the number of chains in the passed samples.
+                2D numpy.ndarray containing the log_e posterior values with
+                shape (nchains_in, nsamples_in) and dtype double. nchains_in 
+                specifies the number of chains in the passed samples.
       
         Raises: 
             - ValueError: 
-                Raised when ndim of new chains does not match previous 
-                chains.
+                Raised when ndim of new chains does not match previous chains.
             - ValueError: 
-                Raised when posterior and samples first and second 
-                length are different
+                Raised when posterior and samples first and second length are 
+                different
         """
 
         nchains_in = samples.shape[0]
@@ -226,13 +220,13 @@ class Chains:
             
     def get_sub_chains(self, list chains_wanted):
         """
-        .. note:: Creates a new chain instance with the chains
-                  indexed in chains_wanted. (Useful for cross validation.)
+        Creates a new chain instance with the chains indexed in chains_wanted. 
+        (Useful for cross validation.)
 
         Args:
             - list chains_wanted: 
-                List of indexes of chains that the new chain
-                instance will contain.
+                List of indexes of chains that the new chain instance will 
+                contain.
 
         Returns:
             - sub_chains: 
@@ -240,8 +234,8 @@ class Chains:
 
         Raises:
             - ValueError: 
-                If any of the chains_wanted indexes are out of bounds
-                i.e. outside of range 0 to nchains - 1.
+                If any of the chains_wanted indexes are out of bounds i.e. 
+                outside of range 0 to nchains - 1.
         """
 
         new_nchains = len(chains_wanted)
@@ -263,10 +257,10 @@ class Chains:
 
     def get_chain_indices(self, long i):
         """
-        .. note:: Gets the start and end index of samples from a chain.
+        Gets the start and end index of samples from a chain.
         
-                  The end index specifies the index one passed the end of the chain, i.e. 
-                  the chain samples can be accessed by self.samples[start:end,:].
+        The end index specifies the index one passed the end of the chain, i.e. 
+        the chain samples can be accessed by self.samples[start:end,:].
         
         Args:
             - i: 
@@ -290,7 +284,7 @@ class Chains:
             
     def add(self, other):
         """
-        .. note:: Add other Chain object to this object.
+        Add other Chain object to this object.
         
         Args: 
             - other: 
@@ -320,21 +314,21 @@ class Chains:
                                                     
     def copy(self):
         """
-        .. note:: Performs deep copy of the chain class (calls the module copy)
+        Performs deep copy of the chain class (calls the module copy)
         """
         return copy.copy(self)
 
     def nsamples_per_chain(self):   
         """
-        .. note:: Compute list containing number of samples in each chain.
+        Compute list containing number of samples in each chain.
         
         Args:
             None.
         
         Returns:
             - nsamples_per_chain: 
-                1D list of length self.nchains containing the 
-                number of samples in each chain.
+                1D list of length self.nchains containing the number of samples 
+                in each chain.
         """
         
         zipped = list(zip(self.start_indices[0:self.nchains],
@@ -346,7 +340,7 @@ class Chains:
 
     def remove_burnin(self, nburn=100):
         """
-        .. note:: Remove burn-in samples from each chain.
+        Remove burn-in samples from each chain.
         
         Args:
             - nburn: 
@@ -357,8 +351,7 @@ class Chains:
             
         Raises:
             - ValueError: 
-                Raised when nburn not less then number of samples in 
-                each chain.
+                Raised when nburn not less then number of samples in each chain.
         """
         
         start_indices_new = [0]
@@ -395,23 +388,22 @@ class Chains:
 
     def split_into_blocks(self, nblocks=100):
         """
-        .. note:: Split chains into larger number of blocks.
+        Split chains into larger number of blocks.
         
-                  The intention of this method is to break chains into blocks that are
-                  (approximately) independent in order to get more independent chains for
-                  computing various statistics.
+        The intention of this method is to break chains into blocks that are
+        (approximately) independent in order to get more independent chains for
+        computing various statistics.
         
-                  Each existing chain is split into blocks (i.e. new chains),
-                  proportionally to the size of the current chains.  Final blocks within
-                  each chain end up containing slightly different numbers of samples
-                  (since we do not ever want to throw away samples!).  One could improve
-                  this, if required, to distribute the additional samples across all of
-                  the blocks of the chain.
+        Each existing chain is split into blocks (i.e. new chains),
+        proportionally to the size of the current chains.  Final blocks within
+        each chain end up containing slightly different numbers of samples
+        (since we do not ever want to throw away samples!).  One could improve
+        this, if required, to distribute the additional samples across all of
+        the blocks of the chain.
                 
         Args: 
             - nblocks: 
-                Number of new (blocked) chains to split existing chains 
-                into.
+                Number of new (blocked) chains to split existing chains into.
 
         Raises:
             - ValueError: 
@@ -458,12 +450,14 @@ class Chains:
                 * step
             
             block_start_indices[-1] = end
-            # print("chain = {}, block_start_indices = {}".format(i_chain, block_start_indices))
+            # print("chain = {}, block_start_indices = {}"
+            #.format(i_chain, block_start_indices))
 
             start_indices_new = np.concatenate((start_indices_new, 
                                                 block_start_indices[1:]))
 
-            # print("chain = {}, start_indices_new = {}".format(i_chain, start_indices_new))
+            # print("chain = {}, start_indices_new = {}"
+            #.format(i_chain, start_indices_new))
         
         self.start_indices = start_indices_new
         self.nchains = nblocks

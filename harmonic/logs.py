@@ -6,49 +6,56 @@ import harmonic
 import os
 
 
-def setup_logging(
-
-    default_level=logging.DEBUG,
-    env_key='LOG_CFG'
-):
+def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
     """
-    .. note:: Call at the begining of code to initialize and configure
-              the desired logging level.
-
+    Initialize and configure logging.
+    
+    Should be called at the beginning of code to initialize and configure the 
+    desired logging level. Logging levels can be ints in [0,50] where 10 is 
+    debug logging and 50 is critical logging.
     Args:
-        - int: 
-            logging level at which to configure.
-        - string:  
-            Environment key. Do not touch this.
-
+        - custom_yaml_path: 
+            Complete pathname of desired yaml logging configuration. If empty 
+            will provide Harmonics default logging config.
+        - default_level: 
+            Logging level at which to configure.
     Raises:
         - ValueError:
-            Raised if logging.yaml is not in src_harmonic/logs/ directory.
+            Raised if Harmonic's logging.yaml is not in src_harmonic/logs/ 
+            directory.
         
     """
-    path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__))) + '/logs/logging.yaml')
-    value = os.getenv(env_key, None)
+    if custom_yaml_path == None:
+        path = os.path.join(os.path.dirname(os.path.dirname(
+            os.path.realpath(harmonic.__file__))) + '/logs/logging.yaml')
+    if custom_yaml_path != None:
+        path = custom_yaml_path
+    value = os.getenv('LOG_CFG', None)
     if value:
         path = value
     if os.path.exists(path):
         with open(path, 'rt') as f:
             config = yaml.safe_load(f.read())
-        config['handlers']['info_file_handler']['filename'] = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__))) + '/logs/info.log')
-        config['handlers']['error_file_handler']['filename'] = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__))) + '/logs/errors.log')
+        if custom_yaml_path == None:
+            config['handlers']['info_file_handler']['filename'] = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(harmonic.__file__))) + '/logs/info.log')
+            config['handlers']['error_file_handler']['filename'] = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(harmonic.__file__))) + '/logs/errors.log')
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
         raise ValueError("Logging config pathway incorrect.")
+    high_log('Using config from {}'.format(path))
 
 
 def low_log(message):
     """
-    .. note:: Custom low-level logger for Harmonic
-
+    Log low-level (DEBUG) message. 
     Args:
-        - string: 
-            message which should be logged.
-
+        - message: 
+            Message to log.
     """
     logger = logging.getLogger('Harmonic')
     logger.debug('\033[0;36;40m' + message + '\033[0;0m')
@@ -56,25 +63,21 @@ def low_log(message):
 
 def high_log(message):
     """
-    .. note:: Custom high-level logger for Harmonic
-
+    Log high-level (CRITICAL) message
     Args:
-        - string: 
-            message which should be logged.
-
+        - message: 
+            Message to log.
     """
     logger = logging.getLogger('Harmonic')
     logger.critical('\033[1;31;40m' + message + '\033[0;0m')
 
 """ 
 In main code, call lines (1) and (2) to create and initialize the logger:
-
-(1) from harmonic import logs as log
-(2) log.setup_logging(default_level=[level that you want to log at e.g. logging.DEBUG])
-
+(1) import harmonic as hm 
+(2) hm.logs.setup_logging()
+(note) if you wish to use a custom logging configuration simply provide the 
+pathname to your yaml as the argument to setup_logging('pathname').
 examples of use:
-        log.Harmonic_low_log('a debug level message')
-        log.Harmonic_high_log('a critical level message')
+        hm.logs.low_log('a debug level message')
+        hm.logs.high_log('a critical level message')
 """
-
-
