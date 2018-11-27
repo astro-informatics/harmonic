@@ -5,6 +5,7 @@ python:
 install:
   - pip install cython
   - pip install scipy
+  - pip install scikit-learn
 script:
   - python setup.py build_ext --inplace
   - pytest
