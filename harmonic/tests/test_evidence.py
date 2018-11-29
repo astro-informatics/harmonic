@@ -72,7 +72,7 @@ def test_process_run():
     evidence_inv  = np.mean(samples)
     evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
     # print(np.std(np.sum(samples,axis=1)/n_samples)**2, nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2/(nchains-1))/nchains
+    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
 
     assert rho.evidence_inv == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)

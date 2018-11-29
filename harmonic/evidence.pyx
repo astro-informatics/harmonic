@@ -9,8 +9,9 @@ import scipy.special as sp
 
 class Optimisation(Enum):
     """
-    .. note:: Enumeration to define whether to optimise for speed or accuracy.  In
-              practices accuracy optimisation does not make a great deal of difference.
+    Enumeration to define whether to optimise for speed or accuracy.  
+
+    In practice accuracy optimisation does not make a great deal of difference.
     """
 
     SPEED = 1
@@ -20,21 +21,21 @@ class Optimisation(Enum):
 OPTIMISATION = Optimisation.SPEED
 
 
-MEAN_SHIFT_SIGN = -1.0
+MEAN_SHIFT_SIGN = 1.0
 
 
 class Evidence:
     """
-    .. note:: Compute inverse evidence values from chains, using posterior model.
+    Compute inverse evidence values from chains, using posterior model. 
 
-              Multiple chains can be added in sequence (to avoid having to store very
-              long chains).
+    Multiple chains can be added in sequence (to avoid having to store very 
+    long chains).
     """
 
     def __init__(self, long nchains, model not None):
         """
-        .. note:: Construct evidence class for computing inverse evidence values from
-                  set number of chains and initialised posterior model.
+        Construct evidence class for computing inverse evidence values from set 
+        number of chains and initialised posterior model.
 
         Args:
             - long nchains: 
@@ -87,8 +88,8 @@ class Evidence:
 
     def set_mean_shift(self, double mean_shift_in):
         """
-        .. note:: Set the multiplicative shift of log_e posterior values to aid
-                  numerical stability (usually the geometric mean).
+        Set the multiplicative shift of log_e posterior values to aid numerical 
+        stability (usually the geometric mean).
 
         Args:
             - double mean_shift_in: 
@@ -107,12 +108,12 @@ class Evidence:
 
     def process_run(self):
         """
-        .. note:: Use the running totals of running_sum and nsamples_per_chain
-                  to calculate an estimate of the inverse evidence, its variance,
-                  and the variance of the variance.
+        Use the running totals of running_sum and nsamples_per_chain to 
+        calculate an estimate of the inverse evidence, its variance, and the 
+        variance of the variance. 
 
-                  This method is ran each time chains are added to update the inverse
-                  variance estimates from the running totals.
+        This method is ran each time chains are added to update the inverse 
+        variance estimates from the running totals.
 
         """
 
@@ -162,15 +163,15 @@ class Evidence:
 
     def add_chains(self, chains not None):
         """
-        .. note:: Add new chains and calculate an estimate of the inverse evidence, its
-                  variance, and the variance of the variance.
+        Add new chains and calculate an estimate of the inverse evidence, its 
+        variance, and the variance of the variance. 
 
-                  Calculations are performed by using running averages of the totals for
-                  each chain. Consequently, the method can be called many times with new
-                  samples for each chain so that the evidence estimate will improve.  The
-                  rationale is that not all samples need to be stored in memory for
-                  high-dimensional problems.  Note that the same number of chains needs to
-                  be considered for each call.
+        Calculations are performed by using running averages of the totals for 
+        each chain. Consequently, the method can be called many times with new 
+        samples for each chain so that the evidence estimate will improve.  The 
+        rationale is that not all samples need to be stored in memory for 
+        high-dimensional problems. Note that the same number of chains needs to 
+        be considered for each call.
 
         Args:
             - chains: 
@@ -179,8 +180,8 @@ class Evidence:
 
         Raises:
             - ValueError: 
-                If the input number of chains to not match the number
-                of chains already set up.
+                If the input number of chains to not match the number of chains 
+                already set up.
 
         """
 
@@ -279,7 +280,8 @@ class Evidence:
                 else:
                     offset = np.amax(terms_ln)
                 
-                running_sum[i_chains] = np.log(np.sum(np.exp(terms_ln - offset)))
+                running_sum[i_chains] = np.log(np.sum(
+                                        np.exp(terms_ln - offset)))
                 running_sum[i_chains] += offset
                 running_sum[i_chains] -= np.log(i_samples_end - i_samples_start)
                  
@@ -298,10 +300,10 @@ class Evidence:
 
     def check_basic_diagnostic(self):
         """
-        .. note:: Perform basic diagontic check on sanity of evidence calulations.
+        Perform basic diagontic check on sanity of evidence calulations.
 
-                  If these tests pass it does *not* necessarily mean the evidence is
-                  accurate and other tests should still be performed.
+        If these tests pass it does *not* necessarily mean the evidence is 
+        accurate and other tests should still be performed.
 
         Return:
             - Boolean: 
@@ -334,7 +336,7 @@ class Evidence:
 
     def compute_evidence(self):
         """
-        .. note:: Compute evidence from the inverse evidence.
+        Compute evidence from the inverse evidence.
 
         Returns: 
             - (evidence, evidence_std):
@@ -356,7 +358,7 @@ class Evidence:
 
     def compute_ln_evidence(self):
         """
-        .. note:: Compute log_e of evidence from the inverse evidence.
+        Compute log_e of evidence from the inverse evidence.
 
         Returns: 
             - (ln_evidence, ln_evidence_std):
@@ -380,7 +382,7 @@ class Evidence:
 
 def compute_bayes_factor(ev1, ev2):
     """
-    .. note:: Compute Bayes factor of two models.
+    Compute Bayes factor of two models.
 
     Args:
         - ev1: 
@@ -423,7 +425,7 @@ def compute_bayes_factor(ev1, ev2):
 
 def compute_ln_bayes_factor(ev1, ev2):
     """
-    .. note:: Computes log_e of Bayes factor of two models.
+    Computes log_e of Bayes factor of two models.
 
     Args:
         - ev1: 
@@ -470,13 +472,14 @@ def compute_ln_bayes_factor(ev1, ev2):
 
 def msum(iterable):
     """
-    .. note:: "Full precision summation using multiple floats for intermediate values"
-               From: http://code.activestate.com/recipes/393090/
-               Rounded x+y stored in hi with the round-off stored in lo.  Together
-               hi+lo are exactly equal to x+y.  The inner loop applies hi/lo summation
-               to each partial so that the list of partial sums remains exact.
-               Depends on IEEE-754 arithmetic guarantees.  See proof of correctness at:
-               www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps
+    "Full precision summation using multiple floats for intermediate values".
+    
+    From: http://code.activestate.com/recipes/393090/ Rounded x+y stored in hi 
+    with the round-off stored in lo. Together hi+lo are exactly equal to x+y.The
+    inner loop applies hi/lo summation to each partial so that the list of 
+    partial sums remains exact. Depends on IEEE-754 arithmetic guarantees. See 
+    proof of correctness at: www-2.cs.cmu.edu/afs/cs/project/quake/public/papers
+    /robust-arithmetic.ps
     """
 
     partials = []               # sorted, non-overlapping partial sums
