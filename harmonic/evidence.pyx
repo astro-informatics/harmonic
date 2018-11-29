@@ -23,7 +23,7 @@ OPTIMISATION = Optimisation.SPEED
 # Shifting toggles
 MEAN_SHIFT_SIGN = 1.0
 MAX_SHIFT_SIGN = 1.0
-DEFAULT_SHIFT_SWITCH = True  # False defaults to mean if not defined,
+DEFAULT_SHIFT_SWITCH = False  # False defaults to mean if not defined,
                               # True defaults to max if not defined.
 
 
