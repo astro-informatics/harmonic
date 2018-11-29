@@ -116,11 +116,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ymax = 6.0
         hm.logs.low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
             .format(xmin, xmax, ymin, ymax))   
-<<<<<<< HEAD
-        ln_prior = partial(ln_prior_uniform, \
-=======
+
+
         ln_prior = partial(ln_prior_uniform, 
->>>>>>> origin/master
+
             xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
 
 	hm.logs.low_log('---------------------------------')
@@ -136,7 +135,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             hm.logs.high_log('Realisation number = {}/{}'
                 .format(i_realisation, n_realisations))
     
-<<<<<<< HEAD
+
         hm.logs.high_log('Run sampling...')
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
@@ -172,7 +171,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('Best hyper-parameter = {}'
             .format(best_hyper_param))
         hm.logs.low_log('---------------------------------')
-=======
+
     hm.logs.high_log('Run sampling...')
     pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
     sampler = emcee.EnsembleSampler(nchains, ndim, 
@@ -353,7 +352,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         if savefigs:
             plt.savefig('./plots/rastrigin_modelexp_image.png',
                         bbox_inches='tight')
->>>>>>> origin/master
+
 
         # Fit model.
         hm.logs.high_log('Fit model...')
