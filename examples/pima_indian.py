@@ -31,7 +31,7 @@ def ln_likelihood(y, theta, x):
 	        Value of log_e likelihood at specified point in parameter space.
 	"""
 	ln_p = compute_ln_p(theta, x)
-	ln_pp = x.dot(theta) - ln_p
+	ln_pp = np.log(1. - np.exp(ln_p))
 	return y.T.dot(ln_p) + (1-y).T.dot(ln_pp)
 
 def ln_prior(tau, theta): 
@@ -49,8 +49,7 @@ def ln_prior(tau, theta):
 	        Value of log_e prior at specified point in parameter space.
 	"""
 	d = len(theta)
-	return 0.5 * d * np.log(tau/(2.*np.pi)) \
-		 - 0.5 * tau * theta.T.dot(theta)
+	return 0.5 * d * np.log(tau/(2.*np.pi)) - 0.5 * tau * theta.T.dot(theta)
 
 def ln_posterior(theta, tau, x, y): 
 	"""
@@ -70,7 +69,17 @@ def ln_posterior(theta, tau, x, y):
 	    - double: 
 	        Value of log_e posterior at specified point in parameter space.
 	"""
-	return ln_prior(tau,theta) + ln_likelihood(y, theta, x)
+	ln_pr = ln_prior(tau, theta)
+
+	# if not np.isfinite(ln_pr):
+	# 	return -np.inf
+
+	ln_L = ln_likelihood(y, theta, x)
+
+	# if not np.isfinite(ln_L):
+	# 	return -np.inf
+
+	return ln_pr + ln_L
 
 def compute_ln_p(theta, x):
 	"""
@@ -86,10 +95,10 @@ def compute_ln_p(theta, x):
 	    - Ln(p):
 			Vector of the log-probabilities p to use in likelihood.
 	"""
-	return - np.log(1.0 + np.exp(x.dot(theta)))
+	return - np.log(1.0 + 1.0 / np.exp(x.dot(theta)))
 
 
-def run_example(ndim=8, nchains=100, samples_per_chain=1000, 
+def run_example(ndim=5, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
@@ -99,8 +108,8 @@ def run_example(ndim=8, nchains=100, samples_per_chain=1000,
 	hm.logs.high_log('Dimensionality = {}'.format(ndim))
 	hm.logs.low_log('---------------------------------')
 
-	if ndim != 8:
-	    raise ValueError("Only ndim=8 is supported (ndim={} specified)"
+	if ndim != 5 and ndim != 6:
+	    raise ValueError("Only 5 and 6 covariates models (ndim={} specified)"
 	        .format(ndim))
 
 
@@ -112,28 +121,37 @@ def run_example(ndim=8, nchains=100, samples_per_chain=1000,
 	"""
 	https://gist.github.com/ktisha/c21e73a1bd1700294ef790c56c8aec1f
 	"""
-	data = np.loadtxt('./data/Pima_Indian.dat')
+	data = np.loadtxt(
+		'/Users/matt/Downloads/Software/harmonic_data/Evidence/Pima_Indian.dat')
 
 	"""
-	 x[:,0] = Number of times pregnant.
-	 x[:,1] = Plasma glucose concentration a 2 hours in an oral glucose 
-	 		  tolerance test.
-	 x[:,2] = Diastolic blood pressure (mm Hg).
-	 x[:,3] = Triceps skin fold thickness (mm).
-	 x[:,4] = 2-Hour serum insulin (mu U/ml).
-	 x[:,5] = Body mass index (weight in kg/(height in m)^2).
-	 x[:,6] = Diabetes pedigree function.
-	 x[:,7] = Age (years).
+	Two primary models for comparison:
+		Model 1: Uses rows const(1) + 1,2,6,7 = 5 dimensional
+		Model 2: Uses rows const(1) + 1,2,3,6,7,8 = 6 dimensional
 	"""
+	# # Model 1:
+	# x=np.zeros((len(data), ndim))
+
+	# x[:,0] = 1.0
+	# x[:,1] = data[:,1]
+	# x[:,2] = data[:,2]
+	# x[:,3] = data[:,5]
+	# x[:,4] = data[:,6]
+
+	# # Model 2:
 	x=np.zeros((len(data), ndim))
-	for i in range(ndim):
-		x[:,i] = data[:,i] - np.nanmean(data[:,i])
 
+	x[:,0] = 1.0
+	x[:,1] = data[:,1]
+	x[:,2] = data[:,2]
+	x[:,3] = data[:,5]
+	x[:,4] = data[:,6]
+	x[:,5] = data[:,7]
 
 	"""
 	y[:] = 1 if patient has diabetes, 0 if patient does not have diabetes.
 	"""
-	y = data[:,ndim]
+	y = data[:,0]
 
 	"""
 	Configure some general parameters.
@@ -149,8 +167,8 @@ def run_example(ndim=8, nchains=100, samples_per_chain=1000,
 	training_proportion = 0.25
 	hyper_parameters_MGMM = [[1, 1E-8, 0.1, 6, 10], [2, 1E-8, 0.5, 6, 10]]
 	hyper_parameters_sphere = [None]
-	domains_sphere = [np.array([1E-1,5E0])]
-	domains_MGMM = [np.array([1E-1,5E0])]
+	domains_sphere = [np.array([1E-2,1E0])]
+	domains_MGMM = [np.array([1E-2,1E0])]
 
 	#===========================================================================
 	# Compute random positions to draw from for emcee sampler.
@@ -159,19 +177,18 @@ def run_example(ndim=8, nchains=100, samples_per_chain=1000,
 	Initial positions for each chain for each covariate \in [0,8).
 	Simply drawn from directly from each covariate prior.
 	"""
-	pos_0 = (0.5*tau**10)*np.random.randn(nchains)
-	pos_1 = (0.5*tau**10)*np.random.randn(nchains)
-	pos_2 = (0.5*tau**10)*np.random.randn(nchains)
-	pos_3 = (0.5*tau**10)*np.random.randn(nchains)
-	pos_4 = (0.5*tau**10)*np.random.randn(nchains)
-	pos_5 = (0.5*tau**10)*np.random.randn(nchains)
-	pos_6 = (0.5*tau**10)*np.random.randn(nchains)
-	pos_7 = (0.5*tau**10)*np.random.randn(nchains)
+	pos_0 = np.random.randn(nchains)*0.01
+	pos_1 = np.random.randn(nchains)*0.01
+	pos_2 = np.random.randn(nchains)*0.01
+	pos_3 = np.random.randn(nchains)*0.01
+	pos_4 = np.random.randn(nchains)*0.01
+	pos_5 = np.random.randn(nchains)*0.01 # --> model 2.
 
 	"""
 	Concatenate these positions into a single variable 'pos'.
 	"""
-	pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4, pos_5, pos_6, pos_7]
+	# pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4]
+	pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4, pos_5] # --> model 2.
 
 	# Start Timer.
 	clock = time.clock()
@@ -377,7 +394,7 @@ def run_example(ndim=8, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 8 # Only 8 dimensional case supported (covariate dim(x_i) = 8)
+    ndim = 6 # Only 5 or 6 dimensional case supported
     nchains = 200
     samples_per_chain = 5000
     nburn = 1000
