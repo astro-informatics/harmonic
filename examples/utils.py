@@ -8,14 +8,17 @@ from getdist import plots, MCSamples
 
 
 def plot_corner(samples, labels=None):
-    """Plot triangle plot of marginalised distributions using corner package.
+    """
+    Plot triangle plot of marginalised distributions using corner package.
 
     Args:
-        samples: 2D array of shape (ndim, nsamples) containing samples.
-        labels: Array of strings containing axis labels.
+        - samples: 
+            2D array of shape (ndim, nsamples) containing samples.
+        - labels: 
+            Array of strings containing axis labels.
 
     Returns:
-        None
+        - None
     """
 
     ndim = samples.shape[1]
@@ -27,14 +30,17 @@ def plot_corner(samples, labels=None):
 
 
 def plot_getdist(samples, labels=None):
-    """Plot triangle plot of marginalised distributions using getdist package.
+    """
+    Plot triangle plot of marginalised distributions using getdist package.
 
     Args:
-        samples: 2D array of shape (ndim, nsamples) containing samples.
-        labels: Array of strings containing axis labels.
+        - samples: 
+            2D array of shape (ndim, nsamples) containing samples.
+        - labels: 
+            Array of strings containing axis labels.
 
     Returns:
-        None
+        - None
     """
 
     ndim = samples.shape[1]
@@ -49,21 +55,32 @@ def plot_getdist(samples, labels=None):
 
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
-    """Evalute 2D function on a grid.
+    """
+    Evalute 2D function on a grid.
 
     Args:
-        func: Function to evalate.
-        xmin: Minimum x value to consider in grid domain.
-        xmax: Maximum x value to consider in grid domain.
-        ymin: Minimum y value to consider in grid domain.
-        ymax: Maximum y value to consider in grid domain.
-        nx: Number of samples to include in grid in x direction.
-        ny: Number of samples to include in grid in y direction.
+        - func: 
+            Function to evalate.
+        - xmin: 
+            Minimum x value to consider in grid domain.
+        - xmax: 
+            Maximum x value to consider in grid domain.
+        - ymin: 
+            Minimum y value to consider in grid domain.
+        - ymax: 
+            Maximum y value to consider in grid domain.
+        - nx: 
+            Number of samples to include in grid in x direction.
+        - ny: 
+            Number of samples to include in grid in y direction.
 
     Returns:
-        func_eval_grid: Function values evaluated on the 2D grid.
-        x_grid: x values over the 2D grid.
-        y_grid: y values over the 2D grid.
+        - func_eval_grid: 
+            Function values evaluated on the 2D grid.
+        - x_grid: 
+            x values over the 2D grid.
+        - y_grid: 
+            y values over the 2D grid.
     """
 
     # Evaluate func over grid.
@@ -81,22 +98,31 @@ def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
 
 def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
                  contour_z_offset=None, contours=None):
-    """Plot surface defined by 2D function on a grid.  Samples may also be optionally plotted.
+    """
+    Plot surface defined by 2D function on a grid.  
+
+    Samples may also be optionally plotted.
 
     Args:
-        func_eval_grid: Function evalated over 2D grid.
-        x_grid: x values over the 2D grid.
-        y_grid: y values over the 2D grid.
-        samples: 2D array of shape (ndim, nsamples) containing samples.
-        vals: 1D array of function values at sample locations.  Both samples
-            and vals must be provided if they are to be plotted.
-        contour_z_offset: If not None then plot contour in plane specified by z
-            offset.
-        contours: Values at which to draw contours (must be in increasing
-            order).
+        - func_eval_grid: 
+            Function evalated over 2D grid.
+        - x_grid: 
+            x values over the 2D grid.
+        - y_grid: 
+            y values over the 2D grid.
+        - samples: 
+            2D array of shape (ndim, nsamples) containing samples.
+        - vals: 
+            1D array of function values at sample locations.  Both samples and 
+            vals must be provided if they are to be plotted.
+        - contour_z_offset: 
+            If not None then plot contour in plane specified by z offset.
+        - contours: 
+            Values at which to draw contours (must be in increasing order).
 
     Returns:
-        ax: Plot axis.
+        - ax: 
+            Plot axis.
     """
 
     # Set up axis for surface plot.
@@ -160,19 +186,28 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
 
 def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
                colorbar_label=None, plot_contour=False, contours=None):
-    """Plot image defined by 2D function on a grid.  Samples may also be optionally plotted.
+    """
+    Plot image defined by 2D function on a grid.  
+
+    Samples may also be optionally plotted.
 
     Args:
-        func_eval_grid: Function evalated over 2D grid.
-        x_grid: x values over the 2D grid.
-        y_grid: y values over the 2D grid.
-        samples: 2D array of shape (ndim, nsamples) containing samples.
-        colorbar_label: Text label to include on colorbar.
-        contours: Values at which to draw contours (must be in increasing
-            order).
+        -func_eval_grid: 
+            Function evalated over 2D grid.
+        -x_grid: 
+            x values over the 2D grid.
+        -y_grid: 
+            y values over the 2D grid.
+        -samples: 
+            2D array of shape (ndim, nsamples) containing samples.
+        -colorbar_label: 
+            Text label to include on colorbar.
+        -contours: 
+            Values at which to draw contours (must be in increasing order).
 
     Returns:
-        ax: Plot axis.
+        - ax: 
+            Plot axis.
     """
 
     plt.figure()
@@ -204,22 +239,27 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
 
 def plot_realisations(mc_estimates, std_estimated,
                       analytic_val=None, analytic_text=None):
-    """Violin plot of estimated quantity from Monte Carlo (MC)
+    """
+    Violin plot of estimated quantity from Monte Carlo (MC)
     simulations, compared with error bar from estimated standard deviation.
+    
     Also plot analytic value if specified.
 
     Args:
-        mc_estimates: 1D array of quanties estimate many times by MC
-            simulation.
-        std_estimate: Standard deviation estimate to be compared with
-            standard deviation from MC simulations.
-        analytic_val: Plot horizonal line if analytic value of quantity
-            estimated is provided.
-        analytic_text: Text to include next to line specifying analytic
-            value, if provided.
+        - mc_estimates: 
+            1D array of quanties estimate many times by MC simulation.
+        - std_estimate: 
+            Standard deviation estimate to be compared with standard deviation 
+            from MC simulations.
+        - analytic_val: 
+            Plot horizonal line if analytic value of quantity estimated is 
+            provided.
+        - analytic_text: 
+            Text to include next to line specifying analytic value, if provided.
 
     Returns:
-        ax: Plot axis.
+        - ax: 
+            Plot axis.
     """
 
     mean = np.mean(mc_estimates)
