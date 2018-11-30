@@ -71,8 +71,8 @@ class Chains:
                       np.ndarray[double,ndim=1,mode="c"] ln_posterior not None, 
                       long nchains_in):
         """
-         Adds a number of chains to the chain class assumes all the chains are 
-         of the same length.
+        Adds a number of chains to the chain class assumes all the chains are 
+        of the same length.
             
         Args:
             - samples: 
