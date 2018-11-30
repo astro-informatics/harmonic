@@ -75,6 +75,14 @@ class Evidence:
         self.kurtosis = 0.0
         self.n_eff = 0
 
+        # For computations purely in log-space.
+        self.ln_evidence_inv = 0.0
+        self.ln_evidence_inv_var = 0.0
+        self.ln_evidence_inv_var_var = 0.0
+        self.ln_kurtosis = 0.0
+
+
+
         # Shift selection
         self.mean_shift_set = False
         self.mean_shift = 0.0
@@ -162,6 +170,7 @@ class Evidence:
         cdef long i_chains, nsamples=0, nchains = self.nchains
         cdef double evidence_inv=0.0, evidence_inv_var=0.0
         cdef double kur=0.0, dummy, n_eff=0
+        cdef double evidence_inv_var_exp=0.0, kur_exp=0.0
 
         for i_chains in range(nchains):
             if OPTIMISATION == Optimisation.SPEED:
@@ -172,31 +181,106 @@ class Evidence:
               
         evidence_inv /= nsamples
 
-        for i_chains in range(nchains):
-            dummy  = running_sum[i_chains]/nsamples_per_chain[i_chains]
-            dummy -= evidence_inv
-            n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
-            evidence_inv_var += nsamples_per_chain[i_chains]*dummy*dummy
-            kur += nsamples_per_chain[i_chains]*dummy*dummy*dummy*dummy
+        # #=======================================================================
 
-        n_eff = <double>nsamples*<double>nsamples/n_eff
-        self.n_eff = n_eff
-        evidence_inv_var /= nsamples
-        kur /= nsamples
-        kur /= evidence_inv_var*evidence_inv_var
+        # For now lets just consider improving var and kurt of running_sum.
+        cdef np.ndarray[double, ndim=1, mode="c"] y_i=np.zeros(len(running_sum))
+        cdef np.ndarray[double, ndim=1, mode="c"] z_i=np.zeros(len(running_sum))
+        cdef double y_mean=0.0, z_mean=0.0
+
+        # Precompute differential vectors.
+        z_i[:] = ( nsamples_per_chain[:]**(0.5) ) \
+                 * np.abs(( ( running_sum[:] / nsamples_per_chain[:] ) \
+                    - evidence_inv) )
+
+        y_i[:] = ( nsamples_per_chain[:]**(0.25) ) \
+                 * np.abs(( ( running_sum[:] / nsamples_per_chain[:] ) \
+                    - evidence_inv) )
+
+        # Compute means. TODO: find log-space equivalent to avoid this
+        z_mean = np.nanmax(z_i)
+        y_mean = np.nanmax(y_i)
+
+        # Calculate exponents of variance 
+        evidence_inv_var_exp = np.log( np.sum( np.exp( 2.0 \
+                                * (np.log(z_i) - np.log(z_mean) ) ) ) ) \
+                                + 2.0 * np.log(z_mean) - np.log(nsamples)
+
+        # Calculate exponents of kurtosis
+        kur_exp = np.log( np.sum( np.exp( 4.0 \
+                                * (np.log(y_i) - np.log(y_mean) ) ) ) ) \
+                                + 4.0 * np.log(y_mean) - np.log(nsamples) \
+                                - 2.0 * evidence_inv_var_exp
+        kur = np.exp(kur_exp)
         self.kurtosis = kur
 
-        # Generalized to include max shift if active.
+        # Compute effective chain lengths.
+        for i in range(nchains):
+            n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
+        n_eff = <double>nsamples*<double>nsamples/n_eff
+        self.n_eff = n_eff
+
+        # Correct for lower-level mean/max shift 
         self.evidence_inv = evidence_inv*exp( \
-                    -MEAN_SHIFT_SIGN*self.mean_shift # TODO: This slows things
-                    -MAX_SHIFT_SIGN*self.max_shift)  # very slightly, change?
+                    -MEAN_SHIFT_SIGN*self.mean_shift \
+                    -MAX_SHIFT_SIGN*self.max_shift) 
+        # Bring variance inside to avoid storing quadratic dependence
         self.evidence_inv_var = \
-            evidence_inv_var*exp(-MEAN_SHIFT_SIGN*2*self.mean_shift
-                                 -MAX_SHIFT_SIGN*2*self.max_shift)/(n_eff)
+            exp(evidence_inv_var_exp -MEAN_SHIFT_SIGN*2*self.mean_shift \
+                                 -MAX_SHIFT_SIGN*2*self.max_shift \
+                                 - np.log(n_eff) )
+        # Bring variance square inside to avoid storing quartic dependence
         self.evidence_inv_var_var = \
-            evidence_inv_var**2 * exp(-MEAN_SHIFT_SIGN*4*self.mean_shift \
-                -MAX_SHIFT_SIGN*4*self.max_shift) / (n_eff*n_eff*n_eff)
+            exp(2.0 * evidence_inv_var_exp - MEAN_SHIFT_SIGN*4*self.mean_shift \
+                - MAX_SHIFT_SIGN*4*self.max_shift - 3.0 *np.log(n_eff))
+
         self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
+
+        # Store log-space variables for log-space computation
+        self.ln_evidence_inv = np.log(evidence_inv) \
+                    -MEAN_SHIFT_SIGN*self.mean_shift \
+                    -MAX_SHIFT_SIGN*self.max_shift
+        self.ln_evidence_inv_var = evidence_inv_var_exp \
+                                 -MEAN_SHIFT_SIGN*2*self.mean_shift \
+                                 -MAX_SHIFT_SIGN*2*self.max_shift \
+                                 - np.log(n_eff)
+        self.ln_evidence_inv_var_var = 2.0 * evidence_inv_var_exp \
+                                    - MEAN_SHIFT_SIGN*4*self.mean_shift \
+                                    - MAX_SHIFT_SIGN*4*self.max_shift \
+                                    - 3.0 *np.log(n_eff) \
+                                    + np.log((kur - 1) + 2./(n_eff-1))
+        self.ln_kurtosis = kur_exp
+
+        # =======================================================================
+
+        # for i_chains in range(nchains):
+        #     dummy  = running_sum[i_chains]/nsamples_per_chain[i_chains]
+        #     dummy -= evidence_inv
+        #     n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
+        #     evidence_inv_var += nsamples_per_chain[i_chains]*dummy*dummy
+        #     kur += nsamples_per_chain[i_chains]*dummy*dummy*dummy*dummy
+
+        # n_eff = <double>nsamples*<double>nsamples/n_eff
+        # self.n_eff = n_eff
+        # evidence_inv_var /= nsamples
+        # kur /= nsamples
+        # kur /= evidence_inv_var*evidence_inv_var
+        # self.kurtosis = kur
+
+        # # Generalized to include max shift if active.
+        # self.evidence_inv = evidence_inv*exp( \
+        #             -MEAN_SHIFT_SIGN*self.mean_shift # TODO: This slows things
+        #             -MAX_SHIFT_SIGN*self.max_shift)  # very slightly, change?
+
+        # self.evidence_inv_var = \
+        #     evidence_inv_var*exp(-MEAN_SHIFT_SIGN*2*self.mean_shift
+        #                          -MAX_SHIFT_SIGN*2*self.max_shift)/(n_eff)
+
+        # self.evidence_inv_var_var = \
+        #     evidence_inv_var**2 * exp(-MEAN_SHIFT_SIGN*4*self.mean_shift \
+        #         -MAX_SHIFT_SIGN*4*self.max_shift) / (n_eff*n_eff*n_eff)
+
+        # self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
 
 
         return

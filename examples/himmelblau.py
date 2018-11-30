@@ -120,7 +120,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             .format(ndim))
 
     # Set parameters.
-    savefigs = True
+    savefigs = False
     nfold = 2
     nhyper = 2
     step = -2
@@ -138,7 +138,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
 
     # Set up and run multiple simulations
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -224,7 +224,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         diff = np.log( np.abs(evidence_numerical_integration \
                      - np.exp(ln_evidence)))
         hm.logs.high_log('Evidence: \
-                          100 * |numerical - estimate| / estimate = {}%'
+            100 * |numerical - estimate| / estimate = {}%'
             .format(100.0 * np.exp(diff - ln_evidence)))
         # ======================================================================
         # Display inverse evidence computation results.

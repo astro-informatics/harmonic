@@ -9,11 +9,13 @@ sys.path.append(".")
 import harmonic as hm
 sys.path.append("examples")
 import utils
+import logging
 
 # Setup Logging config
 hm.logs.setup_logging()
 
-
+logger = logging.getLogger('Harmonic')
+logger.critical('critical message')
 
 def ln_likelihood(y, x, n, alpha, beta, tau):
     
@@ -480,6 +482,37 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #     .format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) 
     #             / ev.evidence_inv))
 
+    #===========================================================================
+    # LOG-SPACE TESTING
+    #===========================================================================
+    hm.logs.low_log('---------------------------------')
+    hm.logs.low_log('ev_var_var test = {}'.format(ev.evidence_inv_var_var))
+    
+    hm.logs.high_log('START TESTING LOG-SPACE!')
+    hm.logs.low_log('ln( evidence_inv ) = {}'
+        .format(ev.ln_evidence_inv))
+    hm.logs.low_log('ln( evidence_inv_std ) = {}, \
+            ln ( evidence_inv_std/evidence_inv ) = {}'
+        .format(0.5*ev.ln_evidence_inv_var, \
+                0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv))
+    hm.logs.low_log('ln( kurtosis ) = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+        .format(ev.ln_kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
+    hm.logs.low_log('ln( ev.evidence_inv_var_std/ev.evidence_inv_var ) = {}'
+        .format(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var) )
+
+
+    hm.logs.low_log('exp( ln( evidence_inv ) ) = {}'
+        .format(np.exp(ev.ln_evidence_inv) ) )
+    hm.logs.low_log('exp( ln( evidence_inv_std ) )= {}, \
+            exp( ln ( evidence_inv_std/evidence_inv ) ) = {}'
+        .format(np.exp( 0.5*ev.ln_evidence_inv_var), \
+                np.exp(0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv)) )
+    hm.logs.low_log('exp( ln( kurtosis ) ) = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+        .format(np.exp( ev.ln_kurtosis ), np.sqrt(2.0/(ev.n_eff-1))))    
+    hm.logs.low_log('exp( ln( ev.evidence_inv_var_std/ev.evidence_inv_var ) ) = {}'
+        .format(np.exp( 0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var) ) )
+
+    hm.logs.high_log('END TESTING LOG-SPACE!')
     #===========================================================================
     # Display more technical details
     #===========================================================================
