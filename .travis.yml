@@ -7,7 +7,7 @@ install:
   - pip install scipy
   - pip install scikit-learn
   - pip install matplotlib
-  - pip install yaml
+  - pip install pyyaml
   - pip install logging
 script:
   - python setup.py build_ext --inplace
