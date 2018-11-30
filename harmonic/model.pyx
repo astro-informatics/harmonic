@@ -1557,7 +1557,6 @@ class ModifiedGaussianMixtureModel(Model):
 
         cdef double gamma = self.gamma, learning_rate = self.learning_rate
         cdef double alpha_lower_bound = self.alpha_domain[0], alpha_upper_bound\
-
             = self.alpha_domain[1]
         cdef double mean_shift = np.mean(Y)
         cdef long i_dim, i_guas, i_sample, i_iter, i_batch, i1_sample, i2_sample
