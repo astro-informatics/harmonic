@@ -331,6 +331,7 @@ class Evidence:
                     offset = np.amax(terms_ln)
                 
                 running_sum[i_chains] = np.log(np.sum(np.exp(terms_ln -offset)))
+
                 running_sum[i_chains] += offset
                 running_sum[i_chains] -= np.log(i_samples_end -i_samples_start)
                  

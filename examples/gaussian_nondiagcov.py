@@ -78,7 +78,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
     """
-    .. not:: Run Gaussian example with non-diagonal covariance matrix.
+    .. note:: Run Gaussian example with non-diagonal covariance matrix.
     Args: 
         - ndim: 
             Dimension of Gaussian.
