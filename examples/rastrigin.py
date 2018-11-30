@@ -116,7 +116,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ymax = 6.0
         hm.logs.low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
             .format(xmin, xmax, ymin, ymax))   
+
+
         ln_prior = partial(ln_prior_uniform, 
+
             xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
 
 	hm.logs.low_log('---------------------------------')
@@ -137,6 +140,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
                                         args=[ln_prior])
+
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
         samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
@@ -161,6 +165,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   modelClass=hm.model.KernelDensityEstimate, \
                                   verbose=verbose, \
                                   seed=0)
+
         hm.logs.low_log('Validation variances = {}'
             .format(validation_variances))
         best_hyper_param_ind = np.argmin(validation_variances)
@@ -383,6 +388,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             dy = y_grid[1,0] - y_grid[0,0]
             evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) \
                                                                      * dx * dy
+
             hm.logs.low_log('dx = {}'.format(dx))
             hm.logs.low_log('dy = {}'.format(dy))    
 
