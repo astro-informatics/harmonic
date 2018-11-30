@@ -247,7 +247,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                     samples[i_chain,:,:].reshape((-1, ndim)), 
                                     np.exp(lnprob[i_chain,:].reshape((-1, 1))),
                                     contour_z_offset=-0.5)
-            # ax.set_zlim(-100.0, 0.0)                
+               
             ax.set_zlabel(r'$\mathcal{L}$') 
 
             # Save.
@@ -285,10 +285,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             i_chain = 0
             ax = utils.plot_surface(np.exp(ln_model_grid), x_grid, y_grid, 
-                                    #samples[i_chain,:,:].reshape((-1, ndim)), 
-                                    #np.exp(lnprob[i_chain,:].reshape((-1, 1))),
-                                    contour_z_offset=-0.075)
-            # ax.set_zlim(-100.0, 0.0)                
+                                    contour_z_offset=-0.075)              
             ax.set_zlabel(r'$\mathcal{L}$') 
 
             # Save.
@@ -304,68 +301,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # ==================================================================
             # Plot posterior image.
             ax = utils.plot_image(np.exp(ln_model_grid), x_grid, y_grid, 
-                                  # samples[i_chain].reshape((-1, ndim)),
                                   colorbar_label='$\mathcal{L}$',
                                   plot_contour=True)
             # Save.
 
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png',
-                 bbox_inches='tight')
+            plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png',
+             bbox_inches='tight')
                     
-            # Create image plot of posterior.
-            plt.figure()
-            plt.imshow(np.exp(ln_posterior_grid), origin='lower', 
-                       extent=[xmin, xmax, xmin, xmax])
-            plt.contour(x, y, np.exp(ln_posterior_grid), cmap=cm.coolwarm)
-            plt.plot(samples[i_chain,:,0].reshape((-1, ndim)), 
-                     samples[i_chain,:,1].reshape((-1, ndim)), 
-                     'r.', markersize=1)
-            plt.colorbar()
-            plt.xlabel('$x_0$')
-            plt.ylabel('$x_1$')     
-                       
-            if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png', 
-                            bbox_inches='tight')        
-            
-            # Create surface plot of model.
-            fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
-            
-            illuminated_surface = \
-                light.shade_rgb(rgb * np.array([0,0.0,1.0]), 
-                                np.exp(ln_model_grid))                            
-            
-            ax.plot_surface(x, y, np.exp(ln_model_grid), 
-                            alpha=0.3, linewidth=0, antialiased=False, 
-                            facecolors=illuminated_surface)
-            
-            cset = ax.contour(x, y, np.exp(ln_model_grid), zdir='z', 
-                              offset=-0.075, cmap=cm.coolwarm)
-            
-            ax.view_init(elev=15.0, azim=110.0)        
-            ax.set_xlabel('$x_0$')
-            ax.set_ylabel('$x_1$')
-            
-            ax.set_xlim(xmin, xmax)
-            ax.set_ylim(xmin, xmax)
-            ax.set_zlim(-0.075, 0.30)
-            
-            if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_surface.png', 
-                            bbox_inches='tight')
-                    
-            # Create image plot of model.
-            plt.figure()        
-            plt.imshow(np.exp(ln_model_grid), origin='lower', 
-                       extent=[xmin, xmax, xmin, xmax])
-            plt.contour(x, y, np.exp(ln_model_grid), cmap=cm.coolwarm)
-            plt.colorbar()
-            plt.xlabel('$x_0$')
-            plt.ylabel('$x_1$')
-
-            if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_image.png', 
-                            bbox_inches='tight')
 
             plt.show(block=False) 
             # ==================================================================
