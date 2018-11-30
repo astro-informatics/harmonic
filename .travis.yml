@@ -8,7 +8,6 @@ install:
   - pip install scikit-learn
   - pip install matplotlib
   - pip install pyyaml
-  - pip install logging
 script:
   - python setup.py build_ext --inplace
   - pytest
