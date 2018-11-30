@@ -3,7 +3,7 @@ import logging.config
 import logging
 import yaml
 import harmonic
-import os
+
 
 
 def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
