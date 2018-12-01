@@ -211,8 +211,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
         hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('mean shift = {}, max shift = {}'
-            .format(ev.mean_shift, ev.max_shift))
+        hm.logs.low_log('mean shift = {}, max shift = {}, min shift = {}'
+            .format(ev.mean_shift, ev.max_shift, ev.min_shift))
         hm.logs.low_log('running sum total = {}'
             .format(sum(ev.running_sum))) 
         hm.logs.low_log('running_sum = \n{}'

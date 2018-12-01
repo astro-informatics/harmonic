@@ -17,14 +17,16 @@ class Optimisation(Enum):
     ACCURACY = 2
 
 
-# OPTIMISATION = Optimisation.ACCURACY
 OPTIMISATION = Optimisation.SPEED
 
-# Shifting toggles
-MEAN_SHIFT_SIGN = 1.0
-MAX_SHIFT_SIGN = 1.0
-DEFAULT_SHIFT_SWITCH = True  # False defaults to mean if not defined,
-                              # True defaults to max if not defined.
+class Shifting(Enum):
+    """
+    Enumeration to define which log-space shifting to adopt. Different choices 
+    may prove optimal for certain settings.
+    """
+    MEAN_SHIFT = 1
+    MAX_SHIFT = 2
+    MIN_SHIFT = 3
 
 
 class Evidence:
@@ -35,7 +37,7 @@ class Evidence:
     long chains).
     """
 
-    def __init__(self, long nchains, model not None):
+    def __init__(self, long nchains, model not None, shift=Shifting.MEAN_SHIFT):
         """
         Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
@@ -76,11 +78,11 @@ class Evidence:
         self.n_eff = 0
 
         # Shift selection
-        self.mean_shift_set = False
+        self.shift = shift
+        self.shift_set = False
         self.mean_shift = 0.0
-
-        self.max_shift_set = False
         self.max_shift = 0.0
+        self.min_shift = 0.0
 
         self.chains_added = False
 
@@ -96,7 +98,7 @@ class Evidence:
     def set_mean_shift(self, double mean_shift_in):
         """
         Set the multiplicative shift of log_e posterior values to aid
-        numerical stability -- here by the geometric mean.
+        numerical stability -- here by the geometric mean of the log-posterior
 
         Args:
             - double mean_shift_in: 
@@ -106,22 +108,23 @@ class Evidence:
             - ValueError: 
                 Raised if mean_shift_in is NaN .
             - ValueError:
-                Raised if one attempts to set mean shift when max shift is 
+                Raised if one attempts to set mean shift when another shift is 
                 already set.
         """
         if not np.isfinite(mean_shift_in):
             raise ValueError("Mean shift must be a number")
-        if self.max_shift_set:
-            raise ValueError("Cannot set both mean and max shift")
+
+        if self.shift_set:
+            raise ValueError("Cannot define multiple shifts!")
 
         self.mean_shift = mean_shift_in
-        self.mean_shift_set = True
+        self.shift_set = True
         return
 
     def set_max_shift(self, double max_shift_in):
         """
         Set the multiplicative shift of log_e posterior values to aid
-        numerical stability -- here by the maximum coefficient.
+        numerical stability -- here by the maximum of the log-posterior
 
         Args:
             - double max_shift_in: 
@@ -131,17 +134,43 @@ class Evidence:
             - ValueError: 
                 Raised if max_shift_in is NaN .
             - ValueError:
-                Raised if one attempts to set max shift when mean shift is 
+                Raised if one attempts to set max shift when another shift is 
                 already set.
         """
         if not np.isfinite(max_shift_in):
             raise ValueError("Max shift must be a number")
 
-        if self.mean_shift_set:
-            raise ValueError("Cannot set both mean and max shift")
+        if self.shift_set:
+            raise ValueError("Cannot define multiple shifts!")
 
         self.max_shift = max_shift_in
-        self.max_shift_set = True
+        self.shift_set = True
+        return
+
+    def set_min_shift(self, double min_shift_in):
+        """
+        Set the multiplicative shift of log_e posterior values to aid
+        numerical stability -- here by the minimum of the log-posterior
+
+        Args:
+            - double min_shift_in: 
+                Multiplicative shift.
+
+        Raises:
+            - ValueError: 
+                Raised if min_shift_in is NaN .
+            - ValueError:
+                Raised if one attempts to set min shift when another shift is 
+                already set.
+        """
+        if not np.isfinite(min_shift_in):
+            raise ValueError("Min shift must be a number")
+
+        if self.shift_set:
+            raise ValueError("Cannot define multiple shifts!")
+
+        self.min_shift = min_shift_in
+        self.shift_set = True
         return
 
     def process_run(self):
@@ -186,17 +215,38 @@ class Evidence:
         kur /= evidence_inv_var*evidence_inv_var
         self.kurtosis = kur
 
-        # Generalized to include max shift if active.
-        self.evidence_inv = evidence_inv*exp( \
-                    -MEAN_SHIFT_SIGN*self.mean_shift # TODO: This slows things
-                    -MAX_SHIFT_SIGN*self.max_shift)  # very slightly, change?
-        self.evidence_inv_var = \
-            evidence_inv_var*exp(-MEAN_SHIFT_SIGN*2*self.mean_shift
-                                 -MAX_SHIFT_SIGN*2*self.max_shift)/(n_eff)
-        self.evidence_inv_var_var = \
-            evidence_inv_var**2 * exp(-MEAN_SHIFT_SIGN*4*self.mean_shift \
-                -MAX_SHIFT_SIGN*4*self.max_shift) / (n_eff*n_eff*n_eff)
-        self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
+        if self.shift == Shifting.MEAN_SHIFT:
+
+            # Corrects for shift by mean of the log-posterior
+            self.evidence_inv = evidence_inv*exp(-self.mean_shift)
+            self.evidence_inv_var = \
+                evidence_inv_var*exp(-2*self.mean_shift)/(n_eff)
+            self.evidence_inv_var_var = \
+                evidence_inv_var**2 * exp(-4*self.mean_shift) \
+                                       / (n_eff*n_eff*n_eff)
+            self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
+
+        if self.shift == Shifting.MAX_SHIFT:
+
+            # Corrects for shift by max of the log-posterior
+            self.evidence_inv = evidence_inv*exp(-self.max_shift)
+            self.evidence_inv_var = \
+                evidence_inv_var*exp(-2*self.max_shift)/(n_eff)
+            self.evidence_inv_var_var = \
+                evidence_inv_var**2 * exp(-4*self.max_shift) \
+                                       / (n_eff*n_eff*n_eff)
+            self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
+
+        if self.shift == Shifting.MIN_SHIFT:
+
+            # Corrects for shift by min of the log-posterior
+            self.evidence_inv = evidence_inv*exp(-self.min_shift)
+            self.evidence_inv_var = \
+                evidence_inv_var*exp(-2*self.min_shift)/(n_eff)
+            self.evidence_inv_var_var = \
+                evidence_inv_var**2 * exp(-4*self.min_shift) \
+                                       / (n_eff*n_eff*n_eff)
+            self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
 
 
         return
@@ -244,15 +294,22 @@ class Evidence:
         cdef long i_chains, i_samples, nchains = self.nchains
         cdef double mean_shift, max_shift, max_i
 
-        # Default shift dependent on user defined MACRO DEFAULT_SHIFT_SWITCH
-        if not self.mean_shift_set and not self.max_shift_set:
-            if not DEFAULT_SHIFT_SWITCH:    
+        """
+        The following performs a shift in log-space to avoid overflow or float
+        rounding errors in realspace.
+        """
+        if not self.shift_set:
+            if self.shift == Shifting.MAX_SHIFT:
+                # Shifts by max of the log-posterior
+                self.set_max_shift(np.max(Y))
+
+            if self.shift == Shifting.MEAN_SHIFT:
+                # Shifts by mean of the log-posterior
                 self.set_mean_shift(np.mean(Y))
-            else: 
-                self.set_max_shift(np.max(Y)) # TODO: is this the correct max
-                                              # shift? Easy to adjust if not.
-        max_shift = self.max_shift
-        mean_shift = self.mean_shift
+
+            if self.shift == Shifting.MIN_SHIFT:
+                # Shifts by min of the log-posterior
+                self.set_min_shift(np.min(Y))
 
 
         for i_chains in range(nchains):
@@ -269,10 +326,16 @@ class Evidence:
                 lnpredict = self.model.predict(X[i_samples,:])
                 lnprob = Y[i_samples]
                 lnarg = lnpredict - lnprob
-                if self.mean_shift_set:
-                    lnarg += MEAN_SHIFT_SIGN*mean_shift
-                if self.max_shift_set:
-                    lnarg += MAX_SHIFT_SIGN*max_shift
+                # Apply shifting term to avoid overflow.
+                if self.shift == Shifting.MAX_SHIFT:
+                    lnarg += self.max_shift
+
+                if self.shift == Shifting.MEAN_SHIFT:
+                    lnarg += self.mean_shift
+
+                if self.shift == Shifting.MIN_SHIFT:
+                    lnarg += self.min_shift
+
                 term = exp(lnarg)
                 nsamples_per_chain[i_chains] += 1
 
