@@ -70,14 +70,7 @@ def ln_posterior(theta, tau, x, y):
 	        Value of log_e posterior at specified point in parameter space.
 	"""
 	ln_pr = ln_prior(tau, theta)
-
-	# if not np.isfinite(ln_pr):
-	# 	return -np.inf
-
 	ln_L = ln_likelihood(y, theta, x)
-
-	# if not np.isfinite(ln_L):
-	# 	return -np.inf
 
 	return ln_pr + ln_L
 
@@ -93,7 +86,7 @@ def compute_ln_p(theta, x):
 	       
 	Returns:
 	    - Ln(p):
-			Vector of the log-probabilities p to use in likelihood.
+	    	Vector of the log-probabilities p to use in likelihood.
 	"""
 	return - np.log(1.0 + 1.0 / np.exp(x.dot(theta)))
 
@@ -126,19 +119,17 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 
 	"""
 	Two primary models for comparison:
-		Model 1: Uses rows const(1) + 1,2,6,7 = 5 dimensional
-		Model 2: Uses rows const(1) + 1,2,3,6,7,8 = 6 dimensional
+		Model 1: Uses rows const(1) + data(1,2,5,6) = 5 dimensional
+		Model 2: Uses rows const(1) + data(1,2,3,5,6,7) = 6 dimensional
+	data[:,0] --> Diabetes incidence. 
+	data[:,1] --> Number of pregnancies (NP)
+	data[:,2] --> Plasma glucose concentration (PGC)
+	data[:,3] --> Diastolic blood pressure (BP)
+	data[:,4] --> Tricept skin fold thickness (TST)
+	data[:,5] --> Body mass index (BMI)
+	data[:,6] --> Diabetes pedigree function (DP)
+	data[:,7] --> Age (AGE)
 	"""
-	# # Model 1:
-	# x=np.zeros((len(data), ndim))
-
-	# x[:,0] = 1.0
-	# x[:,1] = data[:,1]
-	# x[:,2] = data[:,2]
-	# x[:,3] = data[:,5]
-	# x[:,4] = data[:,6]
-
-	# # Model 2:
 	x=np.zeros((len(data), ndim))
 
 	x[:,0] = 1.0
@@ -146,7 +137,7 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	x[:,2] = data[:,2]
 	x[:,3] = data[:,5]
 	x[:,4] = data[:,6]
-	x[:,5] = data[:,7]
+	x[:,5] = data[:,7] # --> model 2.
 
 	"""
 	y[:] = 1 if patient has diabetes, 0 if patient does not have diabetes.
