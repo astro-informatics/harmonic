@@ -216,3 +216,4 @@ def cross_validation(chains,
             validation_variances[i_fold,i_val] = ev.evidence_inv_var
 
     return np.mean(validation_variances, axis=0)
+    
