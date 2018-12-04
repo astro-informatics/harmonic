@@ -97,7 +97,7 @@ def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
 
 
 def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
-                 contour_z_offset=None, contours=None):
+                 contour_z_offset=None, contours=None, alpha=0.3):
     """
     Plot surface defined by 2D function on a grid.  
 
@@ -119,6 +119,8 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
             If not None then plot contour in plane specified by z offset.
         - contours: 
             Values at which to draw contours (must be in increasing order).
+        - alpha:
+            Opacity of surface plot.
 
     Returns:
         - ax: 
@@ -140,7 +142,7 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
 
     # Plot surface.
     ax.plot_surface(x_grid, y_grid, func_eval_grid,
-                    alpha=0.3, linewidth=0, antialiased=False,
+                    alpha=alpha, linewidth=0, antialiased=False,
                     # cmap=cm.coolwarm,
                     facecolors=illuminated_surface)
 
@@ -188,25 +190,28 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
 
 
 def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
-               colorbar_label=None, plot_contour=False, contours=None):
+               colorbar_label=None, plot_contour=False, 
+               contours=None, markersize=1.0):
     """
     Plot image defined by 2D function on a grid.  
 
     Samples may also be optionally plotted.
 
     Args:
-        -func_eval_grid: 
+        - func_eval_grid: 
             Function evalated over 2D grid.
-        -x_grid: 
+        - x_grid: 
             x values over the 2D grid.
-        -y_grid: 
+        - y_grid: 
             y values over the 2D grid.
-        -samples: 
+        - samples: 
             2D array of shape (ndim, nsamples) containing samples.
-        -colorbar_label: 
+        - colorbar_label: 
             Text label to include on colorbar.
-        -contours: 
+        - contours: 
             Values at which to draw contours (must be in increasing order).
+        - markersize:
+            Size of markers for plotting overlaid samples.
 
     Returns:
         - ax: 
@@ -228,7 +233,7 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
     if samples is not None:
         plt.plot(samples[:,0],
                  samples[:,1],
-                 'r.', markersize=1)
+                 'r.', markersize=markersize)
 
     if colorbar_label is not None:
         plt.colorbar(label=colorbar_label)
