@@ -27,6 +27,7 @@ class Shifting(Enum):
     MEAN_SHIFT = 1
     MAX_SHIFT = 2
     MIN_SHIFT = 3
+    ABS_MAX_SHIFT = 4
 
 
 class Evidence:
@@ -80,9 +81,7 @@ class Evidence:
         # Shift selection
         self.shift = shift
         self.shift_set = False
-        self.mean_shift = 0.0
-        self.max_shift = 0.0
-        self.min_shift = 0.0
+        self.shift_value = 0.0
 
         self.chains_added = False
 
@@ -95,81 +94,29 @@ class Evidence:
         self.lnpredictmax = -np.inf
         self.lnpredictmin = np.inf
 
-    def set_mean_shift(self, double mean_shift_in):
+    def set_shift(self, double shift_value):
         """
         Set the multiplicative shift of log_e posterior values to aid
-        numerical stability -- here by the geometric mean of the log-posterior
+        numerical stability. 
 
         Args:
-            - double mean_shift_in: 
+            - double shift_value: 
                 Multiplicative shift.
 
         Raises:
             - ValueError: 
-                Raised if mean_shift_in is NaN .
+                Raised if shift_value is NaN .
             - ValueError:
-                Raised if one attempts to set mean shift when another shift is 
+                Raised if one attempts to set shift when another shift is 
                 already set.
         """
-        if not np.isfinite(mean_shift_in):
-            raise ValueError("Mean shift must be a number")
+        if not np.isfinite(shift_value):
+            raise ValueError("Shift must be a number")
 
         if self.shift_set:
             raise ValueError("Cannot define multiple shifts!")
 
-        self.mean_shift = mean_shift_in
-        self.shift_set = True
-        return
-
-    def set_max_shift(self, double max_shift_in):
-        """
-        Set the multiplicative shift of log_e posterior values to aid
-        numerical stability -- here by the maximum of the log-posterior
-
-        Args:
-            - double max_shift_in: 
-                Multiplicative shift.
-
-        Raises:
-            - ValueError: 
-                Raised if max_shift_in is NaN .
-            - ValueError:
-                Raised if one attempts to set max shift when another shift is 
-                already set.
-        """
-        if not np.isfinite(max_shift_in):
-            raise ValueError("Max shift must be a number")
-
-        if self.shift_set:
-            raise ValueError("Cannot define multiple shifts!")
-
-        self.max_shift = max_shift_in
-        self.shift_set = True
-        return
-
-    def set_min_shift(self, double min_shift_in):
-        """
-        Set the multiplicative shift of log_e posterior values to aid
-        numerical stability -- here by the minimum of the log-posterior
-
-        Args:
-            - double min_shift_in: 
-                Multiplicative shift.
-
-        Raises:
-            - ValueError: 
-                Raised if min_shift_in is NaN .
-            - ValueError:
-                Raised if one attempts to set min shift when another shift is 
-                already set.
-        """
-        if not np.isfinite(min_shift_in):
-            raise ValueError("Min shift must be a number")
-
-        if self.shift_set:
-            raise ValueError("Cannot define multiple shifts!")
-
-        self.min_shift = min_shift_in
+        self.shift_value = shift_value
         self.shift_set = True
         return
 
@@ -215,39 +162,13 @@ class Evidence:
         kur /= evidence_inv_var*evidence_inv_var
         self.kurtosis = kur
 
-        if self.shift == Shifting.MEAN_SHIFT:
-
-            # Corrects for shift by mean of the log-posterior
-            self.evidence_inv = evidence_inv*exp(-self.mean_shift)
-            self.evidence_inv_var = \
-                evidence_inv_var*exp(-2*self.mean_shift)/(n_eff)
-            self.evidence_inv_var_var = \
-                evidence_inv_var**2 * exp(-4*self.mean_shift) \
-                                       / (n_eff*n_eff*n_eff)
-            self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
-
-        if self.shift == Shifting.MAX_SHIFT:
-
-            # Corrects for shift by max of the log-posterior
-            self.evidence_inv = evidence_inv*exp(-self.max_shift)
-            self.evidence_inv_var = \
-                evidence_inv_var*exp(-2*self.max_shift)/(n_eff)
-            self.evidence_inv_var_var = \
-                evidence_inv_var**2 * exp(-4*self.max_shift) \
-                                       / (n_eff*n_eff*n_eff)
-            self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
-
-        if self.shift == Shifting.MIN_SHIFT:
-
-            # Corrects for shift by min of the log-posterior
-            self.evidence_inv = evidence_inv*exp(-self.min_shift)
-            self.evidence_inv_var = \
-                evidence_inv_var*exp(-2*self.min_shift)/(n_eff)
-            self.evidence_inv_var_var = \
-                evidence_inv_var**2 * exp(-4*self.min_shift) \
-                                       / (n_eff*n_eff*n_eff)
-            self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
-
+        # Corrects for shift by mean of the log-posterior
+        self.evidence_inv = evidence_inv*exp(-self.shift_value)
+        self.evidence_inv_var = \
+            evidence_inv_var*exp(-2*self.shift_value)/(n_eff)
+        self.evidence_inv_var_var = \
+            evidence_inv_var**2 * exp(-4*self.shift_value) / (n_eff*n_eff*n_eff)
+        self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
 
         return
 
@@ -301,15 +222,16 @@ class Evidence:
         if not self.shift_set:
             if self.shift == Shifting.MAX_SHIFT:
                 # Shifts by max of the log-posterior
-                self.set_max_shift(np.max(Y))
-
+                self.set_shift(np.max(Y))
             if self.shift == Shifting.MEAN_SHIFT:
                 # Shifts by mean of the log-posterior
-                self.set_mean_shift(np.mean(Y))
-
+                self.set_shift(np.mean(Y))
             if self.shift == Shifting.MIN_SHIFT:
                 # Shifts by min of the log-posterior
-                self.set_min_shift(np.min(Y))
+                self.set_shift(np.min(Y))
+            if self.shift == Shifting.ABS_MAX_SHIFT:
+                # Shifts by the absolute maximum of log-posterior
+                self.set_shift(Y[np.argmax(np.abs(Y))])
 
 
         for i_chains in range(nchains):
@@ -327,15 +249,7 @@ class Evidence:
                 lnprob = Y[i_samples]
                 lnarg = lnpredict - lnprob
                 # Apply shifting term to avoid overflow.
-                if self.shift == Shifting.MAX_SHIFT:
-                    lnarg += self.max_shift
-
-                if self.shift == Shifting.MEAN_SHIFT:
-                    lnarg += self.mean_shift
-
-                if self.shift == Shifting.MIN_SHIFT:
-                    lnarg += self.min_shift
-
+                lnarg += self.shift_value
                 term = exp(lnarg)
                 nsamples_per_chain[i_chains] += 1
 

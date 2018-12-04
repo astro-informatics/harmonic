@@ -16,8 +16,7 @@ hm.logs.setup_logging()
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
     """
-    .. note:: Compute log_e of likelihood.
-
+    Compute log_e of likelihood.
     Args:
         - x_mean: 
             Mean of simulated data.
@@ -29,7 +28,6 @@ def ln_likelihood(x_mean, x_std, x_n, mu, tau):
             Mu value for which to evaluate prior.
         - tau: 
             Tau value for which to evaluate prior.
-
     Returns:
         - double: 
             Value of log_e likelihood at specified (mu, tau) point.
@@ -41,8 +39,7 @@ def ln_likelihood(x_mean, x_std, x_n, mu, tau):
 
 def ln_prior(mu, tau, prior_params):
     """
-    .. note:: Compute log_e of prior.
-
+    Compute log_e of prior.
     Args:
         - mu: 
             Mu value for which to evaluate prior.
@@ -51,7 +48,6 @@ def ln_prior(mu, tau, prior_params):
         - prior_params: 
             Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
-
     Returns:
         - double: 
             Value of log_e prior at specified (mu, tau) point.
@@ -73,8 +69,7 @@ def ln_prior(mu, tau, prior_params):
 
 def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
     """
-    .. note:: Compute log_e of posterior.
-
+    Compute log_e of posterior.
     Args:
         - theta: 
             Position (mu, tau) at which to evaluate posterior.
@@ -87,7 +82,6 @@ def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
         - prior_params: 
             Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
-
     Returns:
         - double: 
             Value of log_e posterior at specified (mu, tau) point.
@@ -127,8 +121,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
     """
-    .. note:: Run Normal-Gamma example.
-
+    Run Normal-Gamma example.
     Args:
         - ndim: 
             Dimension.
@@ -147,7 +140,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             true.
         - verbose: 
             If True then display intermediate results.
-
     Returns:
         - None.
     """

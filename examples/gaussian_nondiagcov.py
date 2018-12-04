@@ -16,14 +16,12 @@ hm.logs.setup_logging()
 
 def ln_analytic_evidence(ndim, cov):
     """
-    .. note:: Compute analytic evidence for nD Gaussian.
-    
+    Compute analytic evidence for nD Gaussian.
     Args:
         - ndim: 
             Dimension of Gaussian.
         - cov: 
             Covariance matrix.
-    
     Returns:
         - double:
             Analytic evidence.
@@ -35,14 +33,12 @@ def ln_analytic_evidence(ndim, cov):
 
 def ln_posterior(x, inv_cov):
     """
-    .. note:: Compute log_e of posterior.
-    
+    Compute log_e of posterior.
     Args: 
         - x: 
             Position at which to evaluate posterior.
         - inv_cov: 
-            Inverse covariance matrix.    
-        
+            Inverse covariance matrix.      
     Returns:
         - double: 
             Value of Gaussian at specified point.
@@ -53,11 +49,10 @@ def ln_posterior(x, inv_cov):
 
 def init_cov(ndim):
     """
-    .. note:: Initialise random non-diagonal covariance matrix.
+    Initialise random non-diagonal covariance matrix.
     Args: 
         - ndim: 
-            Dimension of Gaussian.        
-        
+            Dimension of Gaussian.           
     Returns:
         - cov: 
             Covariance matrix of shape (ndim,ndim).
@@ -78,7 +73,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
     """
-    .. note:: Run Gaussian example with non-diagonal covariance matrix.
+    Run Gaussian example with non-diagonal covariance matrix.
     Args: 
         - ndim: 
             Dimension of Gaussian.

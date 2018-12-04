@@ -11,7 +11,7 @@ class Chains:
         """
         Construct empty Chains for parameter space of dimension ndim.
         
-        Constructor simply sets ndim.  Chain samples are added by the add_chain
+        Constructor simply sets ndim.  Chain samples are added by the add_chain*
         methods since we want to support setting up data for chains from 
         different input data formats (e.g. data from a single chain or multiple 
         chains at once).

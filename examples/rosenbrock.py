@@ -14,8 +14,7 @@ hm.logs.setup_logging()
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
     """
-    .. note:: Compute log_e of uniform prior.
-
+    Compute log_e of uniform prior.
     Args: 
         - x: 
             Position at which to evaluate prior.
@@ -27,7 +26,6 @@ def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
             Uniform prior minimum y edge (second dimension).
         - ymax: 
             Uniform prior maximum y edge (second dimension).             
-        
     Returns:
         - double: 
             Value of prior at specified point.
@@ -41,8 +39,7 @@ def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
         
 def ln_prior_gaussian(x, mu=1.0, sigma=5.):
     """
-    .. note:: Compute log_e of Gaussian prior.
-
+    Compute log_e of Gaussian prior.
     Args: 
         - x: 
             Position at which to evaluate prior.
@@ -50,7 +47,6 @@ def ln_prior_gaussian(x, mu=1.0, sigma=5.):
             Mean (centre) of the prior.
         - sigma: 
             Standard deviation of prior.   
-        
     Returns:
         - double: 
             Value of prior at specified point.
@@ -62,16 +58,14 @@ def ln_prior_gaussian(x, mu=1.0, sigma=5.):
 
 def ln_likelihood(x, a=1.0, b=100.0):
     """
-    .. note:: Compute log_e of likelihood defined by Rosenbrock function.
-    
+    Compute log_e of likelihood defined by Rosenbrock function.
     Args: 
         - x: 
             Position at which to evaluate likelihood.
         - a: 
             First parameter of Rosenbrock function.   
         - b: 
-            First parameter of Rosenbrock function.
-        
+            First parameter of Rosenbrock function. 
     Returns:
         - double: 
             Value of Rosenbrock at specified point.
@@ -89,8 +83,7 @@ def ln_likelihood(x, a=1.0, b=100.0):
 
 def ln_posterior(x, ln_prior, a=1.0, b=100.0):
     """
-    .. note:: Compute log_e of posterior.
-    
+    Compute log_e of posterior.
     Args: 
         - x: 
             Position at which to evaluate posterior.
@@ -99,8 +92,7 @@ def ln_posterior(x, ln_prior, a=1.0, b=100.0):
         - b: 
             First parameter of Rosenbrock function.
         - ln_prior: 
-            Prior function.
-        
+            Prior function. 
     Returns:
         - double: 
             Posterior at specified point.
@@ -118,8 +110,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
     """
-    .. note:: Run Rosenbrock example.
-
+    Run Rosenbrock example.
     Args: 
         - ndim: 
             Dimension.
@@ -135,7 +126,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             Plot surface and samples if true.
         - verbose: 
             If True then display intermediate results.
-        
     Returns:
         - None.
     """
