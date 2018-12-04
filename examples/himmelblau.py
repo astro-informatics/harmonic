@@ -14,8 +14,7 @@ hm.logs.setup_logging()
 
 def ln_prior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
     """
-    .. note:: Compute log_e of uniform prior.
-
+    Compute log_e of uniform prior.
     Args: 
         - x: 
             Position at which to evaluate prior.
@@ -26,8 +25,7 @@ def ln_prior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
         - ymin: 
             Uniform prior minimum y edge (second dimension).
         - ymax: 
-            Uniform prior maximum y edge (second dimension).            
-        
+            Uniform prior maximum y edge (second dimension).               
     Returns:
         - double: 
             Value of prior at specified point.
@@ -41,12 +39,10 @@ def ln_prior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
 
 def ln_likelihood(x):
     """
-    .. note:: Compute log_e of likelihood defined by Himmelblau function.
-    
+    Compute log_e of likelihood defined by Himmelblau function.
     Args: 
         - x: 
-            Position at which to evaluate likelihood.
-        
+            Position at which to evaluate likelihood.   
     Returns:
         - double: 
             Value of Himmelblau function at specified point.
@@ -60,8 +56,7 @@ def ln_likelihood(x):
 
 def ln_posterior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
     """
-    .. note:: Compute log_e of posterior.
-    
+    Compute log_e of posterior.
     Args: 
         - x: 
             Position at which to evaluate posterior.        
@@ -72,8 +67,7 @@ def ln_posterior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
         - ymin: 
             Uniform prior minimum y edge (second dimension).
         - ymax: 
-            Uniform prior maximum y edge (second dimension).  
-        
+            Uniform prior maximum y edge (second dimension).     
     Returns:
         - double: 
             Posterior at specified point.
@@ -91,8 +85,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
     """
-    .. note:: Run Himmelblau example.
-
+    Run Himmelblau example.
     Args: 
         - ndim: 
             Dimension.
@@ -107,8 +100,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         - plot_surface: 
             Plot surface and samples if true.
         - verbose: 
-            If True then display intermediate results.
-        
+            If True then display intermediate results.    
     Returns:
         - None.
     """

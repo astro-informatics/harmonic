@@ -9,7 +9,7 @@ from getdist import plots, MCSamples
 
 def plot_corner(samples, labels=None):
     """
-    .. note:: Plot triangle plot of marginalised distributions using corner package.
+    Plot triangle plot of marginalised distributions using corner package.
 
     Args:
         - samples: 
@@ -31,7 +31,7 @@ def plot_corner(samples, labels=None):
 
 def plot_getdist(samples, labels=None):
     """
-    .. note:: Plot triangle plot of marginalised distributions using getdist package.
+    Plot triangle plot of marginalised distributions using getdist package.
 
     Args:
         - samples: 
@@ -56,7 +56,7 @@ def plot_getdist(samples, labels=None):
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
     """
-    .. note:: Evalute 2D function on a grid.
+    Evalute 2D function on a grid.
 
     Args:
         - func: 
@@ -99,7 +99,7 @@ def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
 def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
                  contour_z_offset=None, contours=None):
     """
-    .. note:: Plot surface defined by 2D function on a grid.  Samples may also be optionally plotted.
+    Plot surface defined by 2D function on a grid.  Samples may also be optionally plotted.
 
     Args:
         - func_eval_grid: 
@@ -190,7 +190,7 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
 def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
                colorbar_label=None, plot_contour=False, contours=None):
     """
-    .. note:: Plot image defined by 2D function on a grid.  Samples may also be optionally plotted.
+    Plot image defined by 2D function on a grid.  Samples may also be optionally plotted.
 
     Args:
         -func_eval_grid: 
@@ -243,7 +243,7 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
 def plot_realisations(mc_estimates, std_estimated,
                       analytic_val=None, analytic_text=None):
     """
-    .. note:: Violin plot of estimated quantity from Monte Carlo (MC)
+    Violin plot of estimated quantity from Monte Carlo (MC)
               simulations, compared with error bar from estimated standard deviation.
               Also plot analytic value if specified.
 

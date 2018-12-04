@@ -14,14 +14,12 @@ hm.logs.setup_logging()
 
 def ln_analytic_evidence(ndim, cov):
     """
-    .. note:: Compute analytic ln_e evidence.
-
+    Compute analytic ln_e evidence.
     Args: 
         - ndim: 
             Dimensionality of the multivariate Gaussian posterior
         - cov
-            Covariance matrix dimension nxn.           
-        
+            Covariance matrix dimension nxn.               
     Returns:
         - double: 
             Value of posterior at x.
@@ -32,12 +30,10 @@ def ln_analytic_evidence(ndim, cov):
 
 def ln_Posterior(x, inv_cov):
     """
-    .. note:: Compute log_e of n dimensional multivariate gaussian 
-
+    Compute log_e of n dimensional multivariate gaussian 
     Args: 
         - x: 
-            Position at which to evaluate prior.         
-        
+            Position at which to evaluate prior.           
     Returns:
         - double: 
             Value of posterior at x.
@@ -49,11 +45,10 @@ def ln_Posterior(x, inv_cov):
 
 def init_cov(ndim): 
     """
-    .. note:: Initialise random diagonal covariance matrix.
+    Initialise random diagonal covariance matrix.
     Args: 
         - ndim: 
             Dimension of Gaussian.        
-        
     Returns:
         - cov: 
             Covariance matrix of shape (ndim,ndim).
@@ -72,7 +67,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
     """
-    .. not:: Run nD Gaussian example with generalized covariance matrix.
+    Run nD Gaussian example with generalized covariance matrix.
     Args: 
         - ndim: 
             Dimension of multivariate Gaussian.

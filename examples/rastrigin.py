@@ -14,8 +14,7 @@ hm.logs.setup_logging()
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
     """
-    .. note:: Compute log_e of uniform prior.
-
+    Compute log_e of uniform prior.
     Args: 
         - x: 
             Position at which to evaluate prior.
@@ -26,8 +25,7 @@ def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
         - ymin: 
             Uniform prior minimum y edge (second dimension).
         - ymax: 
-            Uniform prior maximum y edge (second dimension).             
-        
+            Uniform prior maximum y edge (second dimension).                
     Returns:
         - double: 
             Value of prior at specified point.
@@ -42,12 +40,10 @@ def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
 
 def ln_likelihood(x):
     """
-    .. note:: Compute log_e of likelihood defined by Rastrigin function.
-    
+    Compute log_e of likelihood defined by Rastrigin function.
     Args: 
         - x: 
-            Position at which to evaluate likelihood.
-        
+            Position at which to evaluate likelihood.  
     Returns:
         - double: 
             Value of Rastrigin at specified point.
@@ -65,14 +61,12 @@ def ln_likelihood(x):
 
 def ln_posterior(x, ln_prior):
     """
-    .. note:: Compute log_e of posterior.
-    
+    Compute log_e of posterior.
     Args: 
         - x: 
             Position at which to evaluate posterior.
         - ln_prior: 
-            Prior function.
-        
+            Prior function.  
     Returns:
         - double: 
             Posterior at specified point.
@@ -91,8 +85,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
     """
-    .. note:: Run Rastrigin example.
-
+    Run Rastrigin example.
     Args: 
         - ndim: 
             Dimension.
@@ -107,8 +100,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         - plot_surface: 
             Plot surface and samples if true.
         - verbose: 
-            If True then display intermediate results.
-        
+            If True then display intermediate results.  
     Returns:
         - None.
     """

@@ -16,16 +16,13 @@ hm.logs.setup_logging()
 def ln_likelihood(y, theta, x):
 	"""
 	Compute log_e of Pima Indian likelihood
-
 	Args: 
 	    - y: 
 	        Vector of incidence. 1=diabetes, 0=no diabetes
 	    - theta: 
 	        Vector of parameter variables associated with covariates x.
 	    - x: 
-	        Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).
-	       
-	    
+	        Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).  
 	Returns:
 	    - double: 
 	        Value of log_e likelihood at specified point in parameter space.
@@ -37,13 +34,11 @@ def ln_likelihood(y, theta, x):
 def ln_prior(tau, theta): 
 	"""
 	Compute log_e of Pima Indian multivariate gaussian prior
-
 	Args: 
 	    - tau: 
 	        Characteristic width of posterior \in [0.01,1]
 	    - theta: 
-	        Vector of parameter variables associated with covariates x.
-	       
+	        Vector of parameter variables associated with covariates x.     
 	Returns:
 	    - double: 
 	        Value of log_e prior at specified point in parameter space.
@@ -54,7 +49,6 @@ def ln_prior(tau, theta):
 def ln_posterior(theta, tau, x, y): 
 	"""
 	Compute log_e of Pima Indian multivariate gaussian prior
-
 	Args: 
 		- theta: 
 	        Vector of parameter variables associated with covariates x.
@@ -63,8 +57,7 @@ def ln_posterior(theta, tau, x, y):
 	    - x: 
 	        Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).
 	    - y: 
-	        Vector of incidence. 1=diabetes, 0=no diabetes
-	       
+	        Vector of incidence. 1=diabetes, 0=no diabetes      
 	Returns:
 	    - double: 
 	        Value of log_e posterior at specified point in parameter space.
@@ -77,13 +70,11 @@ def ln_posterior(theta, tau, x, y):
 def compute_ln_p(theta, x):
 	"""
 	Computes log_e probability ln(p) to be used in likelihood function
-
 	Args: 
 	    - theta: 
 	        Vector of parameter variables associated with covariates x.
 	    - x:
-	    	Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).
-	       
+	    	Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).     
 	Returns:
 	    - Ln(p):
 	    	Vector of the log-probabilities p to use in likelihood.
@@ -305,35 +296,12 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	# #===========================================================================
 	# # Display evidence results 
 	# #===========================================================================
-	# hm.logs.high_log('Evidence results')
+	
 	# hm.logs.low_log('---------------------------------')
-	# hm.logs.low_log('ln_evidence) = {}, -np.log(ev.evidence_inv) = {}'
-	#     .format(ln_evidence, -np.log(ev.evidence_inv))) 
-	# hm.logs.low_log('np.exp(evidence) = {}'.format(np.exp(ln_evidence)))
-	# hm.logs.low_log('evidence_std = {}, evidence_std / evidence = {}'
-	#     .format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
-	#  #===========================================================================
-	# # Display evidence results 
-	# #===========================================================================
-	# hm.logs.high_log('Inverse evidence results')
-	# hm.logs.low_log('---------------------------------')
-	# hm.logs.low_log('evidence_inv = {}'
-	#     .format(ev.evidence_inv))
-	# hm.logs.low_log('evidence_inv_std = {}, evidence_inv_std/evidence_inv = {}'
-	#     .format(np.sqrt(ev.evidence_inv_var), \
-	#             np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-	# hm.logs.low_log('kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
-	#     .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
-	# hm.logs.low_log('sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var = {}'
-	#     .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
-	#===========================================================================
-	# LOG-SPACE TESTING
-	#===========================================================================
-	hm.logs.low_log('---------------------------------')
-	hm.logs.low_log('ev_var_var test = {}'.format(ev.evidence_inv_var_var))
+	# hm.logs.low_log('ev_var_var test = {}'.format(ev.evidence_inv_var_var))
 
-	hm.logs.high_log('START TESTING LOG-SPACE!')
-	hm.logs.low_log('---------------------------------')
+	# hm.logs.high_log('START TESTING LOG-SPACE!')
+	# hm.logs.low_log('---------------------------------')
 	hm.logs.low_log('ln( evidence_inv ) = {}'
 	    .format(ev.ln_evidence_inv))
 	hm.logs.low_log('ln( evidence_inv_std ) = {}, \
@@ -356,8 +324,8 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	hm.logs.low_log('exp(ln(ev.evidence_inv_var_std/ev.evidence_inv_var)) = {}'
 	    .format(np.exp( 0.5 * ev.ln_evidence_inv_var_var \
 	    	                - ev.ln_evidence_inv_var) ) )
-	hm.logs.high_log('END TESTING LOG-SPACE!')
-	hm.logs.low_log('---------------------------------')
+	# hm.logs.high_log('END TESTING LOG-SPACE!')
+	# hm.logs.low_log('---------------------------------')
 	#===========================================================================
 	# Display more technical details
 	#===========================================================================
