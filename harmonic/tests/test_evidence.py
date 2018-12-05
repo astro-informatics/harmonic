@@ -48,6 +48,8 @@ def test_set_shift():
     with pytest.raises(ValueError):
         rho.set_shift(np.nan)
     rho.set_shift(2.0)
+    with pytest.raises(ValueError):
+        rho.set_shift(1.0)
     assert rho.shift_value == pytest.approx(2.0)
     assert rho.shift_set  == True
 
