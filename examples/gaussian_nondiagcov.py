@@ -252,7 +252,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png'\
+                plt.savefig('examples/plots/gaussian_nondiagcov_posterior_surface.png'\
                     , bbox_inches='tight')
 
             plt.show(block=False)
@@ -267,7 +267,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   plot_contour=True, markersize=1.0)
             # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png'\
+                plt.savefig('examples/plots/gaussian_nondiagcov_posterior_image.png'\
                     , bbox_inches='tight')
 
             plt.show(block=False) 
@@ -291,7 +291,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Save.
             if savefigs:
 
-                plt.savefig('./plots/gaussian_nondiagcov_surface.png'\
+                plt.savefig('examples/plots/gaussian_nondiagcov_surface.png'\
                     , bbox_inches='tight')
 
             plt.show(block=False)
@@ -305,7 +305,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   plot_contour=True)
             # Save.
 
-            plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png',
+            plt.savefig('examples/plots/gaussian_nondiagcov_posterior_surface.png',
              bbox_inches='tight')
                     
 

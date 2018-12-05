@@ -183,7 +183,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     # Load Radiata Pine data.
     #=========================================================
     # Imports data file
-    data = np.loadtxt('./data/RadiataPine.dat')
+    data = np.loadtxt('examples/data/RadiataPine.dat')
     id = data[:,0]
     y = data[:,1]
     x = data[:,2]
@@ -439,12 +439,12 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
         
         utils.plot_corner(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/radiatapine_corner.png',
+            plt.savefig('examples/plots/radiatapine_corner.png',
                         bbox_inches='tight')
         
         utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/radiatapine_getdist.png',
+            plt.savefig('examples/plots/radiatapine_getdist.png',
                         bbox_inches='tight')
         
         plt.show(block=False)  
@@ -486,7 +486,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #plt.axis('equal')
     
     if savefigs:
-        plt.savefig('./plots/radiatapine_model_x0x1_image.png',
+        plt.savefig('examples/plots/radiatapine_model_x0x1_image.png',
                     bbox_inches='tight')
 
     # Plot exponential of model.
@@ -496,7 +496,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     plt.ylabel('$x_1$')   
     #plt.axis('equal')    
     if savefigs:
-        plt.savefig('./plots/radiatapine_modelexp_x0x1_image.png',
+        plt.savefig('examples/plots/radiatapine_modelexp_x0x1_image.png',
                     bbox_inches='tight')
 
 
@@ -522,7 +522,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #plt.axis('equal')
     
     if savefigs:
-        plt.savefig('./plots/radiatapine_model_x1x2_image.png',
+        plt.savefig('examples/plots/radiatapine_model_x1x2_image.png',
                     bbox_inches='tight')
 
     # Plot exponential of model.
@@ -532,7 +532,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     plt.ylabel('$x_2$')   
     #plt.axis('equal')    
     if savefigs:
-        plt.savefig('./plots/radiatapine_modelexp_x1x2_image.png',
+        plt.savefig('examples/plots/radiatapine_modelexp_x1x2_image.png',
                     bbox_inches='tight')
 
 
@@ -561,7 +561,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #plt.axis('equal')
     
     if savefigs:
-        plt.savefig('./plots/radiatapine_model_x0x2_image.png',
+        plt.savefig('examples/plots/radiatapine_model_x0x2_image.png',
                     bbox_inches='tight')
 
     # Plot exponential of model.
@@ -571,7 +571,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     plt.ylabel('$x_2$')   
     #plt.axis('equal')    
     if savefigs:
-        plt.savefig('./plots/radiatapine_modelexp_x0x2_image.png',
+        plt.savefig('examples/plots/radiatapine_modelexp_x0x2_image.png',
                     bbox_inches='tight')
 
 
