@@ -186,7 +186,7 @@ def test_shifting_settings():
     # Check shift set correctly for: absmax shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.ABS_MAX_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(-1.0*chain.ln_posterior[np.argmax(np.abs(Y))]) 
+    assert cal_ev.shift_value == pytest.approx(chain.ln_posterior[np.argmax(np.abs(Y))]) 
 
 
 def test_compute_evidence():
