@@ -231,7 +231,7 @@ class Evidence:
                 self.set_shift(np.min(Y))
             if self.shift == Shifting.ABS_MAX_SHIFT:
                 # Shifts by the absolute maximum of log-posterior
-                self.set_shift(Y[np.argmax(np.abs(Y))])
+                self.set_shift(-1.0*Y[np.argmax(np.abs(Y))])
 
 
         for i_chains in range(nchains):
