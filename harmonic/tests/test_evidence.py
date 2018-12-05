@@ -31,8 +31,8 @@ def test_constructor():
     assert rho.evidence_inv_var_var        == pytest.approx(0.0)
     assert rho.running_sum.size            == nchains 
     assert rho.nsamples_per_chain.size     == nchains 
-    assert rho.shift_value                  == pytest.approx(0.0)
-    assert rho.shift_set              == False
+    assert rho.shift_value                 == pytest.approx(0.0)
+    assert rho.shift_set                   == False
     for i_chain in range(nchains):
         assert rho.running_sum[i_chain]        == pytest.approx(0.0)
         assert rho.nsamples_per_chain[i_chain] == 0
@@ -147,6 +147,47 @@ def test_add_chains():
     assert ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
 
     return
+
+def test_shifting_settings():
+
+    nchains   = 200
+    nsamples  = 500
+    ndim      = 2
+
+    # Create samples of unnormalised Gaussian
+    np.random.seed(30)
+    X = np.random.randn(nchains,nsamples,ndim)
+    Y = -np.sum(X*X,axis=2)/2.0
+
+    # Add samples to chains
+    chain  = ch.Chains(ndim)    
+    chain.add_chains_3d(X, Y)
+
+    # Fit the Hyper_sphere
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fit(chain.samples, chain.ln_posterior)
+
+    # Check shift set correctly for: mean shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(np.mean(chain.ln_posterior)) 
+
+    # Check shift set correctly for: max shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MAX_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(np.max(chain.ln_posterior)) 
+
+    # Check shift set correctly for: min shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MIN_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(np.min(chain.ln_posterior)) 
+
+    # Check shift set correctly for: absmax shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.ABS_MAX_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(-1.0*chain.ln_posterior[np.argmax(np.abs(Y))]) 
+
 
 def test_compute_evidence():
     
