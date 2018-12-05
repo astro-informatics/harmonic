@@ -334,7 +334,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 labels = [r'$\mu$', r'$\tau$']
                 utils.plot_corner(samples.reshape((-1, ndim)), labels)
                 if savefigs:
-                    plt.savefig('./plots/normalgamma_corner_tau' +
+                    plt.savefig('examples/plots/normalgamma_corner_tau' +
                                 str(tau_prior) +
                                 '.pdf',
                                 bbox_inches='tight')
@@ -342,7 +342,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 labels = [r'\mu', r'\tau']
                 utils.plot_getdist(samples.reshape((-1, ndim)), labels)
                 if savefigs:
-                    plt.savefig('./plots/normalgamma_getdist_tau' +
+                    plt.savefig('examples/plots/normalgamma_getdist_tau' +
                                 str(tau_prior) +
                                 '.pdf',
                                 bbox_inches='tight')
@@ -370,7 +370,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                       colorbar_label=r'$\mathcal{L}$')
                 # ax.set_clim(vmin=0.0, vmax=0.003)
                 if savefigs:
-                    plt.savefig('./plots/' +
+                    plt.savefig('examples/plots/' +
                                 'normalgamma_posterior_image' +
                                 str(tau_prior) + '.png',
                                 bbox_inches='tight')
@@ -387,7 +387,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     colorbar_label=r'$\log \varphi$')
                 # ax.set_clim(vmin=-2.0, vmax=2.0)
                 if savefigs:
-                    plt.savefig('./plots/' +
+                    plt.savefig('examples/plots/' +
                                 'normalgamma_model_image' +
                                 str(tau_prior) +
                                 '.png',
@@ -399,7 +399,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                       colorbar_label=r'$\varphi$')
                 # ax.set_clim(vmin=0.0, vmax=10.0)
                 if savefigs:
-                    plt.savefig('./plots/' +
+                    plt.savefig('examples/plots/' +
                                 'normalgamma_modelexp_image' +
                                 str(tau_prior) +
                                 '.png',
@@ -426,7 +426,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             yerr=np.exp(summary[:,3])/np.exp(summary[:,1]),
             fmt='b.', capsize=4, capthick=2, elinewidth=2)
         if savefigs:
-            plt.savefig('./plots/normalgamma_comparison.pdf',
+            plt.savefig('examples/plots/normalgamma_comparison.pdf',
                         bbox_inches='tight')
         plt.show(block=False)
 
