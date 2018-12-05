@@ -230,12 +230,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         utils.plot_corner(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/himmelblau_corner.png',
+            plt.savefig('examples/plots/himmelblau_corner.png',
                         bbox_inches='tight')
         
         utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/himmelblau_getdist.png',
+            plt.savefig('examples/plots/himmelblau_getdist.png',
                         bbox_inches='tight')
         
         plt.show(block=False)  
@@ -252,7 +252,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ax.set_zlim(-100.0, 0.0)                
         ax.set_zlabel(r'$\log \mathcal{L}$')        
         if savefigs:
-            plt.savefig('./plots/himmelblau_lnposterior_surface.png',
+            plt.savefig('examples/plots/himmelblau_lnposterior_surface.png',
                         bbox_inches='tight')
         
         # Plot posterior image.
@@ -261,7 +261,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                               colorbar_label=r'$\mathcal{L}$')
         # ax.set_clim(vmin=0.0, vmax=0.003)
         if savefigs:
-            plt.savefig('./plots/himmelblau_posterior_image.png',
+            plt.savefig('examples/plots/himmelblau_posterior_image.png',
                         bbox_inches='tight')
 
         # Evaluate model on grid.
@@ -276,7 +276,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                               colorbar_label=r'$\log \varphi$') 
         # ax.set_clim(vmin=-2.0, vmax=2.0)
         if savefigs:
-            plt.savefig('./plots/himmelblau_model_image.png',
+            plt.savefig('examples/plots/himmelblau_model_image.png',
                         bbox_inches='tight')
         
         # Plot exponential of model.
@@ -284,7 +284,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                               colorbar_label=r'$\varphi$')
         # ax.set_clim(vmin=0.0, vmax=10.0)        
         if savefigs:
-            plt.savefig('./plots/himmelblau_modelexp_image.png',
+            plt.savefig('examples/plots/himmelblau_modelexp_image.png',
                         bbox_inches='tight')
 
         plt.show(block=False)  

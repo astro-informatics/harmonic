@@ -10,7 +10,8 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-
+# Setup Logging config
+hm.logs.setup_logging()
 
 
 
@@ -134,8 +135,11 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
-
-    print("Radiata Pine example")
+    
+    hm.logs.low_log('---------------------------------')
+    hm.logs.high_log('Radiata Pine example')
+    hm.logs.high_log('Dimensionality = {}'.format(ndim))
+    hm.logs.low_log('---------------------------------')
 
     if ndim != 3:
         raise ValueError("Only ndim=3 is supported (ndim={} specified)"
@@ -221,15 +225,16 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     # Start timer.
     clock = time.clock()
     
+    hm.logs.high_log('Run sampling...')
     
-    print("Run sampling...")
+    # #=========================================================
+    # # Temporary position for testing
+    # #=========================================================
+    # pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
     
-    
-    ########## TEMP
-    pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1 
-    ##########
-    
-    
+    #=========================================================
+    # Run Emcee to recover posterior sampels 
+    #=========================================================
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
         # args=(y, x, n, mu_0, r_0, s_0, a_0, b_0))
         args=(y, z, n, mu_0, r_0, s_0, a_0, b_0))
@@ -238,22 +243,32 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
     lnprob = np.ascontiguousarray(sampler.lnprobability[:,nburn:])
 
-
     # print("samples = {}".format(samples))
     # print("lnprob = {}".format(lnprob)) 
     # print("sampler.chain = ".format(sampler.chain))
     
     
-    # Calculate evidence using harmonic....
+    #=========================================================
+    # Configure emcee chains for harmonic
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
+    hm.logs.high_log('Calculate evidence using harmonic...')
 
-    # Set up chains.
+    #=========================================================
+    # Configure emcee chains for harmonic
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
+    hm.logs.high_log('Configuring chains...')
     chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, lnprob)
     chains_train, chains_test = hm.utils.split_data(chains, \
         training_proportion=training_proportion)
         
-    # Perform cross-validation.
-    print("Perform cross-validation...")
+    #=========================================================
+    # Perform cross-validation
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
+    hm.logs.high_log('Perform cross-validation...')
     
     # validation_variances_MGMM = \
     #     hm.utils.cross_validation(chains_train, 
@@ -296,13 +311,11 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     # if verbose: print("best_hyper_param = {}".format(best_hyper_param))
 
 
-
-
-
-
-
-    # Fit model.
-    # print("Fit model...")
+    #=========================================================
+    # Fit learnt model for container function 
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
+    hm.logs.high_log('Fit model...')
     # best_var_MGMM = \
     #     validation_variances_MGMM[best_hyper_param_MGMM_ind]
     # best_var_sphere = \
@@ -314,19 +327,16 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #         domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
     #     model.verbose=False
     # else:
-    print("Using HyperSphere")
-    # model = hm.model.HyperSphere(ndim, domains_sphere, \
-    #     hyper_parameters=best_hyper_param_sphere)
-    model = hm.model.HyperSphere(ndim, domains_sphere, \
-        hyper_parameters=None)            
+    hm.logs.high_log('Using HyperSphere')
+    # model = hm.model.HyperSphere(ndim, domains_sphere, hyper_parameters=best_hyper_param_sphere)
+    model = hm.model.HyperSphere(ndim, domains_sphere, hyper_parameters=None)            
         
-    fit_success = model.fit(chains_train.samples,
-                            chains_train.ln_posterior)
-    if verbose: print("fit_success = {}".format(fit_success))    
+    fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
+    hm.logs.low_log('fit_success = {}'.format(fit_success))    
     
-    # model.set_R(model.R * 0.5) # conservative reduction in R.
-    model.set_R(0.5)
-    if verbose: print("model.R = {}\n".format(model.R))
+    model.set_R(model.R * 0.5) # conservative reduction in R.
+    # model.set_R(0.5)
+    hm.logs.low_log('model.R = {}'.format(model.R))
     
 
     # model = hm.model.KernelDensityEstimate(ndim, 
@@ -335,8 +345,12 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     # fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
     # if verbose: print("fit_success = {}".format(fit_success))   
 
+    #=========================================================
+    # Computing evidence using learnt model and emcee chains
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
     # Use chains and model to compute evidence.
-    print("Compute evidence...")
+    hm.logs.high_log('Compute evidence...')
     ev = hm.Evidence(chains_test.nchains, model)
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
@@ -348,72 +362,74 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
         
         
     clock = time.clock() - clock
-    print("execution_time = {}s".format(clock))
+    hm.logs.high_log('execution_time = {}s'.format(clock))
     
     
-    # Display results.            
+    #=========================================================
+    # Display logarithmic evidence results 
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
     # print("ln_evidence_analytic = {}"
     #     .format(ln_evidence_analytic))
-    print("ln_evidence = {}".format(ln_evidence))            
-    print("-np.log(ev.evidence_inv) = {}".format(-np.log(ev.evidence_inv))) 
+    hm.logs.low_log('ln_evidence = {}, -np.log(ev.evidence_inv) = {}'
+        .format(ln_evidence, -np.log(ev.evidence_inv)))            
     # diff = np.abs(ln_evidence_analytic - ln_evidence)
     # print("|ln_evidence_analytic - ln_evidence| / ln_evidence = {}\n"
     #       .format(diff/ln_evidence))
 
+    #=========================================================
+    # Display evidence results 
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
     # print("evidence_analytic = {}"
     #     .format(evidence_analytic))
-    print("evidence = {}".format(np.exp(ln_evidence)))
-    print("evidence_std = {}".format(np.exp(ln_evidence_std)))
-    print("evidence_std / evidence = {}"
-          .format(np.exp(ln_evidence_std - ln_evidence)))
+    hm.logs.low_log('evidence = {}'
+        .format(np.exp(ln_evidence)))
+    hm.logs.low_log('evidence_std = {}, evidence_std / evidence = {}'
+        .format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
     # diff = np.log(np.abs(evidence_analytic - np.exp(ln_evidence)))
     # print("|evidence_analytic - evidence| / evidence = {}\n"
     #       .format(np.exp(diff - ln_evidence)))
 
+    #=========================================================
+    # Display inverse evidence results 
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
     # if verbose: print("evidence_inv_analytic = {}"
     #     .format(1.0/evidence_analytic))
-    if verbose: print("evidence_inv = {}"
+    hm.logs.low_log('evidence_inv = {}'
         .format(ev.evidence_inv))
-    if verbose: print("evidence_inv_std = {}"
-        .format(np.sqrt(ev.evidence_inv_var)))
-    if verbose: print("evidence_inv_std / evidence_inv = {}"
-        .format(np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-    if verbose: print("kurtosis = {}"
-        .format(ev.kurtosis))    
-    if verbose: print("sqrt(2/(n_eff-1)) = {}"
-        .format(np.sqrt(2.0/(ev.n_eff-1))))
-    if verbose: 
-        print("sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var = {}"
+    hm.logs.low_log('evidence_inv_std = {}, evidence_inv_std / evidence_inv = {}'
+        .format(np.sqrt(ev.evidence_inv_var), np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
+    hm.logs.low_log('kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+        .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
+    hm.logs.low_log('sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var = {}'
         .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
     # if verbose: print(
     #     "|evidence_inv_analytic - evidence_inv| / evidence_inv = {}"
     #     .format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) 
     #             / ev.evidence_inv))
 
-    if verbose: print("\nlnargmax = {}"
-        .format(ev.lnargmax))
-    if verbose: print("lnargmin = {}"
-        .format(ev.lnargmin))
-    if verbose: print("lnprobmax = {}"
-        .format(ev.lnprobmax))
-    if verbose: print("lnprobmin = {}"
-        .format(ev.lnprobmin))
-    if verbose: print("lnpredictmax = {}"
-        .format(ev.lnpredictmax))
-    if verbose: print("lnpredictmin = {}"
-        .format(ev.lnpredictmin))
-    if verbose: print("mean_shift = {}"
-        .format(ev.mean_shift))
-
-    if verbose: print("\nrunning_sum = \n{}"
+    #=========================================================
+    # Display more technical details
+    #=========================================================
+    hm.logs.low_log('---------------------------------')
+    hm.logs.low_log('lnargmax = {}, lnargmin = {}'
+        .format(ev.lnargmax, ev.lnargmin))
+    hm.logs.low_log('lnprobmax = {}, lnprobmin = {}'
+        .format(ev.lnprobmax, ev.lnprobmin))
+    hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
+        .format(ev.lnpredictmax, ev.lnpredictmin))
+    hm.logs.low_log('---------------------------------')
+    hm.logs.low_log('mean shift = {}, running sum total = {}'
+        .format(ev.mean_shift, sum(ev.running_sum)))
+    hm.logs.low_log('running sum = \n{}'
         .format(ev.running_sum))
-    if verbose: print("running_sum_total = \n{}"
-        .format(sum(ev.running_sum)))
-
-    if verbose: print("\nnsamples_per_chain = \n{}"
+    hm.logs.low_log('nsamples per chain = \n{}'
         .format(ev.nsamples_per_chain))
-    if verbose: print("nsamples_eff_per_chain = \n{}\n"
+    hm.logs.low_log('nsamples eff per chain = \n{}'
         .format(ev.nsamples_eff_per_chain))
+    hm.logs.low_log('===============================')
     
     
 
@@ -423,12 +439,12 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
         
         utils.plot_corner(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/radiatapine_corner.png',
+            plt.savefig('examples/plots/radiatapine_corner.png',
                         bbox_inches='tight')
         
         utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('./plots/radiatapine_getdist.png',
+            plt.savefig('examples/plots/radiatapine_getdist.png',
                         bbox_inches='tight')
         
         plt.show(block=False)  
@@ -444,8 +460,9 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     
     # Evaluate model on grid.
     
-    
-    
+    #=========================================================
+    # BELOW HERE IS ESSENTIALLY RAW FROM JASON'S LAST COMMIT
+    #=========================================================
     
     
     def model_predict_x0x1(x_2d):         
@@ -469,7 +486,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #plt.axis('equal')
     
     if savefigs:
-        plt.savefig('./plots/radiatapine_model_x0x1_image.png',
+        plt.savefig('examples/plots/radiatapine_model_x0x1_image.png',
                     bbox_inches='tight')
 
     # Plot exponential of model.
@@ -479,7 +496,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     plt.ylabel('$x_1$')   
     #plt.axis('equal')    
     if savefigs:
-        plt.savefig('./plots/radiatapine_modelexp_x0x1_image.png',
+        plt.savefig('examples/plots/radiatapine_modelexp_x0x1_image.png',
                     bbox_inches='tight')
 
 
@@ -505,7 +522,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #plt.axis('equal')
     
     if savefigs:
-        plt.savefig('./plots/radiatapine_model_x1x2_image.png',
+        plt.savefig('examples/plots/radiatapine_model_x1x2_image.png',
                     bbox_inches='tight')
 
     # Plot exponential of model.
@@ -515,7 +532,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     plt.ylabel('$x_2$')   
     #plt.axis('equal')    
     if savefigs:
-        plt.savefig('./plots/radiatapine_modelexp_x1x2_image.png',
+        plt.savefig('examples/plots/radiatapine_modelexp_x1x2_image.png',
                     bbox_inches='tight')
 
 
@@ -544,7 +561,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #plt.axis('equal')
     
     if savefigs:
-        plt.savefig('./plots/radiatapine_model_x0x2_image.png',
+        plt.savefig('examples/plots/radiatapine_model_x0x2_image.png',
                     bbox_inches='tight')
 
     # Plot exponential of model.
@@ -554,7 +571,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     plt.ylabel('$x_2$')   
     #plt.axis('equal')    
     if savefigs:
-        plt.savefig('./plots/radiatapine_modelexp_x0x2_image.png',
+        plt.savefig('examples/plots/radiatapine_modelexp_x0x2_image.png',
                     bbox_inches='tight')
 
 
@@ -606,8 +623,8 @@ if __name__ == '__main__':
     # Define parameters.
     ndim = 3 # Only 3 dimensional case supported.
     nchains = 200
-    samples_per_chain = 1000000
-    # samples_per_chain = 5000
+    # samples_per_chain = 1000000
+    samples_per_chain = 5000
     nburn = 1000
     np.random.seed(3)
     
