@@ -128,7 +128,7 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	x[:,2] = data[:,2]
 	x[:,3] = data[:,5]
 	x[:,4] = data[:,6]
-	x[:,5] = data[:,7] # --> model 2.
+	# x[:,5] = data[:,7] # --> model 2.
 
 	"""
 	y[:] = 1 if patient has diabetes, 0 if patient does not have diabetes.
@@ -139,7 +139,7 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	Configure some general parameters.
 	Tau should be varied in [0.01, 1] for testing.
 	"""
-	tau = 0.01    
+	tau = 1.0 
 	savefigs = True
 
 	"""
@@ -164,13 +164,13 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	pos_2 = np.random.randn(nchains)*0.01
 	pos_3 = np.random.randn(nchains)*0.01
 	pos_4 = np.random.randn(nchains)*0.01
-	pos_5 = np.random.randn(nchains)*0.01 # --> model 2.
+	# pos_5 = np.random.randn(nchains)*0.01 # --> model 2.
 
 	"""
 	Concatenate these positions into a single variable 'pos'.
 	"""
-	# pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4]
-	pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4, pos_5] # --> model 2.
+	pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4]
+	# pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4, pos_5] # --> model 2.
 
 	# Start Timer.
 	clock = time.clock()
@@ -353,7 +353,7 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 6 # Only 5 or 6 dimensional case supported
+    ndim = 5 # Only 5 or 6 dimensional case supported
     nchains = 200
     samples_per_chain = 5000
     nburn = 1000
