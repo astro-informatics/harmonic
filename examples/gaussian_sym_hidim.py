@@ -347,7 +347,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             utils.plot_corner(samples.reshape((-1, ndim)))
 
             if savefigs:
-                plt.savefig('./plots/nD_gaussian_corner.png',
+                plt.savefig('examples/plots/nD_gaussian_corner.png',
                             bbox_inches='tight')
 
             plt.show(block=False)
@@ -362,12 +362,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     hm.logs.high_log('Execution_time = {}s'.format(clock))
 
     if n_realisations > 1:
-        np.savetxt("./data/nD_gaussian_evidence_inv" +
+        np.savetxt("examples/data/nD_gaussian_evidence_inv" +
                    "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = np.exp(ln_rho)
-        np.savetxt("./data/nD_gaussian_evidence_inv" +
+        np.savetxt("examples/data/nD_gaussian_evidence_inv" +
                    "_analytic.dat",
                    evidence_inv_analytic_summary)
 

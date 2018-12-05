@@ -226,12 +226,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_corner.png',
+                plt.savefig('examples/plots/gaussian_nondiagcov_corner.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_getdist.png',
+                plt.savefig('examples/plots/gaussian_nondiagcov_getdist.png',
                             bbox_inches='tight')
                     
             plt.show()        
@@ -267,7 +267,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_surface.png'\
+                plt.savefig('examples/plots/gaussian_nondiagcov_posterior_surface.png'\
                     , bbox_inches='tight')
 
             plt.show(block=False)
@@ -282,7 +282,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   plot_contour=True)
             # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_posterior_image.png' \
+                plt.savefig('examples/plots/gaussian_nondiagcov_posterior_image.png' \
                     , bbox_inches='tight')
 
             plt.show(block=False) 
@@ -308,7 +308,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_surface.png' \
+                plt.savefig('examples/plots/gaussian_nondiagcov_surface.png' \
                     , bbox_inches='tight')
 
             plt.show(block=False)
@@ -323,7 +323,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   plot_contour=True)
             # Save.
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_image.png', 
+                plt.savefig('examples/plots/gaussian_nondiagcov_image.png', 
                             bbox_inches='tight')
 
             plt.show(block=False) 
@@ -337,12 +337,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     hm.logs.high_log('Execution_time = {}s'.format(clock))
 
     if n_realisations > 1:
-        np.savetxt("./data/gaussian_nondiagcov_evidence_inv" +
+        np.savetxt("examples/data/gaussian_nondiagcov_evidence_inv" +
                    "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = np.exp(-ln_evidence_analytic)
-        np.savetxt("./data/gaussian_nondiagcov_evidence_inv" +
+        np.savetxt("examples/data/gaussian_nondiagcov_evidence_inv" +
                    "_analytic.dat",
                    evidence_inv_analytic_summary)
     
