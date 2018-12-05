@@ -9,9 +9,8 @@ import scipy.special as sp
 
 class Optimisation(Enum):
     """
-    Enumeration to define whether to optimise for speed or accuracy.  
-
-    In practice accuracy optimisation does not make a great deal of difference.
+    Enumeration to define whether to optimise for speed or accuracy.  In
+    practices accuracy optimisation does not make a great deal of difference.
     """
 
     SPEED = 1
@@ -20,22 +19,29 @@ class Optimisation(Enum):
 
 OPTIMISATION = Optimisation.SPEED
 
-
-MEAN_SHIFT_SIGN = 1.0
+class Shifting(Enum):
+    """
+    Enumeration to define which log-space shifting to adopt. Different choices 
+    may prove optimal for certain settings.
+    """
+    MEAN_SHIFT = 1
+    MAX_SHIFT = 2
+    MIN_SHIFT = 3
+    ABS_MAX_SHIFT = 4
 
 
 class Evidence:
     """
-    Compute inverse evidence values from chains, using posterior model. 
+    Compute inverse evidence values from chains, using posterior model.
 
-    Multiple chains can be added in sequence (to avoid having to store very 
+    Multiple chains can be added in sequence (to avoid having to store very
     long chains).
     """
 
-    def __init__(self, long nchains, model not None):
+    def __init__(self, long nchains, model not None, shift=Shifting.MEAN_SHIFT):
         """
-        Construct evidence class for computing inverse evidence values from set 
-        number of chains and initialised posterior model.
+        Construct evidence class for computing inverse evidence values from
+        set number of chains and initialised posterior model.
 
         Args:
             - long nchains: 
@@ -72,8 +78,10 @@ class Evidence:
         self.kurtosis = 0.0
         self.n_eff = 0
 
-        self.mean_shift_set = False
-        self.mean_shift = 0.0
+        # Shift selection
+        self.shift = shift
+        self.shift_set = False
+        self.shift_value = 0.0
 
         self.chains_added = False
 
@@ -86,33 +94,39 @@ class Evidence:
         self.lnpredictmax = -np.inf
         self.lnpredictmin = np.inf
 
-    def set_mean_shift(self, double mean_shift_in):
+    def set_shift(self, double shift_value):
         """
-        Set the multiplicative shift of log_e posterior values to aid numerical 
-        stability (usually the geometric mean).
+        Set the multiplicative shift of log_e posterior values to aid
+        numerical stability. 
 
         Args:
-            - double mean_shift_in: 
+            - double shift_value: 
                 Multiplicative shift.
 
         Raises:
             - ValueError: 
-                Raised if mean_shift_in is NaN .
+                Raised if shift_value is NaN .
+            - ValueError:
+                Raised if one attempts to set shift when another shift is 
+                already set.
         """
-        if not np.isfinite(mean_shift_in):
-            raise ValueError("Mean shift must be a number")
+        if not np.isfinite(shift_value):
+            raise ValueError("Shift must be a number")
 
-        self.mean_shift = mean_shift_in
-        self.mean_shift_set = True
+        if self.shift_set:
+            raise ValueError("Cannot define multiple shifts!")
+
+        self.shift_value = shift_value
+        self.shift_set = True
         return
 
     def process_run(self):
         """
-        Use the running totals of running_sum and nsamples_per_chain to 
-        calculate an estimate of the inverse evidence, its variance, and the 
-        variance of the variance. 
+        Use the running totals of running_sum and nsamples_per_chain
+        to calculate an estimate of the inverse evidence, its variance,
+        and the variance of the variance.
 
-        This method is ran each time chains are added to update the inverse 
+        This method is ran each time chains are added to update the inverse
         variance estimates from the running totals.
 
         """
@@ -131,11 +145,7 @@ class Evidence:
             nsamples += nsamples_per_chain[i_chains]
         if OPTIMISATION == Optimisation.ACCURACY:
             evidence_inv += fsum(running_sum)
-            
-            
-        evidence_inv 
-            
-            
+              
         evidence_inv /= nsamples
 
         for i_chains in range(nchains):
@@ -152,36 +162,39 @@ class Evidence:
         kur /= evidence_inv_var*evidence_inv_var
         self.kurtosis = kur
 
-        self.evidence_inv = evidence_inv*exp(-MEAN_SHIFT_SIGN*self.mean_shift)
+        # Corrects for shift by mean of the log-posterior
+        self.evidence_inv = evidence_inv*exp(-self.shift_value)
         self.evidence_inv_var = \
-            evidence_inv_var*exp(-MEAN_SHIFT_SIGN*2*self.mean_shift)/(n_eff)
+            evidence_inv_var*exp(-2*self.shift_value)/(n_eff)
         self.evidence_inv_var_var = \
-            evidence_inv_var**2 * exp(-MEAN_SHIFT_SIGN*4*self.mean_shift) \
-            / (n_eff*n_eff*n_eff)
+            evidence_inv_var**2 * exp(-4*self.shift_value) / (n_eff*n_eff*n_eff)
         self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
+
         return
 
     def add_chains(self, chains not None):
         """
-        Add new chains and calculate an estimate of the inverse evidence, its 
-        variance, and the variance of the variance. 
+        Add new chains and calculate an estimate of the inverse evidence, its
+        variance, and the variance of the variance.
 
-        Calculations are performed by using running averages of the totals for 
-        each chain. Consequently, the method can be called many times with new 
-        samples for each chain so that the evidence estimate will improve.  The 
-        rationale is that not all samples need to be stored in memory for 
-        high-dimensional problems. Note that the same number of chains needs to 
+        Calculations are performed by using running averages of the totals for
+        each chain. Consequently, the method can be called many times with new
+        samples for each chain so that the evidence estimate will improve. The
+        rationale is that not all samples need to be stored in memory for
+        high-dimensional problems.  Note that the same number of chains needs to
         be considered for each call.
 
         Args:
             - chains: 
-                An instance of the chains class containing the chains
-                to be used in the calculation.
+                An instance of the chains class containing the chains to be used 
+                in the calculation.
 
         Raises:
             - ValueError: 
-                If the input number of chains to not match the number of chains 
-                already set up.
+                Raised if the input number of chains to not match the number of 
+                chains already set up.
+            - ValueError:
+                Raised if both max and mean shift are set.
 
         """
 
@@ -195,16 +208,30 @@ class Evidence:
         cdef np.ndarray[double, ndim=1, mode="c"] Y = chains.ln_posterior
         cdef np.ndarray[double, ndim=1, mode="c"] running_sum = self.running_sum
         cdef np.ndarray[long,   ndim=1, mode="c"] \
-            nsamples_per_chain = self.nsamples_per_chain
+        nsamples_per_chain = self.nsamples_per_chain
         cdef np.ndarray[long,   ndim=1, mode="c"] \
-            nsamples_eff_per_chain = self.nsamples_eff_per_chain
+        nsamples_eff_per_chain = self.nsamples_eff_per_chain
 
         cdef long i_chains, i_samples, nchains = self.nchains
-        cdef double mean_shift
+        cdef double mean_shift, max_shift, max_i
 
-        if not self.mean_shift_set:
-            self.set_mean_shift(np.mean(Y))
-        mean_shift = self.mean_shift
+        """
+        The following performs a shift in log-space to avoid overflow or float
+        rounding errors in realspace.
+        """
+        if not self.shift_set:
+            if self.shift == Shifting.MAX_SHIFT:
+                # Shifts by max of the log-posterior
+                self.set_shift(np.max(Y))
+            if self.shift == Shifting.MEAN_SHIFT:
+                # Shifts by mean of the log-posterior
+                self.set_shift(np.mean(Y))
+            if self.shift == Shifting.MIN_SHIFT:
+                # Shifts by min of the log-posterior
+                self.set_shift(np.min(Y))
+            if self.shift == Shifting.ABS_MAX_SHIFT:
+                # Shifts by the absolute maximum of log-posterior
+                self.set_shift(Y[np.argmax(np.abs(Y))])
 
 
         for i_chains in range(nchains):
@@ -221,9 +248,9 @@ class Evidence:
                 lnpredict = self.model.predict(X[i_samples,:])
                 lnprob = Y[i_samples]
                 lnarg = lnpredict - lnprob
-                lnarg += MEAN_SHIFT_SIGN*mean_shift
+                # Apply shifting term to avoid overflow.
+                lnarg += self.shift_value
                 term = exp(lnarg)
-
                 nsamples_per_chain[i_chains] += 1
 
                 if not lnpredict == -np.inf:
@@ -280,10 +307,10 @@ class Evidence:
                 else:
                     offset = np.amax(terms_ln)
                 
-                running_sum[i_chains] = np.log(np.sum(
-                                        np.exp(terms_ln - offset)))
+                running_sum[i_chains] = np.log(np.sum(np.exp(terms_ln -offset)))
+
                 running_sum[i_chains] += offset
-                running_sum[i_chains] -= np.log(i_samples_end - i_samples_start)
+                running_sum[i_chains] -= np.log(i_samples_end -i_samples_start)
                  
                 # running_sum[i_chains] = np.sum(np.exp(terms_ln - offset))
                 # running_sum[i_chains] *= offset
@@ -302,7 +329,7 @@ class Evidence:
         """
         Perform basic diagontic check on sanity of evidence calulations.
 
-        If these tests pass it does *not* necessarily mean the evidence is 
+        If these tests pass it does *not* necessarily mean the evidence is
         accurate and other tests should still be performed.
 
         Return:
@@ -474,12 +501,12 @@ def msum(iterable):
     """
     "Full precision summation using multiple floats for intermediate values".
     
-    From: http://code.activestate.com/recipes/393090/ Rounded x+y stored in hi 
-    with the round-off stored in lo. Together hi+lo are exactly equal to x+y.The
-    inner loop applies hi/lo summation to each partial so that the list of 
-    partial sums remains exact. Depends on IEEE-754 arithmetic guarantees. See 
-    proof of correctness at: www-2.cs.cmu.edu/afs/cs/project/quake/public/papers
-    /robust-arithmetic.ps
+    From: http://code.activestate.com/recipes/393090/
+    Rounded x+y stored in hi with the round-off stored in lo.  Together
+    hi+lo are exactly equal to x+y.  The inner loop applies hi/lo summation
+    to each partial so that the list of partial sums remains exact.
+    Depends on IEEE-754 arithmetic guarantees.  See proof of correctness at:
+    www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps
     """
 
     partials = []               # sorted, non-overlapping partial sums

@@ -15,14 +15,16 @@ hm.logs.setup_logging()
 
 
 def ln_analytic_evidence(ndim, cov):
-    """Compute analytic evidence for nD Gaussian.
-    
+    """
+    Compute analytic evidence for nD Gaussian.
     Args:
-        ndim: Dimension of Gaussian.
-        cov: Covariance matrix.
-    
+        - ndim: 
+            Dimension of Gaussian.
+        - cov: 
+            Covariance matrix.
     Returns:
-        double: Analytic evidence.
+        - double:
+            Analytic evidence.
     """
     
     ln_norm_lik = 0.5*ndim*np.log(2*np.pi) + 0.5*np.log(np.linalg.det(cov))
@@ -30,26 +32,30 @@ def ln_analytic_evidence(ndim, cov):
 
 
 def ln_posterior(x, inv_cov):
-    """Compute log_e of posterior.
-    
+    """
+    Compute log_e of posterior.
     Args: 
-        x: Position at which to evaluate posterior.
-        inv_cov: Inverse covariance matrix.    
-        
+        - x: 
+            Position at which to evaluate posterior.
+        - inv_cov: 
+            Inverse covariance matrix.      
     Returns:
-        double: Value of Gaussian at specified point.
+        - double: 
+            Value of Gaussian at specified point.
     """
     
     return -np.dot(x,np.dot(inv_cov,x))/2.0
 
 
 def init_cov(ndim):
-    """Initialise random non-diagonal covariance matrix covariance matrix.
+    """
+    Initialise random non-diagonal covariance matrix.
     Args: 
-        ndim: Dimension of Gaussian.        
-        
+        - ndim: 
+            Dimension of Gaussian.           
     Returns:
-        cov: Covariance matrix of shape (ndim,ndim).
+        - cov: 
+            Covariance matrix of shape (ndim,ndim).
     """
     
     cov = np.zeros((ndim,ndim))
@@ -66,21 +72,29 @@ def init_cov(ndim):
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """Run Gaussian example with non-diagonal covariance matrix.
+    """
+    Run Gaussian example with non-diagonal covariance matrix.
     Args: 
-        ndim: Dimension of Gaussian.
-        nchains: Number of chains.
-        samples_per_chain: Number of samples per chain.
-        nburn: Number of burn in samples.
-        plot_corner: Plot marginalised distributions if true.
-        plot_surface: Plot surface and samples if true.
-        verbose: If True then display intermediate results.
+        - ndim: 
+            Dimension of Gaussian.
+        - nchains: 
+            Number of chains.
+        - samples_per_chain: 
+            Number of samples per chain.
+        - nburn: 
+            Number of burn in samples.
+        - plot_corner: 
+            Plot marginalised distributions if true.
+        - plot_surface: 
+            Plot surface and samples if true.
+        - verbose: 
+            If True then display intermediate results.
         
     Returns:
-        None.
+        - None.
     """
     
-    hm.logs.high_log('nD Guassian example')
+    hm.logs.high_log('Non-diagonal Covariance Guassian example')
     hm.logs.high_log('Dimensionality = {}'.format(ndim))
     hm.logs.low_log('---------------------------------')
     savefigs = True
@@ -94,7 +108,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.clock()
     
     # Run multiple realisations.
-    n_realisations = 1
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
         
@@ -121,7 +135,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Set up chains.
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)
-        chains_train, chains_test = hm.utils.split_data(chains, 
+        chains_train, chains_test = hm.utils.split_data(chains, \
                                                     training_proportion=0.05)
         hm.logs.low_log('---------------------------------')
         
@@ -159,10 +173,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('Evidence: analytic = {}, estimated = {}'
             .format(np.exp(ln_evidence_analytic), np.exp(ln_evidence)))
         hm.logs.low_log('Evidence: std = {}, std / estimate = {}'
-            .format(np.exp(ln_evidence_std), 
-                np.exp(ln_evidence_std - ln_evidence)))
-        diff = np.log(np.abs(np.exp(ln_evidence_analytic) - \
-            np.exp(ln_evidence)))
+            .format(np.exp(ln_evidence_std), \
+                    np.exp(ln_evidence_std - ln_evidence)))
+        diff = np.log(np.abs(np.exp(ln_evidence_analytic) - np.exp(ln_evidence)))
         hm.logs.high_log("Evidence: |analytic - estimate| / estimate = {}"
             .format(np.exp(diff - ln_evidence)))
         # ======================================================================
@@ -172,16 +185,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('Inv Evidence: analytic = {}, estimate = {}'
             .format(np.exp(-ln_evidence_analytic), ev.evidence_inv))
         hm.logs.low_log('Inv Evidence: std = {}, std / estimate = {}'
-            .format(np.sqrt(ev.evidence_inv_var), 
-                np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-        hm.logs.low_log('Inv Evidence: kurtosis = {},\
-                      sqrt( 2 / ( n_eff - 1 ) ) = {}'
+            .format(np.sqrt(ev.evidence_inv_var), \
+                    np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
+        hm.logs.low_log('Inv Evidence: kurtosis = {}, \
+                         sqrt( 2 / ( n_eff - 1 ) ) = {}'
             .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))     
         hm.logs.low_log('Inv Evidence: sqrt( var(var) ) / var = {}'
             .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))        
         hm.logs.high_log('Inv Evidence: |analytic - estimate| / estimate = {}'
-            .format(np.abs(np.exp(-ln_evidence_analytic) - \
-                ev.evidence_inv)/ev.evidence_inv))
+            .format(np.abs(np.exp(-ln_evidence_analytic) \
+                                  - ev.evidence_inv)/ev.evidence_inv))   
         # ======================================================================
         # Display more technical details for ln evidence.
         # ======================================================================
@@ -193,8 +206,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
         hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('running_sum_total = {}, mean_shift = {}'
-            .format(sum(ev.running_sum), ev.mean_shift))   
+        hm.logs.low_log('mean shift = {}, max shift = {}, min shift = {}'
+            .format(ev.mean_shift, ev.max_shift, ev.min_shift))
+        hm.logs.low_log('running sum total = {}'
+            .format(sum(ev.running_sum))) 
         hm.logs.low_log('running_sum = \n{}'
             .format(ev.running_sum))
         hm.logs.low_log('nsamples_per_chain = \n{}'
@@ -211,12 +226,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_corner.png',
+                plt.savefig('examples/plots/gaussian_nondiagcov_corner.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('./plots/gaussian_nondiagcov_getdist.png',
+                plt.savefig('examples/plots/gaussian_nondiagcov_getdist.png',
                             bbox_inches='tight')
                     
             plt.show()        
@@ -228,14 +243,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     
             # ==================================================================
             # Define plot parameters.  
-            # ================================================================== 
+            # ==================================================================
             nx = 50
             xmin = -3.0
             xmax = 3.0
 
             # ==================================================================
             # 2D surface plot of posterior. 
-            # ================================================================== 
+            # ==================================================================
             ln_posterior_func = partial(ln_posterior, inv_cov=inv_cov)
             ln_posterior_grid, x_grid, y_grid = \
                 utils.eval_func_on_grid(ln_posterior_func, 
@@ -290,7 +305,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Save.
             if savefigs:
-
                 plt.savefig('examples/plots/gaussian_nondiagcov_surface.png'\
                     , bbox_inches='tight')
 
@@ -298,19 +312,18 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # ==================================================================
             # Projection of posteior onto x1,x2 plane with contours.
-            # ==================================================================
+            # ================================================================== 
             # Plot posterior image.
             ax = utils.plot_image(np.exp(ln_model_grid), x_grid, y_grid, 
                                   colorbar_label='$\mathcal{L}$',
                                   plot_contour=True)
             # Save.
-
-            plt.savefig('examples/plots/gaussian_nondiagcov_posterior_surface.png',
-             bbox_inches='tight')
-                    
+            if savefigs:
+                plt.savefig('examples/plots/gaussian_nondiagcov_image.png', 
+                            bbox_inches='tight')
 
             plt.show(block=False) 
-            # ==================================================================
+            # ================================================================== 
         
         evidence_inv_summary[i_realisation,0] = ev.evidence_inv
         evidence_inv_summary[i_realisation,1] = ev.evidence_inv_var
@@ -345,4 +358,4 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=False, plot_surface=True, verbose=False)
+                plot_corner=True, plot_surface=True, verbose=False)

@@ -5,11 +5,10 @@ import yaml
 import harmonic
 
 
-
 def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
     """
     Initialize and configure logging.
-
+    
     Should be called at the beginning of code to initialize and configure the 
     desired logging level. Logging levels can be ints in [0,50] where 10 is 
     debug logging and 50 is critical logging.
@@ -59,7 +58,6 @@ def low_log(message):
     Args:
         - message: 
             Message to log.
-
     """
     logger = logging.getLogger('Harmonic')
     logger.debug('\033[0;36;40m' + message + '\033[0;0m')
@@ -72,23 +70,18 @@ def high_log(message):
     Args:
         - message: 
             Message to log.
-
     """
     logger = logging.getLogger('Harmonic')
     logger.critical('\033[1;31;40m' + message + '\033[0;0m')
 
 """ 
 In main code, call lines (1) and (2) to create and initialize the logger:
-
 (1) import harmonic as hm 
 (2) hm.logs.setup_logging()
-
 (note) if you wish to use a custom logging configuration simply provide the 
 pathname to your yaml as the argument to setup_logging('pathname').
-
 examples of use:
         hm.logs.low_log('a debug level message')
         hm.logs.high_log('a critical level message')
 """
-
 

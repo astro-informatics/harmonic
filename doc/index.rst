@@ -2,17 +2,15 @@
    sphinx-quickstart on Mon Nov 12 20:09:21 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
+
+.. automodule:: harmonic
+.. module:: sphinx.ext.mathbase
+
 **************************
 Harmonic Documentation
 **************************
-**Harmonic** is a general use python package for fast and accurate computation of Bayesian evidences -- combining bespoke **machine learning techniques** and **Bayesian methodology**.
 
-.. automodule:: harmonic
-
-**************************
-Introduction
-**************************
-A basic introduction with some references. Talk about general overview, motivation and how the software package works.
+`Harmonic <https://github.com/astro-informatics/src_harmonic>`_ is a general use python package for fast and accurate computation of Bayesian evidences -- combining bespoke machine learning techniques and Bayesian methodology.
 
 
 Download
@@ -44,7 +42,7 @@ Standard astroinformatics license section.
 
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    Pages/Harmonic_theory/index

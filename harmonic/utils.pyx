@@ -93,7 +93,6 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
             List of indexes for the validation set.
         - list indexes_fit: 
             List of indexes for the training set.
-
     Raises:
         - ValueError: 
             Raised if the value of i_fold does not fall between 0 and nfold-1.
@@ -217,3 +216,4 @@ def cross_validation(chains,
             validation_variances[i_fold,i_val] = ev.evidence_inv_var
 
     return np.mean(validation_variances, axis=0)
+    

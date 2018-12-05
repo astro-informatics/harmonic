@@ -11,7 +11,7 @@ class Chains:
         """
         Construct empty Chains for parameter space of dimension ndim.
         
-        Constructor simply sets ndim. Chain samples are added by the add_chain* 
+        Constructor simply sets ndim.  Chain samples are added by the add_chain*
         methods since we want to support setting up data for chains from 
         different input data formats (e.g. data from a single chain or multiple 
         chains at once).
@@ -125,9 +125,8 @@ class Chains:
                            not None, 
                            long nchains_in, list chain_indexes):        
         """
-        Adds a number of chains to the chain class. 
-
-        Uses a list of indexes to understand where each chain starts and stops.
+        Adds a number of chains to the chain class. Uses a list of indexes to
+        understand where each chain starts and stops.
             
         Args:
             - samples: 
@@ -167,8 +166,8 @@ class Chains:
         cdef long i_chain, samples_per_chain
 
         for i_chain in range(nchains_in):
-            samples_per_chain = \
-                chain_indexes[i_chain+1] - chain_indexes[i_chain]
+            samples_per_chain = chain_indexes[i_chain+1] -chain_indexes[i_chain]
+
             self.add_chain(
                 samples[i_chain*samples_per_chain:
                         (i_chain+1)*samples_per_chain, :],
@@ -189,7 +188,7 @@ class Chains:
                 3D numpy.ndarray containing the samples with shape (nchains_in, 
                 nsamples_in, ndim) and dtype double.
             - ln_posterior: 
-                2D numpy.ndarray containing the log_e posterior values with 
+                2D numpy.ndarray containing the log_e posterior values with
                 shape (nchains_in, nsamples_in) and dtype double. nchains_in 
                 specifies the number of chains in the passed samples.
       
@@ -259,7 +258,7 @@ class Chains:
 
     def get_chain_indices(self, long i):
         """
-        Gets the start and end index of samples from a chain. 
+        Gets the start and end index of samples from a chain.
 
         The end index specifies the index one passed the end of the chain, i.e. 
         the chain samples can be accessed by self.samples[start:end,:].
@@ -392,14 +391,16 @@ class Chains:
         """
         Split chains into larger number of blocks.
         
-        The intention of this method is to break chains into blocks that are 
-        (approximately) independent in order to get more independent chains for 
-        computing various statistics. Each existing chain is split into blocks 
-        (i.e. new chains), proportionally to the size of the current chains.  
-        Final blocks within each chain end up containing slightly different 
-        numbers of samples (since we do not ever want to throw away samples!). 
-        One could improve this, if required, to distribute the additional 
-        samples across all of the blocks of the chain.
+        The intention of this method is to break chains into blocks that are
+        (approximately) independent in order to get more independent chains for
+        computing various statistics.
+        
+        Each existing chain is split into blocks (i.e. new chains),
+        proportionally to the size of the current chains.  Final blocks within
+        each chain end up containing slightly different numbers of samples
+        (since we do not ever want to throw away samples!).  One could improve
+        this, if required, to distribute the additional samples across all of
+        the blocks of the chain.
                 
         Args: 
             - nblocks: 
@@ -451,7 +452,7 @@ class Chains:
             
             block_start_indices[-1] = end
             # print("chain = {}, block_start_indices = {}"
-                #.format(i_chain, block_start_indices))
+            #.format(i_chain, block_start_indices))
 
             start_indices_new = np.concatenate((start_indices_new, 
                                                 block_start_indices[1:]))

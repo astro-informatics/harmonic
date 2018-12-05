@@ -343,7 +343,6 @@ class HyperSphere(Model):
                 Boolean specifying whether fit successful.
             - objective: 
                 Value of objective at optimal point.
-
         Raises:
             - ValueError: 
                 Raised if the first dimension of X is not the same as Y.
@@ -434,7 +433,6 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
             Number of pixels in each dimension in the grid.
         - double D: 
             Diameter of the hyper sphere.
-
     """
 
     cdef long i_sample, i_dim, sub_index, index, nsamples = \
@@ -490,6 +488,7 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim,
         - long * count: 
             a pointer to the count integer that counts how many hyper spheres 
             the postion x falls inside.
+
 
     """
     # this does create looping boundry conditions but doesn't matter in 
@@ -628,7 +627,6 @@ class KernelDensityEstimate(Model):
         Args:
             - X: 
                 2D array of samples of shape (nsamples, ndim).
-
         Raises:
             - ValueError: 
                 Raised if the second dimension of X is not the same as ndim
@@ -660,7 +658,6 @@ class KernelDensityEstimate(Model):
         Args:
             - X: 
                 2D array of samples of shape (nsamples, ndim).
-
         Raises:
             - ValueError 
                 Raised if the second dimension of X is not the same as ndim.
@@ -709,7 +706,6 @@ class KernelDensityEstimate(Model):
         
         Returns:
             - Boolean specifying whether fit successful.
-
         Raises:
             - ValueError: 
                 Raised if the first dimension of X is not the same as Y
@@ -790,7 +786,6 @@ cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(\
             (nguassians).
         - long nguassians: 
             The number of Gaussians in the model.
-
     Return:
         - ndarray weights: 
             1D array where the weight values will go with shape (nguassians)
@@ -820,7 +815,6 @@ def beta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] beta,
             (nguassians).
         - long nguassians: 
             The number of Gaussians in the model.
-
     Return:
         - ndarray weights: 
             1D array where the weight values will go with shape (nguassians)
@@ -841,7 +835,6 @@ cdef double calculate_gaussian_normalisation(double alpha, \
             1D array containing the inverse covariance matrix.
         - long ndim: 
             Dimension of the problem.
-
     Returns:
         - double: 
             The normalisation factor.
@@ -867,7 +860,6 @@ def calculate_gaussian_normalisation_wrap(double alpha, \
             1D array containing the inverse covariance matrix.
         - long ndim: 
             Dimension of the problem.
-
     Returns:
         - double: 
             The normalisation factor.
@@ -895,7 +887,6 @@ cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
             Weight applied to that Guassian.
         - long ndim: 
             Dimension of the problem.
-
     Returns:
         - double: 
             Height of the Guassian.
@@ -932,7 +923,6 @@ def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
             Weight applied to that Guassian.
         - long ndim: 
             Dimension of the problem.
-
     Returns:
         - double: 
             Height of the Guassian.
@@ -958,7 +948,6 @@ cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
             shape (ndim).
         - long ndim: 
             Dimension of the problem.
-
     Returns:
         - double delta_theta_ij: 
             Value of delta_theta_ij squared.
@@ -992,7 +981,6 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
             shape (ndim).
         - long ndim: 
             Dimension of the problem.
-
     Returns:
         - double delta_theta_ij: 
             Value of delta_theta_ij squared.
@@ -1523,7 +1511,6 @@ class ModifiedGaussianMixtureModel(Model):
         Fit the parameters of the model as follows. 
 
         If centres and inv_covariances not set:
-
         - Find clusters using the k-means clustering from scikit learn.
 
         - Use the samples in the clusters to find the centres and covariance 
@@ -1541,7 +1528,6 @@ class ModifiedGaussianMixtureModel(Model):
             
         Returns:
             - Boolean specifying whether fit successful.
-
         Raises:
             - ValueError: 
                 Raised if the first dimension of X is not the same as Y.
@@ -1570,7 +1556,7 @@ class ModifiedGaussianMixtureModel(Model):
         cdef np.ndarray[long, ndim=1, mode='c'] index_perm
 
         cdef double gamma = self.gamma, learning_rate = self.learning_rate
-        cdef double alpha_lower_bound = self.alpha_domain[0], alpha_upper_bound \
+        cdef double alpha_lower_bound = self.alpha_domain[0], alpha_upper_bound\
             = self.alpha_domain[1]
         cdef double mean_shift = np.mean(Y)
         cdef long i_dim, i_guas, i_sample, i_iter, i_batch, i1_sample, i2_sample
@@ -1684,7 +1670,6 @@ class ModifiedGaussianMixtureModel(Model):
         Args: 
             - x: 
                 1D array of sample of shape (ndim) to predict posterior value.
-
         Return:
             - Predicted posterior value.
         """
@@ -1705,4 +1690,5 @@ class ModifiedGaussianMixtureModel(Model):
                                            inv_covariances[i_guas,:], \
                                            alphas[i_guas], weights[i_guas], \
                                            ndim)
+
         return log(value)

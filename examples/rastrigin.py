@@ -13,17 +13,22 @@ import utils
 hm.logs.setup_logging()
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
-    """Compute log_e of uniform prior.
-
+    """
+    Compute log_e of uniform prior.
     Args: 
-        x: Position at which to evaluate prior.
-        xmin: Uniform prior minimum x edge (first dimension).
-        xmax: Uniform prior maximum x edge (first dimension).
-        ymin: Uniform prior minimum y edge (second dimension).
-        ymax: Uniform prior maximum y edge (second dimension).             
-        
+        - x: 
+            Position at which to evaluate prior.
+        - xmin: 
+            Uniform prior minimum x edge (first dimension).
+        - xmax: 
+            Uniform prior maximum x edge (first dimension).
+        - ymin: 
+            Uniform prior minimum y edge (second dimension).
+        - ymax: 
+            Uniform prior maximum y edge (second dimension).              
     Returns:
-        double: Value of prior at specified point.
+        - double: 
+            Value of prior at specified point.
     """
         
     if x[0] >= xmin and x[0] <= xmax and x[1] >= ymin and x[1] <= ymax:        
@@ -34,13 +39,14 @@ def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
 
 
 def ln_likelihood(x):
-    """Compute log_e of likelihood defined by Rastrigin function.
-    
+    """
+    Compute log_e of likelihood defined by Rastrigin function.
     Args: 
-        x: Position at which to evaluate likelihood.
-        
+        - x: 
+            Position at which to evaluate likelihood. 
     Returns:
-        double: Value of Rastrigin at specified point.
+        - double: 
+            Value of Rastrigin at specified point.
     """
     
     ndim = x.size
@@ -54,14 +60,16 @@ def ln_likelihood(x):
 
 
 def ln_posterior(x, ln_prior):
-    """Compute log_e of posterior.
-    
+    """
+    Compute log_e of posterior.
     Args: 
-        x: Position at which to evaluate posterior.
-        ln_prior: Prior function.
-        
+        - x: 
+            Position at which to evaluate posterior.
+        - ln_prior: 
+            Prior function.
     Returns:
-        double: Posterior at specified point.
+        - double: 
+            Posterior at specified point.
     """
     
     ln_L = ln_likelihood(x)
@@ -76,19 +84,25 @@ def ln_posterior(x, ln_prior):
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """Run Rastrigin example.
-
+    """
+    Run Rastrigin example.
     Args: 
-        ndim: Dimension.
-        nchains: Number of chains.
-        samples_per_chain: Number of samples per chain.
-        nburn: Number of burn in samples.
-        plot_corner: Plot marginalised distributions if true.
-        plot_surface: Plot surface and samples if true.
-        verbose: If True then display intermediate results.
-        
+        - ndim: 
+            Dimension.
+        - nchains: 
+            Number of chains.
+        - samples_per_chain: 
+            Number of samples per chain.
+        - nburn: 
+            Number of burn in samples.
+        - plot_corner: 
+            Plot marginalised distributions if true.
+        - plot_surface: 
+            Plot surface and samples if true.
+        - verbose: 
+            If True then display intermediate results.
     Returns:
-        None.
+        - None.
     """
 
     hm.logs.high_log('Rastrigin example')
@@ -116,18 +130,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ymax = 6.0
         hm.logs.low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
             .format(xmin, xmax, ymin, ymax))   
-
-
-        ln_prior = partial(ln_prior_uniform, 
-
-            xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
+        ln_prior = partial(ln_prior_uniform, \
+                           xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
 
 	hm.logs.low_log('---------------------------------')
     # Start timer.
     clock = time.clock() 
 
     # Set up and run multiple simulations
-    n_realisations = 50
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -140,7 +151,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
                                         args=[ln_prior])
-
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
         samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
@@ -151,7 +161,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Set up chains.
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)
-        chains_train, chains_test = hm.utils.split_data(chains, \
+        chains_train, chains_test = hm.utils.split_data(chains, 
                                                         training_proportion=0.5)
 
         # Perform cross-validation.
@@ -236,8 +246,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                         nx=1000, ny=1000)
             dx = x_grid[0,1] - x_grid[0,0]
             dy = y_grid[1,0] - y_grid[0,0]
-            evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx\
-                                                                               * dy
+            evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) \
+                                                                       * dx * dy
             hm.logs.low_log('dx = {}'.format(dx))
             hm.logs.low_log('dy = {}'.format(dy))    
 
@@ -262,7 +272,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             .format(np.sqrt(ev.evidence_inv_var), 
                 np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
         hm.logs.low_log('Inv Evidence: kurtosis = {}, \
-                         sqrt( 2 / ( n_eff - 1 ) ) = {}'
+                        sqrt( 2 / ( n_eff - 1 ) ) = {}'
             .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
         hm.logs.low_log('Inv Evidence: sqrt( var(var) )/ var = {}'
             .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
@@ -280,8 +290,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
         hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('mean shift = {}, running sum total = {}'
-            .format(ev.mean_shift, sum(ev.running_sum)))
+        hm.logs.low_log('mean shift = {}, max shift = {}'
+            .format(ev.mean_shift, ev.max_shift))
+        hm.logs.low_log('running sum total = {}'
+            .format(sum(ev.running_sum)))
         hm.logs.low_log('running sum = \n{}'
             .format(ev.running_sum))
         hm.logs.low_log('nsamples per chain = \n{}'
@@ -293,7 +305,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         # Create corner/triangle plot.
         created_plots = False
-        if plot_corner and i_realisation == 1:
+        if plot_corner and i_realisation == 0:
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
@@ -309,7 +321,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             created_plots = True
                 
         # In 2D case, plot surface/image and samples.    
-        if plot_surface and ndim == 2 and i_realisation == 1:
+        if plot_surface and ndim == 2 and i_realisation == 0:
             
             # Plot ln_posterior surface.
             # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0 
@@ -394,7 +406,7 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False, verbose=False)
+                          plot_corner=True, plot_surface=True, verbose=False)
     
 
 

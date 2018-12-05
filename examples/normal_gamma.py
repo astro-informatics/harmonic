@@ -15,17 +15,22 @@ hm.logs.setup_logging()
 
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
-    """Compute log_e of likelihood.
-
+    """
+    Compute log_e of likelihood.
     Args:
-        x_mean: Mean of simulated data.
-        x_std: Standard deviation of simulated data.
-        x_n: Number of samples of simulated data.
-        mu: Mu value for which to evaluate prior.
-        tau: Tau value for which to evaluate prior.
-
+        - x_mean: 
+            Mean of simulated data.
+        - x_std: 
+            Standard deviation of simulated data.
+        - x_n: 
+            Number of samples of simulated data.
+        - mu: 
+            Mu value for which to evaluate prior.
+        - tau: 
+            Tau value for which to evaluate prior.
     Returns:
-        double: Value of log_e likelihood at specified (mu, tau) point.
+        - double: 
+            Value of log_e likelihood at specified (mu, tau) point.
     """
 
     return -0.5 * x_n * tau * (x_std**2 + (x_mean-mu)**2) \
@@ -33,16 +38,19 @@ def ln_likelihood(x_mean, x_std, x_n, mu, tau):
 
 
 def ln_prior(mu, tau, prior_params):
-    """Compute log_e of prior.
-
+    """
+    Compute log_e of prior.
     Args:
-        mu: Mu value for which to evaluate prior.
-        tau: Tau value for which to evaluate prior.
-        prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+        - mu: 
+            Mu value for which to evaluate prior.
+        - tau: 
+            Tau value for which to evaluate prior.
+        - prior_params: 
+            Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
-
     Returns:
-        double: Value of log_e prior at specified (mu, tau) point.
+        - double: 
+            Value of log_e prior at specified (mu, tau) point.
     """
 
     if tau < 0:
@@ -60,18 +68,23 @@ def ln_prior(mu, tau, prior_params):
 
 
 def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
-    """Compute log_e of posterior.
-
+    """
+    Compute log_e of posterior.
     Args:
-        theta: Position (mu, tau) at which to evaluate posterior.
-        x_mean: Mean of simulated data.
-        x_std: Standard deviation of simulated data.
-        x_n: Number of samples of simulated data.
-        prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+        - theta: 
+            Position (mu, tau) at which to evaluate posterior.
+        - x_mean: 
+            Mean of simulated data.
+        - x_std: 
+            Standard deviation of simulated data.
+        - x_n: 
+            Number of samples of simulated data.
+        - prior_params: 
+            Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
-
     Returns:
-        double: Value of log_e posterior at specified (mu, tau) point.
+        - double: 
+            Value of log_e posterior at specified (mu, tau) point.
     """
 
     mu, tau = theta
@@ -107,21 +120,28 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True,
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
-    """Run Normal-Gamma example.
-
+    """
+    Run Normal-Gamma example.
     Args:
-        ndim: Dimension.
-        nchains: Number of chains.
-        samples_per_chain: Number of samples per chain.
-        nburn: Number of burn in samples.
-        plot_corner: Plot marginalised distributions if true.
-        plot_surface: Plot surface and samples if true.
-        plot_comparison: Plot accuracy for various tau priors if
+        - ndim: 
+            Dimension.
+        - nchains: 
+            Number of chains.
+        - samples_per_chain: 
+            Number of samples per chain.
+        - nburn: 
+            Number of burn in samples.
+        - plot_corner: 
+            Plot marginalised distributions if true.
+        - plot_surface: 
+            Plot surface and samples if true.
+        - plot_comparison: 
+            Plot accuracy for various tau priors if
             true.
-        verbose: If True then display intermediate results.
-
+        - verbose: 
+            If True then display intermediate results.
     Returns:
-        None.
+        - None.
     """
 
     hm.logs.high_log('Normal-Gamma example')
@@ -146,7 +166,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     domains_sphere = [np.array([1E-1,5E0])]
     domains_MGMM = [np.array([1E-1,5E0])]
 
-    n_realisations = 1
+    n_realisations = 100
 
     # Generate simulations.
     hm.logs.high_log('Simulate data...')
@@ -256,34 +276,38 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             hm.logs.low_log('Ln Evidence: analytic = {}, estimated = {}'
                 .format(ln_evidence_analytic, ln_evidence))
             diff = np.abs(ln_evidence_analytic - ln_evidence)
-            hm.logs.high_log('Ln Evidence: |analytic - estimated| / estimated =\
-             {}'.format(diff/ln_evidence))
+            hm.logs.high_log('Ln Evidence: \
+                              100 * |analytic - estimated| / estimated = {}%'
+                              .format(diff/ln_evidence))
             # ==================================================================
             # Display evidence computation results.
             # ==================================================================
             hm.logs.low_log('Evidence: analytic = {}, estimated = {}'
                 .format(evidence_analytic, np.exp(ln_evidence)))
             hm.logs.low_log('Evidence: std = {}, std / estimated = {}'
-                .format(np.exp(ln_evidence_std), 
-                    np.exp(ln_evidence_std - ln_evidence)))
+                .format(np.exp(ln_evidence_std), \
+                        np.exp(ln_evidence_std - ln_evidence)))
             diff = np.log(np.abs(evidence_analytic - np.exp(ln_evidence)))
-            hm.logs.high_log('Evidence: |analytic - estimated| / estimated = {}'
-                .format(np.exp(diff - ln_evidence)))
+            hm.logs.high_log('Evidence: \
+                              100 * |analytic - estimated| / estimated = {}%'
+                .format(100.0 * np.exp(diff - ln_evidence)))
             # ==================================================================
             # Display inverse evidence computation results.
             # ==================================================================
             hm.logs.low_log('Evidence inv: analytic = {}, estimated = {}'
                 .format(1.0/evidence_analytic, ev.evidence_inv))
             hm.logs.low_log('Evidence inv: std = {}, std / estimated = {}'
-                .format(np.sqrt(ev.evidence_inv_var), 
-                    np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-            hm.logs.low_log('Evidence inv: kurtosis = {}, sqrt( 2 / ( n_eff - 1\
-             ) ) = {}'.format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))
+                .format(np.sqrt(ev.evidence_inv_var), \
+                        np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
+            hm.logs.low_log('Evidence inv: kurtosis = {}, \
+                             sqrt( 2 / ( n_eff - 1 ) ) = {}'
+                .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))
             hm.logs.low_log('Evidence inv: sqrt( var( var ) )/ var = {}'
                 .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
-            hm.logs.high_log('Evidence inv: |analytic - estimated| / estimated \
-                = {}'.format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) \
-                    / ev.evidence_inv))
+            hm.logs.high_log('Evidence inv: \
+                              100 * |analytic - estimated| / estimated = {}%'
+                              .format(100.0 * np.abs(1.0 / evidence_analytic \
+                                          - ev.evidence_inv) / ev.evidence_inv))
             # ==================================================================
             # Display more technical details for ln evidence.
             # ==================================================================
@@ -293,8 +317,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 .format(ev.lnprobmax, ev.lnprobmin))
             hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
                 .format(ev.lnpredictmax, ev.lnpredictmin))
-            hm.logs.low_log('mean_shift = {}, running_sum_total = {}'
-                .format(ev.mean_shift, sum(ev.running_sum)))
+            hm.logs.low_log('mean shift = {}, max shift = {}'
+                .format(ev.mean_shift, ev.max_shift))
+            hm.logs.low_log('running sum total = {}'
+                .format(sum(ev.running_sum)))
             hm.logs.low_log('running_sum = \n{}'
                 .format(ev.running_sum))
             hm.logs.low_log('nsamples_per_chain = \n{}'
@@ -395,7 +421,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ax.set_xscale("log")
         ax.set_xlabel(r"Prior size ($\tau_0$)")
         ax.set_ylabel(r"Relative accuracy \
-         ($z_{\rm estimated}/z_{\rm analytic}$)")
+                     ($z_{\rm estimated}/z_{\rm analytic}$)")
         ax.errorbar(tau_array, np.exp(summary[:,2])/np.exp(summary[:,1]),
             yerr=np.exp(summary[:,3])/np.exp(summary[:,1]),
             fmt='b.', capsize=4, capthick=2, elinewidth=2)

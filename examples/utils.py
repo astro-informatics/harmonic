@@ -10,13 +10,12 @@ from getdist import plots, MCSamples
 def plot_corner(samples, labels=None):
     """
     Plot triangle plot of marginalised distributions using corner package.
-
+    
     Args:
         - samples: 
             2D array of shape (ndim, nsamples) containing samples.
         - labels: 
             Array of strings containing axis labels.
-
     Returns:
         - None
     """
