@@ -214,7 +214,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('Best hyper-parameter = {}'
             .format(best_hyper_param))
         hm.logs.low_log('---------------------------------')
-
+        
         # Fit model.
         hm.logs.high_log('Fit model...')
         hm.logs.low_log('---------------------------------')

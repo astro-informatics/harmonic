@@ -261,8 +261,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             ax = utils.plot_surface(np.exp(ln_posterior_grid), x_grid, y_grid, 
                                     samples[i_chain,:,:].reshape((-1, ndim)), 
                                     np.exp(lnprob[i_chain,:].reshape((-1, 1))),
-                                    contour_z_offset=-0.5)
-            # ax.set_zlim(-100.0, 0.0)                
+                                    contour_z_offset=-0.5, alpha=0.3)
+               
             ax.set_zlabel(r'$\mathcal{L}$') 
 
             # Save.
@@ -279,10 +279,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, 
                                   samples[i_chain].reshape((-1, ndim)),
                                   colorbar_label='$\mathcal{L}$',
-                                  plot_contour=True)
+                                  plot_contour=True, markersize=1.0)
             # Save.
             if savefigs:
-                plt.savefig('examples/plots/gaussian_nondiagcov_posterior_image.png' \
+                plt.savefig('examples/plots/gaussian_nondiagcov_posterior_image.png'\
                     , bbox_inches='tight')
 
             plt.show(block=False) 
@@ -296,19 +296,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             ln_model_grid = np.zeros((nx,nx))      
             for i in range(nx):
                 for j in range(nx):
-                    ln_model_grid[i,j]=model.predict(np.array([x[i,j],y[i,j]]))
+                    ln_model_grid[i,j] =model.predict(np.array([x[i,j],y[i,j]]))
 
             i_chain = 0
             ax = utils.plot_surface(np.exp(ln_model_grid), x_grid, y_grid, 
-                                    #samples[i_chain,:,:].reshape((-1, ndim)), 
-                                    #np.exp(lnprob[i_chain,:].reshape((-1, 1))),
-                                    contour_z_offset=-0.075)
-            # ax.set_zlim(-100.0, 0.0)                
+                                    contour_z_offset=-0.075)              
             ax.set_zlabel(r'$\mathcal{L}$') 
 
             # Save.
             if savefigs:
-                plt.savefig('examples/plots/gaussian_nondiagcov_surface.png' \
+                plt.savefig('examples/plots/gaussian_nondiagcov_surface.png'\
                     , bbox_inches='tight')
 
             plt.show(block=False)
@@ -318,7 +315,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # ================================================================== 
             # Plot posterior image.
             ax = utils.plot_image(np.exp(ln_model_grid), x_grid, y_grid, 
-                                  # samples[i_chain].reshape((-1, ndim)),
                                   colorbar_label='$\mathcal{L}$',
                                   plot_contour=True)
             # Save.

@@ -172,7 +172,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         best_hyper_param = hyper_parameters[best_hyper_param_ind]
         hm.logs.low_log('Best hyper parameter = {}'
             .format(best_hyper_param))
-        
+
         # Fit model.
         hm.logs.high_log('Fit model...')
         model = hm.model.KernelDensityEstimate(ndim, 

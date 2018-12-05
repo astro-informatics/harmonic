@@ -169,12 +169,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('---------------------------------')
         validation_variances = \
             hm.utils.cross_validation(chains_train, \
-                                    domain, \
-                                    hyper_parameters, \
-                                    nfold=nfold, \
-                                    modelClass=hm.model.KernelDensityEstimate, \
-                                    verbose=verbose, \
-                                    seed=0)
+                                  domain, \
+                                  hyper_parameters, \
+                                  nfold=nfold, \
+                                  modelClass=hm.model.KernelDensityEstimate, \
+                                  verbose=verbose, \
+                                  seed=0)
+
         hm.logs.low_log('Validation variances = {}'
             .format(validation_variances))
         best_hyper_param_ind = np.argmin(validation_variances)
@@ -221,8 +222,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.high_log('Fit model...')
         hm.logs.low_log('---------------------------------')
         model = hm.model.KernelDensityEstimate(ndim, 
-                                            domain, 
-                                            hyper_parameters=best_hyper_param)
+                                               domain, 
+                                               hyper_parameters=best_hyper_param)
         fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
         hm.logs.low_log('Fit success = {}'.format(fit_success))    
         hm.logs.low_log('---------------------------------')
@@ -235,8 +236,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         # Compute analytic evidence.
         if ndim == 2:
-            hm.logs.high_log('Compute evidence by high-resolution numerical \
-                              integration...')
+            hm.logs.high_log('Compute evidence by numerical integration...')
             hm.logs.low_log('---------------------------------')
             ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior)
             ln_posterior_grid, x_grid, y_grid = \
@@ -251,41 +251,37 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             hm.logs.low_log('dx = {}'.format(dx))
             hm.logs.low_log('dy = {}'.format(dy))    
 
-        # ======================================================================
+        # ==========================================================================
         # Display evidence computation results.
-        # ======================================================================
+        # ==========================================================================
         hm.logs.low_log('---------------------------------')
         hm.logs.low_log('Evidence: numerical = {}, estimate = {}'
             .format(evidence_numerical_integration, np.exp(ln_evidence)))
         hm.logs.low_log('Evidence: std = {}, std / estimate = {}'
-            .format(np.exp(ln_evidence_std), \
-                           np.exp(ln_evidence_std - ln_evidence)))
-        diff = np.log(np.abs(evidence_numerical_integration \
-                                                         - np.exp(ln_evidence)))
-        hm.logs.high_log('Evidence: \
-                          100 * |numerical - estimate| / estimate = {}%'
+            .format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
+        diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
+        hm.logs.high_log('Evidence: |numerical - estimate| / estimate = {}'
             .format(np.exp(diff - ln_evidence)))
-        # ======================================================================
+        # ==========================================================================
         # Display inverse evidence computation results.
-        # ======================================================================
+        # ==========================================================================
         hm.logs.low_log('---------------------------------')
         hm.logs.low_log('Inv Evidence: numerical = {}, estimate = {}'
             .format(1.0/evidence_numerical_integration, ev.evidence_inv))
         hm.logs.low_log('Inv Evidence: std = {}, std / estimate = {}'
-            .format(np.sqrt(ev.evidence_inv_var), \
-                    np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
+            .format(np.sqrt(ev.evidence_inv_var), 
+                np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
         hm.logs.low_log('Inv Evidence: kurtosis = {}, \
                         sqrt( 2 / ( n_eff - 1 ) ) = {}'
             .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
         hm.logs.low_log('Inv Evidence: sqrt( var(var) )/ var = {}'
             .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
-        hm.logs.high_log('Inv Evidence: \
-                          100 * |numerical - estimate| / estimate = {}%'
-            .format(100 * np.abs(1.0 / evidence_numerical_integration - \
-                    ev.evidence_inv) / ev.evidence_inv))
-        # ======================================================================
+        hm.logs.high_log('Inv Evidence: |numerical - estimate| / estimate = {}'
+            .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) \
+             / ev.evidence_inv))
+        # ==========================================================================
         # Display more technical details for ln evidence.
-        # ======================================================================
+        # ==========================================================================
         hm.logs.low_log('---------------------------------')
         hm.logs.low_log('lnargmax = {}, lnargmin = {}'
             .format(ev.lnargmax, ev.lnargmin))
@@ -372,8 +368,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 plt.savefig('examples/plots/rastrigin_modelexp_image.png',
                             bbox_inches='tight')
 
-            plt.show(block=False)  
-            created_plots = True
+                plt.show(block=False)  
+                created_plots = True
 
         # Save out realisations for voilin plot.
         evidence_inv_summary[i_realisation,0] = ev.evidence_inv
