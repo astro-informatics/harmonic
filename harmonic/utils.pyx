@@ -10,13 +10,16 @@ def split_data(chains not None, double training_proportion=0.5):
     Split the data in a chains instance into two (e.g. training and test sets) 
     so that the new chains instances can be used for training and calculationg 
     the evidence on the "test" set.
+
     Chains are split so that the first chains in the original chains object go 
     into the training set and the following go into the test set.
+
     Args:
         - chains: 
             Instance of a chains class containing the data to be split.
         - training_proportion: 
             The ratio of the data to be used in training (default=0.5)
+
     Returns: (chains_train, chains_test)
         - chains_train: 
             Instance of a chains class containing chains to be used to fit the 
@@ -24,6 +27,7 @@ def split_data(chains not None, double training_proportion=0.5):
         - chains_test: 
             Instance of a chains class containing chains to be used to calculate
             the evidence (e.g. testing).
+
     Raises:
         - ValueError: 
             Raised if training_proportion is not strictly between 0 and 1.
@@ -72,6 +76,7 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
     """
     Pull out the correct indexes for the chains of the validation and training 
     sets.
+
     Args:
         - long i_fold: 
             Cross validation iteration to perform.
@@ -82,6 +87,7 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
         - list indexes: 
             List of the chains to be used in fold validation that need to be 
             split.
+
     Returns:
         - list indexes_val: 
             List of indexes for the validation set.
@@ -129,6 +135,7 @@ def cross_validation(chains,
     chunk). This procedure is performed for all the chunks and the average 
     (mean) variance from all the chunks is computed and return.  This can be 
     used to decide which hyper parameters list was better.
+
     Args:
         - chains: 
             instance of a chains class with training data (to be split into 
@@ -147,10 +154,12 @@ def cross_validation(chains,
         - bool verbose: 
             Set to True to print results from cross validation evidence 
             calculations (default=False).
+
     Returns:
         - list validation_variances: 
             Mean validation variance (averaged over nfolds) for each 
             hyperparameter.
+
     Raises:
         - ValueError: 
             Raised if MODEL is not one of the posible models
@@ -207,3 +216,4 @@ def cross_validation(chains,
             validation_variances[i_fold,i_val] = ev.evidence_inv_var
 
     return np.mean(validation_variances, axis=0)
+    

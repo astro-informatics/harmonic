@@ -19,7 +19,7 @@ def ln_analytic_evidence(ndim, cov):
         - ndim: 
             Dimensionality of the multivariate Gaussian posterior
         - cov
-            Covariance matrix dimension nxn.               
+            Covariance matrix dimension nxn.           
     Returns:
         - double: 
             Value of posterior at x.
@@ -33,7 +33,7 @@ def ln_Posterior(x, inv_cov):
     Compute log_e of n dimensional multivariate gaussian 
     Args: 
         - x: 
-            Position at which to evaluate prior.           
+            Position at which to evaluate prior.         
     Returns:
         - double: 
             Value of posterior at x.
@@ -326,8 +326,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(cal_ev.lnpredictmax, cal_ev.lnpredictmin))
         hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('mean shift = {}, max shift = {}'
-            .format(cal_ev.mean_shift, cal_ev.max_shift))
+        hm.logs.low_log('shift = {}, shift setting = {}'
+            .format(cal_ev.shift_value, cal_ev.shift))
         hm.logs.low_log('running sum total = {}'
             .format(sum(cal_ev.running_sum)))
         hm.logs.low_log('running_sum = \n{}'

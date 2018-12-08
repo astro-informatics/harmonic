@@ -6,9 +6,6 @@ import harmonic.model as md
 import harmonic.evidence as cbe
 import harmonic.utils as utils
 
-MEAN_SHIFT_SIGN = 1.0
-MAX_SHIFT_SIGN = 1.0
-
 
 def test_constructor():
     
@@ -34,13 +31,13 @@ def test_constructor():
     assert rho.evidence_inv_var_var        == pytest.approx(0.0)
     assert rho.running_sum.size            == nchains 
     assert rho.nsamples_per_chain.size     == nchains 
-    assert rho.mean_shift                  == pytest.approx(0.0)
-    assert rho.mean_shift_set              == False
+    assert rho.shift_value                 == pytest.approx(0.0)
+    assert rho.shift_set                   == False
     for i_chain in range(nchains):
         assert rho.running_sum[i_chain]        == pytest.approx(0.0)
         assert rho.nsamples_per_chain[i_chain] == 0
 
-def test_set_mean_shift():
+def test_set_shift():
     
     nchains = 100
     ndim = 1000    
@@ -49,30 +46,15 @@ def test_set_mean_shift():
     sphere.fitted = True
     rho = cbe.Evidence(nchains, sphere)
     with pytest.raises(ValueError):
-        rho.set_mean_shift(np.nan)
-
-    rho.set_mean_shift(2.0)
-
-    assert rho.mean_shift      == pytest.approx(2.0)
-    assert rho.mean_shift_set  == True
-
-def test_set_max_shift():
-    
-    nchains = 100
-    ndim = 1000    
-    domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)
-    sphere.fitted = True
-    rho = cbe.Evidence(nchains, sphere)
+        rho.set_shift(np.nan)
+    rho.set_shift(2.0)
     with pytest.raises(ValueError):
-        rho.set_max_shift(np.nan)
+        rho.set_shift(1.0)
+    assert rho.shift_value == pytest.approx(2.0)
+    assert rho.shift_set  == True
 
-    rho.set_max_shift(2.0)
 
-    assert rho.max_shift      == pytest.approx(2.0)
-    assert rho.max_shift_set  == True
-
-def test_process_run_mean_shift():
+def test_process_run_with_shift():
 
     nchains = 10
     n_samples = 20
@@ -91,13 +73,13 @@ def test_process_run_mean_shift():
 
     evidence_inv  = np.mean(samples)
     evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
-    # print(np.std(np.sum(samples,axis=1)/n_samples)**2, nchains)
     evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
 
     assert rho.evidence_inv == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
     assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
 
+    rho = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
     np.random.seed(1)
     post           = np.random.uniform(high=1E3, size=(nchains,n_samples))
     samples        = 1.0/post
@@ -105,7 +87,7 @@ def test_process_run_mean_shift():
     samples_scaled = samples*np.exp(mean_shift)
     rho.running_sum        = np.sum(samples_scaled,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
-    rho.mean_shift = MEAN_SHIFT_SIGN * mean_shift
+    rho.shift_value = mean_shift
     rho.process_run()
 
     evidence_inv  = np.mean(samples)
@@ -116,49 +98,6 @@ def test_process_run_mean_shift():
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
     assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
 
-def test_process_run_max_shift():
-
-    nchains = 10
-    n_samples = 20
-    ndim = 1000
-
-    domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)
-    sphere.fitted = True
-    rho = cbe.Evidence(nchains, sphere)
-
-    np.random.seed(1)
-    samples                = np.random.randn(nchains,n_samples)
-    rho.running_sum        = np.sum(samples,axis=1)
-    rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
-    rho.process_run()
-
-    evidence_inv  = np.mean(samples)
-    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
-    # print(np.std(np.sum(samples,axis=1)/n_samples)**2, nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
-
-    assert rho.evidence_inv == pytest.approx(evidence_inv,abs=1E-7)
-    assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
-    assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
-
-    np.random.seed(1)
-    post           = np.random.uniform(high=1E3, size=(nchains,n_samples))
-    samples        = 1.0/post
-    max_shift     = np.max(np.log(post))
-    samples_scaled = samples*np.exp(max_shift)
-    rho.running_sum        = np.sum(samples_scaled,axis=1)
-    rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
-    rho.max_shift = MAX_SHIFT_SIGN * max_shift
-    rho.process_run()
-
-    evidence_inv  = np.mean(samples)
-    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
-
-    assert rho.evidence_inv  == pytest.approx(evidence_inv,abs=1E-7)
-    assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
-    assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
 
 def test_add_chains():
 
@@ -181,7 +120,7 @@ def test_add_chains():
     sphere.fit(chain.samples, chain.ln_posterior)
 
     # Calculate evidence
-    cal_ev = cbe.Evidence(nchains, sphere)
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
     cal_ev.add_chains(chain)
 
     print("cal_ev.evidence_inv = {}".format(cal_ev.evidence_inv))
@@ -198,8 +137,7 @@ def test_add_chains():
     for i_chain in range(nchains):
         chains2.add_chain(X[i_chain,nsamples1:,:], Y[i_chain,nsamples1:])
 
-    ev = cbe.Evidence(nchains, sphere)
-    ev.set_mean_shift(cal_ev.mean_shift)
+    ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
     # Might have small numerical differences if don't use same mean_shift.
     ev.add_chains(chains1)
     ev.add_chains(chains2)
@@ -209,6 +147,47 @@ def test_add_chains():
     assert ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
 
     return
+
+def test_shifting_settings():
+
+    nchains   = 200
+    nsamples  = 500
+    ndim      = 2
+
+    # Create samples of unnormalised Gaussian
+    np.random.seed(30)
+    X = np.random.randn(nchains,nsamples,ndim)
+    Y = -np.sum(X*X,axis=2)/2.0
+
+    # Add samples to chains
+    chain  = ch.Chains(ndim)    
+    chain.add_chains_3d(X, Y)
+
+    # Fit the Hyper_sphere
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fit(chain.samples, chain.ln_posterior)
+
+    # Check shift set correctly for: mean shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(np.mean(chain.ln_posterior)) 
+
+    # Check shift set correctly for: max shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MAX_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(np.max(chain.ln_posterior)) 
+
+    # Check shift set correctly for: min shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MIN_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(np.min(chain.ln_posterior)) 
+
+    # Check shift set correctly for: absmax shift
+    cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.ABS_MAX_SHIFT)
+    cal_ev.add_chains(chain)
+    assert cal_ev.shift_value == pytest.approx(chain.ln_posterior[np.argmax(np.abs(Y))]) 
+
 
 def test_compute_evidence():
     

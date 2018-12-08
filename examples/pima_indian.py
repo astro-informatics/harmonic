@@ -111,7 +111,7 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	"""
 	Two primary models for comparison:
 		Model 1: Uses rows const(1) + data(1,2,5,6) = 5 dimensional
-		Model 2: Uses rows const(1) + data(1,2,3,5,6,7) = 6 dimensional
+		Model 2: Uses rows const(1) + data(1,2,5,6,7) = 6 dimensional
 	data[:,0] --> Diabetes incidence. 
 	data[:,1] --> Number of pregnancies (NP)
 	data[:,2] --> Plasma glucose concentration (PGC)
@@ -193,7 +193,7 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	#===========================================================================
 	# Configure emcee chains for harmonic
 	#===========================================================================
-	hm.logs.high_log('Configuring chains...')
+	hm.logs.high_log('Configure chains...')
 	hm.logs.low_log('---------------------------------')
 	"""
 	Configure chains for the cross validation stage.
@@ -291,44 +291,40 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	# End Timer.
 	clock = time.clock() - clock
 	hm.logs.high_log('Execution time = {}s'.format(clock))
+
+	#===========================================================================
+	# Display evidence results 
+	#===========================================================================
 	hm.logs.low_log('---------------------------------')
-
-	# #===========================================================================
-	# # Display evidence results 
-	# #===========================================================================
-	
-	# hm.logs.low_log('---------------------------------')
-	# hm.logs.low_log('ev_var_var test = {}'.format(ev.evidence_inv_var_var))
-
-	# hm.logs.high_log('START TESTING LOG-SPACE!')
-	# hm.logs.low_log('---------------------------------')
-	hm.logs.low_log('ln( evidence_inv ) = {}'
+	hm.logs.high_log('Log-space Statistics')
+	hm.logs.low_log('---------------------------------')
+	hm.logs.low_log('ln( z ) = {}'
 	    .format(ev.ln_evidence_inv))
-	hm.logs.low_log('ln( evidence_inv_std ) = {}, \
-	        ln ( evidence_inv_std/evidence_inv ) = {}'
+	hm.logs.low_log('ln( std(z) ) = {}, ln ( std(z)/z ) = {}'
 	    .format(0.5*ev.ln_evidence_inv_var, \
 	            0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv))
-	hm.logs.low_log('ln( kurtosis ) = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+	hm.logs.low_log('ln( kurt ) = {}, sqrt( 2/(n_eff-1) ) = {}'
 	    .format(ev.ln_kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
-	hm.logs.low_log('ln( ev.evidence_inv_var_std/ev.evidence_inv_var ) = {}'
+	hm.logs.low_log('ln( std(var(z))/var(z) ) = {}'
 	    .format(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var) )
 	hm.logs.low_log('---------------------------------')
-	hm.logs.low_log('exp( ln( evidence_inv ) ) = {}'
+	hm.logs.high_log('Real-space Statistics')
+	hm.logs.low_log('---------------------------------')
+	hm.logs.low_log('exp(ln( z )) = {}'
 	    .format(np.exp(ev.ln_evidence_inv) ) )
-	hm.logs.low_log('exp( ln( evidence_inv_std ) )= {}, \
-	        exp( ln ( evidence_inv_std/evidence_inv ) ) = {}'
+	hm.logs.low_log('exp(ln( std(z) ))= {}, exp(ln( std(z)/z )) = {}'
 	    .format(np.exp( 0.5*ev.ln_evidence_inv_var), \
 	            np.exp(0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv)) )
-	hm.logs.low_log('exp( ln( kurtosis ) ) = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
+	hm.logs.low_log('exp(ln( kurt )) = {}, sqrt( 2/(n_eff-1) ) = {}'
 	    .format(np.exp( ev.ln_kurtosis ), np.sqrt(2.0/(ev.n_eff-1))))    
-	hm.logs.low_log('exp(ln(ev.evidence_inv_var_std/ev.evidence_inv_var)) = {}'
+	hm.logs.low_log('exp(ln( std(var(z))/var(z)))) = {}'
 	    .format(np.exp( 0.5 * ev.ln_evidence_inv_var_var \
 	    	                - ev.ln_evidence_inv_var) ) )
-	# hm.logs.high_log('END TESTING LOG-SPACE!')
-	# hm.logs.low_log('---------------------------------')
 	#===========================================================================
 	# Display more technical details
 	#===========================================================================
+	hm.logs.low_log('---------------------------------')
+	hm.logs.high_log('Technical Details')
 	hm.logs.low_log('---------------------------------')
 	hm.logs.low_log('lnargmax = {}, lnargmin = {}'
 	    .format(ev.lnargmax, ev.lnargmin))
@@ -337,8 +333,8 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
 	    .format(ev.lnpredictmax, ev.lnpredictmin))
 	hm.logs.low_log('---------------------------------')
-	hm.logs.low_log('mean shift = {}, max shift = {}'
-	    .format(ev.mean_shift, ev.max_shift))
+	hm.logs.low_log('shift = {}, shift setting = {}'
+	    .format(ev.shift_value, ev.shift))
 	hm.logs.low_log('running sum total = {}'
 	    .format(sum(ev.running_sum)))
 	hm.logs.low_log('running sum = \n{}'

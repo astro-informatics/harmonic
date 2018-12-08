@@ -11,7 +11,7 @@ class Chains:
         """
         Construct empty Chains for parameter space of dimension ndim.
         
-        Constructor simply sets ndim.  Chain samples are added by the add_chain* 
+        Constructor simply sets ndim.  Chain samples are added by the add_chain*
         methods since we want to support setting up data for chains from 
         different input data formats (e.g. data from a single chain or multiple 
         chains at once).
@@ -55,7 +55,7 @@ class Chains:
             raise ValueError("ndim of new chain does not match previous chains")
         
         if nsamples_in != ln_posterior.shape[0]:            
-            raise ValueError("Length of sample and ln_posterior arrays do not "\
+            raise ValueError("Length of sample and ln_posterior arrays do not " 
                 + "match")
         
         self.samples = np.concatenate((self.samples, samples))
@@ -106,7 +106,7 @@ class Chains:
             raise ValueError("ndim of new chain does not match previous chains")
 
         if samples.shape[0] != ln_posterior.shape[0]:            
-            raise ValueError("Length of sample and ln_posterior arrays do not "\
+            raise ValueError("Length of sample and ln_posterior arrays do not "
                 + "match")
 
         cdef long i_chain, samples_per_chain = samples.shape[0] / nchains_in
@@ -160,13 +160,14 @@ class Chains:
             raise ValueError("Length of index list is not nchains_in + 1")
 
         if samples.shape[0] != ln_posterior.shape[0]:            
-            raise ValueError("Length of sample and ln_posterior arrays do not "\
+            raise ValueError("Length of sample and ln_posterior arrays do not "
                 + "match")
 
         cdef long i_chain, samples_per_chain
 
         for i_chain in range(nchains_in):
             samples_per_chain = chain_indexes[i_chain+1] -chain_indexes[i_chain]
+
             self.add_chain(
                 samples[i_chain*samples_per_chain:
                         (i_chain+1)*samples_per_chain, :],
@@ -209,7 +210,7 @@ class Chains:
 
         if samples.shape[0] != ln_posterior.shape[0] \
             or samples.shape[1] != ln_posterior.shape[1]:            
-            raise ValueError("Length of sample and ln_posterior arrays do not "\
+            raise ValueError("Length of sample and ln_posterior arrays do not "
                 + "match")
 
         cdef long i_chain
@@ -258,7 +259,7 @@ class Chains:
     def get_chain_indices(self, long i):
         """
         Gets the start and end index of samples from a chain.
-        
+
         The end index specifies the index one passed the end of the chain, i.e. 
         the chain samples can be accessed by self.samples[start:end,:].
         

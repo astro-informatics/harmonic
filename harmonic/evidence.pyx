@@ -17,14 +17,17 @@ class Optimisation(Enum):
     ACCURACY = 2
 
 
-# OPTIMISATION = Optimisation.ACCURACY
 OPTIMISATION = Optimisation.SPEED
 
-# Shifting toggles
-MEAN_SHIFT_SIGN = 1.0
-MAX_SHIFT_SIGN = 1.0
-DEFAULT_SHIFT_SWITCH = False  # False defaults to mean if not defined,
-                              # True defaults to max if not defined.
+class Shifting(Enum):
+    """
+    Enumeration to define which log-space shifting to adopt. Different choices 
+    may prove optimal for certain settings.
+    """
+    MEAN_SHIFT = 1
+    MAX_SHIFT = 2
+    MIN_SHIFT = 3
+    ABS_MAX_SHIFT = 4
 
 
 class Evidence:
@@ -35,7 +38,7 @@ class Evidence:
     long chains).
     """
 
-    def __init__(self, long nchains, model not None):
+    def __init__(self, long nchains, model not None, shift=Shifting.MEAN_SHIFT):
         """
         Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
@@ -81,14 +84,10 @@ class Evidence:
         self.ln_evidence_inv_var_var = 0.0
         self.ln_kurtosis = 0.0
 
-
-
         # Shift selection
-        self.mean_shift_set = False
-        self.mean_shift = 0.0
-
-        self.max_shift_set = False
-        self.max_shift = 0.0
+        self.shift = shift
+        self.shift_set = False
+        self.shift_value = 0.0
 
         self.chains_added = False
 
@@ -101,55 +100,30 @@ class Evidence:
         self.lnpredictmax = -np.inf
         self.lnpredictmin = np.inf
 
-    def set_mean_shift(self, double mean_shift_in):
+    def set_shift(self, double shift_value):
         """
         Set the multiplicative shift of log_e posterior values to aid
-        numerical stability -- here by the geometric mean.
+        numerical stability. 
 
         Args:
-            - double mean_shift_in: 
+            - double shift_value: 
                 Multiplicative shift.
 
         Raises:
             - ValueError: 
-                Raised if mean_shift_in is NaN .
+                Raised if shift_value is NaN .
             - ValueError:
-                Raised if one attempts to set mean shift when max shift is 
+                Raised if one attempts to set shift when another shift is 
                 already set.
         """
-        if not np.isfinite(mean_shift_in):
-            raise ValueError("Mean shift must be a number")
-        if self.max_shift_set:
-            raise ValueError("Cannot set both mean and max shift")
+        if not np.isfinite(shift_value):
+            raise ValueError("Shift must be a number")
 
-        self.mean_shift = mean_shift_in
-        self.mean_shift_set = True
-        return
+        if self.shift_set:
+            raise ValueError("Cannot define multiple shifts!")
 
-    def set_max_shift(self, double max_shift_in):
-        """
-        Set the multiplicative shift of log_e posterior values to aid
-        numerical stability -- here by the maximum coefficient.
-
-        Args:
-            - double max_shift_in: 
-                Multiplicative shift.
-
-        Raises:
-            - ValueError: 
-                Raised if max_shift_in is NaN .
-            - ValueError:
-                Raised if one attempts to set max shift when mean shift is 
-                already set.
-        """
-        if not np.isfinite(max_shift_in):
-            raise ValueError("Max shift must be a number")
-
-        if self.mean_shift_set:
-            raise ValueError("Cannot set both mean and max shift")
-
-        self.max_shift = max_shift_in
-        self.max_shift_set = True
+        self.shift_value = shift_value
+        self.shift_set = True
         return
 
     def process_run(self):
@@ -181,107 +155,63 @@ class Evidence:
               
         evidence_inv /= nsamples
 
-        # #=======================================================================
+        """
+        The following code computes the exponents of the variance and variance 
+        of the variance where possible in log space to avoid overflow errors.
 
-        # For now lets just consider improving var and kurt of running_sum.
+        This is a log-space representation of the real-space statistics. One may
+        alternatively compute the log-space statistics, but should note that 
+        simply taking the exponential of log-space statistics is NOT the same as 
+        computing the real-space statistics.
+        """
         cdef np.ndarray[double, ndim=1, mode="c"] y_i=np.zeros(len(running_sum))
         cdef np.ndarray[double, ndim=1, mode="c"] z_i=np.zeros(len(running_sum))
         cdef double y_mean=0.0, z_mean=0.0
 
-        # Precompute differential vectors.
-        z_i[:] = ( nsamples_per_chain[:]**(0.5) ) \
-                 * np.abs(( ( running_sum[:] / nsamples_per_chain[:] ) \
-                    - evidence_inv) )
+        """
+        Precompute differential vectors.
+        """
+        z_i[:]  = np.abs((running_sum[:]/nsamples_per_chain[:])-evidence_inv)
+        y_i[:]  = z_i[:] * (nsamples_per_chain[:]**(0.25))
+        z_i[:] *= nsamples_per_chain[:]**(0.5) 
 
-        y_i[:] = ( nsamples_per_chain[:]**(0.25) ) \
-                 * np.abs(( ( running_sum[:] / nsamples_per_chain[:] ) \
-                    - evidence_inv) )
-
-        # Compute means. TODO: find log-space equivalent to avoid this
-        z_mean = np.nanmax(z_i)
-        y_mean = np.nanmax(y_i)
-
-        # Calculate exponents of variance 
-        evidence_inv_var_exp = np.log( np.sum( np.exp( 2.0 \
-                                * (np.log(z_i) - np.log(z_mean) ) ) ) ) \
-                                + 2.0 * np.log(z_mean) - np.log(nsamples)
-
-        # Calculate exponents of kurtosis
-        kur_exp = np.log( np.sum( np.exp( 4.0 \
-                                * (np.log(y_i) - np.log(y_mean) ) ) ) ) \
-                                + 4.0 * np.log(y_mean) - np.log(nsamples) \
-                                - 2.0 * evidence_inv_var_exp
+        """
+        Compute exponents using logsumexp for numerical stability.
+        """
+        evidence_inv_var_exp = sp.logsumexp(2.0*np.log(z_i)) - np.log(nsamples)
+        kur_exp = sp.logsumexp(4.0 * np.log(y_i)) - np.log(nsamples) \
+                                                  - 2.0 * evidence_inv_var_exp
         kur = np.exp(kur_exp)
         self.kurtosis = kur
-
-        # Compute effective chain lengths.
+        """
+        Compute effective chain lengths.
+        """
         for i in range(nchains):
             n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
         n_eff = <double>nsamples*<double>nsamples/n_eff
         self.n_eff = n_eff
 
-        # Correct for lower-level mean/max shift 
-        self.evidence_inv = evidence_inv*exp( \
-                    -MEAN_SHIFT_SIGN*self.mean_shift \
-                    -MAX_SHIFT_SIGN*self.max_shift) 
-        # Bring variance inside to avoid storing quadratic dependence
-        self.evidence_inv_var = \
-            exp(evidence_inv_var_exp -MEAN_SHIFT_SIGN*2*self.mean_shift \
-                                 -MAX_SHIFT_SIGN*2*self.max_shift \
-                                 - np.log(n_eff) )
-        # Bring variance square inside to avoid storing quartic dependence
-        self.evidence_inv_var_var = \
-            exp(2.0 * evidence_inv_var_exp - MEAN_SHIFT_SIGN*4*self.mean_shift \
-                - MAX_SHIFT_SIGN*4*self.max_shift - 3.0 *np.log(n_eff))
-
-        self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
-
-        # Store log-space variables for log-space computation
-        self.ln_evidence_inv = np.log(evidence_inv) \
-                    -MEAN_SHIFT_SIGN*self.mean_shift \
-                    -MAX_SHIFT_SIGN*self.max_shift
-        self.ln_evidence_inv_var = evidence_inv_var_exp \
-                                 -MEAN_SHIFT_SIGN*2*self.mean_shift \
-                                 -MAX_SHIFT_SIGN*2*self.max_shift \
-                                 - np.log(n_eff)
-        self.ln_evidence_inv_var_var = 2.0 * evidence_inv_var_exp \
-                                    - MEAN_SHIFT_SIGN*4*self.mean_shift \
-                                    - MAX_SHIFT_SIGN*4*self.max_shift \
-                                    - 3.0 *np.log(n_eff) \
-                                    + np.log((kur - 1) + 2./(n_eff-1))
+        """
+        Compute inverse evidence values as a log-space representation of the 
+        real-space statistics to attempt to avoid float overflow.
+        """
+        self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
+        self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
+                                                        - np.log(n_eff)
+        self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
+                                     - 3. * np.log(n_eff) \
+                                     - 4. * self.shift_value \
+                                     + np.log((kur - 1) + 2./(n_eff-1))
         self.ln_kurtosis = kur_exp
 
-        # =======================================================================
-
-        # for i_chains in range(nchains):
-        #     dummy  = running_sum[i_chains]/nsamples_per_chain[i_chains]
-        #     dummy -= evidence_inv
-        #     n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
-        #     evidence_inv_var += nsamples_per_chain[i_chains]*dummy*dummy
-        #     kur += nsamples_per_chain[i_chains]*dummy*dummy*dummy*dummy
-
-        # n_eff = <double>nsamples*<double>nsamples/n_eff
-        # self.n_eff = n_eff
-        # evidence_inv_var /= nsamples
-        # kur /= nsamples
-        # kur /= evidence_inv_var*evidence_inv_var
-        # self.kurtosis = kur
-
-        # # Generalized to include max shift if active.
-        # self.evidence_inv = evidence_inv*exp( \
-        #             -MEAN_SHIFT_SIGN*self.mean_shift # TODO: This slows things
-        #             -MAX_SHIFT_SIGN*self.max_shift)  # very slightly, change?
-
-        # self.evidence_inv_var = \
-        #     evidence_inv_var*exp(-MEAN_SHIFT_SIGN*2*self.mean_shift
-        #                          -MAX_SHIFT_SIGN*2*self.max_shift)/(n_eff)
-
-        # self.evidence_inv_var_var = \
-        #     evidence_inv_var**2 * exp(-MEAN_SHIFT_SIGN*4*self.mean_shift \
-        #         -MAX_SHIFT_SIGN*4*self.max_shift) / (n_eff*n_eff*n_eff)
-
-        # self.evidence_inv_var_var *= ((kur - 1) + 2./(n_eff-1))
-
+        """
+        Compute inverse evidence statistics in real-space. In certain settings
+        these values may return nan due to float overflow: in these cases one 
+        should use the log-space values.
+        """
+        self.evidence_inv = exp(self.ln_evidence_inv)
+        self.evidence_inv_var = exp(self.ln_evidence_inv_var)
+        self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
 
         return
 
@@ -328,15 +258,23 @@ class Evidence:
         cdef long i_chains, i_samples, nchains = self.nchains
         cdef double mean_shift, max_shift, max_i
 
-        # Default shift dependent on user defined MACRO DEFAULT_SHIFT_SWITCH
-        if not self.mean_shift_set and not self.max_shift_set:
-            if not DEFAULT_SHIFT_SWITCH:    
-                self.set_mean_shift(np.mean(Y))
-            else: 
-                self.set_max_shift(np.max(Y)) # TODO: is this the correct max
-                                              # shift? Easy to adjust if not.
-        max_shift = self.max_shift
-        mean_shift = self.mean_shift
+        """
+        The following performs a shift in log-space to avoid overflow or float
+        rounding errors in realspace.
+        """
+        if not self.shift_set:
+            if self.shift == Shifting.MAX_SHIFT:
+                # Shifts by max of the log-posterior
+                self.set_shift(np.max(Y))
+            if self.shift == Shifting.MEAN_SHIFT:
+                # Shifts by mean of the log-posterior
+                self.set_shift(np.mean(Y))
+            if self.shift == Shifting.MIN_SHIFT:
+                # Shifts by min of the log-posterior
+                self.set_shift(np.min(Y))
+            if self.shift == Shifting.ABS_MAX_SHIFT:
+                # Shifts by the absolute maximum of log-posterior
+                self.set_shift(Y[np.argmax(np.abs(Y))])
 
 
         for i_chains in range(nchains):
@@ -353,10 +291,8 @@ class Evidence:
                 lnpredict = self.model.predict(X[i_samples,:])
                 lnprob = Y[i_samples]
                 lnarg = lnpredict - lnprob
-                if self.mean_shift_set:
-                    lnarg += MEAN_SHIFT_SIGN*mean_shift
-                if self.max_shift_set:
-                    lnarg += MAX_SHIFT_SIGN*max_shift
+                # Apply shifting term to avoid overflow.
+                lnarg += self.shift_value
                 term = exp(lnarg)
                 nsamples_per_chain[i_chains] += 1
 
@@ -415,6 +351,7 @@ class Evidence:
                     offset = np.amax(terms_ln)
                 
                 running_sum[i_chains] = np.log(np.sum(np.exp(terms_ln -offset)))
+
                 running_sum[i_chains] += offset
                 running_sum[i_chains] -= np.log(i_samples_end -i_samples_start)
                  
