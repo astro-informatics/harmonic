@@ -11,3 +11,5 @@ install:
 script:
   - python setup.py build_ext --inplace
   - pytest
+  - cd doc && make html
+  
