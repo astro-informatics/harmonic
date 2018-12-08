@@ -9,6 +9,7 @@ install:
   - pip install matplotlib
   - pip install pyyaml
   - pip install sphinx
+  - pip install jupyter_sphinx_theme
 script:
   - python setup.py build_ext --inplace
   - pytest
