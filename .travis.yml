@@ -21,7 +21,7 @@ after_success:
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $
+  github_token: $token
   local_dir: build/html
   on:
     branch: Documentation_tests
