@@ -18,4 +18,11 @@ before_install:
   - pip install codecov
 after_success:
   - codecov
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $
+  local_dir: build/html
+  on:
+    branch: Documentation_tests
   
