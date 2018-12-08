@@ -8,8 +8,13 @@ install:
   - pip install scikit-learn
   - pip install matplotlib
   - pip install pyyaml
+  - pip install sphinx
 script:
   - python setup.py build_ext --inplace
   - pytest
   - cd doc && make html
+before_install:
+  - pip install codecov
+after_success:
+  - codecov
   
