@@ -14,15 +14,22 @@ script:
   - python setup.py build_ext --inplace
   - pytest
   - cd doc && make html
-before_install:
-  - pip install codecov
-after_success:
-  - codecov
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $token
-  local_dir: build/html
-  on:
-    branch: Documentation_tests
+  
+# The below code will give us the coverage
+# We just need to activate at some point.
+# before_install:
+#   - pip install codecov
+# after_success:
+#   - codecov
+
+
+# The below code will automatically put the
+# publish the documentation on gh-pages.
+# deploy:
+#   provider: pages
+#   skip_cleanup: true
+#   github_token: $token
+#   local_dir: doc/_build/html
+#   on:
+#     branch: Documentation_tests
   
