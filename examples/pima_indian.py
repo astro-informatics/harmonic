@@ -335,6 +335,7 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	hm.logs.low_log('---------------------------------')
 	hm.logs.low_log('shift = {}, shift setting = {}'
 	    .format(ev.shift_value, ev.shift))
+	hm.logs.low_log('statistic space = {}'.format(ev.statspace))
 	hm.logs.low_log('running sum total = {}'
 	    .format(sum(ev.running_sum)))
 	hm.logs.low_log('running sum = \n{}'
