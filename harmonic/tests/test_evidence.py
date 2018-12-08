@@ -188,6 +188,36 @@ def test_shifting_settings():
     cal_ev.add_chains(chain)
     assert cal_ev.shift_value == pytest.approx(chain.ln_posterior[np.argmax(np.abs(Y))]) 
 
+def test_logspace_averaging():
+
+    nchains   = 200
+    nsamples  = 500
+    ndim      = 2
+
+    # Create samples of unnormalised Gaussian
+    np.random.seed(30)
+    X = np.random.randn(nchains,nsamples,ndim)
+    Y = -np.sum(X*X,axis=2)/2.0
+
+    # Add samples to chains
+    chain  = ch.Chains(ndim)    
+    chain.add_chains_3d(X, Y)
+
+    # Fit the Hyper_sphere
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fit(chain.samples, chain.ln_posterior)
+
+    # Check logspace is correctly set.
+    cal_ev_log = cbe.Evidence(nchains, sphere, \
+        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.Statistic_space.LOG)
+    assert cal_ev_log.statspace == cbe.Statistic_space.LOG
+
+    # Check realspace is correctly set.
+    cal_ev_real = cbe.Evidence(nchains, sphere, \
+        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.Statistic_space.REAL)
+    assert cal_ev_real.statspace == cbe.Statistic_space.REAL
+
 
 def test_compute_evidence():
     
