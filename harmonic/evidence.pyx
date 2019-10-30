@@ -228,7 +228,7 @@ class Evidence:
         """
         self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
         self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
-                                                        - np.log(n_eff)
+                                                        - np.log(n_eff - 1)
         self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
                                      - 3. * np.log(n_eff) \
                                      - 4. * self.shift_value \
@@ -321,7 +321,7 @@ class Evidence:
         """
         self.ln_evidence_inv = evidence_inv - self.shift_value
         self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
-                                                        - np.log(n_eff)
+                                                        - np.log(n_eff-1)
         self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
                                      - 3. * np.log(n_eff) \
                                      - 4. * self.shift_value \
