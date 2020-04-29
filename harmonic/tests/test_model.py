@@ -752,9 +752,8 @@ def test_ModifiedGaussianMixtureModel_fit():
     weight_lo, weight_hi = (weight_1, weight_2) if (weight_1 < weight_2) \
         else (weight_2, weight_1)
 
-    assert weight_lo == pytest.approx(0.25252212) # makes sense as close to 0.25
-    assert weight_hi == pytest.approx(0.74747788) # makes sense as close to 0.75
-
+    assert weight_lo == pytest.approx(0.25, abs=0.05) # makes sense as close to 0.25
+    assert weight_hi == pytest.approx(0.75, abs=0.05) # makes sense as close to 0.75
 
     return
 
