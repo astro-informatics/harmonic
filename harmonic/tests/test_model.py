@@ -741,14 +741,20 @@ def test_ModifiedGaussianMixtureModel_fit():
     assert MGMM.inv_covariance[0,0] == pytest.approx(0.24818792) # makes sense as close to 1/(2.0**2)
     assert MGMM.inv_covariance[0,1] == pytest.approx(0.24781514)
 
-    assert MGMM.alphas[0] == pytest.approx(0.97125603) # makes sense as close to 1
-    assert MGMM.alphas[1] == pytest.approx(0.99537613) # makes sense as close to 1
+    # assert MGMM.alphas[0] == pytest.approx(0.97125603) # makes sense as close to 1
+    # assert MGMM.alphas[1] == pytest.approx(0.99537613) # makes sense as close to 1
+
+    assert MGMM.alphas[1] == pytest.approx(0.97125603) # makes sense as close to 1
+    assert MGMM.alphas[0] == pytest.approx(0.99537613) # makes sense as close to 1
 
     norm    = np.sum(np.exp(MGMM.beta_weights))
     weights = np.exp(MGMM.beta_weights)/norm
 
-    assert weights[0] == pytest.approx(0.25252212) # makes sense as close to 0.25
-    assert weights[1] == pytest.approx(0.74747788) # makes sense as close to 0.75
+    # assert weights[0] == pytest.approx(0.25252212) # makes sense as close to 0.25
+    # assert weights[1] == pytest.approx(0.74747788) # makes sense as close to 0.75
+
+    assert weights[1] == pytest.approx(0.25252212) # makes sense as close to 0.25
+    assert weights[0] == pytest.approx(0.74747788) # makes sense as close to 0.75
 
     return
 
