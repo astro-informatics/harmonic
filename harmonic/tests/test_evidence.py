@@ -220,13 +220,13 @@ def test_logspace_averaging():
 
     # Check logspace is correctly set.
     cal_ev_log = cbe.Evidence(nchains, sphere, \
-        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.Statistic_space.LOG)
-    assert cal_ev_log.statspace == cbe.Statistic_space.LOG
+        shift=cbe.Shifting.MEAN_SHIFT, realspace_statistics=False)
+    assert cal_ev_log.statspace == cbe.StatisticSpace.LOG
 
     # Check realspace is correctly set.
     cal_ev_real = cbe.Evidence(nchains, sphere, \
-        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.Statistic_space.REAL)
-    assert cal_ev_real.statspace == cbe.Statistic_space.REAL
+        shift=cbe.Shifting.MEAN_SHIFT, realspace_statistics=True)
+    assert cal_ev_real.statspace == cbe.StatisticSpace.REAL
 
 
 def test_compute_evidence():
