@@ -731,10 +731,15 @@ def test_ModifiedGaussianMixtureModel_fit():
 
 
 
-    assert MGMM.inv_covariance[0,0] == pytest.approx(0.06037615) # makes sense as close to 1/(4.0**2)
-    assert MGMM.inv_covariance[0,1] == pytest.approx(0.06203164)
-    assert MGMM.inv_covariance[1,0] == pytest.approx(0.24818792) # makes sense as close to 1/(2.0**2)
-    assert MGMM.inv_covariance[1,1] == pytest.approx(0.24781514)
+#    assert MGMM.inv_covariance[0,0] == pytest.approx(0.06037615) # makes sense as close to 1/(4.0**2)
+#    assert MGMM.inv_covariance[0,1] == pytest.approx(0.06203164)
+#    assert MGMM.inv_covariance[1,0] == pytest.approx(0.24818792) # makes sense as close to 1/(2.0**2)
+#    assert MGMM.inv_covariance[1,1] == pytest.approx(0.24781514)
+
+    assert MGMM.inv_covariance[1,0] == pytest.approx(0.06037615) # makes sense as close to 1/(4.0**2)
+    assert MGMM.inv_covariance[1,1] == pytest.approx(0.06203164)
+    assert MGMM.inv_covariance[0,0] == pytest.approx(0.24818792) # makes sense as close to 1/(2.0**2)
+    assert MGMM.inv_covariance[0,1] == pytest.approx(0.24781514)
 
     assert MGMM.alphas[0] == pytest.approx(0.97125603) # makes sense as close to 1
     assert MGMM.alphas[1] == pytest.approx(0.99537613) # makes sense as close to 1
