@@ -3,11 +3,7 @@ python:
   - "3.6"
   - "nightly"
 install:
-  - pip install cython
-  - pip install scipy
-  - pip install scikit-learn
-  - pip install matplotlib
-  - pip install pyyaml
+  - pip install -r requirements.txt
 script:
   - python setup.py build_ext --inplace
   - pytest
