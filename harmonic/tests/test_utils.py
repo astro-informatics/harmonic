@@ -188,16 +188,16 @@ def test_cross_validation():
     validation_variances = utils.cross_validation(chains, 
         [np.array([1E-1,1E1])], \
         hyper_parameters_HS, modelClass=md.HyperSphere, verbose=False)
-    assert validation_variances[0] == pytest.approx(1.48812772e-05) 
-    assert validation_variances[1] == pytest.approx(1.48812772e-05) 
+    assert validation_variances[0] == pytest.approx(1.503159310628641e-05) 
+    assert validation_variances[1] == pytest.approx(1.503159310628641e-05) 
     validation_variances = utils.cross_validation(chains, [], 
                                                   hyper_parameters_KDE, \
                                                   verbose=False)
-    assert validation_variances[0] == pytest.approx(9.74522749e-05) 
-    assert validation_variances[1] == pytest.approx(2.57373056e-06) 
+    assert validation_variances[0] == pytest.approx(9.843664133455417e-05) 
+    assert validation_variances[1] == pytest.approx(2.599727834904592e-06) 
     validation_variances = utils.cross_validation(chains, 
         [np.array([1E-2,10E0])], \
         hyper_parameters_MGMM, modelClass=md.ModifiedGaussianMixtureModel, verbose=False)
-    assert validation_variances[0] == pytest.approx(1.41849113e-07) 
-    assert validation_variances[1] == pytest.approx(3.01021287e-06) 
-    assert validation_variances[2] == pytest.approx(4.52651400e-06) 
+    assert validation_variances[0] == pytest.approx(1.4328193315511208e-07) 
+    assert validation_variances[1] == pytest.approx(3.0406190613789445e-06) 
+    assert validation_variances[2] == pytest.approx(4.572236365068644e-06) 

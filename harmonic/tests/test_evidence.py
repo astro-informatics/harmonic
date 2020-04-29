@@ -53,6 +53,16 @@ def test_set_shift():
     assert rho.shift_value == pytest.approx(2.0)
     assert rho.shift_set  == True
 
+# def test_serialization():
+    
+#     nchains = 100
+#     ndim = 1000    
+#     domain = [np.array([1E-1,1E1])]
+#     sphere = md.HyperSphere(ndim, domain)
+#     sphere.fitted = True
+#     rho = cbe.Evidence(nchains, sphere)
+#     rho.serialize_evidence_class()
+
 
 def test_process_run_with_shift():
 
@@ -72,8 +82,8 @@ def test_process_run_with_shift():
     rho.process_run()
 
     evidence_inv  = np.mean(samples)
-    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
+    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
+    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1)) * (nchains - 1)**2 / nchains**3
 
     assert rho.evidence_inv == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
@@ -91,8 +101,8 @@ def test_process_run_with_shift():
     rho.process_run()
 
     evidence_inv  = np.mean(samples)
-    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
+    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
+    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))*(nchains - 1)**2 / nchains**3
 
     assert rho.evidence_inv  == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
@@ -126,7 +136,7 @@ def test_add_chains():
     print("cal_ev.evidence_inv = {}".format(cal_ev.evidence_inv))
 
     assert cal_ev.evidence_inv              == pytest.approx(0.159438606) 
-    assert cal_ev.evidence_inv_var          == pytest.approx(1.158805126e-07)
+    assert cal_ev.evidence_inv_var          == pytest.approx(1.164628268e-07)
     assert cal_ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
 
     nsamples1 = 300
@@ -143,7 +153,7 @@ def test_add_chains():
     ev.add_chains(chains2)
 
     assert ev.evidence_inv              == pytest.approx(0.159438606)
-    assert ev.evidence_inv_var          == pytest.approx(1.158805126e-07)
+    assert ev.evidence_inv_var          == pytest.approx(1.164628268e-07)
     assert ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
 
     return
