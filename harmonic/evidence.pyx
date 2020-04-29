@@ -162,7 +162,7 @@ class Evidence:
         self.shift_set = True
         return
 
-    def process_run(self):
+    def process_run_realspace(self):
         """
         Use the running totals of realspace running_sum and nsamples_per_chain
         to calculate an estimate of the inverse evidence, its variance,
@@ -502,7 +502,7 @@ class Evidence:
         if self.logspace:
             self.process_run_logspace()
         if not self.logspace:
-            self.process_run()
+            self.process_run_realspace()
 
         self.chains_added = True
 

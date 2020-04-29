@@ -79,7 +79,7 @@ def test_process_run_with_shift():
     samples                = np.random.randn(nchains,n_samples)
     rho.running_sum        = np.sum(samples,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
-    rho.process_run()
+    rho.process_run_realspace()
 
     evidence_inv  = np.mean(samples)
     evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
@@ -98,7 +98,7 @@ def test_process_run_with_shift():
     rho.running_sum        = np.sum(samples_scaled,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
     rho.shift_value = mean_shift
-    rho.process_run()
+    rho.process_run_realspace()
 
     evidence_inv  = np.mean(samples)
     evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
