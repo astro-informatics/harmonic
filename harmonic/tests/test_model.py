@@ -719,10 +719,17 @@ def test_ModifiedGaussianMixtureModel_fit():
 
     MGMM.fit(X, Y)
 
-    assert MGMM.centres[0,0] == pytest.approx(20.19605982) # makes sense as close to 20.0
-    assert MGMM.centres[0,1] == pytest.approx(19.69715662)
-    assert MGMM.centres[1,0] == pytest.approx(-0.02629883) # makes sense as close to 0.0
-    assert MGMM.centres[1,1] == pytest.approx(-0.16510091)
+#    assert MGMM.centres[0,0] == pytest.approx(20.19605982) # makes sense as close to 20.0
+#    assert MGMM.centres[0,1] == pytest.approx(19.69715662)
+#    assert MGMM.centres[1,0] == pytest.approx(-0.02629883) # makes sense as close to 0.0
+#    assert MGMM.centres[1,1] == pytest.approx(-0.16510091)
+
+    assert MGMM.centres[1,0] == pytest.approx(20.19605982) # makes sense as close to 20.0
+    assert MGMM.centres[1,1] == pytest.approx(19.69715662)
+    assert MGMM.centres[0,0] == pytest.approx(-0.02629883) # makes sense as close to 0.0
+    assert MGMM.centres[0,1] == pytest.approx(-0.16510091)
+
+
 
     assert MGMM.inv_covariance[0,0] == pytest.approx(0.06037615) # makes sense as close to 1/(4.0**2)
     assert MGMM.inv_covariance[0,1] == pytest.approx(0.06203164)
