@@ -6,6 +6,8 @@ from math import fsum
 import warnings
 from enum import Enum
 import scipy.special as sp
+import json
+
 
 class Optimisation(Enum):
     """
@@ -29,7 +31,7 @@ class Shifting(Enum):
     MIN_SHIFT = 3
     ABS_MAX_SHIFT = 4
 
-class Statistic_space(Enum):
+class StatisticSpace(Enum):
     """
     Enumeration to define whether one wishes to compute statistics in real-space
     or purely in log-space. Note that recovered log-space statistics are NOT
@@ -49,7 +51,7 @@ class Evidence:
     """
 
     def __init__(self, long nchains, model not None, \
-                 shift=Shifting.MEAN_SHIFT, statspace=Statistic_space.REAL):
+                 shift=Shifting.MEAN_SHIFT, statspace=StatisticSpace.REAL):
         """
         Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
@@ -87,7 +89,7 @@ class Evidence:
         """
         self.statspace = statspace
         self.logspace = False
-        if statspace == Statistic_space.LOG:
+        if statspace == StatisticSpace.LOG:
             self.logspace = True
 
 
@@ -586,6 +588,28 @@ class Evidence:
 
         return (ln_evidence, ln_evidence_std)
 
+    def serialize_evidence_class(self):
+        """
+        Serializes the evidence class for checkpointing.
+
+        Returns:
+            - Nothing.
+        """
+        # file_name = 'user.json'
+        # with open(file_name, 'w') as file:
+        json.dumps(self, default=convert_to_dict,indent=4, sort_keys=True)
+
+def deserialize_evidence_class(file_name):
+    """
+    Serializes the evidence class for checkpointing.
+
+    Returns:
+        - Nothing.
+    """
+    file_name = 'user.json'
+    with open(file_name, 'r') as file:
+        json.loads(file, object_hook=dict_to_obj)
+
 
 def compute_bayes_factor(ev1, ev2):
     """
@@ -703,3 +727,47 @@ def msum(iterable):
             x = hi
         partials[i:] = [x]
     return sum(partials, 0.0), partials
+
+
+
+def convert_to_dict(obj):
+  """
+  A function takes in a custom object and returns a dictionary representation of the object.
+  This dict representation includes meta data such as the object's module and class names.
+  """
+  
+  #  Populate the dictionary with object meta data 
+  obj_dict = {
+    "__class__": obj.__class__.__name__,
+    "__module__": obj.__module__
+  }
+  
+  #  Populate the dictionary with object properties
+  obj_dict.update(obj.__dict__)
+  
+  return obj_dict
+
+def dict_to_obj(our_dict):
+    """
+    Function that takes in a dict and returns a custom object associated with the dict.
+    This function makes use of the "__module__" and "__class__" metadata in the dictionary
+    to know which object type to create.
+    """
+    if "__class__" in our_dict:
+        # Pop ensures we remove metadata from the dict to leave only the instance arguments
+        class_name = our_dict.pop("__class__")
+        
+        # Get the module name from the dict and import it
+        module_name = our_dict.pop("__module__")
+        
+        # We use the built in __import__ function since the module name is not yet known at runtime
+        module = __import__(module_name)
+        
+        # Get the class from the module
+        class_ = getattr(module,class_name)
+        
+        # Use dictionary unpacking to initialize the object
+        obj = class_(**our_dict)
+    else:
+        obj = our_dict
+    return obj
