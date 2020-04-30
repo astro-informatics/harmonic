@@ -1,7 +1,7 @@
-numpy
-cython
-scikit-learn
-scipy
+numpy==1.14.2
+cython==0.26.1
+scikit-learn==0.22.2.post1
+scipy==1.4.1
 pyyaml==3.12
 sphinx==1.8.2
 jupyter-sphinx-theme==0.0.6
