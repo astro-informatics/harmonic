@@ -3,6 +3,7 @@ python:
   - "3.6"
 env:
   - CODECOV_TOKEN=d8f839b7-cf16-4d43-83c7-9d595f6e1d44
+  - CYTHON_TRACE=1
 before_install:
   - pip install pytest pytest-cov
   - pip install codecov
