@@ -51,7 +51,7 @@ class Evidence:
     """
 
     def __init__(self, long nchains, model not None, \
-                 shift=Shifting.MEAN_SHIFT, realspace_statistics=True):
+                 shift=Shifting.MEAN_SHIFT, statspace=StatisticSpace.REAL):
         """
         Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
@@ -61,6 +61,12 @@ class Evidence:
                 Number of chains that will be used in the compuation.
             - model: 
                 An instance of a posterior model class that has been fitted.
+            - shift:
+                What shifting method to use to avoid over/underflow during 
+                computation. Selected from enumerate class.
+            - statspace:
+                In what space the statistics should be computed (i.e 
+                logspace or realspace). Selected from enumerate class.
 
         Raises:
             - ValueError: 
@@ -88,12 +94,9 @@ class Evidence:
         statistics purely in log-space then the lospace will be set to true.
         """
         self.logspace = False
-        if realspace_statistics == True:
-            self.statspace = StatisticSpace.REAL
-        if realspace_statistics == False:
-            self.statspace = StatisticSpace.LOG
+        self.statspace = statspace
+        if statspace == StatisticSpace.LOG:
             self.logspace = True
-        self.logspace = False
 
 
         """
