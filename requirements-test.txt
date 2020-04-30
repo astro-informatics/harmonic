@@ -1,5 +1,5 @@
-numpy==1.14.2
-cython==0.26.1
+numpy
+cython
 scikit-learn==0.22.2.post1
 scipy==1.4.1
 pyyaml==3.12
