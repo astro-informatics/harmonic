@@ -6,8 +6,9 @@ install:
   - pip freeze
 script:
   - python setup.py build_ext --inplace
-  - pytest
-before_install:	
+  - pytest --cov=codecov
+before_install:
+  - pip install pytest
   - pip install codecov
 env:
   - CODECOV_TOKEN=d8f839b7-cf16-4d43-83c7-9d595f6e1d44
