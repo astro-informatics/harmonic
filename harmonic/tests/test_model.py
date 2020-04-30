@@ -434,24 +434,6 @@ def test_evaluate_one_guassian():
 
     return
 
-# def test_delta_theta_ij():
-
-#     np.random.seed(0)
-
-#     ntrials = 20
-#     ndim    = 5
-
-#     alpha = 3.0
-#     mu = np.random.randn(ndim)
-#     diag_cov = np.ones(ndim) + np.random.randn(ndim)*0.1
-#     inv_covariance = 1.0/diag_cov
-
-#     for i_trials in range(ntrials):
-#         x = np.random.randn(ndim)*5*i_trials/ntrials
-#         y = md.delta_theta_ij_wrap(x, mu, inv_covariance, ndim)
-#         assert y == np.sum((x-mu)*(x-mu)*inv_covariance)
-
-#     return
 
 def test_ModifiedGaussianMixtureModel_constructor():
 
@@ -753,45 +735,5 @@ def test_ModifiedGaussianMixtureModel_fit():
 
     return
 
-# def test_idea(sigma):
-
-#     np.random.seed(0)
-
-#     ntrials    = 100
-#     nsamples   = 2000
-#     ndim       = 4
-#     nguassians = 1
-#     gamma      = 1E-8
-#     domains    = [np.array([1E-20,5E0])]
-
-#     mus            = np.zeros((nguassians,ndim))
-#     diag_cov       = np.ones((nguassians,ndim))*sigma*sigma
-#     inv_covariance = 1.0/diag_cov
-#     weights        = np.ones((nguassians))
-
-#     MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[nguassians, gamma,None,None,None])
-
-#     MGMM.set_centres(mus)
-#     MGMM.set_inv_covariance(inv_covariance)
-#     MGMM.set_weights(weights)
-
-#     O = np.zeros(ntrials)
-
-#     x = np.random.randn(nsamples,ndim)*sigma
-#     for i_trials in range(ntrials):
-#         alphas    = np.array([domains[0][0] + (domains[0][1]-domains[0][0])*i_trials/ntrials])
-#         MGMM.set_alphas(alphas)
-
-#         for i_sample in range(nsamples):
-#             y = MGMM.predict(x[i_sample,:])
-#             O[i_trials] += np.exp(2*y+np.dot(x[i_sample,:],x[i_sample,:])/(sigma**2)-100)
-
-
-#     plt.plot(np.linspace(0,domains[0][1],ntrials),O)
-#     plt.show()
-
-#     return
-
-# # test_idea(sigma)
 
 
