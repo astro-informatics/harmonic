@@ -1,6 +1,6 @@
 # Harmonic
 
-[![Github](https://img.shields.io/badge/GitHub-astro--informatics%2Fharmonic-blue.svg?style=flat)](https://github.com/astro-informatics/src_harmonic)
+[![Github](https://img.shields.io/badge/GitHub-astro--informatics%2Fharmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
 [![Build Status](https://travis-ci.com/astro-informatics/src_harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/src_harmonic)
 [![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
 [![License](http://img.shields.io/badge/license-GPL-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.md)
