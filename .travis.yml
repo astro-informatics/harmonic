@@ -1,17 +1,16 @@
 language: python
 python:
   - "3.6"
+env:
+  - CODECOV_TOKEN=d8f839b7-cf16-4d43-83c7-9d595f6e1d44
+before_install:
+  - pip install pytest pytest-cov
+  - pip install codecov
 install:
   - pip install -r requirements.txt
   - pip freeze
 script:
   - python setup.py build_ext --inplace
-  - pytest --cov=codecov
-before_install:
-  - pip install pytest
-  - pip install pytest-cov
-  - pip install codecov
-env:
-  - CODECOV_TOKEN=d8f839b7-cf16-4d43-83c7-9d595f6e1d44
+  - pytest --cov-report term --cov=harmonic
 after_success:
   - codecov
