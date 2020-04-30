@@ -14,9 +14,24 @@ import utils
 hm.logs.setup_logging()
 
 
-
 def ln_likelihood(y, x, n, alpha, beta, tau):
-    
+    """
+    Compute log_e of Radiatta Pine likelihood
+    Args: 
+        - y: 
+            Vector of incidence. 1=diabetes, 0=no diabetes
+        - x: 
+            Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).  
+        - alpha:
+            enter when known.
+        - beta:
+            enter when known.
+        - tau:
+            enter when known.
+    Returns:
+        - double: 
+            Value of log_e likelihood at specified point in parameter space.
+    """
     ln_like = 0.5 * n * np.log(tau)
     ln_like -= 0.5 * n * np.log(2.0 * np.pi)
     
@@ -25,27 +40,24 @@ def ln_likelihood(y, x, n, alpha, beta, tau):
     ln_like -= 0.5 * tau * s
     
     return ln_like
-    
-    
-def ln_likelihood_check(y, x, n, alpha, beta, tau):
-    
-    ln_like = 0.5 * n * np.log(tau)
-    ln_like -= 0.5 * n * np.log(2.0 * np.pi)
-    
-    s = 0.0
-    for i in range(n):
-        s += (y[i,0] - alpha - beta * x[i,0])**2
-        
-    ln_like -= 0.5 * tau * s
-    
-    return ln_like
-    
+
     
 def ln_prior_alpha(alpha, tau, mu_0, r_0):
     """
-        mu_0 here is scalar
+    Compute log_e of alpha / beta prior
+    Args: 
+        - alpha:
+            enter when known.
+        - tau:
+            enter when known.
+        - mu_0:
+            enter when known.
+        - r_0:
+            enter when known.
+    Returns:
+        - double: 
+            Value of log_e prior at specified point in parameter space.
     """
-    
     ln_pr_alpha = 0.5 * np.log(tau)
     ln_pr_alpha += 0.5 * np.log(r_0)
     ln_pr_alpha -= 0.5 * np.log(2.0 * np.pi)
@@ -55,7 +67,19 @@ def ln_prior_alpha(alpha, tau, mu_0, r_0):
 
 
 def ln_prior_tau(tau, a_0, b_0):
-    
+    """
+    Compute log_e of tau prior
+    Args: 
+        - tau:
+            enter when known.
+        - a_0:
+            enter when known.
+        - b_0:
+            enter when known.
+    Returns:
+        - double: 
+            Value of log_e tau prior at specified point in parameter space.
+    """
     if tau < 0:
         return -np.inf
     
@@ -68,7 +92,27 @@ def ln_prior_tau(tau, a_0, b_0):
 
 
 def ln_prior_separated(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
-    
+    """
+    Compute log_e of prior (combining individual prior functions)
+    Args: 
+        - alpha:
+            enter when known.
+        - tau:
+            enter when known.
+        - mu_0:
+            enter when known.
+        - r_0:
+            enter when known.
+         - s_0:
+            enter when known.
+        - a_0:
+            enter when known.
+        - b_0:
+            enter when known.
+    Returns:
+        - double: 
+            Value of log_e prior at specified point in parameter space.
+    """
     ln_pr = ln_prior_alpha(alpha, tau, mu_0[0,0], r_0)
     ln_pr += ln_prior_alpha(beta, tau, mu_0[1,0], s_0)
     ln_pr += ln_prior_tau(tau, a_0, b_0)
@@ -77,7 +121,27 @@ def ln_prior_separated(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
 
 def ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
-    
+    """
+    Compute log_e of combined prior (jointly computing total prior)
+    Args: 
+        - alpha:
+            enter when known.
+        - tau:
+            enter when known.
+        - mu_0:
+            enter when known.
+        - r_0:
+            enter when known.
+         - s_0:
+            enter when known.
+        - a_0:
+            enter when known.
+        - b_0:
+            enter when known.
+    Returns:
+        - double: 
+            Value of log_e combined prior at specified point in parameter space.
+    """
     if tau < 0:
         return -np.inf
 
@@ -95,6 +159,27 @@ def ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
 
 def ln_prior(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
+    """
+    Compute log_e of prior
+    Args: 
+        - alpha:
+            enter when known.
+        - tau:
+            enter when known.
+        - mu_0:
+            enter when known.
+        - r_0:
+            enter when known.
+         - s_0:
+            enter when known.
+        - a_0:
+            enter when known.
+        - b_0:
+            enter when known.
+    Returns:
+        - double: 
+            Value of log_e combined prior at specified point in parameter space.
+    """
 
     return ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
         
@@ -127,7 +212,7 @@ def ln_posterior(theta, y, x, n, mu_0, r_0, s_0, a_0, b_0):
     return  ln_L + ln_pr
     
     
-def ln_posterior_analytic_x(x, y, mu_0, a_0, b_0, ):
+def ln_posterior_analytic_x(x, y, mu_0, a_0, b_0):
     """
     Compute analytic log_e of posterior for model x.
     
@@ -160,7 +245,7 @@ def ln_posterior_analytic_x(x, y, mu_0, a_0, b_0, ):
 
     return ln_z2_x
 
-def ln_posterior_analytic_z(z, y, mu_0, a_0, b_0, ):
+def ln_posterior_analytic_z(z, y, mu_0, a_0, b_0):
     """
     Compute analytic log_e of posterior for model z.
     
@@ -208,9 +293,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     if ndim != 3:
         raise ValueError("Only ndim=3 is supported (ndim={} specified)"
             .format(ndim))
-    
-        
-        
+         
     # Set general parameters.    
     savefigs = True
     
@@ -246,6 +329,9 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Load Radiata Pine data.
     #===========================================================================
+    hm.logs.high_log('Loading data ...')
+    hm.logs.low_log('---------------------------------')
+
     # Imports data file
     data = np.loadtxt('examples/data/RadiataPine.dat')
     id = data[:,0]
@@ -270,38 +356,35 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Compute random positions to draw from for emcee sampler.
     #===========================================================================
+    """
+    Initial positions for each chain for each covariate \in [0,8).
+    Simply drawn from directly from each covariate prior.
+    """
     pos_alpha = mu_0[0,0] + \
                 1.0 / np.sqrt(tau_prior_mean * r_0) * np.random.randn(nchains)  
     pos_beta = mu_0[1,0] + \
-               1.0 / np.sqrt(tau_prior_mean * s_0) * np.random.randn(nchains)    
-    # pos_tau = tau_prior_mean + tau_prior_std * np.random.randn(nchains)            
+               1.0 / np.sqrt(tau_prior_mean * s_0) * np.random.randn(nchains)              
     pos_tau = tau_prior_mean + 2.0 * tau_prior_std * 2.0 * \
                            (np.random.rand(nchains) - 0.5)  # avoid negative tau
-        
+    
+    """
+    Concatenate these positions into a single variable 'pos'.
+    """  
     pos = np.c_[pos_alpha, pos_beta, pos_tau]
            
-           
-    # for i in range(nchains):
-    #     ln_p = ln_posterior(pos[i], y, x, n, mu_0, r_0, s_0, a_0, b_0)
-    #     print("pos[i] = {}".format(pos[i]))
-    #     print("ln_p = {}\n".format(ln_p))
-    # 
-    # return 
-    # 
-    
     # Start timer.
     clock = time.clock()
     
     hm.logs.high_log('Run sampling...')
     
-    # #=========================================================================
-    # # Temporary position for testing
-    # #=========================================================================
-    # pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
-    
     #===========================================================================
     # Run Emcee to recover posterior sampels 
     #===========================================================================
+    hm.logs.high_log('Run sampling...')
+    hm.logs.low_log('---------------------------------')
+    """
+    Feed emcee the ln_posterior function, starting positions and recover chains.
+    """
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
         # args=(y, x, n, mu_0, r_0, s_0, a_0, b_0))
         args=(y, z, n, mu_0, r_0, s_0, a_0, b_0))
@@ -314,18 +397,14 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     # print("lnprob = {}".format(lnprob)) 
     # print("sampler.chain = ".format(sampler.chain))
     
-    
     #===========================================================================
     # Configure emcee chains for harmonic
     #===========================================================================
+    hm.logs.high_log('Configure chains...')
     hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Calculate evidence using harmonic...')
-
-    #===========================================================================
-    # Configure emcee chains for harmonic
-    #===========================================================================
-    hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Configuring chains...')
+    """
+    Configure chains for the cross validation stage.
+    """
     chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, lnprob)
     chains_train, chains_test = hm.utils.split_data(chains, \
@@ -334,8 +413,13 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Perform cross-validation
     #===========================================================================
-    hm.logs.low_log('---------------------------------')
     hm.logs.high_log('Perform cross-validation...')
+    hm.logs.low_log('---------------------------------')
+    """
+    There are several different machine learning models. Cross-validation
+    allows the software to select the optimal model and the optimal model 
+    hyper-parameters for a given situation.
+    """
     
     # validation_variances_MGMM = \
     #     hm.utils.cross_validation(chains_train, 
@@ -382,8 +466,12 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Fit learnt model for container function 
     #===========================================================================
+    hm.logs.high_log('Select optimal model...')
     hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Fit model...')
+    """
+    This simply uses the cross-validation results to choose the model which 
+    has the smallest validation variance -- i.e. the best model for the job.
+    """
     # best_var_MGMM = \
     #     validation_variances_MGMM[best_hyper_param_MGMM_ind]
     # best_var_sphere = \
@@ -417,9 +505,12 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Computing evidence using learnt model and emcee chains
     #===========================================================================
-    hm.logs.low_log('---------------------------------')
-    # Use chains and model to compute evidence.
     hm.logs.high_log('Compute evidence...')
+    hm.logs.low_log('---------------------------------')
+    """
+    Instantiates the evidence class with a given model. Adds some chains and 
+    computes the log-space evidence (marginal likelihood).
+    """
     ev = hm.Evidence(chains_test.nchains, model)
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
@@ -435,54 +526,38 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     
     
     #===========================================================================
-    # Display logarithmic evidence results 
-    #===========================================================================
-    hm.logs.low_log('---------------------------------')
-    # print("ln_evidence_analytic = {}"
-    #     .format(ln_evidence_analytic))
-    hm.logs.low_log('ln_evidence = {}, -np.log(ev.evidence_inv) = {}'
-        .format(ln_evidence, -np.log(ev.evidence_inv)))            
-    # diff = np.abs(ln_evidence_analytic - ln_evidence)
-    # print("|ln_evidence_analytic - ln_evidence| / ln_evidence = {}\n"
-    #       .format(diff/ln_evidence))
-
-    #===========================================================================
     # Display evidence results 
     #===========================================================================
     hm.logs.low_log('---------------------------------')
-    # print("evidence_analytic = {}"
-    #     .format(evidence_analytic))
-    hm.logs.low_log('evidence = {}'
-        .format(np.exp(ln_evidence)))
-    hm.logs.low_log('evidence_std = {}, evidence_std / evidence = {}'
-        .format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
-    # diff = np.log(np.abs(evidence_analytic - np.exp(ln_evidence)))
-    # print("|evidence_analytic - evidence| / evidence = {}\n"
-    #       .format(np.exp(diff - ln_evidence)))
-
-    #===========================================================================
-    # Display inverse evidence results 
-    #===========================================================================
+    hm.logs.high_log('Log-space Statistics')
     hm.logs.low_log('---------------------------------')
-    # if verbose: print("evidence_inv_analytic = {}"
-    #     .format(1.0/evidence_analytic))
-    hm.logs.low_log('evidence_inv = {}'
-        .format(ev.evidence_inv))
-    hm.logs.low_log('evidence_inv_std = {}, evidence_inv_std/evidence_inv = {}'
-        .format(np.sqrt(ev.evidence_inv_var), \
-                np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-    hm.logs.low_log('kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}'
-        .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
-    hm.logs.low_log('sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var = {}'
-        .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))
-    # if verbose: print(
-    #     "|evidence_inv_analytic - evidence_inv| / evidence_inv = {}"
-    #     .format(np.abs(1.0 / evidence_analytic - ev.evidence_inv) 
-    #             / ev.evidence_inv))
-
+    hm.logs.low_log('ln( z ) = {}'
+        .format(ev.ln_evidence_inv))
+    hm.logs.low_log('ln( std(z) ) = {}, ln ( std(z)/z ) = {}'
+        .format(0.5*ev.ln_evidence_inv_var, \
+                0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv))
+    hm.logs.low_log('ln( kurt ) = {}, sqrt( 2/(n_eff-1) ) = {}'
+        .format(ev.ln_kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
+    hm.logs.low_log('ln( std(var(z))/var(z) ) = {}'
+        .format(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var) )
+    hm.logs.low_log('---------------------------------')
+    hm.logs.high_log('Real-space Statistics')
+    hm.logs.low_log('---------------------------------')
+    hm.logs.low_log('exp(ln( z )) = {}'
+        .format(np.exp(ev.ln_evidence_inv) ) )
+    hm.logs.low_log('exp(ln( std(z) ))= {}, exp(ln( std(z)/z )) = {}'
+        .format(np.exp( 0.5*ev.ln_evidence_inv_var), \
+                np.exp(0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv)) )
+    hm.logs.low_log('exp(ln( kurt )) = {}, sqrt( 2/(n_eff-1) ) = {}'
+        .format(np.exp( ev.ln_kurtosis ), np.sqrt(2.0/(ev.n_eff-1))))    
+    hm.logs.low_log('exp(ln( std(var(z))/var(z)))) = {}'
+        .format(np.exp( 0.5 * ev.ln_evidence_inv_var_var \
+                            - ev.ln_evidence_inv_var) ) )
     #===========================================================================
     # Display more technical details
     #===========================================================================
+    hm.logs.low_log('---------------------------------')
+    hm.logs.high_log('Technical Details')
     hm.logs.low_log('---------------------------------')
     hm.logs.low_log('lnargmax = {}, lnargmin = {}'
         .format(ev.lnargmax, ev.lnargmin))
@@ -491,8 +566,8 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
         .format(ev.lnpredictmax, ev.lnpredictmin))
     hm.logs.low_log('---------------------------------')
-    hm.logs.low_log('mean shift = {}, max shift = {}'
-        .format(ev.mean_shift, ev.max_shift))
+    hm.logs.low_log('shift = {}, shift setting = {}'
+        .format(ev.shift_value, ev.shift))
     hm.logs.low_log('running sum total = {}'
         .format(sum(ev.running_sum)))
     hm.logs.low_log('running sum = \n{}'
@@ -504,7 +579,6 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     hm.logs.low_log('===============================')
     
     
-
     # Create corner/triangle plot.
     created_plots = False
     if plot_corner:

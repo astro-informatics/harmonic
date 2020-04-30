@@ -175,7 +175,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('Evidence: std = {}, std / estimate = {}'
             .format(np.exp(ln_evidence_std), \
                     np.exp(ln_evidence_std - ln_evidence)))
-        diff = np.log(np.abs(np.exp(ln_evidence_analytic) - np.exp(ln_evidence)))
+        diff = np.log(np.abs(np.exp(ln_evidence_analytic) -np.exp(ln_evidence)))
         hm.logs.high_log("Evidence: |analytic - estimate| / estimate = {}"
             .format(np.exp(diff - ln_evidence)))
         # ======================================================================
@@ -206,8 +206,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
         hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('mean shift = {}, max shift = {}, min shift = {}'
-            .format(ev.mean_shift, ev.max_shift, ev.min_shift))
+        hm.logs.low_log('shift = {}, shift setting = {}'
+            .format(ev.shift_value, ev.shift))
         hm.logs.low_log('running sum total = {}'
             .format(sum(ev.running_sum))) 
         hm.logs.low_log('running_sum = \n{}'
@@ -282,7 +282,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   plot_contour=True, markersize=1.0)
             # Save.
             if savefigs:
-                plt.savefig('examples/plots/gaussian_nondiagcov_posterior_image.png'\
+                plt.savefig(
+                    'examples/plots/gaussian_nondiagcov_posterior_image.png'
                     , bbox_inches='tight')
 
             plt.show(block=False) 
@@ -305,7 +306,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Save.
             if savefigs:
-                plt.savefig('examples/plots/gaussian_nondiagcov_surface.png'\
+                plt.savefig('examples/plots/gaussian_nondiagcov_surface.png'
                     , bbox_inches='tight')
 
             plt.show(block=False)

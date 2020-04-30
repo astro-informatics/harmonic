@@ -104,15 +104,21 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Returns:
         - None.
     """
-
+    hm.logs.low_log('---------------------------------')  
     hm.logs.high_log('Rastrigin example')
     hm.logs.high_log('Dimensionality = {}'.format(ndim)) 
-    hm.logs.low_log('---------------------------------')   
+    hm.logs.low_log('---------------------------------')  
+
     if ndim != 2:
         raise ValueError("Only ndim=2 is supported (ndim={} specified)"
             .format(ndim))
 
-    # Set parameters.
+    #===========================================================================
+    # Configure Parameters.
+    #===========================================================================
+    """
+    Configure machine learning parameters
+    """
     savefigs = True
     nfold = 2
     nhyper = 2
@@ -120,8 +126,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     domain = []
     hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
     hm.logs.low_log('Hyper-parameters = {}'.format(hyper_parameters))
-
-    # Set prior parameters.
+    """
+    Set prior parameters.
+    """
     use_uniform_prior = True
     if use_uniform_prior:        
         xmin = -6.0
@@ -133,21 +140,34 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ln_prior = partial(ln_prior_uniform, \
                            xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax) 
 
-	hm.logs.low_log('---------------------------------')
     # Start timer.
     clock = time.clock() 
 
-    # Set up and run multiple simulations
+    #===========================================================================
+    # Begin multiple realisations of estimator
+    #===========================================================================
+    """
+    Set up and run multiple simulations
+    """
     n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
         if n_realisations > 1:
+            hm.logs.low_log('---------------------------------')
             hm.logs.high_log('Realisation number = {}/{}'
                 .format(i_realisation, n_realisations))
+            hm.logs.low_log('---------------------------------')
     
-
+        #=======================================================================
+        # Run Emcee to recover posterior sampels 
+        #=======================================================================
         hm.logs.high_log('Run sampling...')
+        hm.logs.low_log('---------------------------------')
+        """
+        Feed emcee the ln_posterior function, starting positions and recover 
+        chains.
+        """
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
                                         args=[ln_prior])
@@ -156,17 +176,29 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
         lnprob = np.ascontiguousarray(sampler.lnprobability[:,nburn:])
 
-        # Calculate evidence using harmonic....
-
-        # Set up chains.
+        #=======================================================================
+        # Configure emcee chains for harmonic
+        #=======================================================================
+        hm.logs.high_log('Configure chains...')
+        hm.logs.low_log('---------------------------------')
+        """
+        Configure chains for the cross validation stage.
+        """
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)
         chains_train, chains_test = hm.utils.split_data(chains, 
                                                         training_proportion=0.5)
 
-        # Perform cross-validation.
+        #=======================================================================
+        # Perform cross-validation
+        #=======================================================================
         hm.logs.high_log('Perform cross-validation...')
         hm.logs.low_log('---------------------------------')
+        """
+        There are several different machine learning models. Cross-validation
+        allows the software to select the optimal model and the optimal model 
+        hyper-parameters for a given situation.
+        """
         validation_variances = \
             hm.utils.cross_validation(chains_train, \
                                   domain, \
@@ -182,54 +214,31 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         best_hyper_param = hyper_parameters[best_hyper_param_ind]
         hm.logs.low_log('Best hyper-parameter = {}'
             .format(best_hyper_param))
-        hm.logs.low_log('---------------------------------')
 
-        hm.logs.high_log('Run sampling...')
-        pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.5    
-        sampler = emcee.EnsembleSampler(nchains, ndim, 
-                                        ln_posterior, args=[ln_prior])
-        rstate = np.random.get_state()
-        sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
-        samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
-        lnprob = np.ascontiguousarray(sampler.lnprobability[:,nburn:])
-
-        # Calculate evidence using harmonic....
-
-        # Set up chains.
-        chains = hm.Chains(ndim)
-        chains.add_chains_3d(samples, lnprob)
-        chains_train, chains_test = hm.utils.split_data(chains, 
-                                                        training_proportion=0.5)
-
-        # Perform cross-validation.
-        hm.logs.high_log('Perform cross-validation...')
-        hm.logs.low_log('---------------------------------')
-        validation_variances = \
-            hm.utils.cross_validation(chains_train, \
-                                      domain, \
-                                      hyper_parameters, \
-                                      nfold=nfold, \
-                                      modelClass=hm.model.KernelDensityEstimate, \
-                                      verbose=verbose, \
-                                      seed=0)
-        hm.logs.low_log('Validation variances = {}'.format(validation_variances))
-        best_hyper_param_ind = np.argmin(validation_variances)
-        best_hyper_param = hyper_parameters[best_hyper_param_ind]
-        hm.logs.low_log('Best hyper-parameter = {}'.format(best_hyper_param))
-        hm.logs.low_log('---------------------------------')
-
-        # Fit model.
+        #=======================================================================
+        # Fit optimal model hyper-parameters
+        #=======================================================================
         hm.logs.high_log('Fit model...')
         hm.logs.low_log('---------------------------------')
+        """
+        Fit model by selecing the configuration of hyper-parameters which 
+        minimises the validation variances.
+        """
         model = hm.model.KernelDensityEstimate(ndim, 
-                                               domain, 
-                                               hyper_parameters=best_hyper_param)
+                                            domain, 
+                                            hyper_parameters=best_hyper_param)
         fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-        hm.logs.low_log('Fit success = {}'.format(fit_success))    
-        hm.logs.low_log('---------------------------------')
+        hm.logs.low_log('Fit success = {}'.format(fit_success)) 
 
-        # Use chains and model to compute evidence.
+        #=======================================================================
+        # Computing evidence using learnt model and emcee chains
+        #=======================================================================
         hm.logs.high_log('Compute evidence...')
+        hm.logs.low_log('---------------------------------')
+        """
+        Instantiates the evidence class with a given model. Adds some chains and 
+        computes the log-space evidence (marginal likelihood).
+        """
         ev = hm.Evidence(chains_test.nchains, model)    
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
@@ -237,7 +246,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Compute analytic evidence.
         if ndim == 2:
             hm.logs.high_log('Compute evidence by numerical integration...')
-            hm.logs.low_log('---------------------------------')
             ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior)
             ln_posterior_grid, x_grid, y_grid = \
                 utils.eval_func_on_grid(ln_posterior_func, 
@@ -246,25 +254,31 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                         nx=1000, ny=1000)
             dx = x_grid[0,1] - x_grid[0,0]
             dy = y_grid[1,0] - y_grid[0,0]
-            evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) \
-                                                                       * dx * dy
+            evidence_numerical_integration = \
+                                     np.sum(np.exp(ln_posterior_grid)) * dx * dy
             hm.logs.low_log('dx = {}'.format(dx))
             hm.logs.low_log('dy = {}'.format(dy))    
 
-        # ==========================================================================
+        # ======================================================================
         # Display evidence computation results.
-        # ==========================================================================
+        # ======================================================================
+        hm.logs.low_log('---------------------------------')
+        hm.logs.high_log('Evidence Statistics')
         hm.logs.low_log('---------------------------------')
         hm.logs.low_log('Evidence: numerical = {}, estimate = {}'
             .format(evidence_numerical_integration, np.exp(ln_evidence)))
         hm.logs.low_log('Evidence: std = {}, std / estimate = {}'
-            .format(np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)))
-        diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
+            .format(np.exp(ln_evidence_std), \
+                np.exp(ln_evidence_std - ln_evidence)))
+        diff = np.log(np.abs(evidence_numerical_integration - \
+                      np.exp(ln_evidence)))
         hm.logs.high_log('Evidence: |numerical - estimate| / estimate = {}'
             .format(np.exp(diff - ln_evidence)))
-        # ==========================================================================
+        # ======================================================================
         # Display inverse evidence computation results.
-        # ==========================================================================
+        # ======================================================================
+        hm.logs.low_log('---------------------------------')
+        hm.logs.high_log('Inverse Evidence Statistics')
         hm.logs.low_log('---------------------------------')
         hm.logs.low_log('Inv Evidence: numerical = {}, estimate = {}'
             .format(1.0/evidence_numerical_integration, ev.evidence_inv))
@@ -277,11 +291,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('Inv Evidence: sqrt( var(var) )/ var = {}'
             .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
         hm.logs.high_log('Inv Evidence: |numerical - estimate| / estimate = {}'
-            .format(np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv) \
-             / ev.evidence_inv))
-        # ==========================================================================
+            .format(np.abs(1.0 / evidence_numerical_integration - \
+                ev.evidence_inv) / ev.evidence_inv))
+        # ======================================================================
         # Display more technical details for ln evidence.
-        # ==========================================================================
+        # ======================================================================
+        hm.logs.low_log('---------------------------------')
+        hm.logs.high_log('Technical Details')
         hm.logs.low_log('---------------------------------')
         hm.logs.low_log('lnargmax = {}, lnargmin = {}'
             .format(ev.lnargmax, ev.lnargmin))
@@ -290,8 +306,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
         hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('mean shift = {}, max shift = {}'
-            .format(ev.mean_shift, ev.max_shift))
+        hm.logs.low_log('shift = {}, shift setting = {}'
+            .format(ev.shift_value, ev.shift))
         hm.logs.low_log('running sum total = {}'
             .format(sum(ev.running_sum)))
         hm.logs.low_log('running sum = \n{}'
@@ -376,9 +392,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         evidence_inv_summary[i_realisation,1] = ev.evidence_inv_var
         evidence_inv_summary[i_realisation,2] = ev.evidence_inv_var_var
 
+    #===========================================================================
+    # End Timer.
     clock = time.clock() - clock
     hm.logs.high_log('Execution time = {}s'.format(clock))
 
+    #===========================================================================
+    # Save out realisations of statistics for analysis.
     if n_realisations > 1:
         np.savetxt("examples/data/rastrigin_evidence_inv" +
                    "_realisations.dat",

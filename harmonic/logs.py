@@ -44,6 +44,9 @@ def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
             config['handlers']['error_file_handler']['filename'] = os.path.join(
                 os.path.dirname(os.path.dirname(
                     os.path.realpath(harmonic.__file__))) + '/logs/errors.log')
+            config['handlers']['critical_file_handler']['filename'] = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(harmonic.__file__))) + '/logs/critical.log')
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
@@ -60,7 +63,7 @@ def low_log(message):
             Message to log.
     """
     logger = logging.getLogger('Harmonic')
-    logger.debug('\033[0;36;40m' + message + '\033[0;0m')
+    logger.debug('\033[0;36;40m ' + message + ' \033[0;0m')
 
 
 def high_log(message):

@@ -53,6 +53,16 @@ def test_set_shift():
     assert rho.shift_value == pytest.approx(2.0)
     assert rho.shift_set  == True
 
+# def test_serialization():
+    
+#     nchains = 100
+#     ndim = 1000    
+#     domain = [np.array([1E-1,1E1])]
+#     sphere = md.HyperSphere(ndim, domain)
+#     sphere.fitted = True
+#     rho = cbe.Evidence(nchains, sphere)
+#     rho.serialize_evidence_class()
+
 
 def test_process_run_with_shift():
 
@@ -69,11 +79,11 @@ def test_process_run_with_shift():
     samples                = np.random.randn(nchains,n_samples)
     rho.running_sum        = np.sum(samples,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
-    rho.process_run()
+    rho.process_run_realspace()
 
     evidence_inv  = np.mean(samples)
-    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
+    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
+    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1)) * (nchains - 1)**2 / nchains**3
 
     assert rho.evidence_inv == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
@@ -88,11 +98,11 @@ def test_process_run_with_shift():
     rho.running_sum        = np.sum(samples_scaled,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
     rho.shift_value = mean_shift
-    rho.process_run()
+    rho.process_run_realspace()
 
     evidence_inv  = np.mean(samples)
-    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains)
-    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))/nchains
+    evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
+    evidence_inv_var_var = evidence_inv_var**2*(kurtosis(np.sum(samples,axis=1)/n_samples) + 2 + 2./(nchains-1))*(nchains - 1)**2 / nchains**3
 
     assert rho.evidence_inv  == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
@@ -126,7 +136,7 @@ def test_add_chains():
     print("cal_ev.evidence_inv = {}".format(cal_ev.evidence_inv))
 
     assert cal_ev.evidence_inv              == pytest.approx(0.159438606) 
-    assert cal_ev.evidence_inv_var          == pytest.approx(1.158805126e-07)
+    assert cal_ev.evidence_inv_var          == pytest.approx(1.164628268e-07)
     assert cal_ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
 
     nsamples1 = 300
@@ -143,7 +153,7 @@ def test_add_chains():
     ev.add_chains(chains2)
 
     assert ev.evidence_inv              == pytest.approx(0.159438606)
-    assert ev.evidence_inv_var          == pytest.approx(1.158805126e-07)
+    assert ev.evidence_inv_var          == pytest.approx(1.164628268e-07)
     assert ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
 
     return
@@ -187,6 +197,36 @@ def test_shifting_settings():
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.ABS_MAX_SHIFT)
     cal_ev.add_chains(chain)
     assert cal_ev.shift_value == pytest.approx(chain.ln_posterior[np.argmax(np.abs(Y))]) 
+
+def test_logspace_averaging():
+
+    nchains   = 200
+    nsamples  = 500
+    ndim      = 2
+
+    # Create samples of unnormalised Gaussian
+    np.random.seed(30)
+    X = np.random.randn(nchains,nsamples,ndim)
+    Y = -np.sum(X*X,axis=2)/2.0
+
+    # Add samples to chains
+    chain  = ch.Chains(ndim)    
+    chain.add_chains_3d(X, Y)
+
+    # Fit the Hyper_sphere
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fit(chain.samples, chain.ln_posterior)
+
+    # Check logspace is correctly set.
+    cal_ev_log = cbe.Evidence(nchains, sphere, \
+        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.StatisticSpace.LOG)
+    assert cal_ev_log.statspace == cbe.StatisticSpace.LOG
+
+    # Check realspace is correctly set.
+    cal_ev_real = cbe.Evidence(nchains, sphere, \
+        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.StatisticSpace.REAL)
+    assert cal_ev_real.statspace == cbe.StatisticSpace.REAL
 
 
 def test_compute_evidence():

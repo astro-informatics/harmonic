@@ -10,7 +10,7 @@ from getdist import plots, MCSamples
 def plot_corner(samples, labels=None):
     """
     Plot triangle plot of marginalised distributions using corner package.
-    
+
     Args:
         - samples: 
             2D array of shape (ndim, nsamples) containing samples.
@@ -248,8 +248,8 @@ def plot_image(func_eval_grid, x_grid, y_grid, samples=None,
 def plot_realisations(mc_estimates, std_estimated,
                       analytic_val=None, analytic_text=None):
     """
-    Violin plot of estimated quantity from Monte Carlo (MC)
-    simulations, compared with error bar from estimated standard deviation.
+    Violin plot of estimated quantity from Monte Carlo (MC) simulations, 
+    compared with error bar from estimated standard deviation.
     
     Also plot analytic value if specified.
 

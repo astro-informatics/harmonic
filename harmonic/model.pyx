@@ -1227,7 +1227,8 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
     """
 
     cdef np.ndarray[double, ndim=1, mode='c'] x_i
-    cdef double I_i, reg=0.0
+    cdef double I_i_temp, I_i=0.0
+    cdef double reg=0.0
     cdef long i_sample, i_dim, index, i_guas
 
     x_i       = np.zeros(ndim)
@@ -1236,13 +1237,14 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
         index = i_sample
         for i_dim in range(ndim):
             x_i[i_dim] = X[index,i_dim]
-        I_i = calculate_I_i(x_i, centres, inv_covariances, alphas, \
+        I_i_temp = calculate_I_i(x_i, centres, inv_covariances, alphas, \
                   weights, Y[index], nguassians, ndim, mean_shift)
+        I_i += I_i_temp*I_i_temp
 
     for i_guas in range(nguassians):
         reg += alphas[i_guas]*alphas[i_guas]
 
-    return I_i*I_i + 0.5*gamma*reg
+    return I_i/nsamples + 0.5*gamma*reg
 
 class ModifiedGaussianMixtureModel(Model):    
     """
