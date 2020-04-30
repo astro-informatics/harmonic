@@ -2,10 +2,7 @@ language: python
 python:
   - "3.6"
 install:
-  - pip install cython
-  - pip install scipy	
-  - pip install scikit-learn	
-  - pip install pyyaml
+  - pip install -r requirements
 script:
   - python setup.py build_ext --inplace
   - pytest
