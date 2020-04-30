@@ -1,7 +1,6 @@
 import pytest
 import harmonic.model as md
 import numpy as np
-import matplotlib.pyplot as plt
 
 def test_hyper_sphere_constructor():
 
@@ -373,9 +372,6 @@ def test_kernel_density_estimate_predict():
             post_grid[i_x,i_y] = np.exp(density.predict(np.array([x,y])))
 
     assert np.sum(post_grid)*(grid_length/n_grid)*(grid_length/n_grid) == pytest.approx(1.0,rel=1E-2)
-
-    # plt.imshow(post_grid)
-    # plt.show()
 
     return
 
