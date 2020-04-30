@@ -6,7 +6,6 @@ import scipy.special as sp
 import scipy.optimize as so
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 
 class Model(metaclass=abc.ABCMeta):
     """
