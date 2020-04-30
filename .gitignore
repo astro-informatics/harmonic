@@ -5,3 +5,4 @@ __pycache__/
 build/
 *~
 .DS_Store
+logs/*.log
