@@ -3,6 +3,7 @@ python:
   - "3.6"
 install:
   - pip install -r requirements-test.txt
+  - pip freeze
 script:
   - python setup.py build_ext --inplace
   - pytest
