@@ -7,22 +7,22 @@
 
 
 
-# Installation
+## Installation
 
-## Set up conda environment
+### Set up conda environment
 
 ```conda create --name harmonic python=3.6```
 
-## Install dependencies for `harmonic` package
+### Install dependencies for `harmonic` package
 
 `pip install -r requirements.txt`
 
 
-## Install dependencies for `harmonic` examples
+### Install dependencies for `harmonic` examples
 
 `pip install -r requirements-examples.txt`
 
-## Build `harmonic`
+### Build `harmonic`
 
 `python setup.py build_ext --inplace`
 
