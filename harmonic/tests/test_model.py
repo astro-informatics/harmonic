@@ -719,24 +719,41 @@ def test_ModifiedGaussianMixtureModel_fit():
 
     MGMM.fit(X, Y)
 
-    assert MGMM.centres[0,0] == pytest.approx(20.19605982) # makes sense as close to 20.0
-    assert MGMM.centres[0,1] == pytest.approx(19.69715662)
-    assert MGMM.centres[1,0] == pytest.approx(-0.02629883) # makes sense as close to 0.0
-    assert MGMM.centres[1,1] == pytest.approx(-0.16510091)
+    centre_1 = (MGMM.centres[0,0], MGMM.centres[0,1])
+    centre_2 = (MGMM.centres[1,0], MGMM.centres[1,1])
+    centre_lo, centre_hi = (centre_1, centre_2) if (centre_1[0] < centre_2[0]) \
+        else (centre_2, centre_1)
+    assert centre_hi[0] == pytest.approx(20.19605982) # makes sense as close to 20.0
+    assert centre_hi[1] == pytest.approx(19.69715662)
+    assert centre_lo[0] == pytest.approx(-0.02629883) # makes sense as close to 0.0
+    assert centre_lo[1] == pytest.approx(-0.16510091)
 
-    assert MGMM.inv_covariance[0,0] == pytest.approx(0.06037615) # makes sense as close to 1/(4.0**2)
-    assert MGMM.inv_covariance[0,1] == pytest.approx(0.06203164)
-    assert MGMM.inv_covariance[1,0] == pytest.approx(0.24818792) # makes sense as close to 1/(2.0**2)
-    assert MGMM.inv_covariance[1,1] == pytest.approx(0.24781514)
+    inv_cov_1 = (MGMM.inv_covariance[0,0], MGMM.inv_covariance[0,1])
+    inv_cov_2 = (MGMM.inv_covariance[1,0], MGMM.inv_covariance[1,1])
+    inv_cov_lo, inv_cov_hi = (inv_cov_1, inv_cov_2) if (inv_cov_1[0] < inv_cov_2[0]) \
+        else (inv_cov_2, inv_cov_1)
+    assert inv_cov_lo[0] == pytest.approx(0.06037615) # makes sense as close to 1/(4.0**2)
+    assert inv_cov_lo[1] == pytest.approx(0.06203164)
+    assert inv_cov_hi[0] == pytest.approx(0.24818792) # makes sense as close to 1/(2.0**2)
+    assert inv_cov_hi[1] == pytest.approx(0.24781514)
 
-    assert MGMM.alphas[0] == pytest.approx(0.97125603) # makes sense as close to 1
-    assert MGMM.alphas[1] == pytest.approx(0.99537613) # makes sense as close to 1
+    alpha_1 = MGMM.alphas[0]
+    alpha_2 = MGMM.alphas[1]
+    alpha_lo, alpha_hi = (alpha_1, alpha_2) if (alpha_1 < alpha_2) \
+        else (alpha_2, alpha_1)
+    assert alpha_lo == pytest.approx(0.97125603, abs=1e-3) # makes sense as close to 1
+    assert alpha_hi == pytest.approx(0.99537613, abs=1e-3) # makes sense as close to 1
 
     norm    = np.sum(np.exp(MGMM.beta_weights))
     weights = np.exp(MGMM.beta_weights)/norm
 
-    assert weights[0] == pytest.approx(0.25252212) # makes sense as close to 0.25
-    assert weights[1] == pytest.approx(0.74747788) # makes sense as close to 0.75
+    weight_1 = weights[0]
+    weight_2 = weights[1]
+    weight_lo, weight_hi = (weight_1, weight_2) if (weight_1 < weight_2) \
+        else (weight_2, weight_1)
+
+    assert weight_lo == pytest.approx(0.25, abs=0.05) # makes sense as close to 0.25
+    assert weight_hi == pytest.approx(0.75, abs=0.05) # makes sense as close to 0.75
 
     return
 
