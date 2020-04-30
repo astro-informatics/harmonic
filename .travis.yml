@@ -7,3 +7,7 @@ install:
 script:
   - python setup.py build_ext --inplace
   - pytest
+before_install:	
+  - pip install codecov
+after_success:
+  - codecov
