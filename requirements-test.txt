@@ -1,0 +1,8 @@
+numpy
+cython
+scikit-learn
+scipy
+pyyaml
+sphinx
+jupyter-sphinx-theme
+sphinx-rtd-theme
