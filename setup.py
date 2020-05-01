@@ -67,5 +67,6 @@ setup(
         libraries=[],
         extra_link_args=extra_link_args,
         extra_compile_args=[]
-    )])
+    )],
+    compiler_directives={'linetrace': True})
 )

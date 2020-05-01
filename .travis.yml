@@ -1,13 +1,13 @@
 language: python
 python:
   - "3.6"
+before_install:
+  - pip install pytest pytest-cov codecov
 install:
   - pip install -r requirements.txt
   - pip freeze
 script:
-  - python setup.py build_ext --inplace
-  - pytest
-before_install:	
-  - pip install codecov
+  - python setup.py build_ext --inplace --define CYTHON_TRACE
+  - pytest --cov-report term --cov=harmonic --cov-config=.coveragerc
 after_success:
-  - codecov
+  - codecov --token d8f839b7-cf16-4d43-83c7-9d595f6e1d44
