@@ -91,31 +91,30 @@ class Model(metaclass=abc.ABCMeta):
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                                          centre, inv_covariance, mean_shift):
-    """
-    Evaluate ojective function forthe HyperSphere model. 
+    """Evaluate objective function forthe HyperSphere model.
 
     Objective function is given by the variance of the estimator (subject to a 
     linear transformation that does not depend on the radius of the sphere, 
     which is the variable to be fitted).
 
     Args:
-        - double R_squared: 
-            Radius of the hyper sphere squared.
-        - X: 
-            2D numpy.ndarray containing the samples with shape (nsamples, ndim) 
-            and dtype double.
-        - Y: 
-            1D numpy.ndarray containing the log_e posterior values with shape 
-            (nsamples) and dtype double.
-        - centre: 
-            1D numpy.ndarray containing the centre of the sphere with shape 
-            (ndim) and dtype double.            
-        - inv_covariance_in: 
-            1D numpy.ndarray containing the diagonal of inverse covariance 
-            matrix that defines the ellipse with shape (ndim) and dtype double.            
+
+        R_squared (double): Radius of the hyper sphere squared.
+
+        X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
+        Y (double ndarray[nsamples]): Target log_e posterior values for each
+            sample in X.
+        
+        centre_in (double ndarray[ndim]): Centre of sphere.
+
+        inv_covariance_in (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix that defines the ellipse.
 
     Return:
-        - Value of the objective function.
+
+        (double): Value of the objective function.
+
     """
 
     cdef np.ndarray[double, ndim=2, mode="c"] X_here = X
@@ -301,7 +300,7 @@ class HyperSphere(Model):
 
         Args:
 
-            inv_covariance_in (double ndarray[ndim]):Diagonal of inverse
+            inv_covariance_in (double ndarray[ndim]): Diagonal of inverse
                 covariance matrix that defines the ellipse.
 
         Raises:
