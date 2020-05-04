@@ -281,7 +281,7 @@ class Chains:
 
         Returns:
 
-            (long,long): A tuple of the start and end index, i.e. (start, end).
+            (long, long): A tuple of the start and end index, i.e. (start, end).
             
         Raises:
 
