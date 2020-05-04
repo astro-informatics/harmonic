@@ -17,6 +17,7 @@ class Chains:
         chains at once).
         
         Args:
+
             ndim (long): Dimension of the parameter space.
 
         """    
