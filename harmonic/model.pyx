@@ -8,74 +8,80 @@ from sklearn import preprocessing
 from sklearn.cluster import KMeans
 
 class Model(metaclass=abc.ABCMeta):
-    """
-    Base abstract class for posterior model.
+    """Base abstract class for posterior model.
     
     All inherited models must implement the abstract constructor, fit and 
     predict methods.
+
     """
+
 
     @abc.abstractmethod
     def __init__(self, long ndim, list domains not None, hyper_parameters=None):
-        """
-        Constructor setting the hyper parameters and domains of the model.
+        """Constructor setting the hyper parameters and domains of the model.
         
         Must be implemented by derivied class (currently abstract).
         
         Args: 
-            - long ndim: 
-                Dimension of the problem to solve.
-            - list domains: 
-                List of 1D numpy ndarrays containing the domains for each 
-                parameter of model.  Each domain is of length two, specifying a 
-                lower and upper bound for real hyper parameters but can be 
-                different in other cases if required.  
-            - list hyper_parameters: 
-                Hyperparameters for model.
+
+            ndim (long): Dimension of the problem to solve.
+
+            domains (list): List of 1D numpy ndarrays containing the domains
+                for each parameter of model. Each domain is of length two,
+                specifying a lower and upper bound for real hyper parameters
+                but can be different in other cases if required.
+
+            hyper_parameters (list): Hyperparameters for model.
+
         """
+
 
     @abc.abstractmethod
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
             np.ndarray[double, ndim=1, mode="c"] Y):
-        """
-        Fit the parameters of the model.
+        """Fit the parameters of the model.
         
         Must be implemented by derivied class (currently abstract).
         
         Args:
-            - X: 
-                2D array of samples of shape (nsamples, ndim).
-            - Y: 
-                1D array of target log_e posterior values for each sample in X 
-                of shape (nsamples).
+
+            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
+            Y (double ndarray[nsamples]): Target log_e posterior values for each
+                sample in X.
         
         Returns:
-            - Boolean specifying whether fit successful.
+
+            (bool): Whether fit successful. 
+
         """
+
 
     @abc.abstractmethod
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """
-        Predict the value of the posterior at point x.
+        """Predict the value of the posterior at point x.
         
-        Must be implemented by derivied class (currently abstract).
+        Must be implemented by derivied class (since abstract).
         
         Args: 
-            - x: 
-                1D array of sample of shape (ndim) to predict posterior value.
+
+            x (double ndarray[ndim]): 1D array of sample of shape (ndim) to predict
+                posterior value.
         
         Return:
-            - Predicted log_e posterior value.
+
+            (double): Predicted log_e posterior value.
+
         """
 
     @abc.abstractmethod
     def is_fitted(self):
-        """
-        Specify whether model has been fitted.
+        """Specify whether model has been fitted.
         
-            
         Return:
-            - Boolean specifying whether the model has been fitted.
+
+            (bool): Whether the model has been fitted.
+
         """
 
 
@@ -142,32 +148,35 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
 
 
 class HyperSphere(Model):
+    """HyperSphere Model to approximate the log_e posterior by a hyper-ellipsoid.
+
     """
-    HyperSphere Model to approximate the log_e posterior by a hyper-ellipsoid.
-    """
+
 
     def __init__(self, long ndim_in, list domains not None, 
                  hyper_parameters=None):
-        """
-        Constructor setting the parameters of the model.
+        """Constructor setting the parameters of the model.
 
         Args:
-            - long ndim_in: 
-                Dimension of the problem to solve.
-            - list domains: 
-                A list of length 1 containing a 1D array of length 2 containing 
-                the lower and upper bound of the radius of the hyper-sphere.
-            - hyper_parameters: 
-                Should not be set as there are no hyperparameters for this model
-                (in general, however, models can have hyperparameters).
+
+            dim_in (long):  Dimension of the problem to solve.
+
+            domains (list): A list of length 1 containing a 1D array of length
+                2 containing the lower and upper bound of the radius of the
+                hyper-sphere.
+
+            hyper_parameters (None): Should not be set as there are no
+                hyperparameters for this model (in general, however, models can
+                have hyperparameters).
                 
         Raises:
-            - ValueError: 
-                If the hyper_parameters variable is not None.
-            - ValueError: 
-                If the length of domains list is not one.
-            - ValueError: 
-                If the ndim_in is not positive.
+
+            ValueError: If the hyper_parameters variable is not None.
+
+            ValueError: If the length of domains list is not one.
+
+            ValueError: If the ndim_in is not positive.
+
         """
         
         if hyper_parameters != None:
@@ -187,29 +196,32 @@ class HyperSphere(Model):
         self.set_R(np.mean(self.R_domain))
         self.fitted             = False
 
+
     def is_fitted(self):
-        """
-        Specify whether model has been fitted.
+        """Specify whether model has been fitted.
             
         Return:
-            - Boolean specifying whether the model has been fitted.
+
+            (bool): Whether the model has been fitted.
+
         """
 
         return self.fitted
 
+
     def set_R(self, double R):
-        """
-        Set the radius of the hypersphere and calculate its volume.
+        """Set the radius of the hypersphere and calculate its volume.
 
         Args:
-            - double R: 
-                The radius of the hyper-sphere.
+
+            R (double): The radius of the hyper-sphere.
         
         Raises:
-            - ValueError: 
-                If the radius is a NaN.
-            - ValueError: 
-                If the Raises is not positive.
+
+            ValueError: If the radius is a NaN.
+
+            ValueError: If the Raises is not positive.
+
         """
 
         if not np.isfinite(R):
@@ -218,14 +230,13 @@ class HyperSphere(Model):
             raise ValueError("Radius must be positive.")
 
         self.R = R
-        self.set_precompucted_values()
+        self.set_precomputed_values()
         
         return
 
-    def set_precompucted_values(self):
-        """
-        Precompute volume of the hyper sphere (scaled ellipse) and squared 
-        radius.
+
+    def set_precomputed_values(self):
+        """Precompute volume of the hyper sphere (scaled ellipse) and squared radius.
 
         """
         
@@ -247,20 +258,21 @@ class HyperSphere(Model):
             
         return
 
+
     def set_centre(self, np.ndarray[double, ndim=1, mode="c"] centre_in):
-        """
-        Set centre of the hyper-sphere.
+        """Set centre of the hyper-sphere.
 
         Args:
-            - centre_in: 
-                1D numpy.ndarray containing the centre of sphere with shape 
-                (ndim) and dtype double.
+
+            centre_in (double ndarray[ndim]): Centre of sphere.
 
         Raises:
-            - ValueError: 
-                If the length of the centre array is not the same as ndim
-            - ValueError: 
-                If the centre array contains a NaN
+
+            ValueError: If the length of the centre array is not the same as
+                ndim.
+
+            ValueError: If the centre array contains a NaN.
+
         """
 
         cdef long i_dim
@@ -280,27 +292,28 @@ class HyperSphere(Model):
 
         return
 
+
     def set_inv_covariance(self, np.ndarray[double, ndim=1, mode="c"] 
                            inv_covariance_in):
-        """
-        Set diagonal inverse covariances for the hyper-sphere.
+        """Set diagonal inverse covariances for the hyper-sphere.
         
         Only diagonal covariance structure is supported.
 
         Args:
-            - inv_covariance_in: 
-                1D numpy.ndarray containing the diagonal of inverse covariance 
-                matrix that defines the ellipse with shape (ndim) and dtype 
-                double.
+
+            inv_covariance_in (double ndarray[ndim]):Diagonal of inverse
+                covariance matrix that defines the ellipse.
 
         Raises:
-            - ValueError: 
-                If the length of the inv_covariance array is not equal to ndim.
-            - ValueError: 
-                If the inv_covariance array contains a NaN.
-            - ValueError: 
-                If the inv_covariance array contains a value that is not 
-                positive.
+
+            ValueError: If the length of the inv_covariance array is not equal
+                to ndim.
+
+            ValueError: If the inv_covariance array contains a NaN.
+
+            ValueError: If the inv_covariance array contains a value that is
+                not positive.
+
         """
 
         cdef long i_dim
@@ -321,32 +334,38 @@ class HyperSphere(Model):
 
         self.inv_covariance_set = True
 
-        self.set_precompucted_values()
+        self.set_precomputed_values()
 
         return
 
+
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
             np.ndarray[double, ndim=1, mode="c"] Y):
-        """
-        Fit the parameters of the model (i.e. its radius).
+        """Fit the parameters of the model (i.e. its radius).
 
         Args:
-            - X: 
-                2D array of samples of shape (nsamples, ndim).
-            - Y: 
-                1D array of target log_e posterior values for each sample in X 
-                of shape (nsamples).
+
+            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
+            Y (double ndarray[nsamples]): Target log_e posterior values for each
+                sample in X.
         
         Returns:
-            - success: 
-                Boolean specifying whether fit successful.
-            - objective: 
-                Value of objective at optimal point.
+
+            (bool, double): A tuple containing the following objects.
+
+                - success (bool): Whether fit successful.
+
+                - objective (double): Value of objective at optimal point.
+
         Raises:
-            - ValueError: 
-                Raised if the first dimension of X is not the same as Y.
-            - ValueError: 
-                Raised if the second dimension of X is not the same as ndim.
+
+            ValueError: Raised if the first dimension of X is not the same as
+                Y.
+
+            ValueError: Raised if the second dimension of X is not the same as
+                ndim.
+
         """
 
         if X.shape[0] != Y.shape[0]:
@@ -373,17 +392,18 @@ class HyperSphere(Model):
 
         return result.success, result.fun
 
+
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """
-        Use model to predict the value of log_e posterior at point x.
+        """Use model to predict the value of log_e posterior at point x.
 
         Args: 
-            - x: 
-                1D array of sample of shape (ndim) to predict posterior value.
+
+            x (double): Sample of which to predict posterior value.
         
         Return:
-            - Predicted posterior value.
-            
+
+            (double): Predicted posterior value.
+
         """
         
         x_minus_centre = x - self.centre        
