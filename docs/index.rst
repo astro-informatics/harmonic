@@ -1,19 +1,58 @@
-.. Harmonic documentation master file, created by
-   sphinx-quickstart on Sat May  2 15:26:26 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+harmonic
+========
+
+**harmonic** ...
 
 
 
 
+.. TODO: Badges
 
 
-Welcome to Harmonic's documentation!
-====================================
+
+Basic Usage
+-----------
+
+
+
+How to Use This Guide
+---------------------
+
+
+
+
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User Guide
+
+   user_guide/install
+   user_guide/overview
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+
+   api/overview
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Examples
+
+   api/overview
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API
+
+   api/overview
+   api/chains
+   api/model
+   api/evidence
+   api/utils
+   api/logs
+
 
 
 
