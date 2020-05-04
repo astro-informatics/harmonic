@@ -28,17 +28,10 @@ Indices and tables
 API
 ===
 
-.. automodule:: harmonic
 
 Chains
 ------
 
 .. autoclass:: harmonic.Chains     
-   :members:
-
-Model
------
-
-.. automodule:: harmonic.model
    :members:
 
