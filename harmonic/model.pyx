@@ -425,32 +425,32 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
                               np.ndarray[double, ndim=2, mode="c"] start_end, \
                               np.ndarray[double, ndim=1, mode="c"] inv_scales, \
                               long ngrid, double D):    
-    """
-    Creates a dictionary that allows a fast way to find the indexes of samples 
-    in a pixel in a grid where the pixel sizes are the diameter of the hyper 
+    """Creates a dictionary that allows a fast way to find the indexes of samples
+    in a pixel in a grid where the pixel sizes are the diameter of the hyper
     spheres placed at each sample.
 
-    Args:        
-        - dict grid: 
-            Empty dictionary where the list of the sample index will be placed. 
-            The key is an index of the grid (c type ordering) and the value is a
-            list containing the indexes in the sample array of all the samples 
-            in that index.            
-        - X: 
-            2D array of samples of shape (nsamples, ndim).
-        - Y: 
-            1D array of target log_e posterior values for each sample in X of 
-            shape (nsamples).
-        - start_end:  
-            2D array of the lowest and highest sample in each dimension 
-            (ndim,2).        
-        - inv_scales: 
-            1D array of the 1.0/delta_x_i where delta_x_i is the difference 
-            between the max and min of the sample in dimension i.        
-        - long ngrid: 
-            Number of pixels in each dimension in the grid.
-        - double D: 
-            Diameter of the hyper sphere.
+    Args:
+
+        grid (dict): Empty dictionary where the list of the sample index will
+            be placed. The key is an index of the grid (c type ordering) and
+            the value is a list containing the indexes in the sample array of
+            all the samples in that index.
+
+        X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
+        Y (double ndarray[nsamples]): Target log_e posterior values for each
+            sample in X.
+
+        start_end (double ndarray[ndim,2]): Lowest and highest sample in each
+            dimension.
+
+        inv_scales (double ndarray[ndim]): 1.0/delta_x_i where delta_x_i is the
+            difference between the max and min of the sample in dimension i.
+
+        ngrid (long): Number of pixels in each dimension in the grid.
+
+        D (double): Diameter of the hyper sphere.
+
     """
 
     cdef long i_sample, i_dim, sub_index, index, nsamples = \
@@ -468,6 +468,7 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
         else:
             grid[index] = [i_sample]
 
+
 cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim, 
                               long ngrid,\
                               long ndim, dict grid, \
@@ -475,38 +476,38 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim,
                               np.ndarray[double, ndim=1, mode="c"] x, \
                               np.ndarray[double, ndim=1, mode="c"] inv_scales, \
                               double radius_squared, long *count):    
-    """
-    Recursive function that calls itself in order to call the search_in_pixel 
-    function on one pixel behind and infront of the pixel x is in for each 
+    """Recursive function that calls itself in order to call the search_in_pixel
+    function on one pixel behind and infront of the pixel x is in for each
     dimension.
 
     Args:
-        - long index: 
-            The current pixel we are looking at.
-        - long i_dim: 
-            Dimension we are doing the current moving forward and backward in.
-        - long ngrid: 
-            Number of pixels in each dimension in the grid.
-        - long ndim: 
-            Dimension of the problem.        
-        - dict grid: 
-            The dictionary with information on which samples are in which pixel. 
-            The key is an index of the grid (c type ordering) and the value is a 
-            list containing the indexes in the sample array of all the samples 
-            in that index.            
-        - samples: 
-            2D array of samples of shape (nsamples, ndim).
-        - x: 
-            1D array of the position we are evaluating the prediction for.
-        - inv_scales: 
-            1D array of the 1.0/delta_x_i where delta_x_i is the difference 
-            between the max and min of the sample in dimension i.
-        - double radius_squared: 
-            Radius squared of the local hypersphere.
-        - long * count: 
-            a pointer to the count integer that counts how many hyper spheres 
-            the postion x falls inside.
 
+        index (long): The current pixel we are looking at.
+
+        i_dim (long): Dimension we are doing the current moving forward and
+            backward in.
+
+        ngrid (long): Number of pixels in each dimension in the grid.
+
+        ndim (long): Dimension of the problem.
+
+        grid (dict): The dictionary with information on which samples are in
+            which pixel. The key is an index of the grid (c type ordering) and
+            the value is a list containing the indexes in the sample array of
+            all the samples in that index.
+
+        samples (double ndarray[nsamples, ndim]): Samples.
+
+        x (double ndarray[ndim]): Position for which we are evaluating the
+            prediction.
+
+        inv_scales (double ndarray[ndim]): 1.0/delta_x_i where delta_x_i is the
+            difference between the max and min of the sample in dimension i.
+
+        radius_squared (double): Radius squared of the local hypersphere.
+
+        count (long*): Pointer to the count integer that counts how many
+            hyper spheres the postion x falls inside.
 
     """
     # this does create looping boundry conditions but doesn't matter in 
@@ -521,37 +522,38 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim,
         KernelDensityEstimate_search_in_pixel(index, grid, samples, x, 
                                               inv_scales, radius_squared, count)
 
+
 cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
                               np.ndarray[double, ndim=2, mode="c"] samples, \
                               np.ndarray[double, ndim=1, mode="c"] x, \
                               np.ndarray[double, ndim=1, mode="c"] inv_scales, \
                               double radius_squared, long *count):
-    """
-    Examines all samples that are in the current pixel and counts how many of
+    """Examines all samples that are in the current pixel and counts how many of
     those position x falls inside
 
     Args:
-        - long index: 
-            The current pixel we are looking at.
-        - long ndim: 
-            Dimension of the problem.
-        - dict grid: 
-            The dictionary with information on which samples are in which pixel. 
-            The key is an index of the grid (c type ordering) and the value is a 
-            list containing the indexes in the sample array of all the samples 
-            in that index.
-        - samples: 
-            2D array of samples of shape (nsamples, ndim).
-        - x: 
-            1D array of the position we are evaluating the prediction for
-        - inv_scales: 
-            1D array of the 1.0/delta_x_i where delta_x_i is the difference 
-            between the max and min of the sample in dimension i.
-        - double radius_squared: 
-            Radius squared of the local hypersphere.        
-        - long * count: 
-            a pointer to the count integer that counts how many hyper spheres 
-            the postion x falls inside.
+
+        index (long): Index of current pixel we are looking at.
+
+        ndim (long): Dimension of the problem.
+
+        grid (dict): The dictionary with information on which samples are in
+            which pixel. The key is an index of the grid (c type ordering) and
+            the value is a list containing the indexes in the sample array of
+            all the samples in that index.
+
+        samples (double ndarray[nsamples, ndim]): Samples.
+
+        x (double ndarray[ndim]): Position for which we are evaluating the
+            prediction.
+
+        inv_scales (double ndarray[ndim]): 1.0/delta_x_i where delta_x_i is the
+            difference between the max and min of the sample in dimension i.
+
+        radius_squared (double): Radius squared of the local hypersphere.
+
+        count (long*): Pointer to the count integer that counts how many
+            hyper spheres the postion x falls inside.
 
     """
     
@@ -570,35 +572,38 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
                 count[0] += 1
     return
 
+
 class KernelDensityEstimate(Model):
-    """
-    KernelDensityEstimate model to approximate the log_e posterior using 
-    kernel density estimation.
+    """KernelDensityEstimate model to approximate the log_e posterior using kernel
+    density estimation.
 
     """
 
     def __init__(self, long ndim, list domains not None, 
                   hyper_parameters=[0.1]):
-        """
-        Constructor setting the hyperparameters and domains of the model.        
+        """Constructor setting the hyperparameters and domains of the model.
 
         Args:
-            - long ndim: 
-                Dimension of the problem to solve.
-            - list domains: 
-                List of length 0.
-            - list hyper_parameters: 
-                A list of length 1 containing the diameter in scaled units of 
-                the hyper spheres to use in the Kernel Density Estimate.
+
+            ndim (long):  Dimension of the problem to solve.
+
+            domains (list): List of length 0 since domain not considered for
+                Kernel Density Estimation.
+
+            hyper_parameters (list): A list of length 1 containing the diameter
+                in scaled units of the hyper spheres to use in the Kernel
+                Density Estimate.
 
         Raises:
-            - ValueError: 
-                If the hyper_parameters list is not length 1
-            - ValueError: 
-                If the length of domains list is not 0.
-            - ValueError: 
-                If the ndim_in is not positive.
+
+            ValueError: If the hyper_parameters list is not length 1.
+
+            ValueError: If the length of domains list is not 0.
+
+            ValueError: If the ndim_in is not positive.
+
         """
+
         if len(hyper_parameters) != 1:
             raise ValueError("Kernel Density Estimate hyper parameter list \
                 should be length 1.")
@@ -627,27 +632,32 @@ class KernelDensityEstimate(Model):
 
         return
 
+
     def is_fitted(self):
-        """
-        Specify whether model has been fitted.
+        """Specify whether model has been fitted.
             
         Return:
-            - Boolean specifying whether the model has been fitted.
+
+            (bool): Whether the model has been fitted.
+
         """
 
         return self.fitted
         
+
     def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
-        """
-        Set the scales of the hyper spheres based on the min and max sample in 
-        each dimension.
+        """Set the scales of the hyper spheres based on the min and max sample in each
+        dimension.
 
         Args:
-            - X: 
-                2D array of samples of shape (nsamples, ndim).
+
+            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
         Raises:
-            - ValueError: 
-                Raised if the second dimension of X is not the same as ndim
+
+            ValueError: Raised if the second dimension of X is not the same as
+                ndim.
+
         """
 
         if X.shape[1] != self.ndim:
@@ -668,17 +678,20 @@ class KernelDensityEstimate(Model):
 
         return
 
+
     def precompute_normalising_factor(self, 
                                       np.ndarray[double, ndim=2, mode="c"] X):
-        """
-        Precompute the log_e normalisation factor of the density estimation.
+        """Precompute the log_e normalisation factor of the density estimation.
 
         Args:
-            - X: 
-                2D array of samples of shape (nsamples, ndim).
+
+            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
         Raises:
-            - ValueError 
-                Raised if the second dimension of X is not the same as ndim.
+
+            ValueError: Raised if the second dimension of X is not the same as
+                ndim.
+
         """
 
         if X.shape[1] != self.ndim:
@@ -698,14 +711,16 @@ class KernelDensityEstimate(Model):
         self.ln_norm = log(<double>X.shape[0]) + ln_volume
         pass
 
-    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
-            np.ndarray[double, ndim=1, mode="c"] Y):
-        """
-        Fit the parameters of the model as follows:
-            
-        - Set the scales of the model from the samples.
 
-        - Create the dictionary containing all the information on which samples 
+    def fit(self, np.ndarray[double, ndim=2, mode="c"] X,
+            np.ndarray[double, ndim=1, mode="c"] Y):
+        """Fit the parameters of the model.
+
+        Fit is performed as follows.
+
+        Set the scales of the model from the samples.
+
+        Create the dictionary containing all the information on which samples 
         are in which pixel in a grid where each pixel size is the same as the 
         diameter of the hyper spheres to be placed on each sample. 
 
@@ -713,22 +728,28 @@ class KernelDensityEstimate(Model):
         list containing the indexes in the sample array of all the samples in 
         that index 3.
             
-        - Precompute the normalisation factor.
+        Precompute the normalisation factor.
 
         Args:
-            - X: 
-                2D array of samples of shape (nsamples, ndim).
-            - Y: 
-                1D array of target log_e posterior values for each sample in X 
-                of shape (nsamples).
-        
+
+
+            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
+            Y (double ndarray[nsamples]): Target log_e posterior values for each
+                sample in X.
+
+
         Returns:
-            - Boolean specifying whether fit successful.
+
+            (bool): Whether fit successful.
+
         Raises:
-            - ValueError: 
-                Raised if the first dimension of X is not the same as Y
-            - ValueError:
-                Raised if the second dimension of X is not the same as ndim
+
+            ValueError: Raised if the first dimension of X is not the same as Y.
+
+            ValueError: Raised if the second dimension of X is not the same as
+                ndim.
+
         """
 
         if X.shape[0] != Y.shape[0]:
@@ -752,16 +773,19 @@ class KernelDensityEstimate(Model):
 
         return True
 
-    def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """
-        Use model to predict the value of the posterior at point x.
 
-        Args: 
-            - x: 
-                1D array of sample of shape (ndim) to predict posterior value.
+    def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
+        """Predict the value of the posterior at point x.
+
+        Args:
+
+            x (double ndarray[ndim]): 1D array of sample of shape (ndim) to predict
+                posterior value.
         
         Return:
-            - Predicted posterior value.
+
+            (double): Predicted log_e posterior value.
+
         """
         cdef np.ndarray[double, ndim=2, mode="c"] samples = self.samples        
         cdef np.ndarray[double, ndim=2, mode="c"] start_end = self.start_end
