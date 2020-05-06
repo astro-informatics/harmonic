@@ -31,17 +31,6 @@ class Shifting(Enum):
     MIN_SHIFT = 3
     ABS_MAX_SHIFT = 4
 
-class StatisticSpace(Enum):
-    """
-    Enumeration to define whether one wishes to compute statistics in real-space
-    or purely in log-space. Note that recovered log-space statistics are NOT
-    equivalent to the exponential of the log-space representation of the
-    real-space statistics.
-    """
-    REAL = 1 # Statistics in real-space
-    LOG = 2 # Statistics in log-space
-
-
 class Evidence:
     """
     Compute inverse evidence values from chains, using posterior model.
@@ -51,7 +40,7 @@ class Evidence:
     """
 
     def __init__(self, long nchains, model not None, \
-                 shift=Shifting.MEAN_SHIFT, statspace=StatisticSpace.REAL):
+                 shift=Shifting.MEAN_SHIFT):
         """
         Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
@@ -64,9 +53,6 @@ class Evidence:
             - shift:
                 What shifting method to use to avoid over/underflow during 
                 computation. Selected from enumerate class.
-            - statspace:
-                In what space the statistics should be computed (i.e 
-                logspace or realspace). Selected from enumerate class.
 
         Raises:
             - ValueError: 
@@ -88,12 +74,6 @@ class Evidence:
         self.running_sum = np.zeros(nchains)
         self.nsamples_per_chain = np.zeros((nchains),dtype=long)
         self.nsamples_eff_per_chain = np.zeros((nchains),dtype=long)
-
-        """
-        Default is realspace statistics. If the user specifies to recover 
-        statistics purely in log-space then the lospace will be set to true.
-        """
-        self.statspace = statspace
 
         """
         Chain parameters and realspace statistics
@@ -170,10 +150,6 @@ class Evidence:
         This method is ran each time chains are added to update the inverse
         variance estimates from the running totals.
 
-        Note: If statistic space is set to logspace the evidence values 
-        represent the statistics in logspace. If statistic space is set 
-        to realspace the evidence is given in realspace.
-
         """
 
         cdef np.ndarray[double, ndim=1, mode="c"] running_sum = self.running_sum
@@ -235,59 +211,22 @@ class Evidence:
         Compute inverse evidence values as a log-space representation of the 
         real-space statistics to attempt to avoid float overflow.
         """
-        if self.statspace == StatisticSpace.REAL:
-            self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
-            self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
-                                                        - np.log(n_eff - 1)
-            self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
-                                                        - 3. * np.log(n_eff) \
-                                                        - 4. * self.shift_value \
-                                                        + np.log((kur - 1) + 2./(n_eff-1))
-        if self.statspace == StatisticSpace.LOG:
-            self.ln_evidence_inv = evidence_inv - self.shift_value
-            self.ln_evidence_inv_var = evidence_inv_var_exp - np.log(n_eff - 1)
-            self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
-                                                        - 3. * np.log(n_eff) \
-                                                        + np.log((kur - 1) + 2./(n_eff-1))
+        self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
+        self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
+                                                    - np.log(n_eff - 1)
+        self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
+                                                    - 3. * np.log(n_eff) \
+                                                    - 4. * self.shift_value \
+                                                    + np.log((kur - 1) + 2./(n_eff-1))
 
         """
         Compute inverse evidence statistics in real-space. In certain settings
         these values may return nan due to float overflow: in these cases one 
         should use the log-space values.
         """
-        if self.statspace == StatisticSpace.REAL:
-            self.evidence_inv = exp(self.ln_evidence_inv)
-            self.evidence_inv_var = exp(self.ln_evidence_inv_var)
-            self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
-        if self.statspace == StatisticSpace.LOG:
-            self.evidence_inv = self.ln_evidence_inv
-            self.evidence_inv_var = exp(self.ln_evidence_inv_var)
-            self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
-
-
-        # """
-        # Compute inverse evidence values as a log-space representation of the 
-        # real-space statistics to attempt to avoid float overflow.
-        # """
-        # if self.statspace == StatisticSpace.REAL:
-        #     self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
-        # if self.statspace == StatisticSpace.LOG:
-        #     self.ln_evidence_inv = evidence_inv - self.shift_value
-        # self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
-        #                                                 - np.log(n_eff - 1)
-        # self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
-        #                              - 3. * np.log(n_eff) \
-        #                              - 4. * self.shift_value \
-        #                              + np.log((kur - 1) + 2./(n_eff-1))
-
-        # """
-        # Compute inverse evidence statistics in real-space. In certain settings
-        # these values may return nan due to float overflow: in these cases one 
-        # should use the log-space values.
-        # """
-        # self.evidence_inv = exp(self.ln_evidence_inv)
-        # self.evidence_inv_var = exp(self.ln_evidence_inv_var)
-        # self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
+        self.evidence_inv = exp(self.ln_evidence_inv)
+        self.evidence_inv_var = exp(self.ln_evidence_inv_var)
+        self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
 
         return
 
@@ -370,10 +309,7 @@ class Evidence:
                 # Apply shifting term to avoid overflow.
                 lnarg += self.shift_value
                 # Store realspace or logspace sum depending on choice.
-                if self.statspace == StatisticSpace.LOG:
-                    term = lnarg
-                if self.statspace == StatisticSpace.REAL:
-                    term = exp(lnarg)
+                term = exp(lnarg)
                 nsamples_per_chain[i_chains] += 1
 
                 if not lnpredict == -np.inf:
@@ -437,18 +373,7 @@ class Evidence:
                  
                 # running_sum[i_chains] = np.sum(np.exp(terms_ln - offset))
                 # running_sum[i_chains] *= offset
-                
-        """
-        If statspce is REAL process the chains in realspace and recover both 
-        the logspace projection of the realspace statistics and the realspace
-        statistics.
 
-        If statspace is LOG process the chains in logspace and recover both the
-        logspace statistics and the realspace projection of the logspace 
-        statistics.
-
-        These should not be confused, and should be interpreted appropriately.
-        """
         self.process_run()
         self.chains_added = True
         self.check_basic_diagnostic()

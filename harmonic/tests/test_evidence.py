@@ -157,44 +157,6 @@ def test_add_chains():
 
     return
 
-def test_log_real_compared():
-
-    nchains   = 200
-    nsamples  = 500
-    ndim      = 2
-
-    # Create samples of unnormalised Gaussian
-    np.random.seed(30)
-    X = np.random.randn(nchains,nsamples,ndim)
-    Y = -np.sum(X*X,axis=2)/2.0
-
-    # Add samples to chains
-    chain  = ch.Chains(ndim)    
-    chain.add_chains_3d(X, Y)
-
-    # Fit the Hyper_sphere
-    domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)
-    sphere.fit(chain.samples, chain.ln_posterior)
-
-    # Calculate evidence
-    cal_ev_real = cbe.Evidence(nchains, sphere, statspace=cbe.StatisticSpace.REAL)
-    cal_ev_real.set_shift(0)
-    cal_ev_real.add_chains(chain)
-
-    cal_ev_log = cbe.Evidence(nchains, sphere, statspace=cbe.StatisticSpace.LOG)
-    cal_ev_log.set_shift(0)
-    cal_ev_log.add_chains(chain)
-
-    print("cal_ev_real.evidence_inv = {}".format(cal_ev_real.evidence_inv))
-    print("cal_ev_log.evidence_inv = {}".format(cal_ev_log.evidence_inv))
-
-    assert cal_ev_real.evidence_inv              == pytest.approx(cal_ev_log.evidence_inv, 1E-1) 
-    assert cal_ev_real.evidence_inv_var          == pytest.approx(cal_ev_log.evidence_inv_var, 1E-1) 
-    assert cal_ev_real.evidence_inv_var_var      == pytest.approx(cal_ev_log.evidence_inv_var_var, 1E-1) 
-    assert cal_ev_real.kurtosis                  == pytest.approx(cal_ev_log.kurtosis, 2e-1) 
-
-
 
 def test_shifting_settings():
 
@@ -236,36 +198,6 @@ def test_shifting_settings():
     cal_ev.add_chains(chain)
     assert cal_ev.shift_value == pytest.approx(chain.ln_posterior[np.argmax(np.abs(Y))]) 
 
-def test_statistic_space_toggle():
-
-    nchains   = 200
-    nsamples  = 500
-    ndim      = 2
-
-    # Create samples of unnormalised Gaussian
-    np.random.seed(30)
-    X = np.random.randn(nchains,nsamples,ndim)
-    Y = -np.sum(X*X,axis=2)/2.0
-
-    # Add samples to chains
-    chain  = ch.Chains(ndim)    
-    chain.add_chains_3d(X, Y)
-
-    # Fit the Hyper_sphere
-    domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)
-    sphere.fit(chain.samples, chain.ln_posterior)
-
-    # Check logspace is correctly set.
-    cal_ev_log = cbe.Evidence(nchains, sphere, \
-        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.StatisticSpace.LOG)
-    assert cal_ev_log.statspace == cbe.StatisticSpace.LOG
-
-    # Check realspace is correctly set.
-    cal_ev_real = cbe.Evidence(nchains, sphere, \
-        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.StatisticSpace.REAL)
-    assert cal_ev_real.statspace == cbe.StatisticSpace.REAL
-
 
 def test_compute_evidence():
     
@@ -293,30 +225,6 @@ def test_compute_evidence():
     assert evidence_std == pytest.approx(np.exp(ln_evidence_std))
 
 
-def test_compute_evidence_logspace():
-    
-    ndim = 2
-    nchains = 100
-    
-    domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)        
-    sphere.fitted = True
-    
-    ev_inv = 1E10
-    ev_inv_var = 2E10
-    ev = cbe.Evidence(nchains, sphere, statspace=cbe.StatisticSpace.LOG)
-    ev.evidence_inv = ev_inv
-    ev.evidence_inv_var = ev_inv_var
-    
-    (evidence, evidence_std) = ev.compute_evidence()
-    assert evidence \
-        == pytest.approx((1 + ev_inv_var / ev_inv**2) / ev_inv)
-    assert evidence_std**2 \
-        == pytest.approx(ev_inv_var / ev_inv**4)
-    
-    (ln_evidence, ln_evidence_std) = ev.compute_ln_evidence()
-    assert evidence == pytest.approx(np.exp(ln_evidence))
-    assert evidence_std == pytest.approx(np.exp(ln_evidence_std))
     
 def test_compute_bayes_factors():
     
