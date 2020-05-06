@@ -93,11 +93,7 @@ class Evidence:
         Default is realspace statistics. If the user specifies to recover 
         statistics purely in log-space then the lospace will be set to true.
         """
-        self.logspace = False
         self.statspace = statspace
-        if statspace == StatisticSpace.LOG:
-            self.logspace = True
-
 
         """
         Chain parameters and realspace statistics
@@ -165,7 +161,7 @@ class Evidence:
         self.shift_set = True
         return
 
-    def process_run_realspace(self):
+    def process_run(self):
         """
         Use the running totals of realspace running_sum and nsamples_per_chain
         to calculate an estimate of the inverse evidence, its variance,
@@ -173,6 +169,10 @@ class Evidence:
 
         This method is ran each time chains are added to update the inverse
         variance estimates from the running totals.
+
+        Note: If statistic space is set to logspace the evidence values 
+        represent the statistics in logspace. If statistic space is set 
+        to realspace the evidence is given in realspace.
 
         """
 
@@ -191,7 +191,7 @@ class Evidence:
             nsamples += nsamples_per_chain[i_chains]
         if OPTIMISATION == Optimisation.ACCURACY:
             evidence_inv += fsum(running_sum)
-              
+        
         evidence_inv /= nsamples
 
         """
@@ -222,6 +222,7 @@ class Evidence:
                                                   - 2.0 * evidence_inv_var_exp
         kur = np.exp(kur_exp)
         self.kurtosis = kur
+        self.ln_kurtosis = kur_exp
         """
         Compute effective chain lengths.
         """
@@ -234,113 +235,59 @@ class Evidence:
         Compute inverse evidence values as a log-space representation of the 
         real-space statistics to attempt to avoid float overflow.
         """
-        self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
-        self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
+        if self.statspace == StatisticSpace.REAL:
+            self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
+            self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
                                                         - np.log(n_eff - 1)
-        self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
-                                     - 3. * np.log(n_eff) \
-                                     - 4. * self.shift_value \
-                                     + np.log((kur - 1) + 2./(n_eff-1))
-        self.ln_kurtosis = kur_exp
+            self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
+                                                        - 3. * np.log(n_eff) \
+                                                        - 4. * self.shift_value \
+                                                        + np.log((kur - 1) + 2./(n_eff-1))
+        if self.statspace == StatisticSpace.LOG:
+            self.ln_evidence_inv = evidence_inv - self.shift_value
+            self.ln_evidence_inv_var = evidence_inv_var_exp - np.log(n_eff - 1)
+            self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
+                                                        - 3. * np.log(n_eff) \
+                                                        + np.log((kur - 1) + 2./(n_eff-1))
 
         """
         Compute inverse evidence statistics in real-space. In certain settings
         these values may return nan due to float overflow: in these cases one 
         should use the log-space values.
         """
-        self.evidence_inv = exp(self.ln_evidence_inv)
-        self.evidence_inv_var = exp(self.ln_evidence_inv_var)
-        self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
+        if self.statspace == StatisticSpace.REAL:
+            self.evidence_inv = exp(self.ln_evidence_inv)
+            self.evidence_inv_var = exp(self.ln_evidence_inv_var)
+            self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
+        if self.statspace == StatisticSpace.LOG:
+            self.evidence_inv = self.ln_evidence_inv
+            self.evidence_inv_var = exp(self.ln_evidence_inv_var)
+            self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
 
-        return
 
-        
-    def process_run_logspace(self):
-        """
-        Use the running totals of logspace running_sum and nsamples_per_chain
-        to calculate an estimate of the inverse evidence, its variance,
-        and the variance of the variance.
+        # """
+        # Compute inverse evidence values as a log-space representation of the 
+        # real-space statistics to attempt to avoid float overflow.
+        # """
+        # if self.statspace == StatisticSpace.REAL:
+        #     self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
+        # if self.statspace == StatisticSpace.LOG:
+        #     self.ln_evidence_inv = evidence_inv - self.shift_value
+        # self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
+        #                                                 - np.log(n_eff - 1)
+        # self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
+        #                              - 3. * np.log(n_eff) \
+        #                              - 4. * self.shift_value \
+        #                              + np.log((kur - 1) + 2./(n_eff-1))
 
-        This method is ran each time chains are added to update the inverse
-        variance estimates from the running totals.
-
-        """
-
-        cdef np.ndarray[double, ndim=1, mode="c"] running_sum = self.running_sum
-        cdef np.ndarray[long, ndim=1, mode="c"] nsamples_per_chain = \
-            self.nsamples_per_chain
-
-        cdef long i_chains, nsamples=0, nchains = self.nchains
-        cdef double evidence_inv=0.0, evidence_inv_var=0.0
-        cdef double kur=0.0, dummy, n_eff=0
-        cdef double evidence_inv_var_exp=0.0, kur_exp=0.0
-
-        """
-        Compute the mean of the log evidence. This is not necessarily the same 
-        as the log of the realspace mean.
-        """
-        for i_chains in range(nchains):
-            if OPTIMISATION == Optimisation.SPEED:
-                evidence_inv += running_sum[i_chains]
-            nsamples += nsamples_per_chain[i_chains]
-        if OPTIMISATION == Optimisation.ACCURACY:
-            evidence_inv += fsum(running_sum)
-              
-        evidence_inv /= nsamples
-
-        """
-        The following code computes the variance, kurtosis and variance of the 
-        variance of the log evidence. Note that this is not equivalent to the 
-        log of the realspace statistical quantities and should not be quoted as 
-        such.
-        """
-        cdef np.ndarray[double, ndim=1, mode="c"] y_i=np.zeros(len(running_sum))
-        cdef np.ndarray[double, ndim=1, mode="c"] z_i=np.zeros(len(running_sum))
-        cdef double y_mean=0.0, z_mean=0.0
-
-        """
-        Precompute differential vectors.
-        """
-        z_i[:]  = np.abs((running_sum[:]/nsamples_per_chain[:])-evidence_inv)
-        y_i[:]  = z_i[:] * (nsamples_per_chain[:]**(0.25))
-        z_i[:] *= nsamples_per_chain[:]**(0.5) 
-
-        """
-        Compute variance and kurtosis of log values.
-        """
-        evidence_inv_var_exp = sp.logsumexp(2.0*np.log(z_i)) - np.log(nsamples)
-
-        evidence_inv_var = np.sum( z_i**2 / nsamples )
-        kur              = np.sum( y_i**4 / nsamples )
-        kur             /= evidence_inv_var**2
-        self.ln_kurtosis    = kur
-
-        """
-        Compute effective chain lengths.
-        """
-        for i in range(nchains):
-            n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
-        n_eff = <double>nsamples*<double>nsamples/n_eff
-        self.n_eff = n_eff
-
-        """
-        Compute log evidence statistics. Note this is not equivalent to log of 
-        the realspace statistics.
-        """
-        self.ln_evidence_inv = evidence_inv - self.shift_value
-        self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
-                                                        - np.log(n_eff-1)
-        self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
-                                     - 3. * np.log(n_eff) \
-                                     - 4. * self.shift_value \
-                                     + np.log((kur - 1) + 2./(n_eff-1))
-        """
-        Project logspace statistics into realspace.
-        """
-        self.kurtosis = exp(kur)
-        self.evidence_inv = exp(self.ln_evidence_inv)
-        self.evidence_inv_var = exp(self.ln_evidence_inv_var)
-        self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
+        # """
+        # Compute inverse evidence statistics in real-space. In certain settings
+        # these values may return nan due to float overflow: in these cases one 
+        # should use the log-space values.
+        # """
+        # self.evidence_inv = exp(self.ln_evidence_inv)
+        # self.evidence_inv_var = exp(self.ln_evidence_inv_var)
+        # self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
 
         return
 
@@ -423,9 +370,9 @@ class Evidence:
                 # Apply shifting term to avoid overflow.
                 lnarg += self.shift_value
                 # Store realspace or logspace sum depending on choice.
-                if self.logspace:
+                if self.statspace == StatisticSpace.LOG:
                     term = lnarg
-                if not self.logspace:
+                if self.statspace == StatisticSpace.REAL:
                     term = exp(lnarg)
                 nsamples_per_chain[i_chains] += 1
 
@@ -492,23 +439,18 @@ class Evidence:
                 # running_sum[i_chains] *= offset
                 
         """
-        If logspace is False process the chains in realspace and recover both 
+        If statspce is REAL process the chains in realspace and recover both 
         the logspace projection of the realspace statistics and the realspace
         statistics.
 
-        If logspace is True process the chains in logspace and recover both the
+        If statspace is LOG process the chains in logspace and recover both the
         logspace statistics and the realspace projection of the logspace 
         statistics.
 
-        These should not be confused, and should be used appropriately.
+        These should not be confused, and should be interpreted appropriately.
         """
-        if self.logspace:
-            self.process_run_logspace()
-        if not self.logspace:
-            self.process_run_realspace()
-
+        self.process_run()
         self.chains_added = True
-
         self.check_basic_diagnostic()
 
         return
