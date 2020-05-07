@@ -818,52 +818,55 @@ class KernelDensityEstimate(Model):
 #===============================================================================
 
 cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(\
-    np.ndarray[double,  ndim=1, mode="c"] beta, long nguassians):
-    """
-    Calculate the weights from the beta_weights.
+    np.ndarray[double,  ndim=1, mode="c"] beta, long ngaussians):
+    """Calculate the weights from the beta_weights.
 
     Args:
-        - ndarray beta: 
-            1D array containing the beta values to be converted with shape 
-            (nguassians).
-        - long nguassians: 
-            The number of Gaussians in the model.
+
+        beta (double ndarray[ngaussians]): Veta values to be converted.
+
+        ngaussians (long): The number of Gaussians in the model.
+
     Return:
-        - ndarray weights: 
-            1D array where the weight values will go with shape (nguassians)
+
+        weights (double ndarray[ngaussians]): 1D array where the weight values
+            will go with shape (ngaussians)
 
     """
     
     cdef double norm = 0.0
     cdef i_guas
-    cdef np.ndarray[double, ndim=1, mode="c"] weights = np.empty(nguassians)
+    cdef np.ndarray[double, ndim=1, mode="c"] weights = np.empty(ngaussians)
 
-    for i_guas in range(nguassians):
+    for i_guas in range(ngaussians):
         norm += exp(beta[i_guas])
     norm = 1.0/norm
 
-    for i_guas in range(nguassians):
+    for i_guas in range(ngaussians):
         weights[i_guas] = exp(beta[i_guas])*norm
+
     return weights
 
+
 def beta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] beta, 
-        long nguassians):    
+        long ngaussians):    
     """
     Wrapper to calculate the weights from the beta_weights.
 
     Args:
         - ndarray beta: 
             1D array containing the beta values to be converted with shape 
-            (nguassians).
-        - long nguassians: 
+            (ngaussians).
+        - long ngaussians: 
             The number of Gaussians in the model.
     Return:
         - ndarray weights: 
-            1D array where the weight values will go with shape (nguassians)
+            1D array where the weight values will go with shape (ngaussians)
 
     """    
     
-    return beta_to_weights(beta, nguassians)
+    return beta_to_weights(beta, ngaussians)
+
 
 cdef double calculate_gaussian_normalisation(double alpha, \
     np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
@@ -890,6 +893,7 @@ cdef double calculate_gaussian_normalisation(double alpha, \
 
     return 1.0/sqrt(det)
 
+
 def calculate_gaussian_normalisation_wrap(double alpha, \
     np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
     """
@@ -908,6 +912,7 @@ def calculate_gaussian_normalisation_wrap(double alpha, \
     """
     
     return calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
+
 
 cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
                            np.ndarray[double, ndim=1, mode="c"] mu, \
@@ -945,6 +950,7 @@ cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
 
     return exp(-distance)*norm*weight
 
+
 def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
                            np.ndarray[double, ndim=1, mode="c"] mu, \
                            np.ndarray[double, ndim=1, mode="c"] inv_covariance,\
@@ -971,6 +977,7 @@ def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
     """
 
     return evaluate_one_guassian(x, mu, inv_covariance, alpha, weight, ndim)
+
 
 cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
                     np.ndarray[double, ndim=1, mode="c"] mu, \
@@ -1080,12 +1087,13 @@ cdef double calculate_I_ij(np.ndarray[double, ndim=1, mode="c"] x, \
 
     return weight*norm*exp(-delta_theta/(2.0*alpha*alpha) - ln_Pi + mean_shift)
 
+
 cdef double calculate_I_i(np.ndarray[double, ndim=1, mode="c"] x, \
                 np.ndarray[double, ndim=2, mode="c"] centres, \
                 np.ndarray[double, ndim=2, mode="c"] inv_covariances, \
                 np.ndarray[double, ndim=1, mode="c"] alphas, \
                 np.ndarray[double, ndim=1, mode="c"] weights, \
-                double ln_Pi, long nguassians, long ndim, double mean_shift):
+                double ln_Pi, long ngaussians, long ndim, double mean_shift):
     """
     Evaluate I_i which is part the gradient of the objective function.
 
@@ -1093,21 +1101,21 @@ cdef double calculate_I_i(np.ndarray[double, ndim=1, mode="c"] x, \
         - ndarray x: 
             1D array containing the current sample (ndim).
         - ndarray centres: 
-            2D array containing the centres of the guassians with shape 
-            (nguassians, ndim).
+            2D array containing the centres of the gaussians with shape 
+            (ngaussians, ndim).
         - ndarray inv_covariances: 
-            2D array containing the inverse covariance of the guassians with 
-            shape (nguassians, ndim).
+            2D array containing the inverse covariance of the gaussians with 
+            shape (ngaussians, ndim).
         - ndarray alphas: 
             1D array containing the current values of alpha with shape 
-            (nguassians).
+            (ngaussians).
         - ndarray weights: 
             1D array containing the current values of the (linear) weights with 
-            shape (nguassians)
+            shape (ngaussians)
         - ndarray ln_Pi: 
             Current ln posterior.
-        - long nguassians: 
-            Number of guassians.
+        - long ngaussians: 
+            Number of gaussians.
         - long ndim: 
             Dimension of the problem.
         - double mean_shift: 
@@ -1122,11 +1130,12 @@ cdef double calculate_I_i(np.ndarray[double, ndim=1, mode="c"] x, \
     cdef double I_i = 0.0
     cdef long i_guas
 
-    for i_guas in range(nguassians):
+    for i_guas in range(ngaussians):
         I_i += calculate_I_ij(x, centres[i_guas,:], inv_covariances[i_guas,:], \
                     alphas[i_guas], weights[i_guas], ln_Pi, ndim, mean_shift)
     # print("I_i ", I_i)
     return I_i
+
 
 cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
                         np.ndarray[double, ndim=1, mode="c"] grad_beta, \
@@ -1136,7 +1145,7 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
                         np.ndarray[double, ndim=1, mode="c"] alphas, \
                         np.ndarray[double, ndim=1, mode="c"] weights, \
                         np.ndarray[double, ndim=1, mode="c"] Y, \
-                        long nguassians, long ndim, long i1_sample, \
+                        long ngaussians, long ndim, long i1_sample, \
                         long i2_sample, \
                         np.ndarray[long, ndim=1, mode="c"] index_perm, \
                         double gamma, double mean_shift):
@@ -1146,28 +1155,28 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
     Args:
         - ndarray grad_alpha: 
             1D array where the gradient of alpha will be placed shape 
-            (nguassians).
+            (ngaussians).
         - ndarray grad_beta: 
             1D array where the gradient of beta will be placed shape 
-            (nguassians)
+            (ngaussians)
         - ndarray X: 
             2D array containing the X values shape (nsamples, ndim).
         - ndarray centres: 
-            2D array containing the centres of the guassians with shape 
-            (nguassians, ndim).
+            2D array containing the centres of the gaussians with shape 
+            (ngaussians, ndim).
         - ndarray inv_covariances: 
-            2D array containing the inverse covariance of the guassians with 
-            shape (nguassians, ndim).
+            2D array containing the inverse covariance of the gaussians with 
+            shape (ngaussians, ndim).
         - ndarray alphas: 
             1D array containing the current values of alpha with shape 
-            (nguassians).
+            (ngaussians).
         - ndarray weights: 
             1D array containing the current values of the (linear) weights with 
-            shape (nguassians)
+            shape (ngaussians)
         - ndarray Y: 
             1D array containing the X values shape (nsamples).
-        - long nguassians: 
-            Number of guassians.
+        - long ngaussians: 
+            Number of gaussians.
         - long ndim: 
             Dimension of the problem.
         - long i1_sample: 
@@ -1193,7 +1202,7 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
     mu_g      = np.zeros(ndim)
     inv_cov_g = np.zeros(ndim)
 
-    for i_guas in range(nguassians):
+    for i_guas in range(ngaussians):
         grad_alpha[i_guas] = <double>0
         grad_beta[i_guas]  = <double>0
 
@@ -1202,9 +1211,9 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
         for i_dim in range(ndim):
             x_i[i_dim] = X[index,i_dim]
         I_i = calculate_I_i(x_i, centres, inv_covariances, alphas, \
-                  weights, Y[index], nguassians, ndim, mean_shift)
+                  weights, Y[index], ngaussians, ndim, mean_shift)
 
-        for i_guas in range(nguassians):
+        for i_guas in range(ngaussians):
             for i_dim in range(ndim):
                 mu_g[i_dim] = centres[i_guas,i_dim]
                 inv_cov_g[i_dim] = inv_covariances[i_guas,i_dim]
@@ -1219,19 +1228,20 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
             grad_alpha[i_guas] += dummy + alphas[i_guas]*gamma
             grad_beta[i_guas]  += 2*I_i*(I_ij - I_i*weights[i_guas])
 
-    for i_guas in range(nguassians):
+    for i_guas in range(ngaussians):
         grad_alpha[i_guas] /= <double>i2_sample - <double>i1_sample
         grad_beta[i_guas]  /= <double>i2_sample - <double>i1_sample 
 
     return
-    
+
+
 cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
                         np.ndarray[double, ndim=2, mode="c"] centres, \
                         np.ndarray[double, ndim=2, mode="c"] inv_covariances, \
                         np.ndarray[double, ndim=1, mode="c"] alphas, \
                         np.ndarray[double, ndim=1, mode="c"] weights, \
                         np.ndarray[double, ndim=1, mode="c"] Y, \
-                        long nguassians, long ndim, long nsamples, \
+                        long ngaussians, long ndim, long nsamples, \
                         double gamma, double mean_shift):
     """
     Evaluate the scaled objective function.
@@ -1240,21 +1250,21 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
         - ndarray X: 
             2D array containing the X values shape (nsamples, ndim).
         - ndarray centres: 
-            2D array containing the centres of the guassians with shape 
-            (nguassians, ndim).
+            2D array containing the centres of the gaussians with shape 
+            (ngaussians, ndim).
         - ndarray inv_covariances: 
-            2D array containing the inverse covariance of the guassians with 
-            shape (nguassians, ndim).
+            2D array containing the inverse covariance of the gaussians with 
+            shape (ngaussians, ndim).
         - ndarray alphas: 
             1D array containing the current values of alpha with shape 
-            (nguassians).
+            (ngaussians).
         - ndarray weights: 
             1D array containing the current values of the (linear) weights with 
-            shape (nguassians).
+            shape (ngaussians).
         - ndarray Y: 
             1D array containing the X values shape (nsamples).
-        - long nguassians: 
-            Number of guassians.
+        - long ngaussians: 
+            Number of gaussians.
         - long ndim: 
             Dimension of the problem.
         - double gamma: 
@@ -1280,13 +1290,14 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
         for i_dim in range(ndim):
             x_i[i_dim] = X[index,i_dim]
         I_i_temp = calculate_I_i(x_i, centres, inv_covariances, alphas, \
-                  weights, Y[index], nguassians, ndim, mean_shift)
+                  weights, Y[index], ngaussians, ndim, mean_shift)
         I_i += I_i_temp*I_i_temp
 
-    for i_guas in range(nguassians):
+    for i_guas in range(ngaussians):
         reg += alphas[i_guas]*alphas[i_guas]
 
     return I_i/nsamples + 0.5*gamma*reg
+
 
 class ModifiedGaussianMixtureModel(Model):    
     """
@@ -1335,16 +1346,16 @@ class ModifiedGaussianMixtureModel(Model):
             raise ValueError("ndim must be greater than 0.")
 
         if hyper_parameters[0] < 1:
-            raise ValueError("nguassians must be a positive integer")
+            raise ValueError("ngaussians must be a positive integer")
 
         self.ndim                = ndim
         self.alpha_domain        = domains[0]
-        self.nguassians          = hyper_parameters[0]
+        self.ngaussians          = hyper_parameters[0]
         self.gamma               = hyper_parameters[1]
-        self.beta_weights        = np.zeros(self.nguassians)
-        self.alphas              = np.ones(self.nguassians)
-        self.centres             = np.zeros((self.nguassians,self.ndim))
-        self.inv_covariance      = np.ones((self.nguassians,self.ndim))
+        self.beta_weights        = np.zeros(self.ngaussians)
+        self.alphas              = np.ones(self.ngaussians)
+        self.centres             = np.zeros((self.ngaussians,self.ndim))
+        self.inv_covariance      = np.ones((self.ngaussians,self.ndim))
         self.centres_inv_cov_set = False
         if hyper_parameters[2] == None:
             self.learning_rate   = 0.1
@@ -1361,6 +1372,7 @@ class ModifiedGaussianMixtureModel(Model):
         self.verbose             = False
         self.fitted              = False
 
+
     def is_fitted(self):
         """
         Specify whether model has been fitted.
@@ -1370,6 +1382,7 @@ class ModifiedGaussianMixtureModel(Model):
         """
 
         return self.fitted
+
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
         """
@@ -1381,11 +1394,11 @@ class ModifiedGaussianMixtureModel(Model):
         Args:
             - ndarray weights_in: 
                 1D array containing the weights (no need to normalise) with 
-                shape (nguassians).
+                shape (ngaussians).
 
         Raises:
             - ValueError: 
-                Raised if the input array length is not nguassians.
+                Raised if the input array length is not ngaussians.
             - ValueError: 
                 Raised if the input array contains a NaN.
             - ValueError: 
@@ -1393,10 +1406,10 @@ class ModifiedGaussianMixtureModel(Model):
             - ValueError: 
                 Raised if the sum of the weights is too close to zero.
         """
-        if weights_in.size != self.nguassians:
-            raise ValueError("Weights must have length nguassians")
+        if weights_in.size != self.ngaussians:
+            raise ValueError("Weights must have length ngaussians")
 
-        for i_guas in range(self.nguassians):
+        for i_guas in range(self.ngaussians):
             if np.isnan(weights_in[i_guas]):
                 raise ValueError("Weights contains a NaN")
             if weights_in[i_guas] < 0.0:
@@ -1410,26 +1423,27 @@ class ModifiedGaussianMixtureModel(Model):
             
         return
 
+
     def set_alphas(self, np.ndarray[double, ndim=1, mode="c"] alphas_in):
         """
         Set the alphas (i.e. scales).
 
         Args:
             - ndarray alphas_in: 
-                1D array containing the alpha scalings with shape (nguassians)
+                1D array containing the alpha scalings with shape (ngaussians)
 
         Raises:
             - ValueError: 
-                Raised if the input array length is not nguassians.
+                Raised if the input array length is not ngaussians.
             - ValueError: 
                 Raised if the input array contains a NaN.
             - ValueError: 
                 Raised if at least one of the alphas not positive.
         """
-        if alphas_in.size != self.nguassians:
-            raise ValueError("alphas must have length nguassians")
+        if alphas_in.size != self.ngaussians:
+            raise ValueError("alphas must have length ngaussians")
 
-        for i_guas in range(self.nguassians):
+        for i_guas in range(self.ngaussians):
             if np.isnan(alphas_in[i_guas]):
                 raise ValueError("alphas contains a NaN")
             if alphas_in[i_guas] <= 0.0:
@@ -1439,13 +1453,14 @@ class ModifiedGaussianMixtureModel(Model):
         
         return
 
+
     def set_centres(self, np.ndarray[double, ndim=2, mode="c"] centres_in):
         """
         Set the centres of the Gaussians.
 
         Args:
             - ndarray centres_in: 
-                2D array containing the centres with shape (ndim, nguassians).
+                2D array containing the centres with shape (ndim, ngaussians).
 
         Raises:
             - ValueError: 
@@ -1454,11 +1469,11 @@ class ModifiedGaussianMixtureModel(Model):
                 Raised if the input array contains a NaN.
         """
         
-        if centres_in.shape[0] != self.nguassians \
+        if centres_in.shape[0] != self.ngaussians \
             or centres_in.shape[1] != self.ndim:
-            raise ValueError("centres must be shape (nguassians,ndim).")
+            raise ValueError("centres must be shape (ngaussians,ndim).")
 
-        for i_guas in range(self.nguassians):
+        for i_guas in range(self.ngaussians):
             for i_dim in range(self.ndim):
                 if np.isnan(centres_in[i_guas,i_dim]):
                     raise ValueError("Centres contains a NaN")
@@ -1467,6 +1482,7 @@ class ModifiedGaussianMixtureModel(Model):
 
         return
 
+
     def set_inv_covariance(self, np.ndarray[double, ndim=2, mode="c"] 
                                  inv_covariance_in):
         """
@@ -1474,7 +1490,7 @@ class ModifiedGaussianMixtureModel(Model):
 
         Args:
             - ndarray inv_covariance_in: 
-                2D array containing the centres with shape (ndim, nguassians)
+                2D array containing the centres with shape (ndim, ngaussians)
 
         Raises:
             - ValueError: 
@@ -1485,11 +1501,11 @@ class ModifiedGaussianMixtureModel(Model):
                 Raised if the input array contains a number that is not positive.
         """
         
-        if inv_covariance_in.shape[0] != self.nguassians or \
+        if inv_covariance_in.shape[0] != self.ngaussians or \
            inv_covariance_in.shape[1] != self.ndim:
-            raise ValueError("inv_covariance must be shape (nguassians,ndim)")
+            raise ValueError("inv_covariance must be shape (ngaussians,ndim)")
 
-        for i_guas in range(self.nguassians):
+        for i_guas in range(self.ngaussians):
             for i_dim in range(self.ndim):
                 if np.isnan(inv_covariance_in[i_guas,i_dim]):
                     raise ValueError("inv_covariance contains a NaN")
@@ -1501,6 +1517,7 @@ class ModifiedGaussianMixtureModel(Model):
 
         return
 
+
     def set_centres_and_inv_covariance(self, \
         np.ndarray[double, ndim=2, mode="c"] centres_in,\
         np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
@@ -1509,9 +1526,9 @@ class ModifiedGaussianMixtureModel(Model):
 
         Args:
             - ndarray centres_in: 
-                2D array containing the centres with shape (ndim, nguassians).
+                2D array containing the centres with shape (ndim, ngaussians).
             - ndarray inv_covariance_in:  
-                2D array containing the centres with shape (ndim, nguassians).
+                2D array containing the centres with shape (ndim, ngaussians).
 
         Raises:
             - ValueError: 
@@ -1523,20 +1540,20 @@ class ModifiedGaussianMixtureModel(Model):
                 positive.
         """
 
-        if centres_in.shape[0] != self.nguassians or \
+        if centres_in.shape[0] != self.ngaussians or \
            centres_in.shape[1] != self.ndim:
-            raise ValueError("centres must be shape (nguassians,ndim)")
+            raise ValueError("centres must be shape (ngaussians,ndim)")
 
-        for i_guas in range(self.nguassians):
+        for i_guas in range(self.ngaussians):
             for i_dim in range(self.ndim):
                 if np.isnan(centres_in[i_guas,i_dim]):
                     raise ValueError("Centres contains a NaN")
 
-        if inv_covariance_in.shape[0] != self.nguassians or \
+        if inv_covariance_in.shape[0] != self.ngaussians or \
            inv_covariance_in.shape[1] != self.ndim:
-            raise ValueError("inv_covariance must be shape (nguassians,ndim)")
+            raise ValueError("inv_covariance must be shape (ngaussians,ndim)")
 
-        for i_guas in range(self.nguassians):
+        for i_guas in range(self.ngaussians):
             for i_dim in range(self.ndim):
                 if np.isnan(inv_covariance_in[i_guas,i_dim]):
                     raise ValueError("inv_covariance contains a NaN")
@@ -1548,6 +1565,7 @@ class ModifiedGaussianMixtureModel(Model):
         self.inv_covariance = inv_covariance_in.copy()
         self.centres_inv_cov_set = True
         return
+
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
             np.ndarray[double, ndim=1, mode="c"] Y):
@@ -1604,7 +1622,7 @@ class ModifiedGaussianMixtureModel(Model):
             = self.alpha_domain[1]
         cdef double mean_shift = np.mean(Y)
         cdef long i_dim, i_guas, i_sample, i_iter, i_batch, i1_sample, i2_sample
-        cdef long ndim = self.ndim, nguassians = self.nguassians, nsamples \
+        cdef long ndim = self.ndim, ngaussians = self.ngaussians, nsamples \
             = X.shape[0]
         cdef long max_iter = self.max_iter, nbatch = min(self.nbatch,nsamples)
         cdef bint keep_going = True
@@ -1615,9 +1633,9 @@ class ModifiedGaussianMixtureModel(Model):
             X_scaled = scaler.transform(X)
 
             # set up with k-means clustering
-            kmeans = KMeans(n_clusters=nguassians, random_state=0).fit(X_scaled)
+            kmeans = KMeans(n_clusters=ngaussians, random_state=0).fit(X_scaled)
 
-            cluster_count = np.zeros(nguassians)
+            cluster_count = np.zeros(ngaussians)
 
             for i_sample in range(nsamples):
                 i_guas = kmeans.labels_[i_sample]
@@ -1628,7 +1646,7 @@ class ModifiedGaussianMixtureModel(Model):
                     inv_covariances[i_guas, i_dim] += X[i_sample,i_dim] * \
                                                       X[i_sample,i_dim]
 
-            for i_guas in range(nguassians):
+            for i_guas in range(ngaussians):
                 for i_dim in range(ndim):
                     centres[i_guas,i_dim]         = \
                          centres[i_guas,i_dim]/cluster_count[i_guas]
@@ -1642,21 +1660,21 @@ class ModifiedGaussianMixtureModel(Model):
             print("centres : ", centres)
             print("inv_covariances : ", inv_covariances)
         # randomally incialise the parameters
-        alphas[:] = np.random.lognormal(sigma=0.25,size=nguassians)
-        betas[:]  = np.random.randn(nguassians)
-        grad_alpha = np.zeros(nguassians)
-        grad_beta = np.zeros(nguassians)
+        alphas[:] = np.random.lognormal(sigma=0.25,size=ngaussians)
+        betas[:]  = np.random.randn(ngaussians)
+        grad_alpha = np.zeros(ngaussians)
+        grad_beta = np.zeros(ngaussians)
         if self.verbose:
             print("iteration : ", 0, "param ", alphas, \
-                                             beta_to_weights(betas, nguassians))
+                                             beta_to_weights(betas, ngaussians))
 
             print("objective function :", objective_function(X, centres, \
                                                 inv_covariances, alphas, \
-                                     beta_to_weights(betas, nguassians), \
-                                   Y, nguassians, ndim, nsamples, gamma, \
+                                     beta_to_weights(betas, ngaussians), \
+                                   Y, ngaussians, ndim, nsamples, gamma, \
                                                              mean_shift))
 
-        for i_guas in range(nguassians):
+        for i_guas in range(ngaussians):
             if alphas[i_guas] < alpha_lower_bound:
                 alphas[i_guas] = alpha_lower_bound
             if alphas[i_guas] > alpha_upper_bound:
@@ -1673,19 +1691,19 @@ class ModifiedGaussianMixtureModel(Model):
                 else:
                     i2_sample = (i_batch+1)*nsamples//nbatch
                 # calculate gradients
-                weights = beta_to_weights(betas, nguassians)
+                weights = beta_to_weights(betas, ngaussians)
                 gradient_i1i2(grad_alpha, grad_beta, X, centres, \
                               inv_covariances, alphas, weights, Y, \
-                              nguassians, ndim, i1_sample, \
+                              ngaussians, ndim, i1_sample, \
                               i2_sample, index_perm, gamma, mean_shift)
                 # print("grads ", grad_alpha, grad_beta)
                 # update parameters
-                for i_guas in range(nguassians):
+                for i_guas in range(ngaussians):
                     alphas[i_guas] -= learning_rate*grad_alpha[i_guas]
                     betas[i_guas]  -= learning_rate*grad_beta[i_guas]
                 # print(" ", alphas, betas)
 
-                for i_guas in range(nguassians):
+                for i_guas in range(ngaussians):
                     if alphas[i_guas] < alpha_lower_bound:
                         alphas[i_guas] = alpha_lower_bound
                     if alphas[i_guas] > alpha_upper_bound:
@@ -1695,17 +1713,18 @@ class ModifiedGaussianMixtureModel(Model):
             i_iter += 1
             if self.verbose:
                 print("iteration : ", i_iter, "param ", alphas, \
-                                             beta_to_weights(betas, nguassians))
+                                             beta_to_weights(betas, ngaussians))
 
                 print("objective function :", objective_function(X, centres, \
                                            inv_covariances, alphas, weights, \
-                                              Y, nguassians, ndim, nsamples, \
+                                              Y, ngaussians, ndim, nsamples, \
                                                           gamma, mean_shift))
             if i_iter >= max_iter:
                 keep_going = False
 
         self.fitted = True
         return
+
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """
@@ -1724,12 +1743,12 @@ class ModifiedGaussianMixtureModel(Model):
         cdef np.ndarray[double, ndim=1, mode="c"] alphas = self.alphas
         cdef np.ndarray[double, ndim=1, mode="c"] weights 
 
-        cdef long i_guas, nguassians = self.nguassians, ndim = self.ndim
+        cdef long i_guas, ngaussians = self.ngaussians, ndim = self.ndim
         cdef double value = 0.0
 
-        weights = beta_to_weights(self.beta_weights, nguassians)
+        weights = beta_to_weights(self.beta_weights, ngaussians)
 
-        for i_guas in range(nguassians):
+        for i_guas in range(ngaussians):
             value += evaluate_one_guassian(x, mus[i_guas,:], \
                                            inv_covariances[i_guas,:], \
                                            alphas[i_guas], weights[i_guas], \
