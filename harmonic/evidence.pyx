@@ -6,6 +6,9 @@ from math import fsum
 import warnings
 from enum import Enum
 import scipy.special as sp
+import pickle
+
+# json can possibly be removed
 import json
 
 
@@ -62,6 +65,7 @@ class Evidence:
             - ValueError: 
                 Raised if model not fitted.
         """
+
         if nchains < 1:
             raise ValueError("nchains must be greater than 0.")
 
@@ -471,6 +475,46 @@ class Evidence:
         # file_name = 'user.json'
         # with open(file_name, 'w') as file:
         json.dumps(self, default=convert_to_dict,indent=4, sort_keys=True)
+
+        return
+
+    def serialize(self, filename):
+        """Serialize evidence object.
+
+        Args:
+
+            filename (string): Name of file to save evidence object.
+
+        """
+
+        file = open(filename, "wb")
+        pickle.dump(self, file)
+        file.close()
+
+        return
+
+    @classmethod
+    def deserialize(self, filename):
+        """Deserialize Evidence object from file.
+
+        Args:
+
+            filename (string): Name of file from which to read evidence object.
+
+        Returns:
+
+            (Evidence): Evidence object deserialized from file.
+
+        """
+        file = open(filename,"rb")
+        ev = pickle.load(file)
+        file.close()
+
+        return ev
+
+
+
+
 
 def deserialize_evidence_class(file_name):
     """
