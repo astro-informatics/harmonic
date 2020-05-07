@@ -68,7 +68,7 @@ class Model(metaclass=abc.ABCMeta):
             x (double ndarray[ndim]): 1D array of sample of shape (ndim) to predict
                 posterior value.
         
-        Return:
+        Returns:
 
             (double): Predicted log_e posterior value.
 
@@ -78,7 +78,7 @@ class Model(metaclass=abc.ABCMeta):
     def is_fitted(self):
         """Specify whether model has been fitted.
         
-        Return:
+        Returns:
 
             (bool): Whether the model has been fitted.
 
@@ -111,7 +111,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
         inv_covariance_in (double ndarray[ndim]): Diagonal of inverse
             covariance matrix that defines the ellipse.
 
-    Return:
+    Returns:
 
         (double): Value of the objective function.
 
@@ -199,7 +199,7 @@ class HyperSphere(Model):
     def is_fitted(self):
         """Specify whether model has been fitted.
             
-        Return:
+        Returns:
 
             (bool): Whether the model has been fitted.
 
@@ -399,7 +399,7 @@ class HyperSphere(Model):
 
             x (double): Sample of which to predict posterior value.
         
-        Return:
+        Returns:
 
             (double): Predicted posterior value.
 
@@ -636,7 +636,7 @@ class KernelDensityEstimate(Model):
     def is_fitted(self):
         """Specify whether model has been fitted.
             
-        Return:
+        Returns:
 
             (bool): Whether the model has been fitted.
 
@@ -782,7 +782,7 @@ class KernelDensityEstimate(Model):
             x (double ndarray[ndim]): 1D array of sample of shape (ndim) to predict
                 posterior value.
         
-        Return:
+        Returns:
 
             (double): Predicted log_e posterior value.
 
@@ -827,7 +827,7 @@ cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(\
 
         ngaussians (long): The number of Gaussians in the model.
 
-    Return:
+    Returns:
 
         weights (double ndarray[ngaussians]): 1D array where the weight values
             will go with shape (ngaussians)
@@ -850,18 +850,17 @@ cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(\
 
 def beta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] beta, 
         long ngaussians):    
-    """
-    Wrapper to calculate the weights from the beta_weights.
+    """Wrapper to calculate the weights from the beta_weights.
 
     Args:
-        - ndarray beta: 
-            1D array containing the beta values to be converted with shape 
-            (ngaussians).
-        - long ngaussians: 
-            The number of Gaussians in the model.
-    Return:
-        - ndarray weights: 
-            1D array where the weight values will go with shape (ngaussians)
+
+        beta (double ndarray[ngaussians]): Beta values to be converted.
+
+        ngaussians (long): The number of Gaussians in the model.
+
+    Returns:
+
+        (double ndarray[ngaussians]): Weight values.
 
     """    
     
@@ -870,19 +869,21 @@ def beta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] beta,
 
 cdef double calculate_gaussian_normalisation(double alpha, \
     np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
-    """
-    Calculate the normalisation for evaluate_one_guassian.
+    """Calculate the normalisation for evaluate_one_guassian.
 
     Args:
-        - double alpha: 
-            The scalling parameter of the covariance matrix.
-        - ndarray inv_covariance: 
-            1D array containing the inverse covariance matrix.
-        - long ndim: 
-            Dimension of the problem.
+
+        alpha (double): The scaling parameter of the covariance matrix.
+
+        inv_covariance (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix that defines the ellipse.
+
+        ndim (long): Dimension of the problem.
+
     Returns:
-        - double: 
-            The normalisation factor.
+
+        (double): The normalisation factor.
+
     """
     
     cdef long i_dim
@@ -896,19 +897,21 @@ cdef double calculate_gaussian_normalisation(double alpha, \
 
 def calculate_gaussian_normalisation_wrap(double alpha, \
     np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
-    """
-    Wrapper to calculate the normalisation for evaluate_one_guassian.
+    """Wrapper to calculate the normalisation for evaluate_one_guassian.
 
     Args:
-        - double alpha: 
-            The scalling parameter of the covariance matrix.
-        - ndarray inv_covariance: 
-            1D array containing the inverse covariance matrix.
-        - long ndim: 
-            Dimension of the problem.
+
+        alpha (double): The scaling parameter of the covariance matrix.
+
+        inv_covariance (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix.
+
+        ndim (long): Dimension of the problem.
+
     Returns:
-        - double: 
-            The normalisation factor.
+
+        (double): The normalisation factor.
+
     """
     
     return calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
@@ -918,25 +921,28 @@ cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
                            np.ndarray[double, ndim=1, mode="c"] mu, \
                            np.ndarray[double, ndim=1, mode="c"] inv_covariance,\
                            double alpha, double weight, long ndim):
-    """
-    Evaluate one Guassian.
+    """Evaluate one Guassian.
 
     Args:
-        - ndarray x: 
-            Postion where the Gaussian is to be evaluated, with shape (ndim).
-        - ndarray mu: 
-            Center of the Gaussian, with shape (ndim).
-        - ndarray inv_covariance: 
-            1D array containing the inverse covariance matrix.
-        - double alpha: 
-            Scalling parameter of the covariance matrix.
-        - double weight: 
-            Weight applied to that Guassian.
-        - long ndim: 
-            Dimension of the problem.
+
+        x (double ndarray[ndim]): Postion where the Gaussian is to be
+            evaluated.
+
+        mu (double ndarray[ndim]): Center of the Gaussian.
+
+        inv_covariance (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix.
+
+        alpha (double): Scaling parameter of the covariance matrix.
+
+        weight (double): Weight applied to that Guassian.
+
+        ndim (long): Dimension of the problem.
+
     Returns:
-        - double: 
-            Height of the Guassian.
+
+        (double): Height of the Guassian.
+
     """
     
     cdef double y, distance = 0.0, norm = \
@@ -955,25 +961,28 @@ def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
                            np.ndarray[double, ndim=1, mode="c"] mu, \
                            np.ndarray[double, ndim=1, mode="c"] inv_covariance,\
                            double alpha, double weight, long ndim):
-    """
-    Wrapper to evaluate one Guassian.
+    """Wrapper to evaluate one Guassian.
 
     Args:
-        - ndarray x: 
-            Postion where the Gaussian is to be evaluated, with shape (ndim).
-        - ndarray mu: 
-            Center of the Gaussian, with shape (ndim).
-        - ndarray inv_covariance: 
-            1D array containing the inverse covariance matrix.
-        - double alpha: 
-            Scalling parameter of the covariance matrix.
-        - double weight: 
-            Weight applied to that Guassian.
-        - long ndim: 
-            Dimension of the problem.
+
+        x (double ndarray[ndim]): Postion where the Gaussian is to be
+            evaluated.
+
+        mu (double ndarray[ndim]): Center of the Gaussian.
+
+        inv_covariance (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix.
+
+        alpha (double): Scaling parameter of the covariance matrix.
+
+        weight (double): Weight applied to that Guassian.
+
+        ndim (long): Dimension of the problem.
+
     Returns:
-        - double: 
-            Height of the Guassian.
+
+        (double): Height of the Guassian.
+
     """
 
     return evaluate_one_guassian(x, mu, inv_covariance, alpha, weight, ndim)
@@ -983,23 +992,24 @@ cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
                     np.ndarray[double, ndim=1, mode="c"] mu, \
                     np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
                     long ndim):
-    """
-    Evaluate delta_theta_ij squared which is part of the gradient of the 
+    """Evaluate delta_theta_ij squared which is part of the gradient of the
     objective function.
 
     Args:
-        - ndarray x: 
-            1D array containing the current sample (ndim).
-        - ndarray mu: 
-            1D array containing the centre of the guassian with shape (ndim).
-        - ndarray inv_covariance: 
-            1D array containing the inverse covariance of the guassian with 
-            shape (ndim).
-        - long ndim: 
-            Dimension of the problem.
+
+        x (double ndarray[ndim]): Position of current sample.
+
+        mu (double ndarray[ndim]): Center of the Gaussian.
+
+        inv_covariance (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix.
+
+        ndim (long): Dimension of the problem.
+
     Returns:
-        - double delta_theta_ij: 
-            Value of delta_theta_ij squared.
+
+        (double): Value of delta_theta_ij squared.
+
     """
     
     cdef long i_dim
@@ -1016,23 +1026,24 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
                         np.ndarray[double, ndim=1, mode="c"] mu, \
                         np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
                         long ndim):
-    """
-    Wrapper to evaluate delta_theta_ij squared which is part of the gradient of 
+    """Wrapper to evaluate delta_theta_ij squared which is part of the gradient of
     the objective function.
 
     Args:
-        - ndarray x: 
-            1D array containing the current sample (ndim).
-        - ndarray mu: 
-            1D array containing the centre of the guassian with shape (ndim).
-        - ndarray inv_covariance: 
-            1D array containing the inverse covariance of the guassian with 
-            shape (ndim).
-        - long ndim: 
-            Dimension of the problem.
+
+        x (double ndarray[ndim]): Position of current sample.
+
+        mu (double ndarray[ndim]): Center of the Gaussian.
+
+        inv_covariance (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix.
+
+        ndim (long): Dimension of the problem.
+
     Returns:
-        - double delta_theta_ij: 
-            Value of delta_theta_ij squared.
+
+        (double): Value of delta_theta_ij squared.
+
     """
 
     return delta_theta_ij(x, mu, inv_covariance, ndim)
@@ -1377,7 +1388,7 @@ class ModifiedGaussianMixtureModel(Model):
         """
         Specify whether model has been fitted.
         
-        Return:
+        Returns:
             - Boolean specifying whether the model has been fitted.
         """
 
@@ -1733,7 +1744,7 @@ class ModifiedGaussianMixtureModel(Model):
         Args: 
             - x: 
                 1D array of sample of shape (ndim) to predict posterior value.
-        Return:
+        Returns:
             - Predicted posterior value.
         """
 
