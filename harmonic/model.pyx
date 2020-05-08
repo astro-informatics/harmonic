@@ -65,8 +65,8 @@ class Model(metaclass=abc.ABCMeta):
         
         Args: 
 
-            x (double ndarray[ndim]): 1D array of sample of shape (ndim) to predict
-                posterior value.
+            x (double ndarray[ndim]): Sample of shape (ndim) at which to
+                predict posterior value.
         
         Returns:
 
@@ -1308,38 +1308,39 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
 
 
 class ModifiedGaussianMixtureModel(Model):    
-    """
-    ModifiedGaussianMixtureModel (MGMM) to approximate the log_e posterior by a 
+    """ModifiedGaussianMixtureModel (MGMM) to approximate the log_e posterior by a
     modified Gaussian mixture model.
+
     """
 
     def __init__(self, long ndim, list domains not None, 
                  hyper_parameters=[3,1E-8,None,None,None]):        
-        """
-        Constructor setting the hyper parameters and domains of the model of the
+        """Constructor setting the hyper parameters and domains of the model of the
         MGMM which models the posterior as a group of Gaussians.
 
         Args:
-            - long ndim: 
-                Dimension of the problem to solve.
-            - list domains: 
-                A list of length 1 with the range of scale parameter of the 
-                covariance matrix, i.e. the range of alpha, where C' = alpha * 
-                C_samples, and C_samples is the diagonal of the covariance in 
-                the samples in each cluster.
-            - hyper_parameters: 
-                A list of length 5, the first of which should be nummber of 
-                clusters, the second is the regularisation parameter gamma, the 
-                third is the learning rate, the fourth is the maximum number of 
-                terations and the fifth is the batch size.
+
+            ndim (long): Dimension of the problem to solve.
+
+            domains (list): A list of length 1 with the range of scale
+                parameter of the covariance matrix, i.e. the range of alpha,
+                where C' = alpha * C_samples, and C_samples is the diagonal of
+                the covariance in the samples in each cluster.
+
+            hyper_parameters (list): A list of length 5, the first of which
+                should be nummber of clusters, the second is the regularisation
+                parameter gamma, the third is the learning rate, the fourth is
+                the maximum number of terations and the fifth is the batch
+                size.
 
         Raises:
-            - ValueError: 
-                Raised if the hyper_parameters list is not length 5.
-            - ValueError: 
-                Raised if the length of domains list is not 1.
-            - ValueError: 
-                Raised if the ndim is not positive.
+
+            ValueError: Raised if the hyper_parameters list is not length 5.
+
+            ValueError: Raised if the length of domains list is not 1.
+
+            ValueError: Raised if the ndim is not positive.
+
         """
 
         if len(hyper_parameters) != 5:
@@ -1382,37 +1383,39 @@ class ModifiedGaussianMixtureModel(Model):
 
 
     def is_fitted(self):
-        """
-        Specify whether model has been fitted.
-        
+        """Specify whether model has been fitted.
+
         Returns:
-            - Boolean specifying whether the model has been fitted.
+
+            (bool): Whether the model has been fitted.
+
         """
 
         return self.fitted
 
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
-        """
-        Set the weights of the Gaussians.
+        """Set the weights of the Gaussians.
         
-        The weights are the softmax of the betas (without normalisation), i.e. 
+        The weights are the softmax of the betas (without normalisation), i.e.
         the betas are the log_e of the weights.
 
         Args:
-            - ndarray weights_in: 
-                1D array containing the weights (no need to normalise) with 
-                shape (ngaussians).
+
+            weights_in (double ndarray[ngaussians]): 1D array containing the
+                weights (no need to normalise).
 
         Raises:
-            - ValueError: 
-                Raised if the input array length is not ngaussians.
-            - ValueError: 
-                Raised if the input array contains a NaN.
-            - ValueError: 
-                Raised if at least one of the weights is negative.
-            - ValueError: 
-                Raised if the sum of the weights is too close to zero.
+
+            ValueError: Raised if the input array length is not ngaussians.
+
+            ValueError: Raised if the input array contains a NaN.
+
+            ValueError: Raised if at least one of the weights is negative.
+
+            ValueError: Raised if the sum of the weights is too close to
+                zero.
+
         """
         if weights_in.size != self.ngaussians:
             raise ValueError("Weights must have length ngaussians")
@@ -1433,20 +1436,20 @@ class ModifiedGaussianMixtureModel(Model):
 
 
     def set_alphas(self, np.ndarray[double, ndim=1, mode="c"] alphas_in):
-        """
-        Set the alphas (i.e. scales).
+        """Set the alphas (i.e. scales).
 
         Args:
-            - ndarray alphas_in: 
-                1D array containing the alpha scalings with shape (ngaussians)
+
+            alphas_in (double ndarray[ngaussians]): Alpha scalings.
 
         Raises:
-            - ValueError: 
-                Raised if the input array length is not ngaussians.
-            - ValueError: 
-                Raised if the input array contains a NaN.
-            - ValueError: 
-                Raised if at least one of the alphas not positive.
+
+            ValueError: Raised if the input array length is not ngaussians.
+
+            ValueError: Raised if the input array contains a NaN.
+
+            ValueError: Raised if at least one of the alphas not positive.
+
         """
         if alphas_in.size != self.ngaussians:
             raise ValueError("alphas must have length ngaussians")
@@ -1463,18 +1466,18 @@ class ModifiedGaussianMixtureModel(Model):
 
 
     def set_centres(self, np.ndarray[double, ndim=2, mode="c"] centres_in):
-        """
-        Set the centres of the Gaussians.
+        """Set the centres of the Gaussians.
 
         Args:
-            - ndarray centres_in: 
-                2D array containing the centres with shape (ndim, ngaussians).
+
+            centres_in (double ndarray[ndim, ngaussians]): Centres.
 
         Raises:
-            - ValueError: 
-                Raised if the input array is not the correct shape.
-            - ValueError: 
-                Raised if the input array contains a NaN.
+
+            ValueError: Raised if the input array is not the correct shape.
+
+            ValueError: Raised if the input array contains a NaN.
+
         """
         
         if centres_in.shape[0] != self.ngaussians \
@@ -1493,20 +1496,22 @@ class ModifiedGaussianMixtureModel(Model):
 
     def set_inv_covariance(self, np.ndarray[double, ndim=2, mode="c"] 
                                  inv_covariance_in):
-        """
-        Set the inverse covariance of the Gaussians.
+        """Set the inverse covariance of the Gaussians.
 
         Args:
-            - ndarray inv_covariance_in: 
-                2D array containing the centres with shape (ndim, ngaussians)
+
+            inv_covariance (double ndarray[ndim, ngaussians]): Inverse
+                covariance of the Gaussians.
 
         Raises:
-            - ValueError: 
-                Raised if the input array is not the correct shape.
-            - ValueError: 
-                Raised if the input array contains a NaN.
-            - ValueError: 
-                Raised if the input array contains a number that is not positive.
+
+            ValueError: Raised if the input array is not the correct shape.
+
+            ValueError: Raised if the input array contains a NaN.
+
+            ValueError: Raised if the input array contains a number that is
+                not positive.
+
         """
         
         if inv_covariance_in.shape[0] != self.ngaussians or \
@@ -1529,23 +1534,24 @@ class ModifiedGaussianMixtureModel(Model):
     def set_centres_and_inv_covariance(self, \
         np.ndarray[double, ndim=2, mode="c"] centres_in,\
         np.ndarray[double, ndim=2, mode="c"] inv_covariance_in):
-        """
-        Set the centres and inverse covariance of the Gaussians.
+        """Set the centres and inverse covariance of the Gaussians.
 
         Args:
-            - ndarray centres_in: 
-                2D array containing the centres with shape (ndim, ngaussians).
-            - ndarray inv_covariance_in:  
-                2D array containing the centres with shape (ndim, ngaussians).
+
+            centres_in (double ndarray[ndim, ngaussians]): Centres.
+
+            inv_covariance (double ndarray[ndim, ngaussians]): Inverse
+                covariance of the Gaussians.
 
         Raises:
-            - ValueError: 
-                Raised if the input arrays are not the correct shape.
-            - ValueError: 
-                Raised if the input arrays contain a NaN.
-            - ValueError: 
-                Raised if the input covariance contains a number that is not 
-                positive.
+
+            ValueError: Raised if the input arrays are not the correct shape.
+
+            ValueError: Raised if the input arrays contain a NaN.
+
+            ValueError: Raised if the input covariance contains a number that
+                is not positive.
+
         """
 
         if centres_in.shape[0] != self.ngaussians or \
@@ -1577,12 +1583,10 @@ class ModifiedGaussianMixtureModel(Model):
 
     def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
             np.ndarray[double, ndim=1, mode="c"] Y):
-        """
-        Fit the parameters of the model as follows. 
+        """Fit the parameters of the model as follows.
 
         If centres and inv_covariances not set:
         - Find clusters using the k-means clustering from scikit learn.
-
         - Use the samples in the clusters to find the centres and covariance 
         matricies.
                     
@@ -1590,21 +1594,28 @@ class ModifiedGaussianMixtureModel(Model):
         stochastic descent.
 
         Args:
-            - X: 
-                2D array of samples of shape (nsamples, ndim).
-            - Y: 
-                1D array of target log_e posterior values for each sample in X 
-                of shape (nsamples).
+
+
+            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
+            Y (double ndarray[nsamples]): Target log_e posterior values for each
+                sample in X.
             
         Returns:
-            - Boolean specifying whether fit successful.
+
+            (bool): Whether fit successful.
+
         Raises:
-            - ValueError: 
-                Raised if the first dimension of X is not the same as Y.
-            - ValueError: 
-                Raised if the first dimension of X is not the same as Y.
-            - ValueError: 
-                Raised if the second dimension of X is not the same as ndim.
+
+            ValueError: Raised if the first dimension of X is not the same as
+                Y.
+
+            ValueError: Raised if the first dimension of X is not the same as
+                Y.
+
+            ValueError: Raised if the second dimension of X is not the same
+                as ndim.
+
         """
 
         if X.shape[0] != Y.shape[0]:
@@ -1735,14 +1746,17 @@ class ModifiedGaussianMixtureModel(Model):
 
 
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """
-        Use model to predict the hight of the posterior at point x.
+        """Predict the value of the posterior at point x.
         
         Args: 
-            - x: 
-                1D array of sample of shape (ndim) to predict posterior value.
+
+            x (double ndarray[ndim]): Sample of shape (ndim) at which to
+                predict posterior value.
+        
         Returns:
-            - Predicted posterior value.
+
+            (double): Predicted log_e posterior value.
+
         """
 
         cdef np.ndarray[double, ndim=2, mode="c"] mus = self.centres
