@@ -869,7 +869,7 @@ def beta_to_weights_wrap(np.ndarray[double, ndim=1, mode="c"] beta,
 
 cdef double calculate_gaussian_normalisation(double alpha, \
     np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
-    """Calculate the normalisation for evaluate_one_guassian.
+    """Calculate the normalisation for evaluate_one_gaussian.
 
     Args:
 
@@ -897,7 +897,7 @@ cdef double calculate_gaussian_normalisation(double alpha, \
 
 def calculate_gaussian_normalisation_wrap(double alpha, \
     np.ndarray[double, ndim=1, mode="c"] inv_covariance, long ndim):
-    """Wrapper to calculate the normalisation for evaluate_one_guassian.
+    """Wrapper to calculate the normalisation for evaluate_one_gaussian.
 
     Args:
 
@@ -917,11 +917,11 @@ def calculate_gaussian_normalisation_wrap(double alpha, \
     return calculate_gaussian_normalisation(alpha, inv_covariance, ndim)
 
 
-cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
+cdef double evaluate_one_gaussian(np.ndarray[double, ndim=1, mode="c"] x, \
                            np.ndarray[double, ndim=1, mode="c"] mu, \
                            np.ndarray[double, ndim=1, mode="c"] inv_covariance,\
                            double alpha, double weight, long ndim):
-    """Evaluate one Guassian.
+    """Evaluate one Gaussian.
 
     Args:
 
@@ -935,13 +935,13 @@ cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
 
         alpha (double): Scaling parameter of the covariance matrix.
 
-        weight (double): Weight applied to that Guassian.
+        weight (double): Weight applied to that Gaussian.
 
         ndim (long): Dimension of the problem.
 
     Returns:
 
-        (double): Height of the Guassian.
+        (double): Height of the Gaussian.
 
     """
     
@@ -957,11 +957,11 @@ cdef double evaluate_one_guassian(np.ndarray[double, ndim=1, mode="c"] x, \
     return exp(-distance)*norm*weight
 
 
-def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
+def evaluate_one_gaussian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
                            np.ndarray[double, ndim=1, mode="c"] mu, \
                            np.ndarray[double, ndim=1, mode="c"] inv_covariance,\
                            double alpha, double weight, long ndim):
-    """Wrapper to evaluate one Guassian.
+    """Wrapper to evaluate one Gaussian.
 
     Args:
 
@@ -975,17 +975,17 @@ def evaluate_one_guassian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
 
         alpha (double): Scaling parameter of the covariance matrix.
 
-        weight (double): Weight applied to that Guassian.
+        weight (double): Weight applied to that Gaussian.
 
         ndim (long): Dimension of the problem.
 
     Returns:
 
-        (double): Height of the Guassian.
+        (double): Height of the Gaussian.
 
     """
 
-    return evaluate_one_guassian(x, mu, inv_covariance, alpha, weight, ndim)
+    return evaluate_one_gaussian(x, mu, inv_covariance, alpha, weight, ndim)
 
 
 cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
@@ -1050,36 +1050,36 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
 
 
 cdef double calculate_I_ij(np.ndarray[double, ndim=1, mode="c"] x, \
-                        np.ndarray[double, ndim=1, mode="c"] mu, \
-                        np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
-                        double alpha, double weight, double ln_Pi, long ndim, \
-                        double mean_shift):
-    """
-    Evaluate I_ij which is part the gradient of the objective function.
+                           np.ndarray[double, ndim=1, mode="c"] mu, \
+                           np.ndarray[double, ndim=1, mode="c"] inv_covariance, \
+                           double alpha, double weight, double ln_Pi, long ndim, \
+                           double mean_shift):
+    """Evaluate I_ij which is part the gradient of the objective function.
 
     Args:
-        - ndarray x: 
-            1D array containing the current sample (ndim).
-        - ndarray mu: 
-            1D array containing the centre of the guassian with shape (ndim).
-        - ndarray inv_covariance: 
-            1D array containing the inverse covariance of the guassian with 
-            shape (ndim).
-        - double alpha: 
-            Current values of alpha (for this guassian).
-        - double weights: 
-            Current values of the weight (for this guassian).
-        - ndarray ln_Pi: 
-            Current ln posterior.
-        - long ndim: 
-            Dimension of the problem.
-        - double mean_shift: 
-            The mean of the Y values to remove that size from scaling the 
-            gradient.
+
+        x (double ndarray[ndim]): Position of current sample.
+
+        mu (double ndarray[ndim]): Center of the Gaussian.
+
+        inv_covariance (double ndarray[ndim]): Diagonal of inverse
+            covariance matrix.
+
+        alpha (double): Current values of alpha (for this Gaussian).
+
+        weight (double): Current values of the weight (for this Gaussian).
+
+        ln_Pi (double): Current ln posterior.
+
+        ndim (long): Dimension of the problem.
+
+        mean_shift (double): The mean of the Y values to remove that size from
+            scaling the gradient.
 
     Returns:
-        - double I_ij: 
-            Value of I_ij.
+
+        (double): Value of I_ij.
+
     """
 
     cdef double norm = alpha**(-ndim)
@@ -1105,37 +1105,37 @@ cdef double calculate_I_i(np.ndarray[double, ndim=1, mode="c"] x, \
                 np.ndarray[double, ndim=1, mode="c"] alphas, \
                 np.ndarray[double, ndim=1, mode="c"] weights, \
                 double ln_Pi, long ngaussians, long ndim, double mean_shift):
-    """
-    Evaluate I_i which is part the gradient of the objective function.
+    """Evaluate I_i which is part the gradient of the objective function.
 
     Args:
-        - ndarray x: 
-            1D array containing the current sample (ndim).
-        - ndarray centres: 
-            2D array containing the centres of the gaussians with shape 
-            (ngaussians, ndim).
-        - ndarray inv_covariances: 
-            2D array containing the inverse covariance of the gaussians with 
-            shape (ngaussians, ndim).
-        - ndarray alphas: 
-            1D array containing the current values of alpha with shape 
-            (ngaussians).
-        - ndarray weights: 
-            1D array containing the current values of the (linear) weights with 
-            shape (ngaussians)
-        - ndarray ln_Pi: 
-            Current ln posterior.
-        - long ngaussians: 
-            Number of gaussians.
-        - long ndim: 
-            Dimension of the problem.
-        - double mean_shift: 
-            The mean of the Y values to remove that size fromscaling the 
-            gradient
+
+
+        x (double ndarray[ndim]): Position of current sample.
+
+        centres (double ndarray[ngaussians, ndim]): 2D array containing the
+            centres of the Gaussians.
+
+        inv_covariance (double ndarray[ngaussians,ndim]): Inverse covariance of
+            the Gaussians.
+
+        alphas (double ndarray[ngaussians]): Current values of alpha.
+
+        weights (double ndarray[ngaussians]): Crrent values of the (linear)
+            weights.
+
+        ln_Pi (double): Current ln posterior.
+
+        ngaussians (long): Number of Gaussians.
+
+        ndim (long): Dimension of the problem.
+
+        mean_shift (double): The mean of the Y values to remove that size
+            from scaling the gradient.
 
     Returns:
-        double I_i: 
-            The value of I_i
+
+        (double): The value of I_i.
+
     """
 
     cdef double I_i = 0.0
@@ -1160,48 +1160,46 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
                         long i2_sample, \
                         np.ndarray[long, ndim=1, mode="c"] index_perm, \
                         double gamma, double mean_shift):
-    """
-    Evaluate the gradient of the objective function.
+    """Evaluate the gradient of the objective function.
 
     Args:
-        - ndarray grad_alpha: 
-            1D array where the gradient of alpha will be placed shape 
-            (ngaussians).
-        - ndarray grad_beta: 
-            1D array where the gradient of beta will be placed shape 
-            (ngaussians)
-        - ndarray X: 
-            2D array containing the X values shape (nsamples, ndim).
-        - ndarray centres: 
-            2D array containing the centres of the gaussians with shape 
-            (ngaussians, ndim).
-        - ndarray inv_covariances: 
-            2D array containing the inverse covariance of the gaussians with 
-            shape (ngaussians, ndim).
-        - ndarray alphas: 
-            1D array containing the current values of alpha with shape 
-            (ngaussians).
-        - ndarray weights: 
-            1D array containing the current values of the (linear) weights with 
-            shape (ngaussians)
-        - ndarray Y: 
-            1D array containing the X values shape (nsamples).
-        - long ngaussians: 
-            Number of gaussians.
-        - long ndim: 
-            Dimension of the problem.
-        - long i1_sample: 
-            First sample to be considered (usefull for mini-batch gradient 
-            decent).
-        - long i2_sample: 
-            Second sample to be considered.
-        - ndarray index_perm: 
-            1D array containing a random permutation of the sample indexes with 
-            shape (X.shape[0]).
-        - double gamma: 
-            Regularisation parameter.
-        - double mean_shift: 
-            Mean of the Y values to remove that size from scaling the gradient.
+
+        grad_alpha (double ndarray[ngaussians]): Gradient
+            of alpha will be placed.
+
+        grad_beta (double ndarray[ngaussians]): Gradient of beta will be
+            placed.
+
+        X (double ndarray[nsamples, ndim]): X values.
+
+        centres (double ndarray[ngaussians, ndim]): Centres of the Gaussians.
+
+        inv_covariance (double ndarray[ngaussians,ndim]): Inverse covariance of
+            the Gaussians.
+
+        alphas (double ndarray[ngaussians]): Current values of alpha.
+
+        weights (double ndarray[ngaussians]): Crrent values of the (linear)
+            weights.
+
+        Y (double ndarray[nsamples]): Y values.
+
+        ngaussians (long): Number of Gaussians.
+
+        ndim (long): Dimension of the problem.
+
+        i1_sample (long): First sample to be considered (usefull for mini-batch
+            gradient decent).
+
+        i2_sample (long): Second sample to be considered.
+
+        index_perm (long ndarray[X.shape[0]]): Random permutation of the sample
+            indexes.
+
+        gamma (double): Regularisation parameter.
+
+        mean_shift (double): The mean of the Y values to remove that size
+            from scaling the gradient.
 
     """
 
@@ -1254,39 +1252,38 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
                         np.ndarray[double, ndim=1, mode="c"] Y, \
                         long ngaussians, long ndim, long nsamples, \
                         double gamma, double mean_shift):
-    """
-    Evaluate the scaled objective function.
+    """Evaluate the scaled objective function.
 
     Args:
-        - ndarray X: 
-            2D array containing the X values shape (nsamples, ndim).
-        - ndarray centres: 
-            2D array containing the centres of the gaussians with shape 
-            (ngaussians, ndim).
-        - ndarray inv_covariances: 
-            2D array containing the inverse covariance of the gaussians with 
-            shape (ngaussians, ndim).
-        - ndarray alphas: 
-            1D array containing the current values of alpha with shape 
-            (ngaussians).
-        - ndarray weights: 
-            1D array containing the current values of the (linear) weights with 
-            shape (ngaussians).
-        - ndarray Y: 
-            1D array containing the X values shape (nsamples).
-        - long ngaussians: 
-            Number of gaussians.
-        - long ndim: 
-            Dimension of the problem.
-        - double gamma: 
-            Regularisation parameter.
-        - double mean_shift: 
-            The mean of the Y values to remove that size from scaling the 
-            gradient.
+
+
+        X (double ndarray[nsamples, ndim]): X values.
+
+        centres (double ndarray[ngaussians, ndim]): Centres of the Gaussians.
+
+        inv_covariance (double ndarray[ngaussians,ndim]): Inverse covariance of
+            the Gaussians.
+
+        alphas (double ndarray[ngaussians]): Current values of alpha.
+
+        weights (double ndarray[ngaussians]): Crrent values of the (linear)
+            weights.
+
+        Y (double ndarray[nsamples]): Y values.
+
+        ngaussians (long): Number of Gaussians.
+
+        ndim (long): Dimension of the problem.
+
+        gamma (double): Regularisation parameter.
+
+        mean_shift (double): The mean of the Y values to remove that size
+            from scaling the gradient.
 
     Returns:
-        - double: 
-            Scaled objective function.
+
+        (double): Scaled objective function.
+
     """
 
     cdef np.ndarray[double, ndim=1, mode='c'] x_i
@@ -1760,7 +1757,7 @@ class ModifiedGaussianMixtureModel(Model):
         weights = beta_to_weights(self.beta_weights, ngaussians)
 
         for i_guas in range(ngaussians):
-            value += evaluate_one_guassian(x, mus[i_guas,:], \
+            value += evaluate_one_gaussian(x, mus[i_guas,:], \
                                            inv_covariances[i_guas,:], \
                                            alphas[i_guas], weights[i_guas], \
                                            ndim)

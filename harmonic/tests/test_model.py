@@ -412,7 +412,7 @@ def test_calculate_gaussian_normalisation():
 
     return
 
-def test_evaluate_one_guassian():
+def test_evaluate_one_gaussian():
 
     np.random.seed(0)
 
@@ -427,7 +427,7 @@ def test_evaluate_one_guassian():
 
     for i_trials in range(ntrials):
         x = np.random.randn(ndim)*5*i_trials/ntrials
-        y = md.evaluate_one_guassian_wrap(x, mu, inv_covariance, alpha, weight, ndim)
+        y = md.evaluate_one_gaussian_wrap(x, mu, inv_covariance, alpha, weight, ndim)
         norm = md.calculate_gaussian_normalisation_wrap(alpha, inv_covariance, ndim)
         # assert y == -np.sum((x-mu)*(x-mu)*inv_covariance)
         assert y == np.exp(-np.sum((x-mu)*(x-mu)*inv_covariance)/(2.0*alpha))*norm*weight
