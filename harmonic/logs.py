@@ -63,6 +63,16 @@ def low_log(message):
     logger = logging.getLogger('Harmonic')
     logger.debug('\033[0;36;40m ' + message + ' \033[0;0m')
 
+def warning_log(message):
+    """Log a warning message.
+
+    Args:
+
+        message: Warning to log.
+
+    """
+    logger = logging.getLogger('Harmonic')
+    logger.warning('\033[0;37;40m ' + message + ' \033[0;0m')
 
 def high_log(message):
     """Log high-level (CRITICAL) message
