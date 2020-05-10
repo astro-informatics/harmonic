@@ -17,6 +17,8 @@ examples of use:
 
     hm.logs.high_log('a critical level message')
 
+    hm.logs.warning_log('a warning to the user')
+
 
 Description
 ================
@@ -24,4 +26,8 @@ Description
 A critical message is something that should be displayed on all runs (e.g. 
 evidence value printing, run completion etc.), whereas a debug message 
 should only be used for background logs to assist debugging (e.g. 
-printing diagnostic checks etc.)
+printing diagnostic checks etc.) 
+
+A warning is typically reserved for internal code print outs to warn the 
+user when they may experience sub-optimal results (e.g. large dynamic 
+ranges).
