@@ -6,7 +6,8 @@ from math import fsum
 import warnings
 from enum import Enum
 import scipy.special as sp
-import json
+import pickle
+
 
 
 class Optimisation(Enum):
@@ -64,6 +65,7 @@ class Evidence:
             ValueError: Raised if model not fitted.
 
         """
+
         if nchains < 1:
             raise ValueError("nchains must be greater than 0.")
 
@@ -451,28 +453,39 @@ class Evidence:
 
         return (ln_evidence, ln_evidence_std)
 
+    def serialize(self, filename):
+        """Serialize evidence object.
 
-    def serialize_evidence_class(self):
-        """Serializes the evidence class for checkpointing.
+        Args:
+
+            filename (string): Name of file to save evidence object.
 
         """
-        # file_name = 'user.json'
-        # with open(file_name, 'w') as file:
-        json.dumps(self, default=convert_to_dict,indent=4, sort_keys=True)
 
+        file = open(filename, "wb")
+        pickle.dump(self, file)
+        file.close()
 
-def deserialize_evidence_class(file_name):
-    """Deserializes the evidence class for checkpointing.
+        return
 
-    Args:
+    @classmethod
+    def deserialize(self, filename):
+        """Deserialize Evidence object from file.
 
-        file_name (string): File name.
+        Args:
 
-    """
-    file_name = 'user.json'
-    with open(file_name, 'r') as file:
-        json.loads(file, object_hook=dict_to_obj)
+            filename (string): Name of file from which to read evidence object.
 
+        Returns:
+
+            (Evidence): Evidence object deserialized from file.
+
+        """
+        file = open(filename,"rb")
+        ev = pickle.load(file)
+        file.close()
+
+        return ev
 
 def compute_bayes_factor(ev1, ev2):
     """Compute Bayes factor of two models.
@@ -593,48 +606,3 @@ def msum(iterable):
             x = hi
         partials[i:] = [x]
     return sum(partials, 0.0), partials
-
-
-
-def convert_to_dict(obj):
-  """A function takes in a custom object and returns a dictionary representation
-  of the object. This dict representation includes meta data such as the
-  object's module and class names.
-
-  """
-  
-  #  Populate the dictionary with object meta data 
-  obj_dict = {
-    "__class__": obj.__class__.__name__,
-    "__module__": obj.__module__
-  }
-  
-  #  Populate the dictionary with object properties
-  obj_dict.update(obj.__dict__)
-  
-  return obj_dict
-
-def dict_to_obj(our_dict):
-    """Function that takes in a dict and returns a custom object associated with
-    the dict. This function makes use of the "__module__" and "__class__"
-    metadata in the dictionary to know which object type to create.
-
-    """
-    if "__class__" in our_dict:
-        # Pop ensures we remove metadata from the dict to leave only the instance arguments
-        class_name = our_dict.pop("__class__")
-        
-        # Get the module name from the dict and import it
-        module_name = our_dict.pop("__module__")
-        
-        # We use the built in __import__ function since the module name is not yet known at runtime
-        module = __import__(module_name)
-        
-        # Get the class from the module
-        class_ = getattr(module,class_name)
-        
-        # Use dictionary unpacking to initialize the object
-        obj = class_(**our_dict)
-    else:
-        obj = our_dict
-    return obj

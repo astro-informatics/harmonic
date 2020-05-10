@@ -53,17 +53,6 @@ def test_set_shift():
     assert rho.shift_value == pytest.approx(2.0)
     assert rho.shift_set  == True
 
-# def test_serialization():
-    
-#     nchains = 100
-#     ndim = 1000    
-#     domain = [np.array([1E-1,1E1])]
-#     sphere = md.HyperSphere(ndim, domain)
-#     sphere.fitted = True
-#     rho = cbe.Evidence(nchains, sphere)
-#     rho.serialize_evidence_class()
-
-
 def test_process_run_with_shift():
 
     nchains = 10
@@ -277,3 +266,48 @@ def test_compute_bayes_factors():
     (evidence, evidence_std) = ev1.compute_evidence()
     assert bf12 == pytest.approx(evidence)
     assert bf12_std == pytest.approx(evidence_std)
+
+
+def test_serialization():
+
+    nchains   = 200
+    nsamples  = 500
+    ndim      = 2
+
+    # Create samples of unnormalised Gaussian
+    np.random.seed(30)
+    X = np.random.randn(nchains,nsamples,ndim)
+    Y = -np.sum(X*X,axis=2)/2.0
+
+    # Add samples to chains
+    chain  = ch.Chains(ndim)    
+    chain.add_chains_3d(X, Y)
+
+    # Fit the Hyper_sphere
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fit(chain.samples, chain.ln_posterior)
+
+    # Set up the evidence object
+    ev1 = cbe.Evidence(nchains, sphere)
+    ev1.add_chains(chain)
+
+    # Serialize evidence
+    ev1.serialize(".test.dat")
+
+    # Deserialize evidence
+    ev2 = cbe.Evidence.deserialize(".test.dat")
+
+    # Test evidence objects the same
+    assert ev1.nchains == ev2.nchains
+    assert ev1.evidence_inv == ev2.evidence_inv
+    assert ev1.evidence_inv_var == ev2.evidence_inv_var
+    assert ev1.evidence_inv_var_var == ev2.evidence_inv_var_var
+    assert ev1.running_sum.size == ev2.running_sum.size
+    assert ev1.nsamples_per_chain.size == ev2.nsamples_per_chain.size
+    assert ev1.shift_value == ev2.shift_value
+    assert ev1.shift_set == ev2.shift_set
+    for i_chain in range(nchains):
+        assert ev1.running_sum[i_chain] == ev2.running_sum[i_chain]
+        assert ev1.nsamples_per_chain[i_chain] == ev2.nsamples_per_chain[i_chain]
+
