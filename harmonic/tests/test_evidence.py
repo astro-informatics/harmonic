@@ -53,17 +53,6 @@ def test_set_shift():
     assert rho.shift_value == pytest.approx(2.0)
     assert rho.shift_set  == True
 
-# def test_serialization():
-    
-#     nchains = 100
-#     ndim = 1000    
-#     domain = [np.array([1E-1,1E1])]
-#     sphere = md.HyperSphere(ndim, domain)
-#     sphere.fitted = True
-#     rho = cbe.Evidence(nchains, sphere)
-#     rho.serialize_evidence_class()
-
-
 def test_process_run_with_shift():
 
     nchains = 10
