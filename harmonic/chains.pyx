@@ -17,6 +17,7 @@ class Chains:
         chains at once).
         
         Args:
+
             ndim (long): Dimension of the parameter space.
 
         """    
@@ -280,7 +281,7 @@ class Chains:
 
         Returns:
 
-            (long,long): A tuple of the start and end index, i.e. (start, end).
+            (long, long): A tuple of the start and end index, i.e. (start, end).
             
         Raises:
 

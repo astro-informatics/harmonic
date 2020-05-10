@@ -41,26 +41,28 @@ class Evidence:
 
     def __init__(self, long nchains, model not None, \
                  shift=Shifting.MEAN_SHIFT):
-        """
-        Construct evidence class for computing inverse evidence values from
+        """Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
 
         Args:
-            - long nchains: 
-                Number of chains that will be used in the compuation.
-            - model: 
-                An instance of a posterior model class that has been fitted.
-            - shift:
-                What shifting method to use to avoid over/underflow during 
+
+            nchains (long): Number of chains that will be used in the
+                computation.
+
+            model (Model): An instance of a posterior model class that has
+                been fitted.
+
+            shift (Shifting): What shifting method to use to avoid over/underflow during
                 computation. Selected from enumerate class.
 
         Raises:
-            - ValueError: 
-                Raised if the number of chains is not positive.
-            - ValueError: 
-                Raised if the number of dimensions is not positive.
-            - ValueError: 
-                Raised if model not fitted.
+
+            ValueError: Raised if the number of chains is not positive.
+
+            ValueError: Raised if the number of dimensions is not positive.
+
+            ValueError: Raised if model not fitted.
+
         """
         if nchains < 1:
             raise ValueError("nchains must be greater than 0.")
@@ -75,9 +77,7 @@ class Evidence:
         self.nsamples_per_chain = np.zeros((nchains),dtype=long)
         self.nsamples_eff_per_chain = np.zeros((nchains),dtype=long)
 
-        """
-        Chain parameters and realspace statistics
-        """
+        # Chain parameters and realspace statistics 
         self.nchains = nchains
         self.ndim = model.ndim
         self.evidence_inv = 0.0
@@ -86,17 +86,13 @@ class Evidence:
         self.kurtosis = 0.0
         self.n_eff = 0
 
-        """
-        For statistics computed purely in log-space.
-        """
+        # For statistics computed purely in log-space.  
         self.ln_evidence_inv = 0.0
         self.ln_evidence_inv_var = 0.0
         self.ln_evidence_inv_var_var = 0.0
         self.ln_kurtosis = 0.0
-
-        """
-        Shift selection
-        """
+        
+        # Shift selection         
         self.shift = shift
         self.shift_set = False
         self.shift_value = 0.0
@@ -105,9 +101,7 @@ class Evidence:
 
         self.model = model
 
-        """
-        Technical details
-        """
+        # Technical details
         self.lnargmax = -np.inf
         self.lnargmin = np.inf
         self.lnprobmax = -np.inf
@@ -115,21 +109,21 @@ class Evidence:
         self.lnpredictmax = -np.inf
         self.lnpredictmin = np.inf
 
+
     def set_shift(self, double shift_value):
-        """
-        Set the multiplicative shift of log_e posterior values to aid
-        numerical stability. 
+        """Set the shift value of log_e posterior values to aid numerical stability.
 
         Args:
-            - double shift_value: 
-                Multiplicative shift.
+
+            shift_value (double): Shift value.
 
         Raises:
-            - ValueError: 
-                Raised if shift_value is NaN .
-            - ValueError:
-                Raised if one attempts to set shift when another shift is 
-                already set.
+
+            ValueError: Raised if shift_value is NaN.
+
+            ValueError: Raised if one attempts to set shift when another
+                shift is already set.
+
         """
         if not np.isfinite(shift_value):
             raise ValueError("Shift must be a number")
@@ -141,11 +135,11 @@ class Evidence:
         self.shift_set = True
         return
 
+
     def process_run(self):
-        """
-        Use the running totals of realspace running_sum and nsamples_per_chain
-        to calculate an estimate of the inverse evidence, its variance,
-        and the variance of the variance.
+        """Use the running totals of realspace running_sum and nsamples_per_chain to
+        calculate an estimate of the inverse evidence, its variance, and the
+        variance of the variance.
 
         This method is ran each time chains are added to update the inverse
         variance estimates from the running totals.
@@ -183,34 +177,27 @@ class Evidence:
         cdef np.ndarray[double, ndim=1, mode="c"] z_i=np.zeros(len(running_sum))
         cdef double y_mean=0.0, z_mean=0.0
 
-        """
-        Precompute differential vectors.
-        """
+        # Precompute differential vectors.
         z_i[:]  = np.abs((running_sum[:]/nsamples_per_chain[:])-evidence_inv)
         y_i[:]  = z_i[:] * (nsamples_per_chain[:]**(0.25))
         z_i[:] *= nsamples_per_chain[:]**(0.5) 
 
-        """
-        Compute exponents using logsumexp for numerical stability.
-        """
+        # Compute exponents using logsumexp for numerical stability.
         evidence_inv_var_exp = sp.logsumexp(2.0*np.log(z_i)) - np.log(nsamples)
         kur_exp = sp.logsumexp(4.0 * np.log(y_i)) - np.log(nsamples) \
                                                   - 2.0 * evidence_inv_var_exp
         kur = np.exp(kur_exp)
         self.kurtosis = kur
         self.ln_kurtosis = kur_exp
-        """
-        Compute effective chain lengths.
-        """
+
+        # Compute effective chain lengths.
         for i in range(nchains):
             n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
         n_eff = <double>nsamples*<double>nsamples/n_eff
         self.n_eff = n_eff
 
-        """
-        Compute inverse evidence values as a log-space representation of the 
-        real-space statistics to attempt to avoid float overflow.
-        """
+        # Compute inverse evidence values as a log-space representation of the 
+        # real-space statistics to attempt to avoid float overflow.
         self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
         self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
                                                     - np.log(n_eff - 1)
@@ -219,20 +206,18 @@ class Evidence:
                                                     - 4. * self.shift_value \
                                                     + np.log((kur - 1) + 2./(n_eff-1))
 
-        """
-        Compute inverse evidence statistics in real-space. In certain settings
-        these values may return nan due to float overflow: in these cases one 
-        should use the log-space values.
-        """
+        # Compute inverse evidence statistics in real-space. In certain settings
+        # these values may return nan due to float overflow: in these cases one 
+        # should use the log-space values.
         self.evidence_inv = exp(self.ln_evidence_inv)
         self.evidence_inv_var = exp(self.ln_evidence_inv_var)
         self.evidence_inv_var_var = exp(self.ln_evidence_inv_var_var)
 
         return
 
+
     def add_chains(self, chains not None):
-        """
-        Add new chains and calculate an estimate of the inverse evidence, its
+        """Add new chains and calculate an estimate of the inverse evidence, its
         variance, and the variance of the variance.
 
         Calculations are performed by using running averages of the totals for
@@ -243,16 +228,16 @@ class Evidence:
         be considered for each call.
 
         Args:
-            - chains: 
-                An instance of the chains class containing the chains to be used 
-                in the calculation.
+
+            chains: An instance of the chains class containing the chains to
+                be used in the calculation.
 
         Raises:
-            - ValueError: 
-                Raised if the input number of chains to not match the number of 
-                chains already set up.
-            - ValueError:
-                Raised if both max and mean shift are set.
+
+            ValueError: Raised if the input number of chains to not match the
+                number of chains already set up.
+
+            ValueError: Raised if both max and mean shift are set.
 
         """
 
@@ -273,10 +258,8 @@ class Evidence:
         cdef long i_chains, i_samples, nchains = self.nchains
         cdef double mean_shift, max_shift, max_i
 
-        """
-        The following performs a shift in log-space to avoid overflow or float
-        rounding errors in realspace.
-        """
+        # The following performs a shift in log-space to avoid overflow or float
+        # rounding errors in realspace.
         if not self.shift_set:
             if self.shift == Shifting.MAX_SHIFT:
                 # Shifts by max of the log-posterior
@@ -380,20 +363,21 @@ class Evidence:
 
         return
 
+
     def check_basic_diagnostic(self):
-        """
-        Perform basic diagontic check on sanity of evidence calulations.
+        """Perform basic diagonstic check on sanity of evidence calculations.
 
         If these tests pass it does *not* necessarily mean the evidence is
         accurate and other tests should still be performed.
 
         Return:
-            - Boolean: 
-                Bool variable speciying whehter diagnostic tests pass.
+
+            Boolean: Whether diagnostic tests pass.
 
         Raises:
-            - Warnings: 
-                Raised if the diagnostic tests fail.
+
+            Warnings: Raised if the diagnostic tests fail.
+
         """
 
         NSAMPLES_EFF_WARNING_LEVEL = 30
@@ -416,16 +400,19 @@ class Evidence:
 
         return tests_pass
 
-    def compute_evidence(self):
-        """
-        Compute evidence from the inverse evidence.
 
-        Returns: 
-            - (evidence, evidence_std):
-                - evidence: 
-                    Estimate of evidence.
-                - evidence_std: 
-                    Estimate of standard deviation of evidence.
+    def compute_evidence(self):
+        """Compute evidence from the inverse evidence.
+
+        Returns:
+
+            (double, double): Tuple containing the following.
+
+                - evidence (double): Estimate of evidence.
+
+                - evidence_std (double): Estimate of standard deviation of
+                  evidence.
+
         """
 
         self.check_basic_diagnostic()
@@ -438,16 +425,19 @@ class Evidence:
 
         return (evidence, evidence_std)
 
-    def compute_ln_evidence(self):
-        """
-        Compute log_e of evidence from the inverse evidence.
 
-        Returns: 
-            - (ln_evidence, ln_evidence_std):
-                - ln_evidence: 
-                    Estimate of log_e of evidence.
-                - ln_evidence_std: 
-                    Estimate of log_e of standard deviation of evidence.
+    def compute_ln_evidence(self):
+        """Compute log_e of evidence from the inverse evidence.
+
+        Returns:
+
+            (double, double): Tuple containing the following.
+
+                - ln_evidence (double): Estimate of log_e of evidence.
+
+                - ln_evidence_std (double): Estimate of log_e of standard
+                    deviation of evidence.
+
         """
 
         self.check_basic_diagnostic()
@@ -461,23 +451,23 @@ class Evidence:
 
         return (ln_evidence, ln_evidence_std)
 
-    def serialize_evidence_class(self):
-        """
-        Serializes the evidence class for checkpointing.
 
-        Returns:
-            - Nothing.
+    def serialize_evidence_class(self):
+        """Serializes the evidence class for checkpointing.
+
         """
         # file_name = 'user.json'
         # with open(file_name, 'w') as file:
         json.dumps(self, default=convert_to_dict,indent=4, sort_keys=True)
 
-def deserialize_evidence_class(file_name):
-    """
-    Serializes the evidence class for checkpointing.
 
-    Returns:
-        - Nothing.
+def deserialize_evidence_class(file_name):
+    """Deserializes the evidence class for checkpointing.
+
+    Args:
+
+        file_name (string): File name.
+
     """
     file_name = 'user.json'
     with open(file_name, 'r') as file:
@@ -485,28 +475,29 @@ def deserialize_evidence_class(file_name):
 
 
 def compute_bayes_factor(ev1, ev2):
-    """
-    Compute Bayes factor of two models.
+    """Compute Bayes factor of two models.
 
     Args:
-        - ev1: 
-            Evidence object of model 1 with chains added.
-        - ev2: 
-            Evidence object of model 2 with chains added.
+
+        ev1 (double): Evidence object of model 1 with chains added.
+
+        ev2 (double): Evidence object of model 2 with chains added.
 
     Returns: 
-        - (bf12, bf12_std):
-            - bf12: 
-                Estimate of the Bayes factor Z_1 / Z_2.
-            - bf12_std: 
-                Estimate of the standard deviation of the Bayes factor
+
+        (double, double): Tuple containing the following.
+
+            - bf12: Estimate of the Bayes factor Z_1 / Z_2.
+
+            - bf12_std: Estimate of the standard deviation of the Bayes factor
                 sqrt( var ( Z_1 / Z_2 ) ).
 
     Raises:
-        - ValueError: 
-            Raised if model 1 does not have chains added.
-        - ValueError: 
-            Raised if model 2 does not have chains added.
+
+        ValueError: Raised if model 1 does not have chains added.
+
+        ValueError: Raised if model 2 does not have chains added.
+
     """
 
     if not ev1.chains_added:
@@ -527,29 +518,31 @@ def compute_bayes_factor(ev1, ev2):
 
     return (bf12, bf12_std)
 
+
 def compute_ln_bayes_factor(ev1, ev2):
-    """
-    Computes log_e of Bayes factor of two models.
+    """Computes log_e of Bayes factor of two models.
 
     Args:
-        - ev1: 
-            Evidence object of model 1 with chains added.
-        - ev2: 
-            Evidence object of model 2 with chains added.
 
-    Returns: 
-        - (ln_bf12, ln_bf12_std):
-            - ln_bf12: 
-                Estimate of log_e of the Bayes factor ln ( Z_1 / Z_2 ).
-            - ln_bf12_std: 
-                Estimate of log_e of the standard deviation of the Bayes
-                factor ln ( sqrt( var ( Z_1 / Z_2 ) ) ).
+        ev1 (double): Evidence object of model 1 with chains added.
+
+        ev2 (double): Evidence object of model 2 with chains added.
+
+    Returns:
+
+        (double, double): Tuple containing the following.
+
+            - ln_bf12: Estimate of log_e of the Bayes factor ln ( Z_1 / Z_2 ).
+
+            - ln_bf12_std: Estimate of log_e of the standard deviation of the
+                Bayes factor ln ( sqrt( var ( Z_1 / Z_2 ) ) ).
 
     Raises:
-        - ValueError: 
-            Raised if model 1 does not have chains added.
-        - ValueError: 
-            Raised if model 2 does not have chains added.
+
+        ValueError: Raised if model 1 does not have chains added.
+
+        ValueError: Raised if model 2 does not have chains added.
+
     """
 
     if not ev1.chains_added:
@@ -575,8 +568,7 @@ def compute_ln_bayes_factor(ev1, ev2):
 
 
 def msum(iterable):
-    """
-    "Full precision summation using multiple floats for intermediate values".
+    """Full precision summation using multiple floats for intermediate values.
     
     From: http://code.activestate.com/recipes/393090/
     Rounded x+y stored in hi with the round-off stored in lo.  Together
@@ -584,6 +576,7 @@ def msum(iterable):
     to each partial so that the list of partial sums remains exact.
     Depends on IEEE-754 arithmetic guarantees.  See proof of correctness at:
     www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps
+
     """
 
     partials = []               # sorted, non-overlapping partial sums
@@ -604,9 +597,10 @@ def msum(iterable):
 
 
 def convert_to_dict(obj):
-  """
-  A function takes in a custom object and returns a dictionary representation of the object.
-  This dict representation includes meta data such as the object's module and class names.
+  """A function takes in a custom object and returns a dictionary representation
+  of the object. This dict representation includes meta data such as the
+  object's module and class names.
+
   """
   
   #  Populate the dictionary with object meta data 
@@ -621,10 +615,10 @@ def convert_to_dict(obj):
   return obj_dict
 
 def dict_to_obj(our_dict):
-    """
-    Function that takes in a dict and returns a custom object associated with the dict.
-    This function makes use of the "__module__" and "__class__" metadata in the dictionary
-    to know which object type to create.
+    """Function that takes in a dict and returns a custom object associated with
+    the dict. This function makes use of the "__module__" and "__class__"
+    metadata in the dictionary to know which object type to create.
+
     """
     if "__class__" in our_dict:
         # Pop ensures we remove metadata from the dict to leave only the instance arguments
