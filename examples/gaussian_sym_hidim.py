@@ -88,9 +88,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         - None.
     """
 
-    hm.logs.high_log('nD Guassian example')
-    hm.logs.high_log('Dimensionality = {}'.format(ndim))
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('nD Guassian example')
+    hm.logs.critical_log('Dimensionality = {}'.format(ndim))
+    hm.logs.debug_log('---------------------------------')
     savefigs = True
     plot_sample = False
 
@@ -99,16 +99,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # ==========================================================================
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)  
-    hm.logs.low_log('Covariance matrix diagonal entries = \n{}'
+    hm.logs.debug_log('Covariance matrix diagonal entries = \n{}'
         .format(np.diagonal(cov)))
-    hm.logs.low_log('---------------------------------')
+    hm.logs.debug_log('---------------------------------')
 
     # ==========================================================================
     # Compute analytic log-evidence for comparison
     # ==========================================================================
     ln_rho = -ln_analytic_evidence(ndim, cov)
-    hm.logs.high_log('Ln Inverse Analytic evidence = {}'.format(ln_rho))
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('Ln Inverse Analytic evidence = {}'.format(ln_rho))
+    hm.logs.debug_log('---------------------------------')
 
     # ==========================================================================
     #                                *** TESTING ***
@@ -119,7 +119,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
     max_r_prob = np.sqrt(ndim-1)
-    hm.logs.low_log('max_r_prob = {}'.format(max_r_prob))
+    hm.logs.debug_log('max_r_prob = {}'.format(max_r_prob))
     domains_sphere = [max_r_prob*np.array([1E0,2E1])]
     hyper_parameters_sphere = [None]
 
@@ -130,7 +130,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     domain_KDE = []
     hyper_parameters_KDE = [[10**(R)] for R in range(-nhyper+step,step)]
 
-    # hm.logs.low_log('Domain = {}'.format(domains))
+    # hm.logs.debug_log('Domain = {}'.format(domains))
 
     # ==========================================================================
     #                                *** TESTING ***
@@ -144,7 +144,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     for i_realisation in range(n_realisations):
 
         if n_realisations > 0:
-            hm.logs.high_log('Realisation = {}/{}'
+            hm.logs.critical_log('Realisation = {}/{}'
                 .format(i_realisation, n_realisations))
 
         # ======================================================================
@@ -152,10 +152,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
 
         # Set up and run sampler.
-        hm.logs.high_log('Run sampling...')
-        hm.logs.low_log('---------------------------------')
+        hm.logs.critical_log('Run sampling...')
+        hm.logs.debug_log('---------------------------------')
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))
-        hm.logs.low_log('pos.shape = {}'.format(pos.shape))
+        hm.logs.debug_log('pos.shape = {}'.format(pos.shape))
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior, \
                                         args=[inv_cov])
         rstate = np.random.get_state() # Set random state to be repeatable.
@@ -175,7 +175,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         #                               *** TESTING ***
         # ======================================================================
-        # hm.logs.high_log('Perform cross-validation...')
+        # hm.logs.critical_log('Perform cross-validation...')
 
         # validation_variances_MGMM = \
         #     hm.utils.cross_validation(chains_train, \
@@ -185,7 +185,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #                    modelClass=hm.model.ModifiedGaussianMixtureModel,\
         #                    verbose=False, \
         #                    seed=0)
-        # hm.logs.low_log('validation_variances_MGMM = {}'
+        # hm.logs.debug_log('validation_variances_MGMM = {}'
         #     .format(validation_variances_MGMM))
         # best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
         # best_hyper_param_MGMM = \
@@ -201,7 +201,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #                    modelClass=hm.model.HyperSphere, \
         #                    verbose=False, \
         #                    seed=0)
-        # hm.logs.low_log('validation_variances_sphere = {}'
+        # hm.logs.debug_log('validation_variances_sphere = {}'
         #     .format(validation_variances_sphere))
         # best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
         # best_hyper_param_sphere = \
@@ -217,7 +217,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #                    modelClass=hm.model.KernelDensityEstimate, \
         #                    verbose=False, \
         #                    seed=0)
-        # hm.logs.low_log('Validation_variances_KDE = {}'
+        # hm.logs.debug_log('Validation_variances_KDE = {}'
         #     .format(validation_variances))
         # best_hyper_param_KDE_ind = np.argmin(validation_variances)
         # best_hyper_param_KDE = \
@@ -233,15 +233,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         model = hm.model.HyperSphere(ndim, domains_sphere)
         fit_success, objective = model.fit(chains_train.samples,\
                                            chains_train.ln_posterior) 
-        hm.logs.low_log('Fit success = {}'.format(fit_success))    
-        hm.logs.low_log('Objective = {}'.format(objective))    
-        hm.logs.low_log('---------------------------------')
+        hm.logs.debug_log('Fit success = {}'.format(fit_success))    
+        hm.logs.debug_log('Objective = {}'.format(objective))    
+        hm.logs.debug_log('---------------------------------')
 
         # ======================================================================
         #                                *** TESTING ***
         # ======================================================================
         # # Fit model.
-        # hm.logs.high_log('Fit model...')
+        # hm.logs.critical_log('Fit model...')
         # best_var_MGMM = \
                 # validation_variances_MGMM[best_hyper_param_MGMM_ind]
         # best_var_sphere = \
@@ -251,24 +251,24 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         # if best_var_MGMM < best_var_sphere:
         #     if best_var_MGMM < best_var_KDE:
-        #         hm.logs.low_log('Using MGMM with hyper_parameters = {}'
+        #         hm.logs.debug_log('Using MGMM with hyper_parameters = {}'
         #             .format(best_hyper_param_MGMM))
         #         model = hm.model.ModifiedGaussianMixtureModel(ndim, \
         #             domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
         #         model.verbose=False
         #     else:
-        #         hm.logs.low_log('Using KDE with hyper_parameters = {}'
+        #         hm.logs.debug_log('Using KDE with hyper_parameters = {}'
         #             .format(best_hyper_param_KDE))
         #         model = hm.model.KernelDensityEstimate(ndim, \
         #             domains_KDE, hyper_parameters=best_hyper_param_KDE)
         #         model.verbose=False
         # else:
         #     if best_var_sphere < best_var_KDE:
-        #         hm.logs.low_log('Using HyperSphere')
+        #         hm.logs.debug_log('Using HyperSphere')
         #         model = hm.model.HyperSphere(ndim, domains_sphere, \
         #             hyper_parameters=best_hyper_param_sphere)
         #     else:
-        #         hm.logs.low_log('Using KDE with hyper_parameters = {}'
+        #         hm.logs.debug_log('Using KDE with hyper_parameters = {}'
         #             .format(best_hyper_param_KDE))
         #         model = hm.model.KernelDensityEstimate(ndim, \
         #             domains_KDE, hyper_parameters=best_hyper_param_KDE)
@@ -276,8 +276,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         # fit_success = model.fit(chains_train.samples,
         #                         chains_train.ln_posterior)
-        # hm.logs.low_log('Fit success = {}'.format(fit_success))
-        # hm.logs.low_log('---------------------------------')
+        # hm.logs.debug_log('Fit success = {}'.format(fit_success))
+        # hm.logs.debug_log('---------------------------------')
 
         # ======================================================================
         #                                *** TESTING ***
@@ -287,7 +287,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         # Compute ln evidence.
         # ======================================================================
-        hm.logs.high_log('Compute evidence...')
+        hm.logs.critical_log('Compute evidence...')
         cal_ev = hm.Evidence(chains_test.nchains, model)
         cal_ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
@@ -295,48 +295,48 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         # Display logarithmic inverse evidence computation results.
         # ======================================================================
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('Ln Inv Evidence: analytic = {}, estimate = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('Ln Inv Evidence: analytic = {}, estimate = {}'
             .format(ln_rho, np.log(cal_ev.evidence_inv)))
-        hm.logs.high_log('Ln Inv Evidence: \
+        hm.logs.critical_log('Ln Inv Evidence: \
                           100 * |analytic - estimate| / |analytic| = {}%'
             .format(100.0 * np.abs( (np.log(cal_ev.evidence_inv) - ln_rho) \
                                                                  / ln_rho ))) 
         # ======================================================================
         # Display inverse evidence computation results.
         # ======================================================================
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('Inv Evidence: analytic = {}, estimate = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('Inv Evidence: analytic = {}, estimate = {}'
             .format(np.exp(ln_rho), cal_ev.evidence_inv))
-        hm.logs.low_log('Inv Evidence: std = {}, std / estimate = {}'
+        hm.logs.debug_log('Inv Evidence: std = {}, std / estimate = {}'
             .format(np.sqrt(cal_ev.evidence_inv_var), \
                     np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv))
-        hm.logs.high_log("Inv Evidence: \
+        hm.logs.critical_log("Inv Evidence: \
                           100 * |analytic - estimate| / estimate = {}%"
             .format(100.0 * np.abs( np.exp(ln_rho) - cal_ev.evidence_inv ) \
                                                    / cal_ev.evidence_inv ) )
         # ======================================================================
         # Display more technical details for ln evidence.
         # ======================================================================
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('lnargmax = {}, lnargmin = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
             .format(cal_ev.lnargmax, cal_ev.lnargmin))
-        hm.logs.low_log('lnprobmax = {}, lnprobmin = {}'
+        hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
             .format(cal_ev.lnprobmax, cal_ev.lnprobmin))
-        hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
+        hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(cal_ev.lnpredictmax, cal_ev.lnpredictmin))
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('shift = {}, shift setting = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('shift = {}, shift setting = {}'
             .format(cal_ev.shift_value, cal_ev.shift))
-        hm.logs.low_log('running sum total = {}'
+        hm.logs.debug_log('running sum total = {}'
             .format(sum(cal_ev.running_sum)))
-        hm.logs.low_log('running_sum = \n{}'
+        hm.logs.debug_log('running_sum = \n{}'
             .format(cal_ev.running_sum))
-        hm.logs.low_log('nsamples_per_chain = \n{}'
+        hm.logs.debug_log('nsamples_per_chain = \n{}'
             .format(cal_ev.nsamples_per_chain))
-        hm.logs.low_log('nsamples_eff_per_chain = \n{}'
+        hm.logs.debug_log('nsamples_eff_per_chain = \n{}'
             .format(cal_ev.nsamples_eff_per_chain))
-        hm.logs.low_log('===============================')
+        hm.logs.debug_log('===============================')
 
         # ======================================================================
         # Create corner/triangle plot.
@@ -359,7 +359,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
     clock = time.clock() - clock
-    hm.logs.high_log('Execution_time = {}s'.format(clock))
+    hm.logs.critical_log('Execution_time = {}s'.format(clock))
 
     if n_realisations > 1:
         np.savetxt("examples/data/nD_gaussian_evidence_inv" +

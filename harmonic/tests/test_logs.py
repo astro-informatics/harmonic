@@ -2,7 +2,7 @@ import harmonic.logs as lg
 import pytest
 import numpy as np
 
-def test_add_chains_2d_and_copy():
+def test_incorrect_log_yaml_path():
 
     dir_name = "random/incorrect/filepath/"
 
