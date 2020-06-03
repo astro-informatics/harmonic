@@ -163,7 +163,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)
         chains_train, chains_test = hm.utils.split_data(chains, 
-                                                        training_proportion=0.5)
+                                                        training_proportion=0.9)
 
         # ======================================================================
         # Train hyper-spherical model 
@@ -181,8 +181,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         # Instantiate the evidence class
         hm.logs.high_log('Compute evidence...')
-        cal_ev = hm.Evidence(chains_test.nchains, model)
-        cal_ev.add_chains(chains_test)
 
         for chain_iteration in range(chain_iterations):
             hm.logs.low_log('Run sampling for chain subiteration {}...'.format(
@@ -203,6 +201,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             chains.add_chains_3d(samples, lnprob)
             chains_train, chains_test = hm.utils.split_data(chains, 
                                                         training_proportion=0.5)
+            if chain_iteration == 0:
+                cal_ev = hm.Evidence(chains_test.nchains, model)
             # Add these new chains to running sum
             cal_ev.add_chains(chains_test)
             cal_ev.add_chains(chains_train)
