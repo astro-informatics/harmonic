@@ -138,9 +138,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         rstate = np.random.get_state() # Set random state to be repeatable.
 
         for burn_iteration in range(burn_iterations+1):
-            hm.logs.low_log('Run burn sampling for burning subiteration {}...'.format(
+            hm.logs.debug_log('Run burn sampling for burning subiteration {}...'.format(
                     burn_iteration+1))
-            hm.logs.low_log('---------------------------------')
+            hm.logs.debug_log('---------------------------------')
             # Clear memory
             if burn_iteration > 0:
                 del sampler, prob
@@ -180,12 +180,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Compute ln evidence by iteratively adding chains
         # ======================================================================
         # Instantiate the evidence class
-        hm.logs.high_log('Compute evidence...')
+        hm.logs.critical_log('Compute evidence...')
 
         for chain_iteration in range(chain_iterations):
-            hm.logs.low_log('Run sampling for chain subiteration {}...'.format(
+            hm.logs.debug_log('Run sampling for chain subiteration {}...'.format(
                     chain_iteration+1))
-            hm.logs.low_log('---------------------------------')
+            hm.logs.debug_log('---------------------------------')
             # Clear memory
             del chains, chains_train, chains_test, samples, lnprob, sampler, prob
             gc.collect()
@@ -208,6 +208,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             cal_ev.add_chains(chains_train)
 
         ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
+
+        cal_ev.serialize(".test.gaussian_dim_{}.dat".format(ndim))
 
         # ======================================================================
         # Display logarithmic inverse evidence computation results.
@@ -300,10 +302,17 @@ if __name__ == '__main__':
     # Define parameters.
     ndim = 32
     nchains = 2*ndim
+<<<<<<< HEAD
     samples_per_chain = 10000
     nburn = 7000
     chain_iterations = 50
     np.random.seed(2)
+=======
+    samples_per_chain = 44000
+    nburn = 40000
+    chain_iterations = 600
+    np.random.seed(1)
+>>>>>>> stash current version
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, chain_iterations,

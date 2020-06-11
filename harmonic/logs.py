@@ -53,7 +53,7 @@ def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
 
 
 def debug_log(message):
-    """Log low-level (DEBUG) message.
+    """Log a debug message (e.g. for background logs to assist debugging)
 
     Args:
 
@@ -64,7 +64,8 @@ def debug_log(message):
     logger.debug('\033[0;36;40m ' + message + ' \033[0;0m')
 
 def warning_log(message):
-    """Log a warning message.
+    """Log a warning (e.g. for internal code warnings such as large dynamic 
+    ranges).
 
     Args:
 
@@ -75,7 +76,8 @@ def warning_log(message):
     logger.warning('\033[0;37;40m ' + message + ' \033[0;0m')
 
 def critical_log(message):
-    """Log high-level (CRITICAL) message
+    """Log a critical message (e.g. evidence value printing, run completion 
+    etc.)
 
     Args:
 
