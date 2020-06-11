@@ -49,11 +49,11 @@ def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
     else:
         logging.basicConfig(level=default_level)
         raise ValueError("Logging config pathway incorrect.")
-    high_log('Using config from {}'.format(path))
+    critical_log('Using config from {}'.format(path))
 
 
-def low_log(message):
-    """Log low-level (DEBUG) message.
+def debug_log(message):
+    """Log a debug message (e.g. for background logs to assist debugging)
 
     Args:
 
@@ -64,7 +64,8 @@ def low_log(message):
     logger.debug('\033[0;36;40m ' + message + ' \033[0;0m')
 
 def warning_log(message):
-    """Log a warning message.
+    """Log a warning (e.g. for internal code warnings such as large dynamic 
+    ranges).
 
     Args:
 
@@ -74,8 +75,9 @@ def warning_log(message):
     logger = logging.getLogger('Harmonic')
     logger.warning('\033[0;37;40m ' + message + ' \033[0;0m')
 
-def high_log(message):
-    """Log high-level (CRITICAL) message
+def critical_log(message):
+    """Log a critical message (e.g. evidence value printing, run completion 
+    etc.)
 
     Args:
 
