@@ -162,15 +162,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)
-        chains_train, chains_test = hm.utils.split_data(chains, 
-                                                        training_proportion=0.9)
 
         # ======================================================================
         # Train hyper-spherical model 
         # ======================================================================
         model = hm.model.HyperSphere(ndim, domains_sphere)
-        fit_success, objective = model.fit(chains_train.samples,\
-                                           chains_train.ln_posterior) 
+        fit_success, objective = model.fit(chains.samples,\
+                                           chains.ln_posterior) 
         hm.logs.debug_log('Fit success = {}'.format(fit_success))    
         hm.logs.debug_log('Objective = {}'.format(objective))    
         hm.logs.debug_log('---------------------------------')
@@ -181,13 +179,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         # Instantiate the evidence class
         hm.logs.critical_log('Compute evidence...')
+        cal_ev = hm.Evidence(chains.nchains, model)
 
         for chain_iteration in range(chain_iterations):
             hm.logs.debug_log('Run sampling for chain subiteration {}...'.format(
                     chain_iteration+1))
             hm.logs.debug_log('---------------------------------')
             # Clear memory
-            del chains, chains_train, chains_test, samples, lnprob, sampler, prob
+            del chains, samples, lnprob, sampler, prob
             gc.collect()
             # Run the emcee sampler from previous endpoint
             sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior, \
@@ -199,13 +198,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Create a new chains class and add the new chains
             chains = hm.Chains(ndim)
             chains.add_chains_3d(samples, lnprob)
-            chains_train, chains_test = hm.utils.split_data(chains, 
-                                                        training_proportion=0.5)
-            if chain_iteration == 0:
-                cal_ev = hm.Evidence(chains_test.nchains, model)
+
             # Add these new chains to running sum
-            cal_ev.add_chains(chains_test)
-            cal_ev.add_chains(chains_train)
+            cal_ev.add_chains(chains)
 
         ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
 
