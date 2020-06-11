@@ -7,6 +7,10 @@ import warnings
 from enum import Enum
 import scipy.special as sp
 import pickle
+import logs as lg 
+
+# Setup Logging config
+lg.setup_logging()
 
 
 
@@ -388,16 +392,16 @@ class Evidence:
         tests_pass = True
 
         if np.mean(self.nsamples_eff_per_chain) <= NSAMPLES_EFF_WARNING_LEVEL:
-            warnings.warn("Evidence may not be accurate due to low " + \
-                "number of effective samples (mean number of effective " + \
-                "samples per chain is {}). Use more samples."
+            lg.warning_log('Evidence may not be accurate due to low ' + \
+                'number of effective samples (mean number of effective ' + \
+                'samples per chain is {}). Use more samples.'
                 .format(np.mean(self.nsamples_eff_per_chain)))
             tests_pass = False
 
         if (self.lnargmax - self.lnargmin) >= LNARG_WARNING_LEVEL:
-            warnings.warn("Evidence may not be accurate due to large " +
-                "dynamic range. Use model with smaller support " +
-                "and/or better predictive accuracy.")
+            lg.warning_log('Evidence may not be accurate due to large ' +
+                'dynamic range. Use model with smaller support ' +
+                'and/or better predictive accuracy.')
             tests_pass = False
 
         return tests_pass

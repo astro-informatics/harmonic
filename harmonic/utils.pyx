@@ -3,6 +3,10 @@ cimport numpy as np
 import chains as ch
 import model as md
 import evidence as cbe
+import logs as lg 
+
+# Setup Logging config
+lg.setup_logging()
 
 
 def split_data(chains not None, double training_proportion=0.5):    
@@ -211,16 +215,16 @@ def cross_validation(chains,
             ev.add_chains(chains_val)
 
             if verbose:
-                print("cross_validation: ifold = {}; hyper_parameter = {}"
+                lg.high_log('cross_validation: ifold = {}; hyper_parameter = {}'
                       .format(i_fold, hyper_parameter))
-                print("cross_validation: evidence_inv = {}"
+                lg.high_log('cross_validation: evidence_inv = {}'
                       .format(ev.evidence_inv))
-                print("cross_validation: evidence_inv_var = {}"
+                lg.high_log('cross_validation: evidence_inv_var = {}'
                       .format(ev.evidence_inv_var))
-                print("cross_validation:" + 
-                      " evidence_inv_var**0.5/evidence_inv = {}"
+                lg.high_log('cross_validation:' + 
+                      ' evidence_inv_var**0.5/evidence_inv = {}'
                       .format(ev.evidence_inv_var**0.5/ev.evidence_inv))
-                print("cross_validation: evidence_inv_var_var = {}"
+                lg.high_log('cross_validation: evidence_inv_var_var = {}'
                       .format(ev.evidence_inv_var_var))
 
             validation_variances[i_fold,i_val] = ev.evidence_inv_var

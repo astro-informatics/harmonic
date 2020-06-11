@@ -49,10 +49,10 @@ def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
     else:
         logging.basicConfig(level=default_level)
         raise ValueError("Logging config pathway incorrect.")
-    high_log('Using config from {}'.format(path))
+    critical_log('Using config from {}'.format(path))
 
 
-def low_log(message):
+def debug_log(message):
     """Log low-level (DEBUG) message.
 
     Args:
@@ -63,8 +63,18 @@ def low_log(message):
     logger = logging.getLogger('Harmonic')
     logger.debug('\033[0;36;40m ' + message + ' \033[0;0m')
 
+def warning_log(message):
+    """Log a warning message.
 
-def high_log(message):
+    Args:
+
+        message: Warning to log.
+
+    """
+    logger = logging.getLogger('Harmonic')
+    logger.warning('\033[0;37;40m ' + message + ' \033[0;0m')
+
+def critical_log(message):
     """Log high-level (CRITICAL) message
 
     Args:
@@ -74,15 +84,4 @@ def high_log(message):
     """
     logger = logging.getLogger('Harmonic')
     logger.critical('\033[1;31;40m' + message + '\033[0;0m')
-
-""" 
-In main code, call lines (1) and (2) to create and initialize the logger:
-(1) import harmonic as hm 
-(2) hm.logs.setup_logging()
-(note) if you wish to use a custom logging configuration simply provide the 
-pathname to your yaml as the argument to setup_logging('pathname').
-examples of use:
-        hm.logs.low_log('a debug level message')
-        hm.logs.high_log('a critical level message')
-"""
 
