@@ -285,10 +285,10 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
     
-    hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Radiata Pine example')
-    hm.logs.high_log('Dimensionality = {}'.format(ndim))
-    hm.logs.low_log('---------------------------------')
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.critical_log('Radiata Pine example')
+    hm.logs.critical_log('Dimensionality = {}'.format(ndim))
+    hm.logs.debug_log('---------------------------------')
 
     if ndim != 3:
         raise ValueError("Only ndim=3 is supported (ndim={} specified)"
@@ -329,8 +329,8 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Load Radiata Pine data.
     #===========================================================================
-    hm.logs.high_log('Loading data ...')
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('Loading data ...')
+    hm.logs.debug_log('---------------------------------')
 
     # Imports data file
     data = np.loadtxt('examples/data/RadiataPine.dat')
@@ -375,13 +375,13 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     # Start timer.
     clock = time.clock()
     
-    hm.logs.high_log('Run sampling...')
+    hm.logs.critical_log('Run sampling...')
     
     #===========================================================================
     # Run Emcee to recover posterior sampels 
     #===========================================================================
-    hm.logs.high_log('Run sampling...')
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('Run sampling...')
+    hm.logs.debug_log('---------------------------------')
     """
     Feed emcee the ln_posterior function, starting positions and recover chains.
     """
@@ -400,8 +400,8 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Configure emcee chains for harmonic
     #===========================================================================
-    hm.logs.high_log('Configure chains...')
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('Configure chains...')
+    hm.logs.debug_log('---------------------------------')
     """
     Configure chains for the cross validation stage.
     """
@@ -413,8 +413,8 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Perform cross-validation
     #===========================================================================
-    hm.logs.high_log('Perform cross-validation...')
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('Perform cross-validation...')
+    hm.logs.debug_log('---------------------------------')
     """
     There are several different machine learning models. Cross-validation
     allows the software to select the optimal model and the optimal model 
@@ -466,8 +466,8 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Fit learnt model for container function 
     #===========================================================================
-    hm.logs.high_log('Select optimal model...')
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('Select optimal model...')
+    hm.logs.debug_log('---------------------------------')
     """
     This simply uses the cross-validation results to choose the model which 
     has the smallest validation variance -- i.e. the best model for the job.
@@ -483,17 +483,17 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #         domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
     #     model.verbose=False
     # else:
-    hm.logs.high_log('Using HyperSphere')
+    hm.logs.critical_log('Using HyperSphere')
     # model = hm.model.HyperSphere(ndim, domains_sphere, \
             # hyper_parameters=best_hyper_param_sphere)
     model = hm.model.HyperSphere(ndim, domains_sphere, hyper_parameters=None)            
         
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-    hm.logs.low_log('fit_success = {}'.format(fit_success))    
+    hm.logs.debug_log('fit_success = {}'.format(fit_success))    
     
     model.set_R(model.R * 0.5) # conservative reduction in R.
     # model.set_R(0.5)
-    hm.logs.low_log('model.R = {}'.format(model.R))
+    hm.logs.debug_log('model.R = {}'.format(model.R))
     
 
     # model = hm.model.KernelDensityEstimate(ndim, 
@@ -505,8 +505,8 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Computing evidence using learnt model and emcee chains
     #===========================================================================
-    hm.logs.high_log('Compute evidence...')
-    hm.logs.low_log('---------------------------------')
+    hm.logs.critical_log('Compute evidence...')
+    hm.logs.debug_log('---------------------------------')
     """
     Instantiates the evidence class with a given model. Adds some chains and 
     computes the log-space evidence (marginal likelihood).
@@ -522,61 +522,61 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
         
         
     clock = time.clock() - clock
-    hm.logs.high_log('execution_time = {}s'.format(clock))
+    hm.logs.critical_log('execution_time = {}s'.format(clock))
     
     
     #===========================================================================
     # Display evidence results 
     #===========================================================================
-    hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Log-space Statistics')
-    hm.logs.low_log('---------------------------------')
-    hm.logs.low_log('ln( z ) = {}'
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.critical_log('Log-space Statistics')
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('ln( z ) = {}'
         .format(ev.ln_evidence_inv))
-    hm.logs.low_log('ln( std(z) ) = {}, ln ( std(z)/z ) = {}'
+    hm.logs.debug_log('ln( std(z) ) = {}, ln ( std(z)/z ) = {}'
         .format(0.5*ev.ln_evidence_inv_var, \
                 0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv))
-    hm.logs.low_log('ln( kurt ) = {}, sqrt( 2/(n_eff-1) ) = {}'
+    hm.logs.debug_log('ln( kurt ) = {}, sqrt( 2/(n_eff-1) ) = {}'
         .format(ev.ln_kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
-    hm.logs.low_log('ln( std(var(z))/var(z) ) = {}'
+    hm.logs.debug_log('ln( std(var(z))/var(z) ) = {}'
         .format(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var) )
-    hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Real-space Statistics')
-    hm.logs.low_log('---------------------------------')
-    hm.logs.low_log('exp(ln( z )) = {}'
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.critical_log('Real-space Statistics')
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('exp(ln( z )) = {}'
         .format(np.exp(ev.ln_evidence_inv) ) )
-    hm.logs.low_log('exp(ln( std(z) ))= {}, exp(ln( std(z)/z )) = {}'
+    hm.logs.debug_log('exp(ln( std(z) ))= {}, exp(ln( std(z)/z )) = {}'
         .format(np.exp( 0.5*ev.ln_evidence_inv_var), \
                 np.exp(0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv)) )
-    hm.logs.low_log('exp(ln( kurt )) = {}, sqrt( 2/(n_eff-1) ) = {}'
+    hm.logs.debug_log('exp(ln( kurt )) = {}, sqrt( 2/(n_eff-1) ) = {}'
         .format(np.exp( ev.ln_kurtosis ), np.sqrt(2.0/(ev.n_eff-1))))    
-    hm.logs.low_log('exp(ln( std(var(z))/var(z)))) = {}'
+    hm.logs.debug_log('exp(ln( std(var(z))/var(z)))) = {}'
         .format(np.exp( 0.5 * ev.ln_evidence_inv_var_var \
                             - ev.ln_evidence_inv_var) ) )
     #===========================================================================
     # Display more technical details
     #===========================================================================
-    hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Technical Details')
-    hm.logs.low_log('---------------------------------')
-    hm.logs.low_log('lnargmax = {}, lnargmin = {}'
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.critical_log('Technical Details')
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
         .format(ev.lnargmax, ev.lnargmin))
-    hm.logs.low_log('lnprobmax = {}, lnprobmin = {}'
+    hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
         .format(ev.lnprobmax, ev.lnprobmin))
-    hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
+    hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
         .format(ev.lnpredictmax, ev.lnpredictmin))
-    hm.logs.low_log('---------------------------------')
-    hm.logs.low_log('shift = {}, shift setting = {}'
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('shift = {}, shift setting = {}'
         .format(ev.shift_value, ev.shift))
-    hm.logs.low_log('running sum total = {}'
+    hm.logs.debug_log('running sum total = {}'
         .format(sum(ev.running_sum)))
-    hm.logs.low_log('running sum = \n{}'
+    hm.logs.debug_log('running sum = \n{}'
         .format(ev.running_sum))
-    hm.logs.low_log('nsamples per chain = \n{}'
+    hm.logs.debug_log('nsamples per chain = \n{}'
         .format(ev.nsamples_per_chain))
-    hm.logs.low_log('nsamples eff per chain = \n{}'
+    hm.logs.debug_log('nsamples eff per chain = \n{}'
         .format(ev.nsamples_eff_per_chain))
-    hm.logs.low_log('===============================')
+    hm.logs.debug_log('===============================')
     
     
     # Create corner/triangle plot.
