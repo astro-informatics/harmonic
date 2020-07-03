@@ -289,7 +289,7 @@ class Evidence:
                 self.set_shift(-np.nanmin(lnargs))
             if self.shift == Shifting.ABS_MAX_SHIFT:
                 # Shifts by the absolute maximum of log-posterior
-                self.set_shift(-Y[np.nanargmax(np.abs(lnargs))])
+                self.set_shift(-lnargs[np.nanargmax(np.abs(lnargs))])
 
         for i_chains in range(nchains):
             i_samples_start = chains.start_indices[i_chains]
