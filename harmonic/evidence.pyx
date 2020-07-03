@@ -264,44 +264,53 @@ class Evidence:
         cdef long i_chains, i_samples, nchains = self.nchains
         cdef double mean_shift, max_shift, max_i
 
+        lnargs = np.zeros_like(Y)
+
+        for i_chains in range(nchains):
+            i_samples_start = chains.start_indices[i_chains]
+            i_samples_end = chains.start_indices[i_chains+1]
+
+            for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
+
+                lnpredict = self.model.predict(X[i_samples,:])
+                lnprob = Y[i_samples]
+                lnargs[i_samples] = lnpredict - lnprob
+
+                if np.isinf(lnargs[i_samples]):
+                    lnargs[i_samples] = np.nan
+
         # The following performs a shift in log-space to avoid overflow or float
         # rounding errors in realspace.
         if not self.shift_set:
             if self.shift == Shifting.MAX_SHIFT:
                 # Shifts by max of the log-posterior
-                self.set_shift(np.max(Y))
+                self.set_shift(-np.nanmax(lnargs))
             if self.shift == Shifting.MEAN_SHIFT:
                 # Shifts by mean of the log-posterior
-                self.set_shift(np.mean(Y))
+                self.set_shift(-np.nanmean(lnargs))
             if self.shift == Shifting.MIN_SHIFT:
                 # Shifts by min of the log-posterior
-                self.set_shift(np.min(Y))
+                self.set_shift(-np.nanmin(lnargs))
             if self.shift == Shifting.ABS_MAX_SHIFT:
                 # Shifts by the absolute maximum of log-posterior
-                self.set_shift(Y[np.argmax(np.abs(Y))])
-
+                self.set_shift(-lnargs[np.nanargmax(np.abs(lnargs))])
 
         for i_chains in range(nchains):
             i_samples_start = chains.start_indices[i_chains]
             i_samples_end = chains.start_indices[i_chains+1]
 
             terms =[]  # TODO: replace terms by numpy array, set size here
-            
             terms_ln =np.zeros(i_samples_end - i_samples_start)
             
 
             for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
-
-                lnpredict = self.model.predict(X[i_samples,:])
-                lnprob = Y[i_samples]
-                lnarg = lnpredict - lnprob
                 # Apply shifting term to avoid overflow.
-                lnarg += self.shift_value
+                lnarg = lnargs[i_samples] + self.shift_value
                 # Store realspace or logspace sum depending on choice.
                 term = exp(lnarg)
                 nsamples_per_chain[i_chains] += 1
 
-                if not lnpredict == -np.inf:
+                if not np.isnan(lnargs[i_samples]):
 
                     # Count number of samples used.
                     nsamples_eff_per_chain[i_chains] +=1

@@ -167,25 +167,39 @@ def test_shifting_settings():
     sphere = md.HyperSphere(ndim, domain)
     sphere.fit(chain.samples, chain.ln_posterior)
 
+    lnarg = np.zeros_like(chain.ln_posterior)
+
     # Check shift set correctly for: mean shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(np.mean(chain.ln_posterior)) 
+
+    for i_chains in range(nchains):
+            i_samples_start = chain.start_indices[i_chains]
+            i_samples_end = chain.start_indices[i_chains+1]
+
+            for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
+                lnpred = cal_ev.model.predict(chain.samples[i_samples,:])
+                lnprob =  chain.ln_posterior[i_samples]
+                lnarg[i_samples] = lnpred-lnprob
+                if np.isinf(lnarg[i_samples]):
+                    lnarg[i_samples] = np.nan
+
+    assert cal_ev.shift_value == pytest.approx(-np.nanmean(lnarg)) 
 
     # Check shift set correctly for: max shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MAX_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(np.max(chain.ln_posterior)) 
+    assert cal_ev.shift_value == pytest.approx(-np.nanmax(lnarg)) 
 
     # Check shift set correctly for: min shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MIN_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(np.min(chain.ln_posterior)) 
+    assert cal_ev.shift_value == pytest.approx(-np.nanmin(lnarg)) 
 
     # Check shift set correctly for: absmax shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.ABS_MAX_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(chain.ln_posterior[np.argmax(np.abs(Y))]) 
+    assert cal_ev.shift_value == pytest.approx(-lnarg[np.nanargmax(np.abs(lnarg))]) 
 
 
 def test_compute_evidence():
