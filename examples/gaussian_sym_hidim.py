@@ -136,7 +136,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         burn_iterations = 50
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))
         rstate = np.random.get_state() # Set random state to be repeatable.
-
         for burn_iteration in range(burn_iterations+1):
             hm.logs.debug_log('Run burn sampling for burning subiteration {}...'.format(
                     burn_iteration+1))
@@ -204,7 +203,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Add these new chains to running sum
             cal_ev.add_chains(chains)
             hm.logs.debug_log('running_sum = {}'.format(cal_ev.running_sum))
-
 
         ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
 
