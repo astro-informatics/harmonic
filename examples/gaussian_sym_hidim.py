@@ -167,11 +167,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Train hyper-spherical model 
         # ======================================================================
         model = hm.model.HyperSphere(ndim, domains_sphere)
-        fit_success, objective = model.fit(chains.samples,\
-                                           chains.ln_posterior) 
-        hm.logs.debug_log('Fit success = {}'.format(fit_success))    
-        hm.logs.debug_log('Objective = {}'.format(objective))    
-        hm.logs.debug_log('---------------------------------')
+        model.set_R(6)
+        model.fitted = True
+        # fit_success, objective = model.fit(chains.samples,\
+        #                                    chains.ln_posterior) 
+        # hm.logs.debug_log('Fit success = {}'.format(fit_success))    
+        # hm.logs.debug_log('Objective = {}'.format(objective))    
+        # hm.logs.debug_log('---------------------------------')
 
         # ======================================================================
 
@@ -201,6 +203,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Add these new chains to running sum
             cal_ev.add_chains(chains)
+            hm.logs.debug_log('running_sum = {}'.format(cal_ev.running_sum))
+
 
         ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
 
@@ -211,10 +215,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         hm.logs.debug_log('---------------------------------')
         hm.logs.debug_log('Ln Inv Evidence: analytic = {}, estimate = {}'
-            .format(ln_rho, np.log(cal_ev.evidence_inv)))
+            .format(ln_rho, cal_ev.ln_evidence_inv))
         hm.logs.critical_log('Ln Inv Evidence: \
                           100 * |analytic - estimate| / |analytic| = {}%'
-            .format(100.0 * np.abs( (np.log(cal_ev.evidence_inv) - ln_rho) \
+            .format(100.0 * np.abs( (cal_ev.ln_evidence_inv - ln_rho) \
                                                                  / ln_rho ))) 
         # ======================================================================
         # Display inverse evidence computation results.
@@ -297,17 +301,10 @@ if __name__ == '__main__':
     # Define parameters.
     ndim = 32
     nchains = 2*ndim
-<<<<<<< HEAD
     samples_per_chain = 10000
     nburn = 7000
     chain_iterations = 50
     np.random.seed(2)
-=======
-    samples_per_chain = 44000
-    nburn = 40000
-    chain_iterations = 600
-    np.random.seed(1)
->>>>>>> stash current version
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, chain_iterations,
