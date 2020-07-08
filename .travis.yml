@@ -5,6 +5,7 @@ before_install:
   - pip install pytest pytest-cov codecov
 install:
   - pip install -r requirements.txt
+  - pip install --upgrade pytest
   - pip freeze
 script:
   - python setup.py build_ext --inplace --define CYTHON_TRACE

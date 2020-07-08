@@ -68,9 +68,23 @@ API
 ===
 
 
-Chains
-------
+..
+   Chains
+   ------
 
-.. autoclass:: harmonic.Chains     
+..
+   .. autoclass:: harmonic.Chains     
+      :members:
+
+..
+   .. automodule:: harmonic.utils
+      :members:
+
+   .. automodule:: harmonic.logs
+      :members:
+
+.. automodule:: harmonic.model
    :members:
+
+
 

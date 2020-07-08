@@ -104,10 +104,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Returns:
         - None.
     """
-    hm.logs.low_log('---------------------------------')
-    hm.logs.high_log('Himmelblau example')
-    hm.logs.high_log('Dimensionality = {}'.format(ndim))  
-    hm.logs.low_log('---------------------------------')
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.critical_log('Himmelblau example')
+    hm.logs.critical_log('Dimensionality = {}'.format(ndim))  
+    hm.logs.debug_log('---------------------------------')
 
     if ndim != 2:
         raise ValueError("Only ndim=2 is supported (ndim={} specified)"
@@ -125,12 +125,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     step = -2
     domain = []
     hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
-    hm.logs.low_log('Hyper-parameters = {}'.format(hyper_parameters))
+    hm.logs.debug_log('Hyper-parameters = {}'.format(hyper_parameters))
     xmin = -5.0
     xmax = 5.0
     ymin = -5.0
     ymax = 5.0    
-    hm.logs.low_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
+    hm.logs.debug_log('xmin, xmax, ymin, ymax = {}, {}, {}, {}'
         .format(xmin, xmax, ymin, ymax))
     
     # Start timer.
@@ -147,16 +147,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     for i_realisation in range(n_realisations):
 
         if n_realisations > 1:
-            hm.logs.low_log('---------------------------------')
-            hm.logs.high_log('Realisation number = {}/{}'
+            hm.logs.debug_log('---------------------------------')
+            hm.logs.critical_log('Realisation number = {}/{}'
                 .format(i_realisation, n_realisations))
-            hm.logs.low_log('---------------------------------')
+            hm.logs.debug_log('---------------------------------')
 
         #=======================================================================
         # Run Emcee to recover posterior sampels 
         #=======================================================================
-        hm.logs.high_log('Run sampling...')
-        hm.logs.low_log('---------------------------------')
+        hm.logs.critical_log('Run sampling...')
+        hm.logs.debug_log('---------------------------------')
         """
         Feed emcee the ln_posterior function, starting positions and recover 
         chains.
@@ -172,8 +172,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
         # Configure emcee chains for harmonic
         #=======================================================================
-        hm.logs.high_log('Configure chains...')
-        hm.logs.low_log('---------------------------------')
+        hm.logs.critical_log('Configure chains...')
+        hm.logs.debug_log('---------------------------------')
         """
         Configure chains for the cross validation stage.
         """
@@ -185,8 +185,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
         # Perform cross-validation
         #=======================================================================
-        hm.logs.high_log('Perform cross-validation...')
-        hm.logs.low_log('---------------------------------')
+        hm.logs.critical_log('Perform cross-validation...')
+        hm.logs.debug_log('---------------------------------')
         """
         There are several different machine learning models. Cross-validation
         allows the software to select the optimal model and the optimal model 
@@ -200,18 +200,18 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                     modelClass=hm.model.KernelDensityEstimate, \
                                     verbose=verbose, \
                                     seed=0)
-        hm.logs.low_log('Validation variances = {}'
+        hm.logs.debug_log('Validation variances = {}'
             .format(validation_variances))
         best_hyper_param_ind = np.argmin(validation_variances)
         best_hyper_param = hyper_parameters[best_hyper_param_ind]
-        hm.logs.low_log('Best hyper parameter = {}'
+        hm.logs.debug_log('Best hyper parameter = {}'
             .format(best_hyper_param))
 
         #=======================================================================
         # Fit optimal model hyper-parameters
         #=======================================================================
-        hm.logs.high_log('Fit model...')
-        hm.logs.low_log('---------------------------------')
+        hm.logs.critical_log('Fit model...')
+        hm.logs.debug_log('---------------------------------')
         """
         Fit model by selecing the configuration of hyper-parameters which 
         minimises the validation variances.
@@ -220,13 +220,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                             domain, 
                                             hyper_parameters=best_hyper_param)
         fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-        hm.logs.low_log('Fit success = {}'.format(fit_success))    
+        hm.logs.debug_log('Fit success = {}'.format(fit_success))    
         
         #=======================================================================
         # Computing evidence using learnt model and emcee chains
         #=======================================================================
-        hm.logs.high_log('Compute evidence...')
-        hm.logs.low_log('---------------------------------')
+        hm.logs.critical_log('Compute evidence...')
+        hm.logs.debug_log('---------------------------------')
         """
         Instantiates the evidence class with a given model. Adds some chains and 
         computes the log-space evidence (marginal likelihood).
@@ -237,7 +237,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         # Compute analytic evidence.
         if ndim == 2:
-            hm.logs.high_log('Compute evidence by numerical integration...')
+            hm.logs.critical_log('Compute evidence by numerical integration...')
             ln_posterior_func = partial(ln_posterior, xmin=xmin, xmax=xmax, 
                                         ymin=ymin, ymax=ymax)
             ln_posterior_grid, x_grid, y_grid = \
@@ -249,68 +249,68 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             dy = y_grid[1,0] - y_grid[0,0]
             evidence_numerical_integration = \
                                      np.sum(np.exp(ln_posterior_grid)) * dx * dy
-            hm.logs.low_log('dx = {}'.format(dx))
-            hm.logs.low_log('dy = {}'.format(dy))        
+            hm.logs.debug_log('dx = {}'.format(dx))
+            hm.logs.debug_log('dy = {}'.format(dy))        
         # ======================================================================
         # Display evidence computation results.
         # ======================================================================
-        hm.logs.low_log('---------------------------------')
-        hm.logs.high_log('Evidence Statistics')
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('Evidence: numerical = {}, estimate = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.critical_log('Evidence Statistics')
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('Evidence: numerical = {}, estimate = {}'
             .format(evidence_numerical_integration, np.exp(ln_evidence)))
-        hm.logs.low_log('Evidence: std = {}, std / estimate = {}'
+        hm.logs.debug_log('Evidence: std = {}, std / estimate = {}'
             .format( np.exp(ln_evidence_std), \
                      np.exp(ln_evidence_std - ln_evidence)))
         diff = np.log( np.abs(evidence_numerical_integration \
                      - np.exp(ln_evidence)))
-        hm.logs.high_log('Evidence: \
+        hm.logs.critical_log('Evidence: \
             100 * |numerical - estimate| / estimate = {}%'
             .format(100.0 * np.exp(diff - ln_evidence)))
         # ======================================================================
         # Display inverse evidence computation results.
         # ======================================================================
-        hm.logs.low_log('---------------------------------')
-        hm.logs.high_log('Inverse Evidence Statistics')
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('Inv Evidence: numerical = {}, estimate = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.critical_log('Inverse Evidence Statistics')
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('Inv Evidence: numerical = {}, estimate = {}'
             .format(1.0/evidence_numerical_integration, ev.evidence_inv))
-        hm.logs.low_log('Inv Evidence: std = {}, std / estimate = {}'
+        hm.logs.debug_log('Inv Evidence: std = {}, std / estimate = {}'
             .format(np.sqrt(ev.evidence_inv_var), \
                     np.sqrt(ev.evidence_inv_var)/ev.evidence_inv))
-        hm.logs.low_log('Inv Evidence: kurtosis = {}, \
+        hm.logs.debug_log('Inv Evidence: kurtosis = {}, \
                          sqrt( 2 / ( n_eff - 1 ) ) = {}'
             .format(ev.kurtosis, np.sqrt( 2.0 / (ev.n_eff-1) )))    
-        hm.logs.low_log('Inv Evidence: sqrt( var(var) )/ var = {}'
+        hm.logs.debug_log('Inv Evidence: sqrt( var(var) )/ var = {}'
             .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
-        hm.logs.high_log('Inv Evidence: \
+        hm.logs.critical_log('Inv Evidence: \
                           100 * |numerical - estimate| / estimate = {}%'
             .format(100.0 * np.abs(1.0 / evidence_numerical_integration \
                                        - ev.evidence_inv) / ev.evidence_inv))
         # ======================================================================
         # Display more technical details for ln evidence.
         # ======================================================================
-        hm.logs.low_log('---------------------------------')
-        hm.logs.high_log('Technical Details')
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('lnargmax = {}, lnargmin = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.critical_log('Technical Details')
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
             .format(ev.lnargmax, ev.lnargmin))
-        hm.logs.low_log('lnprobmax = {}, lnprobmin = {}'
+        hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
             .format(ev.lnprobmax, ev.lnprobmin))
-        hm.logs.low_log('lnpredictmax = {}, lnpredictmin = {}'
+        hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
-        hm.logs.low_log('---------------------------------')
-        hm.logs.low_log('shift = {}, shift setting = {}'
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('shift = {}, shift setting = {}'
             .format(ev.shift_value, ev.shift))
-        hm.logs.low_log('running sum total = {}'
+        hm.logs.debug_log('running sum total = {}'
             .format(sum(ev.running_sum)))
-        hm.logs.low_log('running sum = \n{}'
+        hm.logs.debug_log('running sum = \n{}'
             .format(ev.running_sum))
-        hm.logs.low_log('nsamples per chain = \n{}'
+        hm.logs.debug_log('nsamples per chain = \n{}'
             .format(ev.nsamples_per_chain))
-        hm.logs.low_log('nsamples eff per chain = \n{}'
+        hm.logs.debug_log('nsamples eff per chain = \n{}'
             .format(ev.nsamples_eff_per_chain))
-        hm.logs.low_log('===============================')
+        hm.logs.debug_log('===============================')
 
 
         # Create corner/triangle plot.
@@ -389,7 +389,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # End Timer.
     clock = time.clock() - clock
-    hm.logs.high_log('execution_time = {}s'.format(clock))
+    hm.logs.critical_log('execution_time = {}s'.format(clock))
 
     #===========================================================================
     # Save out realisations of statistics for analysis.

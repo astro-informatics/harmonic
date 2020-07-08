@@ -53,17 +53,6 @@ def test_set_shift():
     assert rho.shift_value == pytest.approx(2.0)
     assert rho.shift_set  == True
 
-# def test_serialization():
-    
-#     nchains = 100
-#     ndim = 1000    
-#     domain = [np.array([1E-1,1E1])]
-#     sphere = md.HyperSphere(ndim, domain)
-#     sphere.fitted = True
-#     rho = cbe.Evidence(nchains, sphere)
-#     rho.serialize_evidence_class()
-
-
 def test_process_run_with_shift():
 
     nchains = 10
@@ -79,7 +68,7 @@ def test_process_run_with_shift():
     samples                = np.random.randn(nchains,n_samples)
     rho.running_sum        = np.sum(samples,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
-    rho.process_run_realspace()
+    rho.process_run()
 
     evidence_inv  = np.mean(samples)
     evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
@@ -98,7 +87,7 @@ def test_process_run_with_shift():
     rho.running_sum        = np.sum(samples_scaled,axis=1)
     rho.nsamples_per_chain = np.ones(nchains, dtype=int)*n_samples
     rho.shift_value = mean_shift
-    rho.process_run_realspace()
+    rho.process_run()
 
     evidence_inv  = np.mean(samples)
     evidence_inv_var = np.std(np.sum(samples,axis=1)/n_samples)**2/(nchains-1)
@@ -107,7 +96,6 @@ def test_process_run_with_shift():
     assert rho.evidence_inv  == pytest.approx(evidence_inv,abs=1E-7)
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
     assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
-
 
 def test_add_chains():
 
@@ -158,6 +146,7 @@ def test_add_chains():
 
     return
 
+
 def test_shifting_settings():
 
     nchains   = 200
@@ -178,55 +167,39 @@ def test_shifting_settings():
     sphere = md.HyperSphere(ndim, domain)
     sphere.fit(chain.samples, chain.ln_posterior)
 
+    lnarg = np.zeros_like(chain.ln_posterior)
+
     # Check shift set correctly for: mean shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(np.mean(chain.ln_posterior)) 
+
+    for i_chains in range(nchains):
+            i_samples_start = chain.start_indices[i_chains]
+            i_samples_end = chain.start_indices[i_chains+1]
+
+            for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
+                lnpred = cal_ev.model.predict(chain.samples[i_samples,:])
+                lnprob =  chain.ln_posterior[i_samples]
+                lnarg[i_samples] = lnpred-lnprob
+                if np.isinf(lnarg[i_samples]):
+                    lnarg[i_samples] = np.nan
+
+    assert cal_ev.shift_value == pytest.approx(-np.nanmean(lnarg)) 
 
     # Check shift set correctly for: max shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MAX_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(np.max(chain.ln_posterior)) 
+    assert cal_ev.shift_value == pytest.approx(-np.nanmax(lnarg)) 
 
     # Check shift set correctly for: min shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MIN_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(np.min(chain.ln_posterior)) 
+    assert cal_ev.shift_value == pytest.approx(-np.nanmin(lnarg)) 
 
     # Check shift set correctly for: absmax shift
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.ABS_MAX_SHIFT)
     cal_ev.add_chains(chain)
-    assert cal_ev.shift_value == pytest.approx(chain.ln_posterior[np.argmax(np.abs(Y))]) 
-
-def test_logspace_averaging():
-
-    nchains   = 200
-    nsamples  = 500
-    ndim      = 2
-
-    # Create samples of unnormalised Gaussian
-    np.random.seed(30)
-    X = np.random.randn(nchains,nsamples,ndim)
-    Y = -np.sum(X*X,axis=2)/2.0
-
-    # Add samples to chains
-    chain  = ch.Chains(ndim)    
-    chain.add_chains_3d(X, Y)
-
-    # Fit the Hyper_sphere
-    domain = [np.array([1E-1,1E1])]
-    sphere = md.HyperSphere(ndim, domain)
-    sphere.fit(chain.samples, chain.ln_posterior)
-
-    # Check logspace is correctly set.
-    cal_ev_log = cbe.Evidence(nchains, sphere, \
-        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.StatisticSpace.LOG)
-    assert cal_ev_log.statspace == cbe.StatisticSpace.LOG
-
-    # Check realspace is correctly set.
-    cal_ev_real = cbe.Evidence(nchains, sphere, \
-        shift=cbe.Shifting.MEAN_SHIFT, statspace=cbe.StatisticSpace.REAL)
-    assert cal_ev_real.statspace == cbe.StatisticSpace.REAL
+    assert cal_ev.shift_value == pytest.approx(-lnarg[np.nanargmax(np.abs(lnarg))]) 
 
 
 def test_compute_evidence():
@@ -253,6 +226,8 @@ def test_compute_evidence():
     (ln_evidence, ln_evidence_std) = ev.compute_ln_evidence()
     assert evidence == pytest.approx(np.exp(ln_evidence))
     assert evidence_std == pytest.approx(np.exp(ln_evidence_std))
+
+
     
 def test_compute_bayes_factors():
     
@@ -305,3 +280,48 @@ def test_compute_bayes_factors():
     (evidence, evidence_std) = ev1.compute_evidence()
     assert bf12 == pytest.approx(evidence)
     assert bf12_std == pytest.approx(evidence_std)
+
+
+def test_serialization():
+
+    nchains   = 200
+    nsamples  = 500
+    ndim      = 2
+
+    # Create samples of unnormalised Gaussian
+    np.random.seed(30)
+    X = np.random.randn(nchains,nsamples,ndim)
+    Y = -np.sum(X*X,axis=2)/2.0
+
+    # Add samples to chains
+    chain  = ch.Chains(ndim)    
+    chain.add_chains_3d(X, Y)
+
+    # Fit the Hyper_sphere
+    domain = [np.array([1E-1,1E1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fit(chain.samples, chain.ln_posterior)
+
+    # Set up the evidence object
+    ev1 = cbe.Evidence(nchains, sphere)
+    ev1.add_chains(chain)
+
+    # Serialize evidence
+    ev1.serialize(".test.dat")
+
+    # Deserialize evidence
+    ev2 = cbe.Evidence.deserialize(".test.dat")
+
+    # Test evidence objects the same
+    assert ev1.nchains == ev2.nchains
+    assert ev1.evidence_inv == ev2.evidence_inv
+    assert ev1.evidence_inv_var == ev2.evidence_inv_var
+    assert ev1.evidence_inv_var_var == ev2.evidence_inv_var_var
+    assert ev1.running_sum.size == ev2.running_sum.size
+    assert ev1.nsamples_per_chain.size == ev2.nsamples_per_chain.size
+    assert ev1.shift_value == ev2.shift_value
+    assert ev1.shift_set == ev2.shift_set
+    for i_chain in range(nchains):
+        assert ev1.running_sum[i_chain] == ev2.running_sum[i_chain]
+        assert ev1.nsamples_per_chain[i_chain] == ev2.nsamples_per_chain[i_chain]
+
