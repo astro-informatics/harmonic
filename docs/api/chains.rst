@@ -1,4 +1,4 @@
-.. _chains:
+.. _api-chains:
 
 Chains
 ======

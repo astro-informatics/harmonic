@@ -82,9 +82,9 @@ API
 
    .. automodule:: harmonic.logs
       :members:
-
-.. automodule:: harmonic.model
-   :members:
+..
+   .. automodule:: harmonic.model
+      :members:
 
 
 

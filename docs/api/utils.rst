@@ -2,3 +2,6 @@
 
 Utils
 =====
+
+.. automodule:: harmonic.utils
+   :members: 

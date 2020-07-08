@@ -2,3 +2,6 @@
 
 Logging
 =======
+
+.. automodule:: harmonic.logs
+   :members: 
