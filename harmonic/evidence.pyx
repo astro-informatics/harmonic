@@ -18,10 +18,12 @@ class Shifting(Enum):
     Enumeration to define which log-space shifting to adopt. Different choices 
     may prove optimal for certain settings.
     """
+
     MEAN_SHIFT = 1
     MAX_SHIFT = 2
     MIN_SHIFT = 3
     ABS_MAX_SHIFT = 4
+
 
 class Evidence:
     """
