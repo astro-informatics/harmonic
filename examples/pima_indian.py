@@ -82,19 +82,20 @@ def compute_ln_p(theta, x):
 	return - np.log(1.0 + 1.0 / np.exp(x.dot(theta)))
 
 
-def run_example(ndim=5, nchains=100, samples_per_chain=1000, 
+def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
 
 	hm.logs.debug_log('---------------------------------')
 	hm.logs.critical_log('Pima Indian example')
+	#Set_dimension
+	if model_1:
+		ndim=5
+	else:
+		ndim=6
 	hm.logs.critical_log('Dimensionality = {}'.format(ndim))
 	hm.logs.debug_log('---------------------------------')
-
-	if ndim != 5 and ndim != 6:
-	    raise ValueError("Only 5 and 6 covariates models (ndim={} specified)"
-	        .format(ndim))
 
 
 	#===========================================================================
@@ -123,12 +124,20 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	"""
 	x=np.zeros((len(data), ndim))
 
-	x[:,0] = 1.0
-	x[:,1] = data[:,1]
-	x[:,2] = data[:,2]
-	x[:,3] = data[:,5]
-	x[:,4] = data[:,6]
-	# x[:,5] = data[:,7] # --> model 2.
+	if model_1:
+		x[:,0] = 1.0
+		x[:,1] = data[:,1]
+		x[:,2] = data[:,2]
+		x[:,3] = data[:,5]
+		x[:,4] = data[:,6]
+
+	else:
+		x[:,0] = 1.0
+		x[:,1] = data[:,1]
+		x[:,2] = data[:,2]
+		x[:,3] = data[:,5]
+		x[:,4] = data[:,6]
+		x[:,5] = data[:,7] # --> model 2.
 
 	"""
 	y[:] = 1 if patient has diabetes, 0 if patient does not have diabetes.
@@ -159,18 +168,23 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	Initial positions for each chain for each covariate \in [0,8).
 	Simply drawn from directly from each covariate prior.
 	"""
-	pos_0 = np.random.randn(nchains)*0.01
-	pos_1 = np.random.randn(nchains)*0.01
-	pos_2 = np.random.randn(nchains)*0.01
-	pos_3 = np.random.randn(nchains)*0.01
-	pos_4 = np.random.randn(nchains)*0.01
-	# pos_5 = np.random.randn(nchains)*0.01 # --> model 2.
+	if model_1:
+		pos_0 = np.random.randn(nchains)*0.01
+		pos_1 = np.random.randn(nchains)*0.01
+		pos_2 = np.random.randn(nchains)*0.01
+		pos_3 = np.random.randn(nchains)*0.01
+		pos_4 = np.random.randn(nchains)*0.01
+		pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4]
 
-	"""
-	Concatenate these positions into a single variable 'pos'.
-	"""
-	pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4]
-	# pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4, pos_5] # --> model 2.
+
+	else:
+		pos_0 = np.random.randn(nchains)*0.01
+		pos_1 = np.random.randn(nchains)*0.01
+		pos_2 = np.random.randn(nchains)*0.01
+		pos_3 = np.random.randn(nchains)*0.01
+		pos_4 = np.random.randn(nchains)*0.01
+		pos_5 = np.random.randn(nchains)*0.01 
+		pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4, pos_5]
 
 	# Start Timer.
 	clock = time.clock()
@@ -349,14 +363,14 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 5 # Only 5 or 6 dimensional case supported
+    model_1 = True
     nchains = 200
     samples_per_chain = 5000
     nburn = 1000
     np.random.seed(3)
     
     # Run example.
-    samples = run_example(ndim, nchains, samples_per_chain, nburn, 
+    samples = run_example(model_1, nchains, samples_per_chain, nburn, 
                           plot_corner=False, plot_surface=False,
                           plot_comparison=False, 
                           verbose=False)
