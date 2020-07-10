@@ -170,7 +170,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         model.fitted = True
         
         # ======================================================================
-
         # Compute ln evidence by iteratively adding chains
         # ======================================================================
         # Instantiate the evidence class
