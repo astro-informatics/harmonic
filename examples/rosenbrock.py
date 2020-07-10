@@ -9,8 +9,6 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-# Setup Logging config
-hm.logs.setup_logging()
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
     """
@@ -182,7 +180,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 100
+    n_realisations = 25
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -311,6 +309,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.critical_log('Evidence: \
                           100 * |numerical - estimate| / estimate = {}%'
             .format(100.0 * np.exp(diff - ln_evidence)))
+
         # ======================================================================
         # Display inverse evidence computation results.
         # ======================================================================
@@ -331,6 +330,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                           100 * |numerical - estimate| / estimate = {}%'
             .format(100.0 * np.abs(1.0 / evidence_numerical_integration \
                     - ev.evidence_inv) / ev.evidence_inv))
+
         # ======================================================================
         # Display more technical details for ln evidence.
         # ======================================================================
@@ -453,7 +453,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
-    
+
+    # Setup logging config.
+    hm.logs.setup_logging()
+
     # Define parameters.
     ndim = 2 
     nchains = 200

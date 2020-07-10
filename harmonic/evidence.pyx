@@ -13,28 +13,17 @@ import logs as lg
 lg.setup_logging()
 
 
-
-class Optimisation(Enum):
-    """
-    Enumeration to define whether to optimise for speed or accuracy.  In
-    practices accuracy optimisation does not make a great deal of difference.
-    """
-
-    SPEED = 1
-    ACCURACY = 2
-
-
-OPTIMISATION = Optimisation.SPEED
-
 class Shifting(Enum):
     """
     Enumeration to define which log-space shifting to adopt. Different choices 
     may prove optimal for certain settings.
     """
+
     MEAN_SHIFT = 1
     MAX_SHIFT = 2
     MIN_SHIFT = 3
     ABS_MAX_SHIFT = 4
+
 
 class Evidence:
     """
@@ -162,11 +151,8 @@ class Evidence:
         cdef double evidence_inv_var_exp=0.0, kur_exp=0.0
 
         for i_chains in range(nchains):
-            if OPTIMISATION == Optimisation.SPEED:
-                evidence_inv += running_sum[i_chains]
+            evidence_inv += running_sum[i_chains]
             nsamples += nsamples_per_chain[i_chains]
-        if OPTIMISATION == Optimisation.ACCURACY:
-            evidence_inv += fsum(running_sum)
         
         evidence_inv /= nsamples
 
@@ -299,10 +285,6 @@ class Evidence:
             i_samples_start = chains.start_indices[i_chains]
             i_samples_end = chains.start_indices[i_chains+1]
 
-            terms =[]  # TODO: replace terms by numpy array, set size here
-            terms_ln =np.zeros(i_samples_end - i_samples_start)
-            
-
             for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
                 # Apply shifting term to avoid overflow.
                 lnarg = lnargs[i_samples] + self.shift_value
@@ -315,14 +297,8 @@ class Evidence:
                     # Count number of samples used.
                     nsamples_eff_per_chain[i_chains] +=1
 
-                    if OPTIMISATION == Optimisation.SPEED:
-                        # Add contribution to running sum.
-                        running_sum[i_chains] += term
-
-                    elif OPTIMISATION == Optimisation.ACCURACY:
-                        # Store all contributions in list to then be added.
-                        terms.append(term)
-                        terms_ln[i] = lnarg
+                    # Add contribution to running sum.
+                    running_sum[i_chains] += term
 
                     # Log diagnostic terms.
                     self.lnargmax = lnarg \
@@ -338,40 +314,6 @@ class Evidence:
                     self.lnpredictmin = lnpredict \
                         if lnpredict < self.lnpredictmin else self.lnpredictmin
             
-            if OPTIMISATION == Optimisation.ACCURACY:
-                # Sum all terms at once (fsum) to get track of partial terms.
-                # Could extend this approach to compute final sums with fsum but
-                # running sums for each chain should be of similar value so not
-                # a great deal of merit in doing so. Hacked experiments to test
-                # that (not implemented in current version) show that approach
-                # doesn't make much difference.  Even doing fsum here doesn't
-                # make much difference.  Recommended approach is to optimise for
-                # speed rather than acuracy since accuracy optimisation doesn't
-                # make much difference.
-                
-                # running_sum[i_chains] += fsum(terms)
-                
-                #running_sum[i_chains] = fsum(terms)
-                
-                # running_sum[i_chains] = exp(sp.logsumexp(terms_ln))
-                # running_sum[i_chains] = (sp.logsumexp(terms_ln))
-                # running_sum[i_chains] += sp.logsumexp(terms_ln)
-                
-                
-                           
-                if np.amax(np.absolute(terms_ln)) > np.amax(terms_ln):
-                    offset = np.amin(terms_ln)
-                else:
-                    offset = np.amax(terms_ln)
-                
-                running_sum[i_chains] = np.log(np.sum(np.exp(terms_ln -offset)))
-
-                running_sum[i_chains] += offset
-                running_sum[i_chains] -= np.log(i_samples_end -i_samples_start)
-                 
-                # running_sum[i_chains] = np.sum(np.exp(terms_ln - offset))
-                # running_sum[i_chains] *= offset
-
         self.process_run()
         self.chains_added = True
         self.check_basic_diagnostic()
@@ -591,31 +533,3 @@ def compute_ln_bayes_factor(ev1, ev2):
 
     return (ln_bf12, ln_bf12_std)
 
-
-
-def msum(iterable):
-    """Full precision summation using multiple floats for intermediate values.
-    
-    From: http://code.activestate.com/recipes/393090/
-    Rounded x+y stored in hi with the round-off stored in lo.  Together
-    hi+lo are exactly equal to x+y.  The inner loop applies hi/lo summation
-    to each partial so that the list of partial sums remains exact.
-    Depends on IEEE-754 arithmetic guarantees.  See proof of correctness at:
-    www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps
-
-    """
-
-    partials = []               # sorted, non-overlapping partial sums
-    for x in iterable:
-        i = 0
-        for y in partials:
-            if abs(x) < abs(y):
-                x, y = y, x
-            hi = x + y
-            lo = y - (hi - x)
-            if lo:
-                partials[i] = lo
-                i += 1
-            x = hi
-        partials[i:] = [x]
-    return sum(partials, 0.0), partials
