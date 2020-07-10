@@ -1,0 +1,815 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Model &mdash; Harmonic 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Evidence" href="evidence.html" />
+    <link rel="prev" title="Chains" href="chains.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Harmonic
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/overview.html">Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chains.html">Chains</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evidence.html">Evidence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logs.html">Logging</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Harmonic</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="model">
+<span id="api-model"></span><h1>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="harmonic.model.HyperSphere">
+<em class="property">class </em><code class="descclassname">harmonic.model.</code><code class="descname">HyperSphere</code><a class="headerlink" href="#harmonic.model.HyperSphere" title="Permalink to this definition">¶</a></dt>
+<dd><p>HyperSphere Model to approximate the log_e posterior by a hyper-ellipsoid.</p>
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.__init__">
+<code class="descname">__init__</code><a class="headerlink" href="#harmonic.model.HyperSphere.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor setting the parameters of the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dim_in</strong> (<em>long</em>) – Dimension of the problem to solve.</li>
+<li><strong>domains</strong> (<em>list</em>) – A list of length 1 containing a 1D array of length
+2 containing the lower and upper bound of the radius of the
+hyper-sphere.</li>
+<li><strong>hyper_parameters</strong> (<em>None</em>) – Should not be set as there are no
+hyperparameters for this model (in general, however, models can
+have hyperparameters).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the hyper_parameters variable is not None.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the length of domains list is not one.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the ndim_in is not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.fit">
+<code class="descname">fit</code><a class="headerlink" href="#harmonic.model.HyperSphere.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the parameters of the model (i.e. its radius).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</li>
+<li><strong>Y</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>]</em>) – Target log_e posterior values for each
+sample in X.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A tuple containing the following objects.</p>
+<blockquote>
+<div><ul class="simple">
+<li>success (bool): Whether fit successful.</li>
+<li>objective (double): Value of objective at optimal point.</li>
+</ul>
+</div></blockquote>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">(bool, double)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the first dimension of X is not the same as
+Y.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the second dimension of X is not the same as
+ndim.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.is_fitted">
+<code class="descname">is_fitted</code><a class="headerlink" href="#harmonic.model.HyperSphere.is_fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify whether model has been fitted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether the model has been fitted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.predict">
+<code class="descname">predict</code><a class="headerlink" href="#harmonic.model.HyperSphere.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use model to predict the value of log_e posterior at point x.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>double</em>) – Sample of which to predict posterior value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Predicted posterior value.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(double)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.set_R">
+<code class="descname">set_R</code><a class="headerlink" href="#harmonic.model.HyperSphere.set_R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the radius of the hypersphere and calculate its volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>R</strong> (<em>double</em>) – The radius of the hyper-sphere.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the radius is a NaN.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the Raises is not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.set_centre">
+<code class="descname">set_centre</code><a class="headerlink" href="#harmonic.model.HyperSphere.set_centre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set centre of the hyper-sphere.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>centre_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Centre of sphere.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the length of the centre array is not the same as
+ndim.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the centre array contains a NaN.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.set_inv_covariance">
+<code class="descname">set_inv_covariance</code><a class="headerlink" href="#harmonic.model.HyperSphere.set_inv_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set diagonal inverse covariances for the hyper-sphere.</p>
+<p>Only diagonal covariance structure is supported.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>inv_covariance_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Diagonal of inverse
+covariance matrix that defines the ellipse.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the length of the inv_covariance array is not equal
+to ndim.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the inv_covariance array contains a NaN.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the inv_covariance array contains a value that is
+not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.HyperSphere.set_precomputed_values">
+<code class="descname">set_precomputed_values</code><a class="headerlink" href="#harmonic.model.HyperSphere.set_precomputed_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Precompute volume of the hyper sphere (scaled ellipse) and squared radius.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="harmonic.model.KernelDensityEstimate">
+<em class="property">class </em><code class="descclassname">harmonic.model.</code><code class="descname">KernelDensityEstimate</code><a class="headerlink" href="#harmonic.model.KernelDensityEstimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>KernelDensityEstimate model to approximate the log_e posterior using kernel
+density estimation.</p>
+<dl class="attribute">
+<dt id="harmonic.model.KernelDensityEstimate.__init__">
+<code class="descname">__init__</code><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor setting the hyperparameters and domains of the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ndim</strong> (<em>long</em>) – Dimension of the problem to solve.</li>
+<li><strong>domains</strong> (<em>list</em>) – List of length 0 since domain not considered for
+Kernel Density Estimation.</li>
+<li><strong>hyper_parameters</strong> (<em>list</em>) – A list of length 1 containing the diameter
+in scaled units of the hyper spheres to use in the Kernel
+Density Estimate.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the hyper_parameters list is not length 1.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the length of domains list is not 0.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the ndim_in is not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.KernelDensityEstimate.fit">
+<code class="descname">fit</code><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the parameters of the model.</p>
+<p>Fit is performed as follows.</p>
+<p>Set the scales of the model from the samples.</p>
+<p>Create the dictionary containing all the information on which samples
+are in which pixel in a grid where each pixel size is the same as the
+diameter of the hyper spheres to be placed on each sample.</p>
+<p>The key is an index of the grid (c type ordering) and the value is a
+list containing the indexes in the sample array of all the samples in
+that index 3.</p>
+<p>Precompute the normalisation factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</li>
+<li><strong>Y</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>]</em>) – Target log_e posterior values for each
+sample in X.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether fit successful.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">(bool)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the first dimension of X is not the same as Y.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the second dimension of X is not the same as
+ndim.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.KernelDensityEstimate.is_fitted">
+<code class="descname">is_fitted</code><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.is_fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify whether model has been fitted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether the model has been fitted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.KernelDensityEstimate.precompute_normalising_factor">
+<code class="descname">precompute_normalising_factor</code><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.precompute_normalising_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Precompute the log_e normalisation factor of the density estimation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the second dimension of X is not the same as
+ndim.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.KernelDensityEstimate.predict">
+<code class="descname">predict</code><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the value of the posterior at point x.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – 1D array of sample of shape (ndim) to predict
+posterior value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Predicted log_e posterior value.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(double)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.KernelDensityEstimate.set_scales">
+<code class="descname">set_scales</code><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.set_scales" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the scales of the hyper spheres based on the min and max sample in each
+dimension.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the second dimension of X is not the same as
+ndim.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel">
+<em class="property">class </em><code class="descclassname">harmonic.model.</code><code class="descname">ModifiedGaussianMixtureModel</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>ModifiedGaussianMixtureModel (MGMM) to approximate the log_e posterior by a
+modified Gaussian mixture model.</p>
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.__init__">
+<code class="descname">__init__</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor setting the hyper parameters and domains of the model of the
+MGMM which models the posterior as a group of Gaussians.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ndim</strong> (<em>long</em>) – Dimension of the problem to solve.</li>
+<li><strong>domains</strong> (<em>list</em>) – A list of length 1 with the range of scale
+parameter of the covariance matrix, i.e. the range of alpha,
+where C’ = alpha * C_samples, and C_samples is the diagonal of
+the covariance in the samples in each cluster.</li>
+<li><strong>hyper_parameters</strong> (<em>list</em>) – A list of length 5, the first of which
+should be nummber of clusters, the second is the regularisation
+parameter gamma, the third is the learning rate, the fourth is
+the maximum number of terations and the fifth is the batch
+size.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the hyper_parameters list is not length 5.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the length of domains list is not 1.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the ndim is not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.fit">
+<code class="descname">fit</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the parameters of the model as follows.</p>
+<p>If centres and inv_covariances not set:
+- Find clusters using the k-means clustering from scikit learn.
+- Use the samples in the clusters to find the centres and covariance
+matricies.</p>
+<p>Then minimize the objective function using the gradients and mini-batch
+stochastic descent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</li>
+<li><strong>Y</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>]</em>) – Target log_e posterior values for each
+sample in X.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether fit successful.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">(bool)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the first dimension of X is not the same as
+Y.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the first dimension of X is not the same as
+Y.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the second dimension of X is not the same
+as ndim.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.is_fitted">
+<code class="descname">is_fitted</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.is_fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify whether model has been fitted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether the model has been fitted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.predict">
+<code class="descname">predict</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the value of the posterior at point x.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Sample of shape (ndim) at which to
+predict posterior value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Predicted log_e posterior value.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(double)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.set_alphas">
+<code class="descname">set_alphas</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.set_alphas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the alphas (i.e. scales).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>alphas_in</strong> (<em>double ndarray</em><em>[</em><em>ngaussians</em><em>]</em>) – Alpha scalings.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array length is not ngaussians.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array contains a NaN.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if at least one of the alphas not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.set_centres">
+<code class="descname">set_centres</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.set_centres" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the centres of the Gaussians.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>centres_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Centres.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array is not the correct shape.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array contains a NaN.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.set_centres_and_inv_covariance">
+<code class="descname">set_centres_and_inv_covariance</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.set_centres_and_inv_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the centres and inverse covariance of the Gaussians.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>centres_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Centres.</li>
+<li><strong>inv_covariance</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Inverse
+covariance of the Gaussians.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input arrays are not the correct shape.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input arrays contain a NaN.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input covariance contains a number that
+is not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.set_inv_covariance">
+<code class="descname">set_inv_covariance</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.set_inv_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the inverse covariance of the Gaussians.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>inv_covariance</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Inverse
+covariance of the Gaussians.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array is not the correct shape.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array contains a NaN.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array contains a number that is
+not positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harmonic.model.ModifiedGaussianMixtureModel.set_weights">
+<code class="descname">set_weights</code><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.set_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the weights of the Gaussians.</p>
+<p>The weights are the softmax of the betas (without normalisation), i.e.
+the betas are the log_e of the weights.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>weights_in</strong> (<em>double ndarray</em><em>[</em><em>ngaussians</em><em>]</em>) – 1D array containing the
+weights (no need to normalise).</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array length is not ngaussians.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the input array contains a NaN.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if at least one of the weights is negative.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the sum of the weights is too close to
+zero.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="evidence.html" class="btn btn-neutral float-right" title="Evidence" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="chains.html" class="btn btn-neutral" title="Chains" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

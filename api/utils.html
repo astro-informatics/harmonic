@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Utils &mdash; Harmonic 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Logging" href="logs.html" />
+    <link rel="prev" title="Evidence" href="evidence.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Harmonic
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/overview.html">Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chains.html">Chains</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evidence.html">Evidence</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logs.html">Logging</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Harmonic</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-harmonic.utils">
+<span id="utils"></span><span id="api-utils"></span><h1>Utils<a class="headerlink" href="#module-harmonic.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="harmonic.utils.cross_validation">
+<code class="descclassname">harmonic.utils.</code><code class="descname">cross_validation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.cross_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform n-fold validation for given model using chains to be split into
+validation and training data.</p>
+<p>First, splits data into nfold chunks. Second, fits the model using each of
+the hyper parameters given using all but one of the chunks (the validation
+chunk). This procedure is performed for all the chunks and the average
+(mean) variance from all the chunks is computed and return.  This can be
+used to decide which hyper parameters list was better.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chains</strong> (<a class="reference internal" href="chains.html#harmonic.Chains" title="harmonic.Chains"><em>Chains</em></a>) – Chains containing samples (to be split into
+training and validation data herein).</li>
+<li><strong>domains</strong> (<em>list</em>) – Domains of the model’s parameters.</li>
+<li><strong>hyper_parameters</strong> (<em>list</em>) – List of hyper_parameters where each entry is a
+hyper_parameter list to be considered.</li>
+<li><strong>modelClass</strong> (<em>Model</em>) – Model that is being cross validated (default =
+KernelDensityEstimate).</li>
+<li><strong>seed</strong> (<em>long</em>) – Seed for random number generator when drawing the chains
+(if this is negative the seed is not set).</li>
+<li><strong>verbose</strong> (<em>bool</em>) – Set to True to print results from cross validation
+evidence calculations (default=False).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Mean validation variance (averaged over nfolds) for each hyperparameter.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">(list)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if model is not one of the posible models.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harmonic.utils.split_data">
+<code class="descclassname">harmonic.utils.</code><code class="descname">split_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.split_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the data in a chains instance into two (e.g. training and test sets).</p>
+<p>New chains instances can be used for training and calculation the evidence
+on the “test” set.</p>
+<p>Chains are split so that the first chains in the original chains object go
+into the training set and the following go into the test set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chains</strong> (<a class="reference internal" href="chains.html#harmonic.Chains" title="harmonic.Chains"><em>Chains</em></a>) – Instance of a chains class containing the data to be split.</li>
+<li><strong>training_proportion</strong> (<em>double</em>) – Proportion of data to be used in training
+(default=0.5)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A tuple containing the following two Chains.</p>
+<blockquote>
+<div><ul class="simple">
+<li>chains_train (Chains): Instance of a chains class containing
+chains to be used to fit the model (e.g. training).</li>
+<li>chains_test (Chains): Instance of a chains class containing
+chains to be used to calculate the evidence (e.g. testing).</li>
+</ul>
+</div></blockquote>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">(<a class="reference internal" href="chains.html#harmonic.Chains" title="harmonic.Chains">Chains</a>, <a class="reference internal" href="chains.html#harmonic.Chains" title="harmonic.Chains">Chains</a>)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if training_proportion is not strictly between 0 and
+1.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if resulting nchains in training set is less than 1.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if resulting nchains in test set is less than 1.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harmonic.utils.validation_fit_indexes">
+<code class="descclassname">harmonic.utils.</code><code class="descname">validation_fit_indexes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.validation_fit_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pull out the correct indexes for the chains of the validation and training
+sets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i_fold</strong> (<em>long</em>) – Cross validation iteration to perform.</li>
+<li><strong>nchains_in_val_set</strong> (<em>long</em>) – The number of chains that will go in each
+validation set.</li>
+<li><strong>nfold</strong> (<em>long</em>) – Number of fold validation sets to be made.</li>
+<li><strong>indexes</strong> (<em>list</em>) – List of the chains to be used in fold validation that
+need to be split.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A tuple containing the following two lists of indices.</p>
+<blockquote>
+<div><ul class="simple">
+<li>indexes_val (list): List of indexes for the validation set.</li>
+<li>indexes_fit (list): List of indexes for the training set.</li>
+</ul>
+</div></blockquote>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">(list, list)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Raised if the value of i_fold does not fall between 0 and
+nfold-1.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="logs.html" class="btn btn-neutral float-right" title="Logging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="evidence.html" class="btn btn-neutral" title="Evidence" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>
