@@ -46,6 +46,17 @@ e.g.
 `python examples/rastrigin.py`
 
 
+Make violin plots
+
+`python examples/plot_realisations.py <evidence_inv_realisations> <evidence_inv_analytic>
+
+e.g.
+
+examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_evidence_inv_analytic.dat`
+
+`python examples/plot_realisations.py examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_evidence_inv_analytic.dat`
+
+
 ### Build for code coverage and compute code coverage
 
 `python setup.py build_ext --inplace --define CYTHON_TRACE`
