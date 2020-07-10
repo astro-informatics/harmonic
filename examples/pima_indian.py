@@ -335,7 +335,6 @@ def run_example(ndim=5, nchains=100, samples_per_chain=1000,
 	hm.logs.debug_log('---------------------------------')
 	hm.logs.debug_log('shift = {}, shift setting = {}'
 	    .format(ev.shift_value, ev.shift))
-	hm.logs.debug_log('statistic space = {}'.format(ev.statspace))
 	hm.logs.debug_log('running sum total = {}'
 	    .format(sum(ev.running_sum)))
 	hm.logs.debug_log('running sum = \n{}'

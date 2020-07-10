@@ -411,97 +411,25 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
         training_proportion=training_proportion)
         
     #===========================================================================
-    # Perform cross-validation
-    #===========================================================================
-    hm.logs.critical_log('Perform cross-validation...')
-    hm.logs.debug_log('---------------------------------')
-    """
-    There are several different machine learning models. Cross-validation
-    allows the software to select the optimal model and the optimal model 
-    hyper-parameters for a given situation.
-    """
-    
-    # validation_variances_MGMM = \
-    #     hm.utils.cross_validation(chains_train, 
-    #         domains_MGMM, \
-    #         hyper_parameters_MGMM, \
-    #         nfold=nfold, 
-    #         modelClass=hm.model.ModifiedGaussianMixtureModel, \
-    #         verbose=verbose, seed=0)                
-    # if verbose: print("validation_variances_MGMM = {}"
-    #     .format(validation_variances_MGMM))
-    # best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
-    # best_hyper_param_MGMM = \
-    #     hyper_parameters_MGMM[best_hyper_param_MGMM_ind]
-    # 
-    # validation_variances_sphere = \
-    #     hm.utils.cross_validation(chains_train, 
-    #         domains_sphere, \
-    #         hyper_parameters_sphere, nfold=nfold, 
-    #         modelClass=hm.model.HyperSphere, 
-    #         verbose=verbose, seed=0)
-    # if verbose: print("validation_variances_sphere = {}"
-    #     .format(validation_variances_sphere))
-    # best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
-    # best_hyper_param_sphere = \
-    #     hyper_parameters_sphere[best_hyper_param_sphere_ind]
-
-    # Perform cross-validation.
-    # print("Perform cross-validation...")
-    # validation_variances = \
-    #     hm.utils.cross_validation(chains_train, \
-    #                               domain, \
-    #                               hyper_parameters, \
-    #                               nfold=nfold, \
-    #                               modelClass=hm.model.KernelDensityEstimate,\
-    #                               verbose=verbose, \
-    #                               seed=0)
-    # if verbose: print("validation_variances = {}"
-    #      .format(validation_variances))
-    # best_hyper_param_ind = np.argmin(validation_variances)
-    # best_hyper_param = hyper_parameters[best_hyper_param_ind]
-    # if verbose: print("best_hyper_param = {}".format(best_hyper_param))
-
-
-    #===========================================================================
     # Fit learnt model for container function 
     #===========================================================================
-    hm.logs.critical_log('Select optimal model...')
+    hm.logs.critical_log('Select model...')
     hm.logs.debug_log('---------------------------------')
     """
-    This simply uses the cross-validation results to choose the model which 
-    has the smallest validation variance -- i.e. the best model for the job.
+    This could simply use the cross-validation results to choose the model which 
+    has the smallest validation variance -- i.e. the best model for the job. Here
+    however we manually select the hypersphere model.
     """
-    # best_var_MGMM = \
-    #     validation_variances_MGMM[best_hyper_param_MGMM_ind]
-    # best_var_sphere = \
-    #     validation_variances_sphere[best_hyper_param_sphere_ind]
-    # if best_var_MGMM < best_var_sphere:            
-    #     print("Using MGMM with hyper_parameters = {}"
-    #         .format(best_hyper_param_MGMM))                
-    #     model = hm.model.ModifiedGaussianMixtureModel(ndim, \
-    #         domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
-    #     model.verbose=False
-    # else:
+
     hm.logs.critical_log('Using HyperSphere')
-    # model = hm.model.HyperSphere(ndim, domains_sphere, \
-            # hyper_parameters=best_hyper_param_sphere)
     model = hm.model.HyperSphere(ndim, domains_sphere, hyper_parameters=None)            
         
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
     hm.logs.debug_log('fit_success = {}'.format(fit_success))    
     
     model.set_R(model.R * 0.5) # conservative reduction in R.
-    # model.set_R(0.5)
     hm.logs.debug_log('model.R = {}'.format(model.R))
     
-
-    # model = hm.model.KernelDensityEstimate(ndim, 
-    #                                        domain, 
-    #                                        hyper_parameters=best_hyper_param)
-    # fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-    # if verbose: print("fit_success = {}".format(fit_success))   
-
     #===========================================================================
     # Computing evidence using learnt model and emcee chains
     #===========================================================================
@@ -514,13 +442,6 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     ev = hm.Evidence(chains_test.nchains, model)
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-    #
-    # # Compute analytic evidence.
-    # ln_evidence_analytic = ln_analytic_evidence(x_mean, \
-    #     x_std, x_n, prior_params)
-    # evidence_analytic = np.exp(ln_evidence_analytic)    
-        
-        
     clock = time.clock() - clock
     hm.logs.critical_log('execution_time = {}s'.format(clock))
     
@@ -596,19 +517,8 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
         plt.show(block=False)  
         created_plots = True
 
-
-
-    # TODO
-    
-    
-    # plot model, take 2D slices starting from mean or MAP estimate in 
-    # other dimension
-    
-    
-    # Evaluate model on grid.
-    
     #===========================================================================
-    # BELOW HERE IS ESSENTIALLY RAW FROM JASON'S LAST COMMIT
+    # Plotting and prediction functions
     #===========================================================================
     
     
