@@ -280,41 +280,24 @@ def ln_posterior_analytic_z(z, y, mu_0, a_0, b_0):
 
     
     
-def run_example(ndim=3, nchains=100, samples_per_chain=1000, 
+def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
     
     hm.logs.debug_log('---------------------------------')
     hm.logs.critical_log('Radiata Pine example')
+    ndim=3
     hm.logs.critical_log('Dimensionality = {}'.format(ndim))
     hm.logs.debug_log('---------------------------------')
-
-    if ndim != 3:
-        raise ValueError("Only ndim=3 is supported (ndim={} specified)"
-            .format(ndim))
          
     # Set general parameters.    
     savefigs = True
     
     nfold = 3
     training_proportion = 0.25
-    hyper_parameters_MGMM = [[1, 1E-8, 0.1, 6, 10],\
-            [2, 1E-8, 0.5, 6, 10]]#, [3,1E-8,2.0,10,10]]
     hyper_parameters_sphere = [None]
     domains_sphere = [np.array([1E-1,5E0])]
-    domains_MGMM = [np.array([1E-1,5E0])]
-    
-    
-    # training_proportion = 0.50
-    # nfold = 2
-    # nhyper = 2
-    # step = -2    
-    # domain = []
-    # # hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
-    # hyper_parameters = [[10**(R)] for R in range(-3,-1,1)]
-    # if verbose: print("hyper_parameters = {}".format(hyper_parameters))
-    
     
     #===========================================================================
     # Set-up Priors
@@ -364,19 +347,25 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
                 1.0 / np.sqrt(tau_prior_mean * r_0) * np.random.randn(nchains)  
     pos_beta = mu_0[1,0] + \
                1.0 / np.sqrt(tau_prior_mean * s_0) * np.random.randn(nchains)              
-    pos_tau = tau_prior_mean + 2.0 * tau_prior_std * 2.0 * \
+    pos_tau = tau_prior_mean + tau_prior_std * \
                            (np.random.rand(nchains) - 0.5)  # avoid negative tau
+
+    # pos_alpha = mu_0[0,0]+ (np.random.rand(nchains)-0.5) * 0.1*mu_0[0,0]
+    # pos_beta = mu_0[1,0]+ (np.random.rand(nchains)-0.5) * 0.1*mu_0[1,0]
+    # pos_tau = tau_prior_mean + (np.random.rand(nchains)-0.5) * 0.1*tau_prior_mean
     
     """
     Concatenate these positions into a single variable 'pos'.
     """  
     pos = np.c_[pos_alpha, pos_beta, pos_tau]
+
+    hm.logs.critical_log('Initial pos alpha: {}'.format(np.max(pos_alpha)))
+    hm.logs.critical_log('Initial pos beta: {}'.format(np.max(pos_beta)))
+    hm.logs.critical_log('Initial pos tau: {}'.format(np.max(pos_tau)))
            
     # Start timer.
     clock = time.clock()
-    
-    hm.logs.critical_log('Run sampling...')
-    
+
     #===========================================================================
     # Run Emcee to recover posterior sampels 
     #===========================================================================
@@ -385,18 +374,17 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     """
     Feed emcee the ln_posterior function, starting positions and recover chains.
     """
+    if model_1:
+        args = (y, z, n, mu_0, r_0, s_0, a_0, b_0)
+    else:
+        args = (y, x, n, mu_0, r_0, s_0, a_0, b_0)
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
-        # args=(y, x, n, mu_0, r_0, s_0, a_0, b_0))
-        args=(y, z, n, mu_0, r_0, s_0, a_0, b_0))
+        args=args)
     rstate = np.random.get_state()
     sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
     samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
     lnprob = np.ascontiguousarray(sampler.lnprobability[:,nburn:])
 
-    # print("samples = {}".format(samples))
-    # print("lnprob = {}".format(lnprob)) 
-    # print("sampler.chain = ".format(sampler.chain))
-    
     #===========================================================================
     # Configure emcee chains for harmonic
     #===========================================================================
@@ -427,7 +415,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
     hm.logs.debug_log('fit_success = {}'.format(fit_success))    
     
-    model.set_R(model.R * 0.5) # conservative reduction in R.
+    model.set_R(model.R) # conservative reduction in R.
     hm.logs.debug_log('model.R = {}'.format(model.R))
     
     #===========================================================================
@@ -594,9 +582,6 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
 
 
 
-
-
-
     def model_predict_x0x2(x_2d): 
         x1 = 185.0
         x = np.append(x_2d[0], [x1])
@@ -632,33 +617,7 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
                     bbox_inches='tight')
 
 
-
-
     plt.show(block=False)  
-
-
-
-    # Test
-    alpha = 3000.0 
-    beta = 185.0
-    tau = a_0 / b_0
-    ln_pr_combined = \
-                  ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
-    ln_pr_separated = \
-                  ln_prior_separated(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
-    print("ln_pr_combined = {}".format(ln_pr_combined))
-    print("ln_pr_separated = {}".format(ln_pr_separated))
-    
-
-    ln_like = ln_likelihood(y, x, n, alpha, beta, tau)
-    ln_like_check = ln_likelihood_check(y, x, n, alpha, beta, tau)
-    
-    print("ln_like = {}".format(ln_pr_combined))
-    print("ln_like_check = {}".format(ln_pr_separated))
-    
-    
-    
-
 
     if created_plots:
         input("\nPress Enter to continue...")
@@ -670,15 +629,15 @@ def run_example(ndim=3, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    ndim = 3 # Only 3 dimensional case supported.
-    nchains = 200
+    model_1=False
+    nchains = 400
     # samples_per_chain = 1000000
-    samples_per_chain = 5000
-    nburn = 1000
-    np.random.seed(3)
+    samples_per_chain = 20000
+    nburn = 2000
+    np.random.seed(2)
     
     # Run example.
-    samples = run_example(ndim, nchains, samples_per_chain, nburn, 
+    samples = run_example(model_1, nchains, samples_per_chain, nburn, 
                           plot_corner=True, plot_surface=True,
                           plot_comparison=True, 
                           verbose=True)
