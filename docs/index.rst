@@ -33,8 +33,9 @@ How to Use This Guide
 .. toctree::
    :maxdepth: 2
    :caption: Tutorials
-
+   
    api/overview
+   notebooks/CodeWalkthrough.ipynb
 
 .. toctree::
    :maxdepth: 2
