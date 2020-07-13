@@ -350,19 +350,11 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     pos_tau = tau_prior_mean + tau_prior_std * \
                            (np.random.rand(nchains) - 0.5)  # avoid negative tau
 
-    # pos_alpha = mu_0[0,0]+ (np.random.rand(nchains)-0.5) * 0.1*mu_0[0,0]
-    # pos_beta = mu_0[1,0]+ (np.random.rand(nchains)-0.5) * 0.1*mu_0[1,0]
-    # pos_tau = tau_prior_mean + (np.random.rand(nchains)-0.5) * 0.1*tau_prior_mean
-    
     """
     Concatenate these positions into a single variable 'pos'.
     """  
     pos = np.c_[pos_alpha, pos_beta, pos_tau]
-
-    hm.logs.critical_log('Initial pos alpha: {}'.format(np.max(pos_alpha)))
-    hm.logs.critical_log('Initial pos beta: {}'.format(np.max(pos_beta)))
-    hm.logs.critical_log('Initial pos tau: {}'.format(np.max(pos_tau)))
-           
+     
     # Start timer.
     clock = time.clock()
 
@@ -375,9 +367,9 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     Feed emcee the ln_posterior function, starting positions and recover chains.
     """
     if model_1:
-        args = (y, z, n, mu_0, r_0, s_0, a_0, b_0)
-    else:
         args = (y, x, n, mu_0, r_0, s_0, a_0, b_0)
+    else:
+        args = (y, z, n, mu_0, r_0, s_0, a_0, b_0)
     sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
         args=args)
     rstate = np.random.get_state()
@@ -629,7 +621,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
 if __name__ == '__main__':
     
     # Define parameters.
-    model_1=False
+    model_1=True
     nchains = 400
     # samples_per_chain = 1000000
     samples_per_chain = 20000
