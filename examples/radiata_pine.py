@@ -10,9 +10,6 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-# Setup Logging config
-hm.logs.setup_logging()
-
 
 def ln_likelihood(y, x, n, alpha, beta, tau):
     """
@@ -422,10 +419,31 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     ev = hm.Evidence(chains_test.nchains, model)
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
+    evidence_std_log_space = np.log(np.exp(ln_evidence) + np.exp(ln_evidence_std)) - ln_evidence
+
+    #===========================================================================
+    # End Timer.
     clock = time.clock() - clock
     hm.logs.critical_log('execution_time = {}s'.format(clock))
     
-    
+
+    #===========================================================================
+    # Display evidence results 
+    #===========================================================================
+    hm.logs.critical_log('---------------------------------')
+    hm.logs.critical_log('Results')
+    hm.logs.critical_log('---------------------------------')
+    hm.logs.critical_log('ln_evidence = {} +/- {}'.format(ln_evidence, evidence_std_log_space))
+    hm.logs.critical_log('kurtosis = {}'.format(ev.kurtosis))
+    hm.logs.critical_log('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
+    check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
+    hm.logs.critical_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
+
+
+
+
+
+
     #===========================================================================
     # Display evidence results 
     #===========================================================================
@@ -619,9 +637,13 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
-    
+
+
+    # Setup l ogging config.
+    hm.logs.setup_logging()
+
     # Define parameters.
-    model_1=True
+    model_1=False
     nchains = 400
     # samples_per_chain = 1000000
     samples_per_chain = 20000
