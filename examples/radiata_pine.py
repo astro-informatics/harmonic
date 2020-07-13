@@ -242,6 +242,7 @@ def ln_posterior_analytic_x(x, y, mu_0, a_0, b_0):
 
     return ln_z2_x
 
+#def ln_posterior_analytic_z(z, y, n, mu_0, r_0, s_0, a_0, b_0):
 def ln_posterior_analytic_z(z, y, mu_0, a_0, b_0):
     """
     Compute analytic log_e of posterior for model z.
@@ -257,6 +258,19 @@ def ln_posterior_analytic_z(z, y, mu_0, a_0, b_0):
     s_0 = 6
     Q_0 = np.diag([r_0, s_0])
     n = len(z)
+
+
+
+
+
+    a_0 = a_0 * 2.0
+    b_0 = b_0 * 2.0
+
+
+
+
+
+
 
     Z = np.c_[np.ones((n, 1)), z]
     M_z = Z.T.dot(Z) + Q_0
@@ -440,7 +454,13 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     hm.logs.critical_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
 
 
+    ln_evidence_analytic_model1 = ln_posterior_analytic_z(x, y, mu_0, a_0, b_0)
+    hm.logs.critical_log('ln_evidence_analytic_model1 = {}'
+                         .format(ln_evidence_analytic_model1))
 
+    ln_evidence_analytic_model2 = ln_posterior_analytic_z(z, y, mu_0, a_0, b_0)
+    hm.logs.critical_log('ln_evidence_analytic_model2 = {}'
+                         .format(ln_evidence_analytic_model2))
 
 
 
