@@ -35,8 +35,8 @@ How to Use This Guide
    :caption: Tutorials
    
    api/overview
-   notebooks/CodeWalkthrough.ipynb
-   notebooks/CheckpointingWalkthrough.ipynb
+   CodeWalkthrough
+   CheckpointingWalkthrough
 
 .. toctree::
    :maxdepth: 2
