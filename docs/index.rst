@@ -36,6 +36,7 @@ How to Use This Guide
    
    api/overview
    notebooks/CodeWalkthrough.ipynb
+   notebooks/BenchmarkingWalkthrough.ipynb
 
 .. toctree::
    :maxdepth: 2
