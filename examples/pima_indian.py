@@ -324,13 +324,10 @@ def run_example(model_1=True, tau=1.0,
     hm.logs.critical_log('Results')
     hm.logs.critical_log('---------------------------------')
     hm.logs.critical_log('ln_evidence = {} +/- {}'.format(ln_evidence, evidence_std_log_space))
-    #hm.logs.critical_log('ln_evidence = {}'.format(ln_evidence))
-    #hm.logs.critical_log('evidence_std_log_space = {}'.format(evidence_std_log_space))
     hm.logs.critical_log('kurtosis = {}'.format(ev.kurtosis))
     hm.logs.critical_log('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
     check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
     hm.logs.critical_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
-
 
     #===========================================================================
     # Display more technical details
