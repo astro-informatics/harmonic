@@ -10,9 +10,6 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-# Setup Logging config
-hm.logs.setup_logging()
-
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
     """
@@ -200,7 +197,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Run many realisations for each Tau value.
     """
-    n_realisations = 100
+    n_realisations = 25
     for i_tau, tau_prior in enumerate(tau_array):
         hm.logs.debug_log('---------------------------------')
         hm.logs.critical_log('Considering tau = {}...'.format(tau_prior))
@@ -352,6 +349,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             hm.logs.critical_log('Ln Evidence: \
                               100 * |analytic - estimated| / estimated = {}%'
                               .format(diff/ln_evidence))
+
             # ==================================================================
             # Display evidence computation results.
             # ==================================================================
@@ -367,6 +365,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             hm.logs.critical_log('Evidence: \
                               100 * |analytic - estimated| / estimated = {}%'
                 .format(100.0 * np.exp(diff - ln_evidence)))
+
             # ==================================================================
             # Display inverse evidence computation results.
             # ==================================================================
@@ -387,6 +386,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                               100 * |analytic - estimated| / estimated = {}%'
                               .format(100.0 * np.abs(1.0 / evidence_analytic \
                                           - ev.evidence_inv) / ev.evidence_inv))
+
             # ==================================================================
             # Display more technical details for ln evidence.
             # ==================================================================
@@ -523,6 +523,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
+
+    # Setup logging config.
+    hm.logs.setup_logging()
 
     # Define parameters.
     ndim = 2 # Only 2 dimensional case supported.
