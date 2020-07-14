@@ -297,8 +297,7 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
     
 def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False,
-                plot_comparison=False):
+                plot_corner=False, plot_surface=False)
     """Run Radiata Pine example.
 
     Args:
@@ -316,8 +315,6 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         - plot_corner: Plot marginalised distributions if true.
 
         - plot_surface: Plot surface and samples if true.
-
-        - plot_comparison: Plot accuracy for various tau priors if true.
 
     Returns:
 
@@ -660,6 +657,5 @@ if __name__ == '__main__':
     # Run example.
     samples = run_example(model_1, nchains, samples_per_chain, nburn, 
                           plot_corner=True, plot_surface=True,
-                          plot_comparison=True, 
                           verbose=True)
 
