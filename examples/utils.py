@@ -5,7 +5,7 @@ from matplotlib.colors import LightSource
 from mpl_toolkits.mplot3d import Axes3D
 import corner
 from getdist import plots, MCSamples
-
+import getdist
 
 def plot_corner(samples, labels=None):
     """
@@ -50,6 +50,7 @@ def plot_getdist(samples, labels=None):
     mcsamples = MCSamples(samples=samples,
                           names=names, labels=labels)
     g = plots.getSubplotPlotter()
+    getdist.chains.print_load_details = False
     g.triangle_plot([mcsamples], filled=True)
 
 
