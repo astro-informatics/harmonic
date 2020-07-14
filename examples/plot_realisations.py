@@ -40,7 +40,7 @@ ax.set_ylabel(r'Inverse evidence ($\rho$)')
 filename_base = os.path.basename(args.filename_realisations)
 filename_base_noext = os.path.splitext(filename_base)[0]
 if savefigs:
-    plt.savefig('./plots/' + filename_base_noext + '_evidence_inv.png',
+    plt.savefig('./examples/plots/' + filename_base_noext + '_evidence_inv.png',
                 bbox_inches='tight')      
         
 # Plot variance of inverse evidence.        
@@ -51,7 +51,7 @@ ax.set_ylabel(r'Inverse evidence variance ($\sigma^2$)')
 # ax.set_ylim([-0.1, 1])
     
 if savefigs:
-    plt.savefig('./plots/' + filename_base_noext + '_evidence_inv_var.png',
+    plt.savefig('./examples/plots/' + filename_base_noext + '_evidence_inv_var.png',
                 bbox_inches='tight')                  
         
 plt.show(block=False)

@@ -9,46 +9,53 @@ import matplotlib.pyplot as plt
 import utils
 import gc 
 
-# Setup Logging config
-hm.logs.setup_logging()
-
 
 def ln_analytic_evidence(ndim, cov):
-    """
-    Compute analytic ln_e evidence.
-    Args: 
-        - ndim: 
-            Dimensionality of the multivariate Gaussian posterior
-        - cov
-            Covariance matrix dimension nxn.           
+    """Compute analytic ln_e evidence.
+
+    Args:
+
+        ndim: Dimensionality of the multivariate Gaussian posterior/
+
+        cov: Covariance matrix of dimension nxn.
+
     Returns:
-        - double: 
-            Value of posterior at x.
+
+        double: Analytic evidence.
+
     """
+
     ln_norm_lik = -0.5*ndim*np.log(2*np.pi)-0.5*np.log(np.linalg.det(cov))   
     return -ln_norm_lik
 
-def ln_Posterior(x, inv_cov):
-    """
-    Compute log_e of n dimensional multivariate gaussian 
-    Args: 
-        - x: 
-            Position at which to evaluate prior.         
+
+def ln_posterior(x, inv_cov):
+    """Compute log_e of posterior of n dimensional multivariate Gaussian.
+
+    Args:
+
+        x: Position at which to evaluate posterior.
+
     Returns:
-        - double: 
-            Value of posterior at x.
+
+        double: Value of posterior at x.
+
     """
+
     return -np.dot(x,np.dot(inv_cov,x))/2.0   
 
+
 def init_cov(ndim): 
-    """
-    Initialise random diagonal covariance matrix.
-    Args: 
-        - ndim: 
-            Dimension of Gaussian.        
+    """Initialise random diagonal covariance matrix.
+
+    Args:
+
+        ndim: Dimension of Gaussian.
+
     Returns:
-        - cov: 
-            Covariance matrix of shape (ndim,ndim).
+
+        double ndarray[ndim, ndim]: Covariance matrix of shape (ndim,ndim).
+
     """
 
     cov = np.zeros((ndim,ndim))
@@ -63,24 +70,25 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 plot_corner=False, plot_surface=False):
     """
     Run nD Gaussian example with generalized covariance matrix.
-    Args: 
-        - ndim: 
-            Dimension of multivariate Gaussian.
-        - nchains: 
-            Number of chains.
-        - samples_per_chain: 
-            Number of samples per chain.
-        - nburn: 
-            Number of burn in samples.
-        - plot_corner: 
-            Plot marginalised distributions if true.
-        - plot_surface: 
-            Plot surface and samples if true.
-        - verbose: 
-            If True then displalnprob intermediate results.
-        
-    Returns:
-        - None.
+
+    Args:
+
+        ndim: Dimension.
+
+        nchains: Number of chains.
+
+        samples_per_chain: Number of samples per chain.
+
+        nburn: Number of burn in samples for each chain.
+
+        chain_iterations: Number of chain iterations to run.
+
+        verbose: If True then display intermediate results.
+
+        plot_corner: Plot marginalised distributions if true.
+
+        plot_surface: Plot surface and samples if true.
+
     """
 
     hm.logs.critical_log('nD Guassian example')
@@ -145,7 +153,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 del sampler, prob
                 gc.collect()
             # Run the emcee sampler from previous endpoint
-            sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior, \
+            sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
                                         args=[inv_cov])
             if burn_iteration < burn_iterations:
                 (pos, prob, rstate) = sampler.run_mcmc(pos, nburn/burn_iterations, \
@@ -166,16 +174,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Train hyper-spherical model 
         # ======================================================================
         model = hm.model.HyperSphere(ndim, domains_sphere)
-        model.set_R(6)
+        model.set_R(max_r_prob)
         model.fitted = True
-        # fit_success, objective = model.fit(chains.samples,\
-        #                                    chains.ln_posterior) 
-        # hm.logs.debug_log('Fit success = {}'.format(fit_success))    
-        # hm.logs.debug_log('Objective = {}'.format(objective))    
-        # hm.logs.debug_log('---------------------------------')
-
+        
         # ======================================================================
-
         # Compute ln evidence by iteratively adding chains
         # ======================================================================
         # Instantiate the evidence class
@@ -190,7 +192,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             del chains, samples, lnprob, sampler, prob
             gc.collect()
             # Run the emcee sampler from previous endpoint
-            sampler = emcee.EnsembleSampler(nchains, ndim, ln_Posterior, \
+            sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
                                         args=[inv_cov])
             (pos, prob, rstate) = sampler.run_mcmc(pos, (samples_per_chain-nburn)/10, \
                                               rstate0=rstate) 
@@ -295,9 +297,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
-    
+
+    # Setup logging config.
+    hm.logs.setup_logging()
+
     # Define parameters.
-    ndim = 32
+    ndim = 256
     nchains = 2*ndim
     samples_per_chain = 10000
     nburn = 7000
