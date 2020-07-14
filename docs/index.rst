@@ -57,36 +57,11 @@ How to Use This Guide
 
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-
-API
-===
-
-
 ..
-   Chains
-   ------
+  Indices and tables
+  ==================
 
-..
-   .. autoclass:: harmonic.Chains     
-      :members:
-
-..
-   .. automodule:: harmonic.utils
-      :members:
-
-   .. automodule:: harmonic.logs
-      :members:
-..
-   .. automodule:: harmonic.model
-      :members:
-
-
+  * :ref:`genindex`
+  * :ref:`modindex`
+  * :ref:`search`
 
