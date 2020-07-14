@@ -10,21 +10,20 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-# Setup Logging config
-hm.logs.setup_logging()
-
 
 def ln_analytic_evidence(ndim, cov):
-    """
-    Compute analytic evidence for nD Gaussian.
+    """Compute analytic evidence for nD Gaussian.
+
     Args:
-        - ndim: 
-            Dimension of Gaussian.
-        - cov: 
-            Covariance matrix.
+
+        - ndim: Dimension of Gaussian.
+
+        - cov: Covariance matrix.
+
     Returns:
-        - double:
-            Analytic evidence.
+
+        - double: Analytic evidence.
+
     """
     
     ln_norm_lik = 0.5*ndim*np.log(2*np.pi) + 0.5*np.log(np.linalg.det(cov))
@@ -32,30 +31,34 @@ def ln_analytic_evidence(ndim, cov):
 
 
 def ln_posterior(x, inv_cov):
-    """
-    Compute log_e of posterior.
-    Args: 
-        - x: 
-            Position at which to evaluate posterior.
-        - inv_cov: 
-            Inverse covariance matrix.      
+    """Compute log_e of posterior.
+
+    Args:
+
+        - x: Position at which to evaluate posterior.
+
+        - inv_cov: Inverse covariance matrix.
+
     Returns:
-        - double: 
-            Value of Gaussian at specified point.
+
+        - double: Value of Gaussian at specified point.
+
     """
     
     return -np.dot(x,np.dot(inv_cov,x))/2.0
 
 
 def init_cov(ndim):
-    """
-    Initialise random non-diagonal covariance matrix.
-    Args: 
-        - ndim: 
-            Dimension of Gaussian.           
+    """Initialise random non-diagonal covariance matrix.
+
+    Args:
+
+        - ndim: Dimension of Gaussian.
+
     Returns:
-        - cov: 
-            Covariance matrix of shape (ndim,ndim).
+
+        - cov: Covariance matrix of shape (ndim,ndim).
+
     """
     
     cov = np.zeros((ndim,ndim))
@@ -72,26 +75,28 @@ def init_cov(ndim):
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
-    """
-    Run Gaussian example with non-diagonal covariance matrix.
-    Args: 
-        - ndim: 
-            Dimension of Gaussian.
-        - nchains: 
-            Number of chains.
-        - samples_per_chain: 
-            Number of samples per chain.
-        - nburn: 
-            Number of burn in samples.
-        - plot_corner: 
-            Plot marginalised distributions if true.
-        - plot_surface: 
-            Plot surface and samples if true.
-        - verbose: 
-            If True then display intermediate results.
-        
+    """Run Gaussian example with non-diagonal covariance matrix.
+
+    Args:
+
+        - ndim: Dimension.
+
+        - nchains: Number of chains.
+
+        - samples_per_chain: Number of samples per chain.
+
+        - nburn: Number of burn in samples for each chain.
+
+        - verbose: If True then display intermediate results.
+
+        - plot_corner: Plot marginalised distributions if true.
+
+        - plot_surface: Plot surface and samples if true.
+
     Returns:
+
         - None.
+
     """
     
     hm.logs.critical_log('Non-diagonal Covariance Guassian example')
@@ -349,7 +354,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
 
 if __name__ == '__main__':
-    
+
+    # Setup logging config.
+    hm.logs.setup_logging()
+
     # Define parameters.
     ndim = 2
     nchains = 100
