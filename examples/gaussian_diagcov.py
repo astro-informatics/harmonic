@@ -9,22 +9,19 @@ import matplotlib.pyplot as plt
 import utils
 import gc 
 
-# Setup Logging config
-hm.logs.setup_logging()
-
 
 def ln_analytic_evidence(ndim, cov):
     """Compute analytic ln_e evidence.
 
     Args:
 
-        - ndim: Dimensionality of the multivariate Gaussian posterior/
+        ndim: Dimensionality of the multivariate Gaussian posterior/
 
-        - cov: Covariance matrix of dimension nxn.
+        cov: Covariance matrix of dimension nxn.
 
     Returns:
 
-        - double: Analytic evidence.
+        double: Analytic evidence.
 
     """
 
@@ -37,11 +34,11 @@ def ln_posterior(x, inv_cov):
 
     Args:
 
-        - x: Position at which to evaluate posterior.
+        x: Position at which to evaluate posterior.
 
     Returns:
 
-        - double: Value of posterior at x.
+        double: Value of posterior at x.
 
     """
 
@@ -53,11 +50,11 @@ def init_cov(ndim):
 
     Args:
 
-        - ndim: Dimension of Gaussian.
+        ndim: Dimension of Gaussian.
 
     Returns:
 
-        - double ndarray[ndim, ndim]: Covariance matrix of shape (ndim,ndim).
+        double ndarray[ndim, ndim]: Covariance matrix of shape (ndim,ndim).
 
     """
 
@@ -76,25 +73,21 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     Args:
 
-        - ndim: Dimension.
+        ndim: Dimension.
 
-        - nchains: Number of chains.
+        nchains: Number of chains.
 
-        - samples_per_chain: Number of samples per chain.
+        samples_per_chain: Number of samples per chain.
 
-        - nburn: Number of burn in samples for each chain.
+        nburn: Number of burn in samples for each chain.
 
-        - chain_iterations: Number of chain iterations to run.
+        chain_iterations: Number of chain iterations to run.
 
-        - verbose: If True then display intermediate results.
+        verbose: If True then display intermediate results.
 
-        - plot_corner: Plot marginalised distributions if true.
+        plot_corner: Plot marginalised distributions if true.
 
-        - plot_surface: Plot surface and samples if true.
-
-    Returns:
-
-        - None.
+        plot_surface: Plot surface and samples if true.
 
     """
 
@@ -304,7 +297,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
-    
+
+    # Setup logging config.
+    hm.logs.setup_logging()
+
     # Define parameters.
     ndim = 256
     nchains = 2*ndim

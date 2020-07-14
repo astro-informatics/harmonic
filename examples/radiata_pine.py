@@ -16,19 +16,19 @@ def ln_likelihood(y, x, n, alpha, beta, tau):
 
     Args:
 
-        - y: Compression strength along grain.
+        y: Compression strength along grain.
 
-        - x: Predictor (density or density adjusted for resin content).
+        x: Predictor (density or density adjusted for resin content).
 
-        - alpha: Model bias term.
+        alpha: Model bias term.
 
-        - beta: Model linear term.
+        beta: Model linear term.
 
-        - tau: Prior precision factor.
+        tau: Prior precision factor.
 
     Returns:
 
-        - double: Value of log_e likelihood at specified point in parameter
+        double: Value of log_e likelihood at specified point in parameter
             space.
 
     """
@@ -48,17 +48,17 @@ def ln_prior_alpha(alpha, tau, mu_0, r_0):
 
     Args:
 
-        - alpha: Model term (bias or linear term).
+        alpha: Model term (bias or linear term).
 
-        - tau: Prior precision factor.
+        tau: Prior precision factor.
 
-        - mu_0: Prior mean.
+        mu_0: Prior mean.
 
-        - r_0: Prior precision constant factor.
+        r_0: Prior precision constant factor.
 
     Returns:
 
-        - double: Value of log_e prior at specified point in parameter space.
+        double: Value of log_e prior at specified point in parameter space.
 
     """
     ln_pr_alpha = 0.5 * np.log(tau)
@@ -74,15 +74,15 @@ def ln_prior_tau(tau, a_0, b_0):
 
     Args:
 
-        - tau: Prior precision factor.
+        tau: Prior precision factor.
 
-        - a_0: Gamma prior shape parameter.
+        a_0: Gamma prior shape parameter.
 
-        - b_0: Gamma prior rate parameter.
+        b_0: Gamma prior rate parameter.
 
     Returns:
 
-        - double: Value of log_e tau prior at specified point in parameter
+        double: Value of log_e tau prior at specified point in parameter
             space.
 
     """
@@ -103,25 +103,25 @@ def ln_prior_separated(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
     Args:
 
-        - alpha: Model bias term.
+        alpha: Model bias term.
 
-        - beta: Model linear term.
+        beta: Model linear term.
 
-        - tau: Prior precision factor.
+        tau: Prior precision factor.
 
-        - mu_0: Prior means.
+        mu_0: Prior means.
 
-        - r_0: Prior precision constant factor for bias term.
+        r_0: Prior precision constant factor for bias term.
 
-        - s_0: Prior precision constant factor for linear term.
+        s_0: Prior precision constant factor for linear term.
 
-        - a_0: Gamma prior shape parameter.
+        a_0: Gamma prior shape parameter.
 
-        - b_0: Gamma prior rate parameter.
+        b_0: Gamma prior rate parameter.
 
     Returns:
 
-        - double: Value of log_e prior at specified point in parameter space.
+        double: Value of log_e prior at specified point in parameter space.
 
     """
     ln_pr = ln_prior_alpha(alpha, tau, mu_0[0,0], r_0)
@@ -136,25 +136,25 @@ def ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
     Args:
 
-        - alpha: Model bias term.
+        alpha: Model bias term.
 
-        - beta: Model linear term.
+        beta: Model linear term.
 
-        - tau: Prior precision factor.
+        tau: Prior precision factor.
 
-        - mu_0: Prior means.
+        mu_0: Prior means.
 
-        - r_0: Prior precision constant factor for bias term.
+        r_0: Prior precision constant factor for bias term.
 
-        - s_0: Prior precision constant factor for linear term.
+        s_0: Prior precision constant factor for linear term.
 
-        - a_0: Gamma prior shape parameter.
+        a_0: Gamma prior shape parameter.
 
-        - b_0: Gamma prior rate parameter.
+        b_0: Gamma prior rate parameter.
 
     Returns:
 
-        - double: Value of log_e prior at specified point in parameter space.
+        double: Value of log_e prior at specified point in parameter space.
 
     """
     if tau < 0:
@@ -182,25 +182,25 @@ def ln_prior(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
     Args:
 
-        - alpha: Model bias term.
+        alpha: Model bias term.
 
-        - beta: Model linear term.
+        beta: Model linear term.
 
-        - tau: Prior precision factor.
+        tau: Prior precision factor.
 
-        - mu_0: Prior means.
+        mu_0: Prior means.
 
-        - r_0: Prior precision constant factor for bias term.
+        r_0: Prior precision constant factor for bias term.
 
-        - s_0: Prior precision constant factor for linear term.
+        s_0: Prior precision constant factor for linear term.
 
-        - a_0: Gamma prior shape parameter.
+        a_0: Gamma prior shape parameter.
 
-        - b_0: Gamma prior rate parameter.
+        b_0: Gamma prior rate parameter.
 
     Returns:
 
-        - double: Value of log_e prior at specified point in parameter space.
+        double: Value of log_e prior at specified point in parameter space.
 
     """
 
@@ -212,27 +212,27 @@ def ln_posterior(theta, y, x, n, mu_0, r_0, s_0, a_0, b_0):
     
     Args:
 
-        - theta: Position (alpha, beta, tau) at which to evaluate posterior.
+        theta: Position (alpha, beta, tau) at which to evaluate posterior.
 
-        - y: Compression strength along grain.
+        y: Compression strength along grain.
 
-        - x: Predictor (density or density adjusted for resin content).
+        x: Predictor (density or density adjusted for resin content).
 
-        - n: Number of specimens.
+        n: Number of specimens.
 
-        - mu_0: Prior means.
+        mu_0: Prior means.
 
-        - r_0: Prior precision constant factor for bias term.
+        r_0: Prior precision constant factor for bias term.
 
-        - s_0: Prior precision constant factor for linear term.
+        s_0: Prior precision constant factor for linear term.
 
-        - a_0: Gamma prior shape parameter.
+        a_0: Gamma prior shape parameter.
 
-        - b_0: Gamma prior rate parameter.
+        b_0: Gamma prior rate parameter.
 
     Returns:
 
-        - double: Value of log_e posterior at specified theta (alpha, beta,
+        double: Value of log_e posterior at specified theta (alpha, beta,
             tau) point.
 
     """
@@ -254,25 +254,25 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
 
     Args:
 
-        - x: Predictor (density or density adjusted for resin content).
+        x: Predictor (density or density adjusted for resin content).
 
-        - y: Compression strength along grain.
+        y: Compression strength along grain.
 
-        - n: Number of specimens.
+        n: Number of specimens.
 
-        - mu_0: Prior means.
+        mu_0: Prior means.
 
-        - r_0: Prior precision constant factor for bias term.
+        r_0: Prior precision constant factor for bias term.
 
-        - s_0: Prior precision constant factor for linear term.
+        s_0: Prior precision constant factor for linear term.
 
-        - a_0: Gamma prior shape parameter.
+        a_0: Gamma prior shape parameter.
 
-        - b_0: Gamma prior rate parameter.
+        b_0: Gamma prior rate parameter.
 
     Returns:
 
-        - double: Value of log_e of analytic evidence for model.
+        double: Value of log_e of analytic evidence for model.
 
     """
 
@@ -302,23 +302,19 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
 
     Args:
 
-        - model_1: Consider model 1 if true, otherwise model 2.
+        model_1: Consider model 1 if true, otherwise model 2.
 
-        - nchains: Number of chains.
+        nchains: Number of chains.
 
-        - samples_per_chain: Number of samples per chain.
+        samples_per_chain: Number of samples per chain.
 
-        - nburn: Number of burn in samples for each chain.
+        nburn: Number of burn in samples for each chain.
 
-        - verbose: If True then display intermediate results.
+        verbose: If True then display intermediate results.
 
-        - plot_corner: Plot marginalised distributions if true.
+        plot_corner: Plot marginalised distributions if true.
 
-        - plot_surface: Plot surface and samples if true.
-
-    Returns:
-
-        - None.
+        plot_surface: Plot surface and samples if true.
 
     """
        

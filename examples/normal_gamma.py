@@ -16,19 +16,19 @@ def ln_likelihood(x_mean, x_std, x_n, mu, tau):
 
     Args:
 
-        - x_mean: Mean of simulated data.
+        x_mean: Mean of simulated data.
 
-        - x_std: Standard deviation of simulated data.
+        x_std: Standard deviation of simulated data.
 
-        - x_n: Number of samples of simulated data.
+        x_n: Number of samples of simulated data.
 
-        - mu: Mu value for which to evaluate prior.
+        mu: Mu value for which to evaluate prior.
 
-        - tau: Tau value for which to evaluate prior.
+        tau: Tau value for which to evaluate prior.
 
     Returns:
 
-        - double: Value of log_e likelihood at specified (mu, tau) point.
+        double: Value of log_e likelihood at specified (mu, tau) point.
 
     """
 
@@ -41,16 +41,16 @@ def ln_prior(mu, tau, prior_params):
 
     Args:
 
-        - mu: Mean value for which to evaluate prior.
+        mu: Mean value for which to evaluate prior.
 
-        - tau: Precision value for which to evaluate prior.
+        tau: Precision value for which to evaluate prior.
 
-        - prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+        prior_params: Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
 
     Returns:
 
-        - double: Value of log_e prior at specified (mu, tau) point.
+        double: Value of log_e prior at specified (mu, tau) point.
 
     """
 
@@ -73,20 +73,20 @@ def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
 
     Args:
 
-        - theta: Position (mu, tau) at which to evaluate posterior.
+        theta: Position (mu, tau) at which to evaluate posterior.
 
-        - x_mean: Mean of simulated data.
+        x_mean: Mean of simulated data.
 
-        - x_std: Standard deviation of simulated data.
+        x_std: Standard deviation of simulated data.
 
-        - x_n: Number of samples of simulated data.
+        x_n: Number of samples of simulated data.
 
-        - prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+        prior_params: Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
 
     Returns:
 
-        - double: Value of log_e posterior at specified (mu, tau) point.
+        double: Value of log_e posterior at specified (mu, tau) point.
 
     """
 
@@ -107,18 +107,18 @@ def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
 
     Args:
 
-        - x_mean: Mean of simulated data.
+        x_mean: Mean of simulated data.
 
-        - x_std: Standard deviation of simulated data.
+        x_std: Standard deviation of simulated data.
 
-        - x_n: Number of samples of simulated data.
+        x_n: Number of samples of simulated data.
 
-        - prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+        prior_params: Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
 
     Returns:
 
-        - double: Value of log_e evidence computed analytically.
+        double: Value of log_e evidence computed analytically.
 
     """
 
@@ -145,25 +145,21 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     Args:
 
-        - ndim: Dimension.
+        ndim: Dimension.
 
-        - nchains: Number of chains.
+        nchains: Number of chains.
 
-        - samples_per_chain: Number of samples per chain.
+        samples_per_chain: Number of samples per chain.
 
-        - nburn: Number of burn in samples for each chain.
+        nburn: Number of burn in samples for each chain.
 
-        - verbose: If True then display intermediate results.
+        verbose: If True then display intermediate results.
 
-        - plot_corner: Plot marginalised distributions if true.
+        plot_corner: Plot marginalised distributions if true.
 
-        - plot_surface: Plot surface and samples if true.
+        plot_surface: Plot surface and samples if true.
 
-        - plot_comparison: Plot accuracy for various tau priors if true.
-
-    Returns:
-
-        - None.
+        plot_comparison: Plot accuracy for various tau priors if true.
 
     """
     hm.logs.debug_log('---------------------------------')

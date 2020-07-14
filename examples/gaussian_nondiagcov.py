@@ -16,13 +16,13 @@ def ln_analytic_evidence(ndim, cov):
 
     Args:
 
-        - ndim: Dimension of Gaussian.
+        ndim: Dimension of Gaussian.
 
-        - cov: Covariance matrix.
+        cov: Covariance matrix.
 
     Returns:
 
-        - double: Analytic evidence.
+        double: Analytic evidence.
 
     """
     
@@ -35,13 +35,13 @@ def ln_posterior(x, inv_cov):
 
     Args:
 
-        - x: Position at which to evaluate posterior.
+        x: Position at which to evaluate posterior.
 
-        - inv_cov: Inverse covariance matrix.
+        inv_cov: Inverse covariance matrix.
 
     Returns:
 
-        - double: Value of Gaussian at specified point.
+        double: Value of Gaussian at specified point.
 
     """
     
@@ -53,11 +53,11 @@ def init_cov(ndim):
 
     Args:
 
-        - ndim: Dimension of Gaussian.
+        ndim: Dimension of Gaussian.
 
     Returns:
 
-        - cov: Covariance matrix of shape (ndim,ndim).
+        cov: Covariance matrix of shape (ndim,ndim).
 
     """
     
@@ -79,23 +79,19 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     Args:
 
-        - ndim: Dimension.
+        ndim: Dimension.
 
-        - nchains: Number of chains.
+        nchains: Number of chains.
 
-        - samples_per_chain: Number of samples per chain.
+        samples_per_chain: Number of samples per chain.
 
-        - nburn: Number of burn in samples for each chain.
+        nburn: Number of burn in samples for each chain.
 
-        - verbose: If True then display intermediate results.
+        verbose: If True then display intermediate results.
 
-        - plot_corner: Plot marginalised distributions if true.
+        plot_corner: Plot marginalised distributions if true.
 
-        - plot_surface: Plot surface and samples if true.
-
-    Returns:
-
-        - None.
+        plot_surface: Plot surface and samples if true.
 
     """
     

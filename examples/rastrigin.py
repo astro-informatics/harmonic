@@ -15,19 +15,19 @@ def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
 
     Args:
 
-        - x: Position at which to evaluate prior.
+        x: Position at which to evaluate prior.
 
-        - xmin: Uniform prior minimum x edge (first dimension).
+        xmin: Uniform prior minimum x edge (first dimension).
 
-        - xmax: Uniform prior maximum x edge (first dimension).
+        xmax: Uniform prior maximum x edge (first dimension).
 
-        - ymin: Uniform prior minimum y edge (second dimension).
+        ymin: Uniform prior minimum y edge (second dimension).
 
-        - ymax: Uniform prior maximum y edge (second dimension).
+        ymax: Uniform prior maximum y edge (second dimension).
 
     Returns:
 
-        - double: Value of prior at specified point.
+        double: Value of prior at specified point.
 
     """
         
@@ -42,11 +42,11 @@ def ln_likelihood(x):
 
     Args:
 
-        - x: Position at which to evaluate likelihood.
+        x: Position at which to evaluate likelihood.
 
     Returns:
 
-        - double: Value of Rastrigin at specified point.
+        double: Value of Rastrigin at specified point.
 
     """
     
@@ -65,13 +65,13 @@ def ln_posterior(x, ln_prior):
 
     Args:
 
-        - x: Position at which to evaluate posterior.
+        x: Position at which to evaluate posterior.
 
-        - ln_prior: Prior function.
+        ln_prior: Prior function.
 
     Returns:
 
-        - double: Posterior at specified point.
+        double: Posterior at specified point.
 
     """
     
@@ -91,23 +91,19 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     Args:
 
-        - ndim: Dimension.
+        ndim: Dimension.
 
-        - nchains: Number of chains.
+        nchains: Number of chains.
 
-        - samples_per_chain: Number of samples per chain.
+        samples_per_chain: Number of samples per chain.
 
-        - nburn: Number of burn in samples for each chain.
+        nburn: Number of burn in samples for each chain.
 
-        - verbose: If True then display intermediate results.
+        verbose: If True then display intermediate results.
 
-        - plot_corner: Plot marginalised distributions if true.
+        plot_corner: Plot marginalised distributions if true.
 
-        - plot_surface: Plot surface and samples if true.
-
-    Returns:
-
-        - None.
+        plot_surface: Plot surface and samples if true.
 
     """
 

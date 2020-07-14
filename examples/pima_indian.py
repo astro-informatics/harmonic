@@ -16,15 +16,15 @@ def ln_likelihood(y, theta, x):
 
     Args:
 
-        - y: Vector of diabetes incidence (1=diabetes, 0=no diabetes).
+        y: Vector of diabetes incidence (1=diabetes, 0=no diabetes).
 
-        - theta: Vector of parameter variables associated with covariates x.
+        theta: Vector of parameter variables associated with covariates x.
 
-        - x: Vector of data covariates (e.g. NP, PGC, BP, TST, DMI etc.).
+        x: Vector of data covariates (e.g. NP, PGC, BP, TST, DMI etc.).
 
     Returns:
 
-        - double: Value of log_e likelihood at specified point in parameter
+        double: Value of log_e likelihood at specified point in parameter
             space.
 
     """
@@ -39,13 +39,13 @@ def ln_prior(tau, theta):
 
     Args:
 
-        - tau: Characteristic width of posterior \in [0.01,1].
+        tau: Characteristic width of posterior \in [0.01,1].
 
-        - theta: Vector of parameter variables associated with covariates x.
+        theta: Vector of parameter variables associated with covariates x.
 
     Returns:
 
-        - double: Value of log_e prior at specified point in parameter space.
+        double: Value of log_e prior at specified point in parameter space.
 
     """
 
@@ -58,17 +58,17 @@ def ln_posterior(theta, tau, x, y):
 
     Args:
 
-        - theta: Vector of parameter variables associated with covariates x.
+        theta: Vector of parameter variables associated with covariates x.
 
-        - tau: Characteristic width of posterior \in [0.01,1].
+        tau: Characteristic width of posterior \in [0.01,1].
 
-        - x: Vector of data covariates (e.g. NP, PGC, BP, TST, DMI etc).
+        x: Vector of data covariates (e.g. NP, PGC, BP, TST, DMI etc).
 
-        - y: Vector of incidence. 1=diabetes, 0=no diabetes.
+        y: Vector of incidence. 1=diabetes, 0=no diabetes.
 
     Returns:
 
-        - double: Value of log_e posterior at specified point in parameter
+        double: Value of log_e posterior at specified point in parameter
             space.
 
     """
@@ -84,13 +84,13 @@ def compute_ln_p(theta, x):
 
     Args:
 
-        - theta: Vector of parameter variables associated with covariates x.
+        theta: Vector of parameter variables associated with covariates x.
 
-        - x: Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).
+        x: Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).
 
     Returns:
 
-        - double: Vector of the log-probabilities p to use in likelihood.
+        double: Vector of the log-probabilities p to use in likelihood.
 
     """
 
@@ -105,25 +105,21 @@ def run_example(model_1=True, tau=1.0,
 
     Args:
 
-        - model_1: Consider model 1 if true, otherwise model 2.
+        model_1: Consider model 1 if true, otherwise model 2.
 
-        - tau: Precision parameter.
+        tau: Precision parameter.
 
-        - nchains: Number of chains.
+        nchains: Number of chains.
 
-        - samples_per_chain: Number of samples per chain.
+        samples_per_chain: Number of samples per chain.
 
-        - nburn: Number of burn in samples for each chain.
+        nburn: Number of burn in samples for each chain.
 
-        - verbose: If True then display intermediate results.
+        verbose: If True then display intermediate results.
 
-        - plot_corner: Plot marginalised distributions if true.
+        plot_corner: Plot marginalised distributions if true.
 
-        - plot_surface: Plot surface and samples if true.
-
-    Returns:
-
-        - None.
+        plot_surface: Plot surface and samples if true.
 
     """
 
