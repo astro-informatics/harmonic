@@ -9,10 +9,6 @@ import scipy.special as sp
 import pickle
 import logs as lg 
 
-# Setup Logging config
-lg.setup_logging()
-
-
 class Shifting(Enum):
     """
     Enumeration to define which log-space shifting to adopt. Different choices 

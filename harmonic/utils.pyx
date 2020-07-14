@@ -5,9 +5,6 @@ import model as md
 import evidence as cbe
 import logs as lg 
 
-# Setup Logging config
-lg.setup_logging()
-
 
 def split_data(chains not None, double training_proportion=0.5):    
     """Split the data in a chains instance into two (e.g. training and test sets).
