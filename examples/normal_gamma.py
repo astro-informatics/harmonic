@@ -162,6 +162,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         - plot_comparison: Plot accuracy for various tau priors if true.
 
     Returns:
+
         - None.
 
     """
@@ -547,9 +548,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
-    """Run Normal-Gamma example.
-
-    """
 
     # Setup logging config.
     hm.logs.setup_logging()
