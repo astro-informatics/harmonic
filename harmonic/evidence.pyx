@@ -9,10 +9,6 @@ import scipy.special as sp
 import pickle
 import logs as lg 
 
-# Setup Logging config
-lg.setup_logging()
-
-
 class Shifting(Enum):
     """
     Enumeration to define which log-space shifting to adopt. Different choices 
@@ -338,7 +334,7 @@ class Evidence:
         """
 
         NSAMPLES_EFF_WARNING_LEVEL = 30
-        LNARG_WARNING_LEVEL = 10.0
+        LNARG_WARNING_LEVEL = 400.0
 
         tests_pass = True
 
@@ -408,6 +404,7 @@ class Evidence:
 
         return (ln_evidence, ln_evidence_std)
 
+
     def serialize(self, filename):
         """Serialize evidence object.
 
@@ -422,6 +419,7 @@ class Evidence:
         file.close()
 
         return
+
 
     @classmethod
     def deserialize(self, filename):
@@ -441,6 +439,7 @@ class Evidence:
         file.close()
 
         return ev
+
 
 def compute_bayes_factor(ev1, ev2):
     """Compute Bayes factor of two models.

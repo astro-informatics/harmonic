@@ -9,26 +9,26 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
-# Setup Logging config
-hm.logs.setup_logging()
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
-    """
-    Compute log_e of uniform prior.
-    Args: 
-        - x: 
-            Position at which to evaluate prior.
-        - xmin: 
-            Uniform prior minimum x edge (first dimension).
-        - xmax: 
-            Uniform prior maximum x edge (first dimension).
-        - ymin: 
-            Uniform prior minimum y edge (second dimension).
-        - ymax: 
-            Uniform prior maximum y edge (second dimension).              
+    """Compute log_e of uniform prior.
+
+    Args:
+
+        x: Position at which to evaluate prior.
+
+        xmin: Uniform prior minimum x edge (first dimension).
+
+        xmax: Uniform prior maximum x edge (first dimension).
+
+        ymin: Uniform prior minimum y edge (second dimension).
+
+        ymax: Uniform prior maximum y edge (second dimension).
+
     Returns:
-        - double: 
-            Value of prior at specified point.
+
+        double: Value of prior at specified point.
+
     """
         
     if x[0] >= xmin and x[0] <= xmax and x[1] >= ymin and x[1] <= ymax:        
@@ -37,16 +37,17 @@ def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
         return 0.0
         
 
-
 def ln_likelihood(x):
-    """
-    Compute log_e of likelihood defined by Rastrigin function.
-    Args: 
-        - x: 
-            Position at which to evaluate likelihood. 
+    """Compute log_e of likelihood defined by Rastrigin function.
+
+    Args:
+
+        x: Position at which to evaluate likelihood.
+
     Returns:
-        - double: 
-            Value of Rastrigin at specified point.
+
+        double: Value of Rastrigin at specified point.
+
     """
     
     ndim = x.size
@@ -60,16 +61,18 @@ def ln_likelihood(x):
 
 
 def ln_posterior(x, ln_prior):
-    """
-    Compute log_e of posterior.
-    Args: 
-        - x: 
-            Position at which to evaluate posterior.
-        - ln_prior: 
-            Prior function.
+    """Compute log_e of posterior.
+
+    Args:
+
+        x: Position at which to evaluate posterior.
+
+        ln_prior: Prior function.
+
     Returns:
-        - double: 
-            Posterior at specified point.
+
+        double: Posterior at specified point.
+
     """
     
     ln_L = ln_likelihood(x)
@@ -84,26 +87,26 @@ def ln_posterior(x, ln_prior):
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
                 plot_corner=False, plot_surface=False):
+    """Run Rastrigin example.
+
+    Args:
+
+        ndim: Dimension.
+
+        nchains: Number of chains.
+
+        samples_per_chain: Number of samples per chain.
+
+        nburn: Number of burn in samples for each chain.
+
+        verbose: If True then display intermediate results.
+
+        plot_corner: Plot marginalised distributions if true.
+
+        plot_surface: Plot surface and samples if true.
+
     """
-    Run Rastrigin example.
-    Args: 
-        - ndim: 
-            Dimension.
-        - nchains: 
-            Number of chains.
-        - samples_per_chain: 
-            Number of samples per chain.
-        - nburn: 
-            Number of burn in samples.
-        - plot_corner: 
-            Plot marginalised distributions if true.
-        - plot_surface: 
-            Plot surface and samples if true.
-        - verbose: 
-            If True then display intermediate results.
-    Returns:
-        - None.
-    """
+
     hm.logs.debug_log('---------------------------------')  
     hm.logs.critical_log('Rastrigin example')
     hm.logs.critical_log('Dimensionality = {}'.format(ndim)) 
@@ -160,7 +163,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             hm.logs.debug_log('---------------------------------')
     
         #=======================================================================
-        # Run Emcee to recover posterior sampels 
+        # Run Emcee to recover posterior samples
         #=======================================================================
         hm.logs.critical_log('Run sampling...')
         hm.logs.debug_log('---------------------------------')
@@ -274,6 +277,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                       np.exp(ln_evidence)))
         hm.logs.critical_log('Evidence: |numerical - estimate| / estimate = {}'
             .format(np.exp(diff - ln_evidence)))
+
         # ======================================================================
         # Display inverse evidence computation results.
         # ======================================================================
@@ -293,6 +297,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.critical_log('Inv Evidence: |numerical - estimate| / estimate = {}'
             .format(np.abs(1.0 / evidence_numerical_integration - \
                 ev.evidence_inv) / ev.evidence_inv))
+
         # ======================================================================
         # Display more technical details for ln evidence.
         # ======================================================================
@@ -317,7 +322,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.debug_log('nsamples eff per chain = \n{}'
             .format(ev.nsamples_eff_per_chain))
         hm.logs.debug_log('===============================')
-
 
         # Create corner/triangle plot.
         created_plots = False
@@ -416,7 +420,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
-    
+
+    # Setup logging config.
+    hm.logs.setup_logging()
+
     # Define parameters.
     ndim = 2 
     nchains = 200
