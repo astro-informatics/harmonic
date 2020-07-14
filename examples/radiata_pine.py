@@ -204,7 +204,7 @@ def ln_prior(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
     """
 
-  return ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
+    return ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
         
 
 def ln_posterior(theta, y, x, n, mu_0, r_0, s_0, a_0, b_0):
