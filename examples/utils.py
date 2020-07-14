@@ -42,6 +42,8 @@ def plot_getdist(samples, labels=None):
         - None
     """
 
+    getdist.chains.print_load_details = False
+
     ndim = samples.shape[1]
     names = ["x%s"%i for i in range(ndim)]
     if labels is None:
@@ -50,7 +52,6 @@ def plot_getdist(samples, labels=None):
     mcsamples = MCSamples(samples=samples,
                           names=names, labels=labels)
     g = plots.getSubplotPlotter()
-    getdist.chains.print_load_details = False
     g.triangle_plot([mcsamples], filled=True)
 
 
