@@ -34,7 +34,7 @@ How to Use This Guide
    :maxdepth: 2
    :caption: Tutorials
    
-   api/overview
+   tutorials/overview
    CodeWalkthrough
    CheckpointingWalkthrough
 
@@ -42,7 +42,7 @@ How to Use This Guide
    :maxdepth: 2
    :caption: Examples
 
-   api/overview
+   examples/overview
 
 .. toctree::
    :maxdepth: 2
