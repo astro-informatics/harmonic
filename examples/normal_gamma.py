@@ -12,22 +12,24 @@ import utils
 
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
-    """
-    Compute log_e of likelihood.
+    """Compute log_e of likelihood.
+
     Args:
-        - x_mean: 
-            Mean of simulated data.
-        - x_std: 
-            Standard deviation of simulated data.
-        - x_n: 
-            Number of samples of simulated data.
-        - mu: 
-            Mu value for which to evaluate prior.
-        - tau: 
-            Tau value for which to evaluate prior.
+
+        - x_mean: Mean of simulated data.
+
+        - x_std: Standard deviation of simulated data.
+
+        - x_n: Number of samples of simulated data.
+
+        - mu: Mu value for which to evaluate prior.
+
+        - tau: Tau value for which to evaluate prior.
+
     Returns:
-        - double: 
-            Value of log_e likelihood at specified (mu, tau) point.
+
+        - double: Value of log_e likelihood at specified (mu, tau) point.
+
     """
 
     return -0.5 * x_n * tau * (x_std**2 + (x_mean-mu)**2) \
@@ -35,19 +37,21 @@ def ln_likelihood(x_mean, x_std, x_n, mu, tau):
 
 
 def ln_prior(mu, tau, prior_params):
-    """
-    Compute log_e of prior.
+    """Compute log_e of prior.
+
     Args:
-        - mu: 
-            Mu value for which to evaluate prior.
-        - tau: 
-            Tau value for which to evaluate prior.
-        - prior_params: 
-            Tuple of prior parameters, including (mu_0, tau_0,
+
+        - mu: Mean value for which to evaluate prior.
+
+        - tau: Precision value for which to evaluate prior.
+
+        - prior_params: Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
+
     Returns:
-        - double: 
-            Value of log_e prior at specified (mu, tau) point.
+
+        - double: Value of log_e prior at specified (mu, tau) point.
+
     """
 
     if tau < 0:
@@ -65,23 +69,25 @@ def ln_prior(mu, tau, prior_params):
 
 
 def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
-    """
-    Compute log_e of posterior.
+    """Compute log_e of posterior.
+
     Args:
-        - theta: 
-            Position (mu, tau) at which to evaluate posterior.
-        - x_mean: 
-            Mean of simulated data.
-        - x_std: 
-            Standard deviation of simulated data.
-        - x_n: 
-            Number of samples of simulated data.
-        - prior_params: 
-            Tuple of prior parameters, including (mu_0, tau_0,
+
+        - theta: Position (mu, tau) at which to evaluate posterior.
+
+        - x_mean: Mean of simulated data.
+
+        - x_std: Standard deviation of simulated data.
+
+        - x_n: Number of samples of simulated data.
+
+        - prior_params: Tuple of prior parameters, including (mu_0, tau_0,
             alpha_0, beta_0).
+
     Returns:
-        - double: 
-            Value of log_e posterior at specified (mu, tau) point.
+
+        - double: Value of log_e posterior at specified (mu, tau) point.
+
     """
 
     mu, tau = theta
@@ -97,6 +103,24 @@ def ln_posterior(theta, x_mean, x_std, x_n, prior_params):
 
 
 def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
+    """Compute analytic evidence.
+
+    Args:
+
+        - x_mean: Mean of simulated data.
+
+        - x_std: Standard deviation of simulated data.
+
+        - x_n: Number of samples of simulated data.
+
+        - prior_params: Tuple of prior parameters, including (mu_0, tau_0,
+            alpha_0, beta_0).
+
+    Returns:
+
+        - double: Value of log_e evidence computed analytically.
+
+    """
 
     mu_0, tau_0, alpha_0, beta_0 = prior_params
 
@@ -117,28 +141,29 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True,
                 plot_corner=False, plot_surface=False,
                 plot_comparison=False):
-    """
-    Run Normal-Gamma example.
+    """Run Normal-Gamma example.
+
     Args:
-        - ndim: 
-            Dimension.
-        - nchains: 
-            Number of chains.
-        - samples_per_chain: 
-            Number of samples per chain.
-        - nburn: 
-            Number of burn in samples.
-        - plot_corner: 
-            Plot marginalised distributions if true.
-        - plot_surface: 
-            Plot surface and samples if true.
-        - plot_comparison: 
-            Plot accuracy for various tau priors if
-            true.
-        - verbose: 
-            If True then display intermediate results.
+
+        - ndim: Dimension.
+
+        - nchains: Number of chains.
+
+        - samples_per_chain: Number of samples per chain.
+
+        - nburn: Number of burn in samples for each chain.
+
+        - verbose: If True then display intermediate results.
+
+        - plot_corner: Plot marginalised distributions if true.
+
+        - plot_surface: Plot surface and samples if true.
+
+        - plot_comparison: Plot accuracy for various tau priors if true.
+
     Returns:
         - None.
+
     """
     hm.logs.debug_log('---------------------------------')
     hm.logs.critical_log('Normal-Gamma example')
@@ -522,6 +547,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 if __name__ == '__main__':
+    """Run Normal-Gamma example.
+
+    """
 
     # Setup logging config.
     hm.logs.setup_logging()
