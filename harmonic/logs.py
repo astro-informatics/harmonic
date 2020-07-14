@@ -45,6 +45,9 @@ def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
             config['handlers']['critical_file_handler']['filename'] = os.path.join(
                 os.path.dirname(os.path.dirname(
                     os.path.realpath(harmonic.__file__))) + '/logs/critical.log')
+            config['handlers']['info_file_handler']['filename'] = os.path.join(
+                os.path.dirname(os.path.dirname(
+                    os.path.realpath(harmonic.__file__))) + '/logs/info.log')
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
@@ -76,8 +79,7 @@ def warning_log(message):
     logger.warning(message)
 
 def critical_log(message):
-    """Log a critical message (e.g. evidence value printing, run completion 
-    etc.)
+    """Log a critical message (e.g. core code failures etc)
 
     Args:
 
@@ -86,4 +88,16 @@ def critical_log(message):
     """
     logger = logging.getLogger('Harmonic')
     logger.critical(message)
+
+def info_log(message):
+    """Log an information message (e.g. evidence value printing, run completion 
+    etc.)
+
+    Args:
+
+        message: Message to log.
+
+    """
+    logger = logging.getLogger('Harmonic')
+    logger.info(message)
 
