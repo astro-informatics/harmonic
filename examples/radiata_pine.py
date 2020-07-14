@@ -12,23 +12,27 @@ import utils
 
 
 def ln_likelihood(y, x, n, alpha, beta, tau):
-    """
-    Compute log_e of Radiatta Pine likelihood
-    Args: 
-        - y: 
-            Vector of incidence. 1=diabetes, 0=no diabetes
-        - x: 
-            Vector of data covariates (e.g. NP, PGC, BP, TST, DMI e.t.c.).  
-        - alpha:
-            enter when known.
-        - beta:
-            enter when known.
-        - tau:
-            enter when known.
+    """Compute log_e of Radiata Pine likelihood.
+
+    Args:
+
+        - y: Compression strength along grain.
+
+        - x: Predictor (density or density adjusted for resin content).
+
+        - alpha: Model bias term.
+
+        - beta: Model linear term.
+
+        - tau: Prior precision factor.
+
     Returns:
-        - double: 
-            Value of log_e likelihood at specified point in parameter space.
+
+        - double: Value of log_e likelihood at specified point in parameter
+            space.
+
     """
+
     ln_like = 0.5 * n * np.log(tau)
     ln_like -= 0.5 * n * np.log(2.0 * np.pi)
     
@@ -40,20 +44,22 @@ def ln_likelihood(y, x, n, alpha, beta, tau):
 
     
 def ln_prior_alpha(alpha, tau, mu_0, r_0):
-    """
-    Compute log_e of alpha / beta prior
-    Args: 
-        - alpha:
-            enter when known.
-        - tau:
-            enter when known.
-        - mu_0:
-            enter when known.
-        - r_0:
-            enter when known.
+    """Compute log_e of alpha / beta prior (Normal prior).
+
+    Args:
+
+        - alpha: Model term (bias or linear term).
+
+        - tau: Prior precision factor.
+
+        - mu_0: Prior mean.
+
+        - r_0: Prior precision constant factor.
+
     Returns:
-        - double: 
-            Value of log_e prior at specified point in parameter space.
+
+        - double: Value of log_e prior at specified point in parameter space.
+
     """
     ln_pr_alpha = 0.5 * np.log(tau)
     ln_pr_alpha += 0.5 * np.log(r_0)
@@ -64,19 +70,23 @@ def ln_prior_alpha(alpha, tau, mu_0, r_0):
 
 
 def ln_prior_tau(tau, a_0, b_0):
-    """
-    Compute log_e of tau prior
-    Args: 
-        - tau:
-            enter when known.
-        - a_0:
-            enter when known.
-        - b_0:
-            enter when known.
+    """Compute log_e of tau prior (Gamma prior).
+
+    Args:
+
+        - tau: Prior precision factor.
+
+        - a_0: Gamma prior shape parameter.
+
+        - b_0: Gamma prior rate parameter.
+
     Returns:
-        - double: 
-            Value of log_e tau prior at specified point in parameter space.
+
+        - double: Value of log_e tau prior at specified point in parameter
+            space.
+
     """
+
     if tau < 0:
         return -np.inf
     
@@ -89,26 +99,30 @@ def ln_prior_tau(tau, a_0, b_0):
 
 
 def ln_prior_separated(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
-    """
-    Compute log_e of prior (combining individual prior functions)
-    Args: 
-        - alpha:
-            enter when known.
-        - tau:
-            enter when known.
-        - mu_0:
-            enter when known.
-        - r_0:
-            enter when known.
-         - s_0:
-            enter when known.
-        - a_0:
-            enter when known.
-        - b_0:
-            enter when known.
+    """Compute log_e of prior (combining individual prior functions).
+
+    Args:
+
+        - alpha: Model bias term.
+
+        - beta: Model linear term.
+
+        - tau: Prior precision factor.
+
+        - mu_0: Prior means.
+
+        - r_0: Prior precision constant factor for bias term.
+
+        - s_0: Prior precision constant factor for linear term.
+
+        - a_0: Gamma prior shape parameter.
+
+        - b_0: Gamma prior rate parameter.
+
     Returns:
-        - double: 
-            Value of log_e prior at specified point in parameter space.
+
+        - double: Value of log_e prior at specified point in parameter space.
+
     """
     ln_pr = ln_prior_alpha(alpha, tau, mu_0[0,0], r_0)
     ln_pr += ln_prior_alpha(beta, tau, mu_0[1,0], s_0)
@@ -118,26 +132,30 @@ def ln_prior_separated(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
 
 def ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
-    """
-    Compute log_e of combined prior (jointly computing total prior)
-    Args: 
-        - alpha:
-            enter when known.
-        - tau:
-            enter when known.
-        - mu_0:
-            enter when known.
-        - r_0:
-            enter when known.
-         - s_0:
-            enter when known.
-        - a_0:
-            enter when known.
-        - b_0:
-            enter when known.
+    """Compute log_e of combined prior (jointly computing total prior).
+
+    Args:
+
+        - alpha: Model bias term.
+
+        - beta: Model linear term.
+
+        - tau: Prior precision factor.
+
+        - mu_0: Prior means.
+
+        - r_0: Prior precision constant factor for bias term.
+
+        - s_0: Prior precision constant factor for linear term.
+
+        - a_0: Gamma prior shape parameter.
+
+        - b_0: Gamma prior rate parameter.
+
     Returns:
-        - double: 
-            Value of log_e combined prior at specified point in parameter space.
+
+        - double: Value of log_e prior at specified point in parameter space.
+
     """
     if tau < 0:
         return -np.inf
@@ -156,140 +174,126 @@ def ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
 
 
 def ln_prior(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0):
-    """
-    Compute log_e of prior
-    Args: 
-        - alpha:
-            enter when known.
-        - tau:
-            enter when known.
-        - mu_0:
-            enter when known.
-        - r_0:
-            enter when known.
-         - s_0:
-            enter when known.
-        - a_0:
-            enter when known.
-        - b_0:
-            enter when known.
+    """Compute log_e of combined prior.
+
+    Can be used to easily switch with prior function using (e.g.
+    ln_prior_separated or ln_prior_combined). There should be (and is) not
+    difference (both implemented just as an additional consistency check).
+
+    Args:
+
+        - alpha: Model bias term.
+
+        - beta: Model linear term.
+
+        - tau: Prior precision factor.
+
+        - mu_0: Prior means.
+
+        - r_0: Prior precision constant factor for bias term.
+
+        - s_0: Prior precision constant factor for linear term.
+
+        - a_0: Gamma prior shape parameter.
+
+        - b_0: Gamma prior rate parameter.
+
     Returns:
-        - double: 
-            Value of log_e combined prior at specified point in parameter space.
+
+        - double: Value of log_e prior at specified point in parameter space.
+
     """
 
-    return ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
+  return ln_prior_combined(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
         
 
 def ln_posterior(theta, y, x, n, mu_0, r_0, s_0, a_0, b_0):
-    """
-    Compute log_e of posterior.
+    """Compute log_e of posterior.
     
-    Args: 
-        - theta: 
-            Position (alpha, beta, tau) at which to evaluate posterior.
-        
+    Args:
+
+        - theta: Position (alpha, beta, tau) at which to evaluate posterior.
+
+        - y: Compression strength along grain.
+
+        - x: Predictor (density or density adjusted for resin content).
+
+        - n: Number of specimens.
+
+        - mu_0: Prior means.
+
+        - r_0: Prior precision constant factor for bias term.
+
+        - s_0: Prior precision constant factor for linear term.
+
+        - a_0: Gamma prior shape parameter.
+
+        - b_0: Gamma prior rate parameter.
+
     Returns:
-        - double: 
-            Value of log_e posterior at specified (alpha, beta, tau) point.
+
+        - double: Value of log_e posterior at specified theta (alpha, beta,
+            tau) point.
+
     """
     
     alpha, beta, tau = theta
-    # print("alpha, beta, tau = ({}, {}, {})".format(alpha, beta, tau))
 
     ln_pr = ln_prior(alpha, beta, tau, mu_0, r_0, s_0, a_0, b_0)
-    # print("ln_pr = {}".format(ln_pr))
     
     if not np.isfinite(ln_pr):
         return -np.inf
 
     ln_L = ln_likelihood(y, x, n, alpha, beta, tau)    
-    # print("ln_L = {}\n".format(ln_L))
     
     return  ln_L + ln_pr
     
-    
-def ln_posterior_analytic_x(x, y, mu_0, a_0, b_0):
-    """
-    Compute analytic log_e of posterior for model x.
-    
-    Args: 
-        
+
+def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
+    """Compute log_e of analytic evidence.
+
+    Args:
+
+        - x: Predictor (density or density adjusted for resin content).
+
+        - y: Compression strength along grain.
+
+        - n: Number of specimens.
+
+        - mu_0: Prior means.
+
+        - r_0: Prior precision constant factor for bias term.
+
+        - s_0: Prior precision constant factor for linear term.
+
+        - a_0: Gamma prior shape parameter.
+
+        - b_0: Gamma prior rate parameter.
+
     Returns:
-        - double: 
-            Value of analytic log_e posterior for model x.
+
+        - double: Value of log_e of analytic evidence for model.
+
     """
 
-    r_0 = 0.06
-    s_0 = 6
     Q_0 = np.diag([r_0, s_0])
-    n = len(x)
-
     X = np.c_[np.ones((n, 1)), x]
-    M_x = X.T.dot(X) + Q_0
+    M = X.T.dot(X) + Q_0
+    nu_0 = np.linalg.inv(M).dot(X.T.dot(y) + Q_0.dot(mu_0))
 
-    beta0_x = np.linalg.inv(M_x).dot(X.T.dot(y) + Q_0.dot(mu_0))
-    c0_x = y.T.dot(y) + mu_0.T.dot(Q_0).dot(mu_0) - \
-                        beta0_x.T.dot(M_x).dot(beta0_x)
+    quad_terms = y.T.dot(y) + mu_0.T.dot(Q_0).dot(mu_0) - \
+                        nu_0.T.dot(M).dot(nu_0)
 
-    ln_z2_x = -0.5 * n * np.log(np.pi)
-    ln_z2_x += 0.5 * a_0 * np.log(b_0)
-    ln_z2_x += sp.gammaln(0.5*(n + a_0)) - sp.gammaln(0.5*a_0)
-    ln_z2_x += 0.5 * np.log(np.linalg.det(Q_0)) - \
-               0.5 * np.log(np.linalg.det(M_x))
+    ln_evidence = -0.5 * n * np.log(np.pi)
+    ln_evidence += a_0 * np.log(2.0*b_0)
+    ln_evidence += sp.gammaln(0.5*n + a_0) - sp.gammaln(a_0)
+    ln_evidence += 0.5 * np.log(np.linalg.det(Q_0)) - \
+               0.5 * np.log(np.linalg.det(M))
 
-    ln_z2_x += -0.5 * (n + a_0) * np.log(c0_x + b_0)
+    ln_evidence += -(0.5 * n + a_0) * np.log(quad_terms + 2.0 * b_0)
 
-    return ln_z2_x
+    return ln_evidence
 
-#def ln_posterior_analytic_z(z, y, n, mu_0, r_0, s_0, a_0, b_0):
-def ln_posterior_analytic_z(z, y, mu_0, a_0, b_0):
-    """
-    Compute analytic log_e of posterior for model z.
-    
-    Args: 
-        
-    Returns:
-        - double: 
-            Value of analytic log_e posterior for model z.
-    """
-
-    r_0 = 0.06
-    s_0 = 6
-    Q_0 = np.diag([r_0, s_0])
-    n = len(z)
-
-
-
-
-
-    a_0 = a_0 * 2.0
-    b_0 = b_0 * 2.0
-
-
-
-
-
-
-
-    Z = np.c_[np.ones((n, 1)), z]
-    M_z = Z.T.dot(Z) + Q_0
-
-    beta0_z = np.linalg.inv(M_z).dot(Z.T.dot(y) + Q_0.dot(mu_0))
-    c0_z = y.T.dot(y) + mu_0.T.dot(Q_0).dot(mu_0) - \
-                        beta0_z.T.dot(M_z).dot(beta0_z)
-
-    ln_z2_z = -0.5 * n * np.log(np.pi)
-    ln_z2_z += 0.5 * a_0 * np.log(b_0)
-    ln_z2_z += sp.gammaln(0.5*(n + a_0)) - sp.gammaln(0.5*a_0)
-    ln_z2_z += 0.5 * np.log(np.linalg.det(Q_0)) - \
-               0.5 * np.log(np.linalg.det(M_z))
-
-    ln_z2_z += -0.5 * (n + a_0) * np.log(c0_z + b_0)
-
-    return ln_z2_z
-
-    
     
 def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
@@ -440,7 +444,6 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     clock = time.clock() - clock
     hm.logs.critical_log('execution_time = {}s'.format(clock))
     
-
     #===========================================================================
     # Display evidence results 
     #===========================================================================
@@ -452,46 +455,15 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     hm.logs.critical_log('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
     check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
     hm.logs.critical_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
-
-
-    ln_evidence_analytic_model1 = ln_posterior_analytic_z(x, y, mu_0, a_0, b_0)
+    ln_evidence_analytic_model1 = \
+        ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0)
     hm.logs.critical_log('ln_evidence_analytic_model1 = {}'
-                         .format(ln_evidence_analytic_model1))
-
-    ln_evidence_analytic_model2 = ln_posterior_analytic_z(z, y, mu_0, a_0, b_0)
+                         .format(ln_evidence_analytic_model1[0][0]))
+    ln_evidence_analytic_model2 = \
+        ln_evidence_analytic(z, y, n, mu_0, r_0, s_0, a_0, b_0)
     hm.logs.critical_log('ln_evidence_analytic_model2 = {}'
-                         .format(ln_evidence_analytic_model2))
+                         .format(ln_evidence_analytic_model2[0][0]))
 
-
-
-    #===========================================================================
-    # Display evidence results 
-    #===========================================================================
-    hm.logs.debug_log('---------------------------------')
-    hm.logs.critical_log('Log-space Statistics')
-    hm.logs.debug_log('---------------------------------')
-    hm.logs.debug_log('ln( z ) = {}'
-        .format(ev.ln_evidence_inv))
-    hm.logs.debug_log('ln( std(z) ) = {}, ln ( std(z)/z ) = {}'
-        .format(0.5*ev.ln_evidence_inv_var, \
-                0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv))
-    hm.logs.debug_log('ln( kurt ) = {}, sqrt( 2/(n_eff-1) ) = {}'
-        .format(ev.ln_kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
-    hm.logs.debug_log('ln( std(var(z))/var(z) ) = {}'
-        .format(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var) )
-    hm.logs.debug_log('---------------------------------')
-    hm.logs.critical_log('Real-space Statistics')
-    hm.logs.debug_log('---------------------------------')
-    hm.logs.debug_log('exp(ln( z )) = {}'
-        .format(np.exp(ev.ln_evidence_inv) ) )
-    hm.logs.debug_log('exp(ln( std(z) ))= {}, exp(ln( std(z)/z )) = {}'
-        .format(np.exp( 0.5*ev.ln_evidence_inv_var), \
-                np.exp(0.5 * ev.ln_evidence_inv_var - ev.ln_evidence_inv)) )
-    hm.logs.debug_log('exp(ln( kurt )) = {}, sqrt( 2/(n_eff-1) ) = {}'
-        .format(np.exp( ev.ln_kurtosis ), np.sqrt(2.0/(ev.n_eff-1))))    
-    hm.logs.debug_log('exp(ln( std(var(z))/var(z)))) = {}'
-        .format(np.exp( 0.5 * ev.ln_evidence_inv_var_var \
-                            - ev.ln_evidence_inv_var) ) )
     #===========================================================================
     # Display more technical details
     #===========================================================================
@@ -517,7 +489,11 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         .format(ev.nsamples_eff_per_chain))
     hm.logs.debug_log('===============================')
     
-    
+   
+    #===========================================================================
+    # Plotting and prediction functions
+    #===========================================================================
+
     # Create corner/triangle plot.
     created_plots = False
     if plot_corner:
@@ -535,13 +511,9 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         plt.show(block=False)  
         created_plots = True
 
-    #===========================================================================
-    # Plotting and prediction functions
-    #===========================================================================
-    
-    
+    # Plot model over first two parameters.
+
     def model_predict_x0x1(x_2d):         
-        # x2 = a_0 / b_0
         x2 = 1.4E-5
         x = np.append(x_2d, [x2])
         # print("x01x1: x = {}".format(x))
@@ -552,14 +524,13 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
                                 xmin=2900.0, xmax=3100.0, 
                                 ymin=185.0-30.0, ymax=185.0+30.0,
                                 nx=1000, ny=1000)
-                                                                
+
     # Plot model.
     ax = utils.plot_image(model_grid, x_grid, y_grid, 
                           colorbar_label=r'$\log \varphi$')   
     plt.xlabel('$x_0$')
     plt.ylabel('$x_1$')   
-    #plt.axis('equal')
-    
+    #plt.axis('equal')    
     if savefigs:
         plt.savefig('examples/plots/radiatapine_model_x0x1_image.png',
                     bbox_inches='tight')
@@ -574,8 +545,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         plt.savefig('examples/plots/radiatapine_modelexp_x0x1_image.png',
                     bbox_inches='tight')
 
-
-
+    # Plot model over second and third parameters.
 
     def model_predict_x1x2(x_2d): 
         x0 = 3000.0
@@ -588,14 +558,13 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
                                xmin=185.0-30.0, xmax=185.0+30.0, 
                                ymin=a_0 / b_0 - 0.5E-5, ymax=a_0 / b_0 + 0.5E-5, 
                                nx=1000, ny=1000)
-                                                                
+
     # Plot model.
     ax = utils.plot_image(model_grid, x_grid, y_grid, 
                           colorbar_label=r'$\log \varphi$')   
     plt.xlabel('$x_1$')
     plt.ylabel('$x_2$')   
-    #plt.axis('equal')
-    
+    #plt.axis('equal')    
     if savefigs:
         plt.savefig('examples/plots/radiatapine_model_x1x2_image.png',
                     bbox_inches='tight')
@@ -610,13 +579,12 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         plt.savefig('examples/plots/radiatapine_modelexp_x1x2_image.png',
                     bbox_inches='tight')
 
-
+    # Plot model over first and third parameters.
 
     def model_predict_x0x2(x_2d): 
         x1 = 185.0
         x = np.append(x_2d[0], [x1])
         x = np.append(x, x_2d[1])
-        # print("x0x2: x = {}".format(x))
         return model.predict(x)
         
     model_grid, x_grid, y_grid = \
@@ -646,26 +614,20 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         plt.savefig('examples/plots/radiatapine_modelexp_x0x2_image.png',
                     bbox_inches='tight')
 
-
     plt.show(block=False)  
 
     if created_plots:
         input("\nPress Enter to continue...")
 
 
-    
-
-
 if __name__ == '__main__':
 
-
-    # Setup l ogging config.
+    # Setup logging config.
     hm.logs.setup_logging()
 
     # Define parameters.
-    model_1=False
+    model_1 = False
     nchains = 400
-    # samples_per_chain = 1000000
     samples_per_chain = 20000
     nburn = 2000
     np.random.seed(2)

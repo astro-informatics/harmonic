@@ -16,7 +16,7 @@ def ln_likelihood(y, theta, x):
 
     Args:
 
-        - y: Vector of incidence. 1=diabetes, 0=no diabetes
+        - y: Vector of diabetes incidence (1=diabetes, 0=no diabetes).
 
         - theta: Vector of parameter variables associated with covariates x.
 
