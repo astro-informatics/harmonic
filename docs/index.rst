@@ -35,11 +35,8 @@ How to Use This Guide
    :caption: Tutorials
    
    tutorials/overview
-   tutorials/basic_usage
-   tutorials/cross-validation_hyper-parameters
-   tutorials/cross-validation_learnt_model
-   tutorials/checkpointing
 
+   
 .. toctree::
    :maxdepth: 2
    :caption: Examples
