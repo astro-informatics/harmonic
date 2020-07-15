@@ -100,7 +100,7 @@ def compute_ln_p(theta, x):
 def run_example(model_1=True, tau=1.0,
                 nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False)
+                plot_corner=False, plot_surface=False):
     """Run Pima Indians example.
 
     Args:
@@ -123,22 +123,19 @@ def run_example(model_1=True, tau=1.0,
 
     """
 
-    hm.logs.debug_log('---------------------------------')
-    hm.logs.critical_log('Pima Indian example')
+    hm.logs.info_log('Pima Indian example')
 
     # Set_dimension
     if model_1:
         ndim = 5
     else:
         ndim = 6
-    hm.logs.critical_log('Dimensionality = {}'.format(ndim))
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Dimensionality = {}'.format(ndim))
 
     #===========================================================================
     # Load Pima Indian data.
     #===========================================================================
-    hm.logs.critical_log('Loading data ...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Loading data ...')
 
     data = np.loadtxt('examples/data/PimaIndian.dat')
 
@@ -222,8 +219,7 @@ def run_example(model_1=True, tau=1.0,
     #===========================================================================
     # Run Emcee to recover posterior sampels 
     #===========================================================================
-    hm.logs.critical_log('Run sampling...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Run sampling...')
     """
     Feed emcee the ln_posterior function, starting positions and recover chains.
     """
@@ -237,8 +233,7 @@ def run_example(model_1=True, tau=1.0,
     #===========================================================================
     # Configure emcee chains for harmonic
     #===========================================================================
-    hm.logs.critical_log('Configure chains...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Configure chains...')
     """
     Configure chains for the cross validation stage.
     """
@@ -250,8 +245,7 @@ def run_example(model_1=True, tau=1.0,
     #===========================================================================
     # Perform cross-validation
     #===========================================================================
-    hm.logs.critical_log('Perform cross-validation...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Perform cross-validation...')
     """
     There are several different machine learning models. Cross-validation
     allows the software to select the optimal model and the optimal model 
@@ -287,8 +281,7 @@ def run_example(model_1=True, tau=1.0,
     #===========================================================================
     # Select the optimal model from cross-validation results
     #===========================================================================
-    hm.logs.critical_log('Select optimal model...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Select optimal model...')
     """
     This simply uses the cross-validation results to choose the model which 
     has the smallest validation variance -- i.e. the best model for the job.
@@ -298,13 +291,13 @@ def run_example(model_1=True, tau=1.0,
     best_var_sphere = \
         validation_variances_sphere[best_hyper_param_sphere_ind]
     if best_var_MGMM < best_var_sphere:            
-        hm.logs.critical_log('Using MGMM with hyper_parameters = {}'
+        hm.logs.info_log('Using MGMM with hyper_parameters = {}'
             .format(best_hyper_param_MGMM))                
         model = hm.model.ModifiedGaussianMixtureModel(ndim, \
             domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
         model.verbose=False
     else:
-        hm.logs.critical_log('Using HyperSphere')
+        hm.logs.info_log('Using HyperSphere')
         model = hm.model.HyperSphere(ndim, domains_sphere, \
                 hyper_parameters=best_hyper_param_sphere)
         model = hm.model.HyperSphere(ndim, domains_sphere,hyper_parameters=None)            
@@ -321,8 +314,7 @@ def run_example(model_1=True, tau=1.0,
     #===========================================================================
     # Computing evidence using learnt model and emcee chains
     #===========================================================================
-    hm.logs.critical_log('Compute evidence...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Compute evidence...')
     """
     Instantiates the evidence class with a given model. Adds some chains and 
     computes the log-space evidence (marginal likelihood).
@@ -335,19 +327,16 @@ def run_example(model_1=True, tau=1.0,
     #===========================================================================
     # End Timer.
     clock = time.clock() - clock
-    hm.logs.critical_log('Execution time = {}s'.format(clock))
+    hm.logs.info_log('Execution time = {}s'.format(clock))
 
     #===========================================================================
     # Display evidence results 
     #===========================================================================
-    hm.logs.critical_log('---------------------------------')
-    hm.logs.critical_log('Results')
-    hm.logs.critical_log('---------------------------------')
-    hm.logs.critical_log('ln_evidence = {} +/- {}'.format(ln_evidence, evidence_std_log_space))
-    hm.logs.critical_log('kurtosis = {}'.format(ev.kurtosis))
-    hm.logs.critical_log('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
+    hm.logs.info_log('ln_evidence = {} +/- {}'.format(ln_evidence, evidence_std_log_space))
+    hm.logs.info_log('kurtosis = {}'.format(ev.kurtosis))
+    hm.logs.info_log('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
     check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
-    hm.logs.critical_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
+    hm.logs.info_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
 
     #===========================================================================
     # Display more technical details

@@ -297,7 +297,7 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
     
 def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False)
+                plot_corner=False, plot_surface=False):
     """Run Radiata Pine example.
 
     Args:
@@ -318,11 +318,9 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
 
     """
        
-    hm.logs.debug_log('---------------------------------')
-    hm.logs.critical_log('Radiata Pine example')
+    hm.logs.info_log('Radiata Pine example')
     ndim=3
-    hm.logs.critical_log('Dimensionality = {}'.format(ndim))
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Dimensionality = {}'.format(ndim))
          
     # Set general parameters.    
     savefigs = True
@@ -345,8 +343,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Load Radiata Pine data.
     #===========================================================================
-    hm.logs.critical_log('Loading data ...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Loading data ...')
 
     # Imports data file
     data = np.loadtxt('examples/data/RadiataPine.dat')
@@ -394,8 +391,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Run Emcee to recover posterior sampels 
     #===========================================================================
-    hm.logs.critical_log('Run sampling...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Run sampling...')
     """
     Feed emcee the ln_posterior function, starting positions and recover chains.
     """
@@ -413,8 +409,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Configure emcee chains for harmonic
     #===========================================================================
-    hm.logs.critical_log('Configure chains...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Configure chains...')
     """
     Configure chains for the cross validation stage.
     """
@@ -426,15 +421,14 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Fit learnt model for container function 
     #===========================================================================
-    hm.logs.critical_log('Select model...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Select model...')
     """
     This could simply use the cross-validation results to choose the model which 
     has the smallest validation variance -- i.e. the best model for the job. Here
     however we manually select the hypersphere model.
     """
 
-    hm.logs.critical_log('Using HyperSphere')
+    hm.logs.info_log('Using HyperSphere')
     model = hm.model.HyperSphere(ndim, domains_sphere, hyper_parameters=None)            
         
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
@@ -446,8 +440,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Computing evidence using learnt model and emcee chains
     #===========================================================================
-    hm.logs.critical_log('Compute evidence...')
-    hm.logs.debug_log('---------------------------------')
+    hm.logs.info_log('Compute evidence...')
     """
     Instantiates the evidence class with a given model. Adds some chains and 
     computes the log-space evidence (marginal likelihood).
@@ -460,33 +453,30 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # End Timer.
     clock = time.clock() - clock
-    hm.logs.critical_log('execution_time = {}s'.format(clock))
+    hm.logs.info_log('execution_time = {}s'.format(clock))
     
     #===========================================================================
     # Display evidence results 
     #===========================================================================
-    hm.logs.critical_log('---------------------------------')
-    hm.logs.critical_log('Results')
-    hm.logs.critical_log('---------------------------------')
-    hm.logs.critical_log('ln_evidence = {} +/- {}'.format(ln_evidence, evidence_std_log_space))
-    hm.logs.critical_log('kurtosis = {}'.format(ev.kurtosis))
-    hm.logs.critical_log('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
+    hm.logs.info_log('ln_evidence = {} +/- {}'.format(ln_evidence, evidence_std_log_space))
+    hm.logs.info_log('kurtosis = {}'.format(ev.kurtosis))
+    hm.logs.info_log('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
     check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
-    hm.logs.critical_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
+    hm.logs.info_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
     ln_evidence_analytic_model1 = \
         ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0)
-    hm.logs.critical_log('ln_evidence_analytic_model1 = {}'
+    hm.logs.info_log('ln_evidence_analytic_model1 = {}'
                          .format(ln_evidence_analytic_model1[0][0]))
     ln_evidence_analytic_model2 = \
         ln_evidence_analytic(z, y, n, mu_0, r_0, s_0, a_0, b_0)
-    hm.logs.critical_log('ln_evidence_analytic_model2 = {}'
+    hm.logs.info_log('ln_evidence_analytic_model2 = {}'
                          .format(ln_evidence_analytic_model2[0][0]))
 
     #===========================================================================
     # Display more technical details
     #===========================================================================
     hm.logs.debug_log('---------------------------------')
-    hm.logs.critical_log('Technical Details')
+    hm.logs.debug_log('Technical Details')
     hm.logs.debug_log('---------------------------------')
     hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
         .format(ev.lnargmax, ev.lnargmin))
@@ -506,7 +496,6 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     hm.logs.debug_log('nsamples eff per chain = \n{}'
         .format(ev.nsamples_eff_per_chain))
     hm.logs.debug_log('===============================')
-    
    
     #===========================================================================
     # Plotting and prediction functions
