@@ -73,8 +73,7 @@ def init_cov(ndim):
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False, plot_surface=False):
     """Run Gaussian example with non-diagonal covariance matrix.
 
     Args:
@@ -86,8 +85,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         samples_per_chain: Number of samples per chain.
 
         nburn: Number of burn in samples for each chain.
-
-        verbose: If True then display intermediate results.
 
         plot_corner: Plot marginalised distributions if true.
 
@@ -360,4 +357,4 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=True, plot_surface=True, verbose=False)
+                plot_corner=True, plot_surface=True)

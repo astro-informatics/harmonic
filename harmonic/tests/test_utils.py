@@ -187,17 +187,16 @@ def test_cross_validation():
     # just checks the result of the code is unchanged
     validation_variances = utils.cross_validation(chains, 
         [np.array([1E-1,1E1])], \
-        hyper_parameters_HS, modelClass=md.HyperSphere, verbose=False)
+        hyper_parameters_HS, modelClass=md.HyperSphere)
     assert validation_variances[0] == pytest.approx(1.503159310628641e-05) 
     assert validation_variances[1] == pytest.approx(1.503159310628641e-05) 
     validation_variances = utils.cross_validation(chains, [], 
-                                                  hyper_parameters_KDE, \
-                                                  verbose=False)
+                                                  hyper_parameters_KDE)
     assert validation_variances[0] == pytest.approx(9.843664133455417e-05) 
     assert validation_variances[1] == pytest.approx(2.599727834904592e-06) 
     validation_variances = utils.cross_validation(chains, 
         [np.array([1E-2,10E0])], \
-        hyper_parameters_MGMM, modelClass=md.ModifiedGaussianMixtureModel, verbose=False)
+        hyper_parameters_MGMM, modelClass=md.ModifiedGaussianMixtureModel)
     assert validation_variances[0] == pytest.approx(1.4328193315511208e-07) 
     assert validation_variances[1] == pytest.approx(3.0406190613789445e-06, abs=2e-7)  
     assert validation_variances[2] == pytest.approx(4.572236365068644e-06, abs=2e-7) 

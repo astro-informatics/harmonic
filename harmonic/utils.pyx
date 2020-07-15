@@ -137,7 +137,7 @@ def cross_validation(chains,
                      list hyper_parameters, 
                      long nfold=2, 
                      modelClass = md.KernelDensityEstimate, 
-                     long seed=-1, bint verbose=False):    
+                     long seed=-1):    
     """Perform n-fold validation for given model using chains to be split into
     validation and training data.
     
@@ -162,9 +162,6 @@ def cross_validation(chains,
 
         seed (long): Seed for random number generator when drawing the chains
             (if this is negative the seed is not set).
-
-        verbose (bool): Set to True to print results from cross validation
-            evidence calculations (default=False).
 
     Returns:
 
@@ -211,18 +208,17 @@ def cross_validation(chains,
             ev = cbe.Evidence(chains_val.nchains, model)
             ev.add_chains(chains_val)
 
-            if verbose:
-                lg.critical_log('cross_validation: ifold = {}; hyper_parameter = {}'
-                      .format(i_fold, hyper_parameter))
-                lg.critical_log('cross_validation: evidence_inv = {}'
-                      .format(ev.evidence_inv))
-                lg.critical_log('cross_validation: evidence_inv_var = {}'
-                      .format(ev.evidence_inv_var))
-                lg.critical_log('cross_validation:' + 
-                      ' evidence_inv_var**0.5/evidence_inv = {}'
-                      .format(ev.evidence_inv_var**0.5/ev.evidence_inv))
-                lg.critical_log('cross_validation: evidence_inv_var_var = {}'
-                      .format(ev.evidence_inv_var_var))
+            lg.debug_log('cross_validation: ifold = {}; hyper_parameter = {}'
+                  .format(i_fold, hyper_parameter))
+            lg.debug_log('cross_validation: evidence_inv = {}'
+                  .format(ev.evidence_inv))
+            lg.debug_log('cross_validation: evidence_inv_var = {}'
+                  .format(ev.evidence_inv_var))
+            lg.debug_log('cross_validation:' + 
+                  ' evidence_inv_var**0.5/evidence_inv = {}'
+                  .format(ev.evidence_inv_var**0.5/ev.evidence_inv))
+            lg.debug_log('cross_validation: evidence_inv_var_var = {}'
+                  .format(ev.evidence_inv_var_var))
 
             validation_variances[i_fold,i_val] = ev.evidence_inv_var
 

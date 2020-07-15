@@ -686,7 +686,6 @@ def test_ModifiedGaussianMixtureModel_fit():
     mu_off     = 20.0
 
     MGMM = md.ModifiedGaussianMixtureModel(ndim, domains, hyper_parameters=[ngaussians, gamma,1.0,20,10])
-    # MGMM.verbose = True
 
     X = np.zeros((nsamples,ndim))
     Y = np.zeros((nsamples))

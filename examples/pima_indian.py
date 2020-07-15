@@ -99,8 +99,7 @@ def compute_ln_p(theta, x):
 
 def run_example(model_1=True, tau=1.0,
                 nchains=100, samples_per_chain=1000,
-                nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False, plot_surface=False):
     """Run Pima Indians example.
 
     Args:
@@ -114,8 +113,6 @@ def run_example(model_1=True, tau=1.0,
         samples_per_chain: Number of samples per chain.
 
         nburn: Number of burn in samples for each chain.
-
-        verbose: If True then display intermediate results.
 
         plot_corner: Plot marginalised distributions if true.
 
@@ -258,7 +255,7 @@ def run_example(model_1=True, tau=1.0,
             hyper_parameters_MGMM, \
             nfold=nfold, 
             modelClass=hm.model.ModifiedGaussianMixtureModel, \
-            verbose=verbose, seed=0)                
+            seed=0)                
     hm.logs.debug_log('Validation variances of MGMM = {}'
         .format(validation_variances_MGMM))
     best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
@@ -271,7 +268,7 @@ def run_example(model_1=True, tau=1.0,
             domains_sphere, \
             hyper_parameters_sphere, nfold=nfold, 
             modelClass=hm.model.HyperSphere, 
-            verbose=verbose, seed=0)
+            seed=0)
     hm.logs.debug_log('Validation variances of sphere = {}'
         .format(validation_variances_sphere))
     best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
@@ -295,7 +292,6 @@ def run_example(model_1=True, tau=1.0,
             .format(best_hyper_param_MGMM))                
         model = hm.model.ModifiedGaussianMixtureModel(ndim, \
             domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
-        model.verbose=False
     else:
         hm.logs.info_log('Using HyperSphere')
         model = hm.model.HyperSphere(ndim, domains_sphere, \
@@ -382,5 +378,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(model_1, tau, nchains, samples_per_chain, nburn, 
-                          verbose=False,
                           plot_corner=False, plot_surface=False)
