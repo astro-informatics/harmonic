@@ -1,0 +1,12 @@
+# Non-Commercial Use License Condition v1.0
+
+The Software is provided to you by the Licensor under the License, as defined below, subject to the following condition.
+
+The rights granted under the Licence apply to the use of the Software for academic, research and other similar
+non-commercial uses.  Without limiting other conditions in the License, the grant of rights under the License will not include, and the License does not grant to you, the right to use the Software for commercial uses.
+
+Software: harmonic
+
+License: See LICENSE.md
+
+Licensor: Jason McEwen 
