@@ -5,7 +5,7 @@ from matplotlib.colors import LightSource
 from mpl_toolkits.mplot3d import Axes3D
 import corner
 from getdist import plots, MCSamples
-
+import getdist
 
 def plot_corner(samples, labels=None):
     """
@@ -41,6 +41,8 @@ def plot_getdist(samples, labels=None):
     Returns:
         - None
     """
+
+    getdist.chains.print_load_details = False
 
     ndim = samples.shape[1]
     names = ["x%s"%i for i in range(ndim)]
