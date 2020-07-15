@@ -14,4 +14,4 @@ Software: harmonic
 
 License: See LICENSE.txt (CPL3)
 
-Licensor: Jason McEwen 
+Licensor: Jason McEwen & contributors
