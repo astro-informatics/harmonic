@@ -297,7 +297,7 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
     
 def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
                 nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False)
+                plot_corner=False, plot_surface=False):
     """Run Radiata Pine example.
 
     Args:

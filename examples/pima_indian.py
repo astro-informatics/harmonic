@@ -100,7 +100,7 @@ def compute_ln_p(theta, x):
 def run_example(model_1=True, tau=1.0,
                 nchains=100, samples_per_chain=1000,
                 nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False)
+                plot_corner=False, plot_surface=False):
     """Run Pima Indians example.
 
     Args:
