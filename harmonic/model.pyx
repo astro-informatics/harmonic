@@ -6,6 +6,7 @@ import scipy.special as sp
 import scipy.optimize as so
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
+import logs as lg 
 
 class Model(metaclass=abc.ABCMeta):
     """Base abstract class for posterior model.
@@ -1378,7 +1379,6 @@ class ModifiedGaussianMixtureModel(Model):
             self.nbatch          = 100
         else:
             self.nbatch          = hyper_parameters[4]
-        self.verbose             = False
         self.fitted              = False
 
 
@@ -1675,23 +1675,25 @@ class ModifiedGaussianMixtureModel(Model):
                          centres[i_guas,i_dim]*centres[i_guas,i_dim]
                     inv_covariances[i_guas,i_dim] = \
                          1.0/inv_covariances[i_guas,i_dim]
-        if self.verbose:
-            print("centres : ", centres)
-            print("inv_covariances : ", inv_covariances)
+        
+        lg.debug_log("centres : {}".format(centres))
+        lg.debug_log("inv_covariances : {}".format(inv_covariances))
+
         # randomally incialise the parameters
         alphas[:] = np.random.lognormal(sigma=0.25,size=ngaussians)
         betas[:]  = np.random.randn(ngaussians)
         grad_alpha = np.zeros(ngaussians)
         grad_beta = np.zeros(ngaussians)
-        if self.verbose:
-            print("iteration : ", 0, "param ", alphas, \
-                                             beta_to_weights(betas, ngaussians))
 
-            print("objective function :", objective_function(X, centres, \
-                                                inv_covariances, alphas, \
-                                     beta_to_weights(betas, ngaussians), \
-                                   Y, ngaussians, ndim, nsamples, gamma, \
-                                                             mean_shift))
+        lg.debug_log("iteration : {} param {} {}".format(\
+                     0,alphas, beta_to_weights(betas, ngaussians)))
+
+        lg.debug_log("objective function : {}".format(
+                                objective_function(X, centres, \
+                                inv_covariances, alphas, \
+                                beta_to_weights(betas, ngaussians), \
+                                    Y, ngaussians, ndim, nsamples, gamma, \
+                                    mean_shift)))
 
         for i_guas in range(ngaussians):
             if alphas[i_guas] < alpha_lower_bound:
@@ -1730,14 +1732,15 @@ class ModifiedGaussianMixtureModel(Model):
 
             # check stopping criteria
             i_iter += 1
-            if self.verbose:
-                print("iteration : ", i_iter, "param ", alphas, \
-                                             beta_to_weights(betas, ngaussians))
 
-                print("objective function :", objective_function(X, centres, \
-                                           inv_covariances, alphas, weights, \
-                                              Y, ngaussians, ndim, nsamples, \
-                                                          gamma, mean_shift))
+            lg.debug_log("iteration : {} param {} {}".format(\
+                     i_iter,alphas, beta_to_weights(betas, ngaussians)))
+
+            lg.debug_log("objective function : {}".format(
+                                objective_function(X, centres, \
+                                inv_covariances, alphas, weights, \
+                                Y, ngaussians, ndim, nsamples, \
+                                gamma, mean_shift)))
             if i_iter >= max_iter:
                 keep_going = False
 

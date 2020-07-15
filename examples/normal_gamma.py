@@ -138,8 +138,7 @@ def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000,
-                nburn=500, verbose=True,
-                plot_corner=False, plot_surface=False,
+                nburn=500, plot_corner=False, plot_surface=False,
                 plot_comparison=False):
     """Run Normal-Gamma example.
 
@@ -152,8 +151,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         samples_per_chain: Number of samples per chain.
 
         nburn: Number of burn in samples for each chain.
-
-        verbose: If True then display intermediate results.
 
         plot_corner: Plot marginalised distributions if true.
 
@@ -279,7 +276,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     hyper_parameters_MGMM, \
                     nfold=nfold,
                     modelClass=hm.model.ModifiedGaussianMixtureModel, \
-                    verbose=False, seed=0)
+                    seed=0)
             hm.logs.debug_log('validation_variances_MGMM = {}'
                 .format(validation_variances_MGMM))
             best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
@@ -291,7 +288,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     domains_sphere, \
                     hyper_parameters_sphere, nfold=nfold,
                     modelClass=hm.model.HyperSphere,
-                    verbose=False, seed=0)
+                    seed=0)
             hm.logs.debug_log('validation_variances_sphere = {}'
                 .format(validation_variances_sphere))
             best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
@@ -315,7 +312,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     .format(best_hyper_param_MGMM))
                 model = hm.model.ModifiedGaussianMixtureModel(ndim, \
                     domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
-                model.verbose=False
             else:
                 hm.logs.debug_log('Using HyperSphere')
                 model = hm.model.HyperSphere(ndim, domains_sphere, \
@@ -519,5 +515,4 @@ if __name__ == '__main__':
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn,
                           plot_corner=True, plot_surface=True,
-                          plot_comparison=True,
-                          verbose=True)
+                          plot_comparison=True)

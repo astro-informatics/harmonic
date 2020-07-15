@@ -296,8 +296,7 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
 
     
 def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
-                nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False, plot_surface=False):
     """Run Radiata Pine example.
 
     Args:
@@ -309,8 +308,6 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         samples_per_chain: Number of samples per chain.
 
         nburn: Number of burn in samples for each chain.
-
-        verbose: If True then display intermediate results.
 
         plot_corner: Plot marginalised distributions if true.
 
@@ -641,6 +638,5 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(model_1, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=True,
-                          verbose=True)
+                          plot_corner=True, plot_surface=True)
 

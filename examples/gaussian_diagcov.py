@@ -66,7 +66,7 @@ def init_cov(ndim):
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, chain_iterations=1, verbose=True, 
+                nburn=500, chain_iterations=1, 
                 plot_corner=False, plot_surface=False):
     """
     Run nD Gaussian example with generalized covariance matrix.
@@ -82,8 +82,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         nburn: Number of burn in samples for each chain.
 
         chain_iterations: Number of chain iterations to run.
-
-        verbose: If True then display intermediate results.
 
         plot_corner: Plot marginalised distributions if true.
 
@@ -305,6 +303,6 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, chain_iterations,
-                plot_corner=False, plot_surface=False, verbose=False)
+                plot_corner=False, plot_surface=False)
 
 
