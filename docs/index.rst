@@ -35,8 +35,8 @@ How to Use This Guide
    :caption: Tutorials
    
    tutorials/overview
-   CodeWalkthrough
-   CheckpointingWalkthrough
+   tutorials/basic_usage_cross-validation
+   tutorials/checkpointing
 
 .. toctree::
    :maxdepth: 2
