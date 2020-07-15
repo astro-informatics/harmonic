@@ -299,8 +299,7 @@ def run_example(model_1=True, tau=1.0,
     else:
         hm.logs.info_log('Using HyperSphere')
         model = hm.model.HyperSphere(ndim, domains_sphere, \
-                hyper_parameters=best_hyper_param_sphere)
-        model = hm.model.HyperSphere(ndim, domains_sphere,hyper_parameters=None)            
+                hyper_parameters=best_hyper_param_sphere)          
 
     #===========================================================================
     # Fit learnt model for container function 
