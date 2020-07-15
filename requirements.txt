@@ -8,5 +8,6 @@ colorlog==4.1.0
 pyyaml==3.12
 sphinx==1.8.2
 nbsphinx-link==1.3.0
+pandoc==1.0.2
 jupyter-sphinx-theme==0.0.6
 sphinx-rtd-theme==0.3.0
