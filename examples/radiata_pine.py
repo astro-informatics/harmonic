@@ -349,7 +349,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     hm.logs.debug_log('---------------------------------')
 
     # Imports data file
-    data = np.loadtxt('examples/data/RadiataPine.dat')
+    data = np.loadtxt('examples/data/radiata_pine.dat')
     id = data[:,0]
     y = data[:,1]
     x = data[:,2]

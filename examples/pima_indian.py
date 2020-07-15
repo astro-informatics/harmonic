@@ -140,7 +140,7 @@ def run_example(model_1=True, tau=1.0,
     hm.logs.critical_log('Loading data ...')
     hm.logs.debug_log('---------------------------------')
 
-    data = np.loadtxt('examples/data/PimaIndian.dat')
+    data = np.loadtxt('examples/data/pima_indian.dat')
 
     """
     Two primary models for comparison:
