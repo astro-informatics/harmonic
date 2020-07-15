@@ -2,7 +2,7 @@ import sys
 import os
 import shutil
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 

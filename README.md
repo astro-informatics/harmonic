@@ -21,6 +21,9 @@
 
 `pip install -r requirements.txt`
 
+You may need to update your chache to ensure old packages are not picked up:
+
+`hash -r`
 
 ### Install dependencies for harmonic examples
 
