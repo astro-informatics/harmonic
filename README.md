@@ -73,10 +73,6 @@ harmonic is released under the GPL-3 license (see [LICENSE.txt](https://github.c
      harmonic
      Copyright (C) 2020 Jason McEwen & contributors
 
-     This program is released under the GPL-3 license (see 
-     LICENSE.txt), subject to a non-commercical use condition 
-     (see LICENSE_EXT.txt).
+     This program is released under the GPL-3 license (see LICENSE.txt), subject to a non-commercical use condition (see LICENSE_EXT.txt).
 
-     This program is distributed in the hope that it will be useful,
-     but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
