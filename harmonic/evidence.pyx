@@ -144,7 +144,7 @@ class Evidence:
         cdef long i_chains, nsamples=0, nchains = self.nchains
         cdef double evidence_inv=0.0, evidence_inv_var=0.0
         cdef double kur=0.0, dummy, n_eff=0
-        cdef double evidence_inv_var_exp=0.0, kur_exp=0.0
+        cdef double evidence_inv_var_ln_temp=0.0, kur_ln=0.0
 
         for i_chains in range(nchains):
             evidence_inv += running_sum[i_chains]
@@ -171,12 +171,12 @@ class Evidence:
         z_i[:] *= nsamples_per_chain[:]**(0.5) 
 
         # Compute exponents using logsumexp for numerical stability.
-        evidence_inv_var_exp = sp.logsumexp(2.0*np.log(z_i)) - np.log(nsamples)
-        kur_exp = sp.logsumexp(4.0 * np.log(y_i)) - np.log(nsamples) \
-                                                  - 2.0 * evidence_inv_var_exp
-        kur = np.exp(kur_exp)
+        evidence_inv_var_ln_temp = sp.logsumexp(2.0*np.log(z_i)) - np.log(nsamples)
+        kur_ln = sp.logsumexp(4.0 * np.log(y_i)) - np.log(nsamples) \
+                                                  - 2.0 * evidence_inv_var_ln_temp
+        kur = np.exp(kur_ln)
         self.kurtosis = kur
-        self.ln_kurtosis = kur_exp
+        self.ln_kurtosis = kur_ln
 
         # Compute effective chain lengths.
         for i in range(nchains):
@@ -187,9 +187,9 @@ class Evidence:
         # Compute inverse evidence values as a log-space representation of the 
         # real-space statistics to attempt to avoid float overflow.
         self.ln_evidence_inv = np.log(evidence_inv) - self.shift_value
-        self.ln_evidence_inv_var = evidence_inv_var_exp - 2 * self.shift_value \
+        self.ln_evidence_inv_var = evidence_inv_var_ln_temp - 2 * self.shift_value \
                                                     - np.log(n_eff - 1)
-        self.ln_evidence_inv_var_var = 2. * evidence_inv_var_exp \
+        self.ln_evidence_inv_var_var = 2. * evidence_inv_var_ln_temp \
                                                     - 3. * np.log(n_eff) \
                                                     - 4. * self.shift_value \
                                                     + np.log((kur - 1) + 2./(n_eff-1))

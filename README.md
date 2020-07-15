@@ -1,10 +1,14 @@
 # Harmonic
 
-[![Github](https://img.shields.io/badge/GitHub-astro--informatics%2Fharmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
-[![Build Status](https://travis-ci.com/astro-informatics/src_harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/src_harmonic)
+[![Github](https://img.shields.io/badge/GitHub-harmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
+[![Build Status](https://travis-ci.com/astro-informatics/harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/harmonic)
+[![docs](http://img.shields.io/badge/docs-built-brightgreen.svg?style=flat)](https://astro-informatics.github.io/harmonic/)
+[![codecov](https://codecov.io/gh/astro-informatics/harmonic/branch/master/graph/badge.svg?token=1s4SATphHV)](https://codecov.io/gh/astro-informatics/harmonic)
+[![License](http://img.shields.io/badge/license-GPL-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)
+[![License](http://img.shields.io/badge/license-Extension-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt)
 [![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
-[![License](http://img.shields.io/badge/license-GPL-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.md)
-[![codecov](https://codecov.io/gh/astro-informatics/src_harmonic/branch/master/graph/badge.svg?token=1s4SATphHV)](https://codecov.io/gh/astro-informatics/src_harmonic)
+
+
 
 
 ## Installation
@@ -67,3 +71,16 @@ examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_ev
 `pytest --cov-report term --cov=harmonic --cov-config=.coveragerc`
 
 
+## License
+
+harmonic is released under the GPL-3 license (see [LICENSE.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)), subject to the non-commercical use condition (see [LICENSE_EXT.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt))
+
+     harmonic
+     Copyright (C) 2020 Jason McEwen & contributors
+
+     This program is released under the GPL-3 license (see LICENSE.txt), 
+     subject to a non-commercical use condition (see LICENSE_EXT.txt).
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
