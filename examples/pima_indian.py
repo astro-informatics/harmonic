@@ -382,5 +382,5 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(model_1, tau, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False,
-                          verbose=False)
+                          verbose=False,
+                          plot_corner=False, plot_surface=False)
