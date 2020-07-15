@@ -70,10 +70,12 @@ examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_ev
 
 harmonic is released under the GPL-3 license (see [LICENSE.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)), subject to the non-commercical use condition (see [LICENSE_EXT.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt))
 
-     harmonic: 
+     harmonic
      Copyright (C) 2020 Jason McEwen & contributors
 
-     This program is released under the GPL-3 license (see [LICENSE.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)), subject to a non-commercical use condition (see [LICENSE_EXT.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt)).
+     This program is released under the GPL-3 license (see 
+     LICENSE.txt), subject to a non-commercical use condition 
+     (see LICENSE_EXT.txt).
 
      This program is distributed in the hope that it will be useful,
      but WITHOUT ANY WARRANTY; without even the implied warranty of
