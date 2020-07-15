@@ -8,4 +8,4 @@ _build/
 .DS_Store
 logs/*.log
 .coverage
-
+.test.dat
