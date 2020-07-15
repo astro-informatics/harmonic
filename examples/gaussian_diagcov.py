@@ -224,6 +224,33 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.info_log("Inv Evidence: 100 * |analytic - estimate| / estimate = {}%"
             .format(100.0 * np.abs( np.exp(ln_rho) - cal_ev.evidence_inv ) \
                                                    / cal_ev.evidence_inv ) )
+
+        #===========================================================================
+        # Display more technical details
+        #===========================================================================
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.critical_log('Technical Details')
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
+            .format(ev.lnargmax, ev.lnargmin))
+        hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
+            .format(ev.lnprobmax, ev.lnprobmin))
+        hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
+            .format(ev.lnpredictmax, ev.lnpredictmin))
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('shift = {}, shift setting = {}'
+            .format(ev.shift_value, ev.shift))
+        hm.logs.debug_log('statistic space = {}'.format(ev.statspace))
+        hm.logs.debug_log('running sum total = {}'
+            .format(sum(ev.running_sum)))
+        hm.logs.debug_log('running sum = \n{}'
+            .format(ev.running_sum))
+        hm.logs.debug_log('nsamples per chain = \n{}'
+            .format(ev.nsamples_per_chain))
+        hm.logs.debug_log('nsamples eff per chain = \n{}'
+            .format(ev.nsamples_eff_per_chain))
+        hm.logs.debug_log('===============================')
+        
         # ======================================================================
         # Create corner/triangle plot.
         # ======================================================================

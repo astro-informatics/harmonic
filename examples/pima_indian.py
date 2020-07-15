@@ -338,6 +338,32 @@ def run_example(model_1=True, tau=1.0,
     check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
     hm.logs.info_log('sqrt(evidence_inv_var_var) / evidence_inv_var = {}'.format(check))
 
+    #===========================================================================
+    # Display more technical details
+    #===========================================================================
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.critical_log('Technical Details')
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
+        .format(ev.lnargmax, ev.lnargmin))
+    hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
+        .format(ev.lnprobmax, ev.lnprobmin))
+    hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
+        .format(ev.lnpredictmax, ev.lnpredictmin))
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('shift = {}, shift setting = {}'
+        .format(ev.shift_value, ev.shift))
+    hm.logs.debug_log('statistic space = {}'.format(ev.statspace))
+    hm.logs.debug_log('running sum total = {}'
+        .format(sum(ev.running_sum)))
+    hm.logs.debug_log('running sum = \n{}'
+        .format(ev.running_sum))
+    hm.logs.debug_log('nsamples per chain = \n{}'
+        .format(ev.nsamples_per_chain))
+    hm.logs.debug_log('nsamples eff per chain = \n{}'
+        .format(ev.nsamples_eff_per_chain))
+    hm.logs.debug_log('===============================')
+
 
 if __name__ == '__main__':
 
