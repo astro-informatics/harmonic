@@ -8,4 +8,5 @@ _build/
 .DS_Store
 logs/*.log
 .coverage
-
+notebooks/.ipynb_checkpoints/
+notebooks/.temp.*
