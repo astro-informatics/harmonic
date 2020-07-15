@@ -1,12 +1,14 @@
 # Harmonic
 
-[![Github](https://img.shields.io/badge/GitHub-astro--informatics%2Fharmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
+[![Github](https://img.shields.io/badge/GitHub-harmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
 [![Build Status](https://travis-ci.com/astro-informatics/harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/harmonic)
-[![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
+[![docs](http://img.shields.io/badge/docs-built-brightgreen.svg?style=flat)](https://astro-informatics.github.io/harmonic/)
+[![codecov](https://codecov.io/gh/astro-informatics/harmonic/branch/master/graph/badge.svg?token=1s4SATphHV)](https://codecov.io/gh/astro-informatics/harmonic)
 [![License](http://img.shields.io/badge/license-GPL-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)
 [![License](http://img.shields.io/badge/license-Extension-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt)
-[![codecov](https://codecov.io/gh/astro-informatics/harmonic/branch/master/graph/badge.svg?token=1s4SATphHV)](https://codecov.io/gh/astro-informatics/harmonic)
-[![docs](http://img.shields.io/badge/docs-built-brightgreen.svg?style=flat)](https://astro-informatics.github.io/harmonic/)
+[![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
+
+
 
 
 ## Installation
