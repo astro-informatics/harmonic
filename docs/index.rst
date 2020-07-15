@@ -35,7 +35,9 @@ How to Use This Guide
    :caption: Tutorials
    
    tutorials/overview
+   tutorials/basic_usage
    tutorials/basic_usage_cross-validation
+   tutorials/basic_usage_model_selection
    tutorials/checkpointing
 
 .. toctree::
