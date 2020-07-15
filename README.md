@@ -66,7 +66,7 @@ examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_ev
 `pytest --cov-report term --cov=harmonic --cov-config=.coveragerc`
 
 
-## LICENSE
+## License
 
 harmonic is released under the GPL-3 license (see [LICENSE.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)), subject to the non-commercical use condition (see [LICENSE_EXT.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt))
 
