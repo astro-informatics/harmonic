@@ -342,7 +342,7 @@ def run_example(model_1=True, tau=1.0,
     # Display more technical details
     #===========================================================================
     hm.logs.debug_log('---------------------------------')
-    hm.logs.critical_log('Technical Details')
+    hm.logs.debug_log('Technical Details')
     hm.logs.debug_log('---------------------------------')
     hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
         .format(ev.lnargmax, ev.lnargmin))
@@ -353,7 +353,6 @@ def run_example(model_1=True, tau=1.0,
     hm.logs.debug_log('---------------------------------')
     hm.logs.debug_log('shift = {}, shift setting = {}'
         .format(ev.shift_value, ev.shift))
-    hm.logs.debug_log('statistic space = {}'.format(ev.statspace))
     hm.logs.debug_log('running sum total = {}'
         .format(sum(ev.running_sum)))
     hm.logs.debug_log('running sum = \n{}'
