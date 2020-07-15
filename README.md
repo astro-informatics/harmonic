@@ -15,7 +15,7 @@
 
 ### Set up conda environment
 
-```conda create --name harmonic python=3.6```
+```conda create --name harmonic python=3.6.1```
 
 ### Install dependencies for harmonic package
 
