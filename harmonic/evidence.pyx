@@ -397,7 +397,7 @@ class Evidence:
 
         ln_x = self.ln_evidence_inv_var - 2.0 * self.ln_evidence_inv
         x = np.exp(ln_x)
-        ln_evidence = np.log(1+x) - self.ln_evidence_inv
+        ln_evidence = np.log( 1.0 + x ) - self.ln_evidence_inv
         ln_evidence_std = 0.5*self.ln_evidence_inv_var \
             - 2.0*self.ln_evidence_inv
 
