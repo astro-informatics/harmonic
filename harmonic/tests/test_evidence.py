@@ -216,6 +216,8 @@ def test_compute_evidence():
     ev = cbe.Evidence(nchains, sphere)
     ev.evidence_inv = ev_inv
     ev.evidence_inv_var = ev_inv_var
+    ev.ln_evidence_inv = np.log(ev_inv)
+    ev.ln_evidence_inv_var = np.log(ev_inv_var)
     
     (evidence, evidence_std) = ev.compute_evidence()
     assert evidence \

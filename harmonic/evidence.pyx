@@ -395,12 +395,11 @@ class Evidence:
 
         self.check_basic_diagnostic()
 
-        common_factor = 1.0 + self.evidence_inv_var/(self.evidence_inv**2)
-
-        ln_evidence = np.log(common_factor) - np.log(self.evidence_inv)
-
-        ln_evidence_std = 0.5*np.log(self.evidence_inv_var) \
-            - 2.0*np.log(self.evidence_inv)
+        ln_x = self.ln_evidence_inv_var - 2.0 * self.ln_evidence_inv
+        x = np.exp(ln_x)
+        ln_evidence = np.log( 1.0 + x ) - self.ln_evidence_inv
+        ln_evidence_std = 0.5*self.ln_evidence_inv_var \
+            - 2.0*self.ln_evidence_inv
 
         return (ln_evidence, ln_evidence_std)
 
