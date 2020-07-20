@@ -35,6 +35,10 @@ How to Use This Guide
    :caption: Tutorials
    
    tutorials/overview
+   tutorials/basic_usage.nblink
+   tutorials/checkpointing.nblink
+   tutorials/cross-validation_hyper-parameters.nblink
+   tutorials/cross-validation_learnt_model.nblink
 
    
 .. toctree::
