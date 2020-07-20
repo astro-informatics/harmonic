@@ -13,6 +13,7 @@ script:
 after_success:
   - codecov --token d8f839b7-cf16-4d43-83c7-9d595f6e1d44
   - cd docs && make html
+  - pandoc --version
 deploy:
   provider: pages
   skip-cleanup: true
