@@ -430,8 +430,6 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
     hm.logs.debug_log('fit_success = {}'.format(fit_success))    
-    
-    model.set_R(model.R) # conservative reduction in R.
     hm.logs.debug_log('model.R = {}'.format(model.R))
     
     #===========================================================================
@@ -630,7 +628,7 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define parameters.
-    model_1 = False
+    model_1 = True
     nchains = 400
     samples_per_chain = 20000
     nburn = 2000
