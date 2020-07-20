@@ -12,6 +12,7 @@ script:
   - pytest --cov-report term --cov=harmonic --cov-config=.coveragerc
 after_success:
   - codecov --token d8f839b7-cf16-4d43-83c7-9d595f6e1d44
+  - pip install pandoc
   - cd docs && make html
   - pandoc --version
 deploy:
