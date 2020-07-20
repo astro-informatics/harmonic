@@ -375,6 +375,20 @@ if __name__ == '__main__':
     samples_per_chain = 5000
     nburn = 1000
     np.random.seed(3)
+
+
+    hm.logs.info_log('-- Selected Parameters --')
+
+    hm.logs.info_log('Number of chains = {}'.format(nchains))
+    hm.logs.info_log('Samples per chain = {}'.format(samples_per_chain))
+    hm.logs.info_log('Burn in = {}'.format(nburn))
+    hm.logs.info_log('Tau = {}'.format(Tau))
+    if model_1:
+        hm.logs.info_log('Using Model 1')
+    else:
+        hm.logs.info_log('Using Model 2')
+    
+    hm.logs.info_log('-------------------------')
     
     # Run example.
     samples = run_example(model_1, tau, nchains, samples_per_chain, nburn, 

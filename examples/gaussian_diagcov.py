@@ -138,7 +138,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         burn_iterations = 50
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))
         rstate = np.random.get_state() # Set random state to be repeatable.
-        for burn_iteration in range(burn_iterations+1):
+        for burn_iteration in range(burn_iterations):
             hm.logs.info_log('Run burn sampling for burning subiteration {}...'.format(
                     burn_iteration+1))
             # Clear memory
@@ -154,14 +154,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             else:
                 (pos, prob, rstate) = sampler.run_mcmc(pos, samples_per_chain-nburn, \
                                               rstate0=rstate) 
-        samples = np.ascontiguousarray(sampler.chain[:,:,:])
-        lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])
 
         # ======================================================================
         # Configure chains
         # ======================================================================
         chains = hm.Chains(ndim)
-        chains.add_chains_3d(samples, lnprob)
+        samples = []
+        lnprob = []
 
         # ======================================================================
         # Train hyper-spherical model 
@@ -175,7 +174,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # ======================================================================
         # Instantiate the evidence class
         hm.logs.info_log('Compute evidence...')
-        cal_ev = hm.Evidence(chains.nchains, model)
+        cal_ev = hm.Evidence(nchains, model)
 
         for chain_iteration in range(chain_iterations):
             hm.logs.info_log('Run sampling for chain subiteration {}...'.format(
@@ -187,7 +186,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Run the emcee sampler from previous endpoint
             sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
                                         args=[inv_cov])
-            (pos, prob, rstate) = sampler.run_mcmc(pos, (samples_per_chain-nburn)/10, \
+            (pos, prob, rstate) = sampler.run_mcmc(pos, (samples_per_chain-nburn)/40, \
                                               rstate0=rstate) 
             samples = np.ascontiguousarray(sampler.chain[:,:,:])
             lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])
@@ -198,7 +197,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Add these new chains to running sum
             cal_ev.add_chains(chains)
 
-        ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
+        # ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
 
         cal_ev.serialize(".test.gaussian_dim_{}.dat".format(ndim))
 
@@ -294,13 +293,23 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define parameters.
-    ndim = 32
+    ndim = 512
     nchains = 2*ndim
-    samples_per_chain = 10000
-    nburn = 7000
-    chain_iterations = 50
+    samples_per_chain = 20000
+    nburn = 15000
+    chain_iterations = 300
     np.random.seed(2)
+
+    hm.logs.info_log('-- Selected Parameters --')
+
+    hm.logs.info_log('Dimensionality = {}'.format(ndim))
+    hm.logs.info_log('Number of chains = {}'.format(nchains))
+    hm.logs.info_log('Samples per chain = {}'.format(samples_per_chain))
+    hm.logs.info_log('Burn in = {}'.format(nburn))
+    hm.logs.info_log('Number of additional chain iterations = {}'.format(chain_iterations))
     
+    hm.logs.info_log('-------------------------')
+
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, chain_iterations,
                 plot_corner=False, plot_surface=False)

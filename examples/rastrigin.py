@@ -408,6 +408,15 @@ if __name__ == '__main__':
     samples_per_chain = 5000
     nburn = 2000
     np.random.seed(20)
+
+    hm.logs.info_log('-- Selected Parameters --')
+
+    hm.logs.info_log('Dimensionality = {}'.format(ndim))
+    hm.logs.info_log('Number of chains = {}'.format(nchains))
+    hm.logs.info_log('Samples per chain = {}'.format(samples_per_chain))
+    hm.logs.info_log('Burn in = {}'.format(nburn))
+    
+    hm.logs.info_log('-------------------------')
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
