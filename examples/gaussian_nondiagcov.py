@@ -91,9 +91,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         plot_surface: Plot surface and samples if true.
 
     """
-    
-    hm.logs.info_log('Non-diagonal Covariance Guassian example')
-    hm.logs.info_log('Dimensionality = {}'.format(ndim))
+
     savefigs = True
 
     # Initialise covariance matrix.
@@ -355,15 +353,16 @@ if __name__ == '__main__':
     nburn = 500     
     np.random.seed(10)
 
+    hm.logs.info_log('Non-diagonal Covariance Guassian example')
 
-    hm.logs.info_log('-- Selected Parameters --')
+    hm.logs.debug_log('-- Selected Parameters --')
 
-    hm.logs.info_log('Dimensionality = {}'.format(ndim))
-    hm.logs.info_log('Number of chains = {}'.format(nchains))
-    hm.logs.info_log('Samples per chain = {}'.format(samples_per_chain))
-    hm.logs.info_log('Burn in = {}'.format(nburn))
+    hm.logs.debug_log('Dimensionality = {}'.format(ndim))
+    hm.logs.debug_log('Number of chains = {}'.format(nchains))
+    hm.logs.debug_log('Samples per chain = {}'.format(samples_per_chain))
+    hm.logs.debug_log('Burn in = {}'.format(nburn))
     
-    hm.logs.info_log('-------------------------')
+    hm.logs.debug_log('-------------------------')
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 

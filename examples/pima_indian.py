@@ -120,14 +120,12 @@ def run_example(model_1=True, tau=1.0,
 
     """
 
-    hm.logs.info_log('Pima Indian example')
-
     # Set_dimension
     if model_1:
         ndim = 5
     else:
         ndim = 6
-    hm.logs.info_log('Dimensionality = {}'.format(ndim))
+    hm.logs.debug_log('Dimensionality = {}'.format(ndim))
 
     #===========================================================================
     # Load Pima Indian data.
@@ -376,19 +374,21 @@ if __name__ == '__main__':
     nburn = 1000
     np.random.seed(3)
 
+    hm.logs.info_log('Pima Indian example')
 
-    hm.logs.info_log('-- Selected Parameters --')
-
-    hm.logs.info_log('Number of chains = {}'.format(nchains))
-    hm.logs.info_log('Samples per chain = {}'.format(samples_per_chain))
-    hm.logs.info_log('Burn in = {}'.format(nburn))
-    hm.logs.info_log('Tau = {}'.format(Tau))
     if model_1:
         hm.logs.info_log('Using Model 1')
     else:
         hm.logs.info_log('Using Model 2')
+
+    hm.logs.debug_log('-- Selected Parameters --')
+
+    hm.logs.debug_log('Number of chains = {}'.format(nchains))
+    hm.logs.debug_log('Samples per chain = {}'.format(samples_per_chain))
+    hm.logs.debug_log('Burn in = {}'.format(nburn))
+    hm.logs.debug_log('Tau = {}'.format(Tau))
     
-    hm.logs.info_log('-------------------------')
+    hm.logs.debug_log('-------------------------')
     
     # Run example.
     samples = run_example(model_1, tau, nchains, samples_per_chain, nburn, 
