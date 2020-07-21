@@ -104,9 +104,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     """
 
-    hm.logs.info_log('Rastrigin example')
-    hm.logs.info_log('Dimensionality = {}'.format(ndim)) 
-
     if ndim != 2:
         raise ValueError("Only ndim=2 is supported (ndim={} specified)"
             .format(ndim))
@@ -408,6 +405,18 @@ if __name__ == '__main__':
     samples_per_chain = 5000
     nburn = 2000
     np.random.seed(20)
+
+
+    hm.logs.info_log('Rastrigin example')
+
+    hm.logs.debug_log('-- Selected Parameters --')
+
+    hm.logs.debug_log('Dimensionality = {}'.format(ndim))
+    hm.logs.debug_log('Number of chains = {}'.format(nchains))
+    hm.logs.debug_log('Samples per chain = {}'.format(samples_per_chain))
+    hm.logs.debug_log('Burn in = {}'.format(nburn))
+    
+    hm.logs.debug_log('-------------------------')
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 

@@ -315,9 +315,8 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
 
     """
        
-    hm.logs.info_log('Radiata Pine example')
     ndim=3
-    hm.logs.info_log('Dimensionality = {}'.format(ndim))
+    hm.logs.debug_log('Dimensionality = {}'.format(ndim))
          
     # Set general parameters.    
     savefigs = True
@@ -336,6 +335,11 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     s_0 = 6.0
     a_0 = 3.0
     b_0 = 2.0 * 300**2
+
+    hm.logs.debug_log('r_0 = {}'.format(r_0))
+    hm.logs.debug_log('s_0 = {}'.format(s_0))
+    hm.logs.debug_log('a_0 = {}'.format(a_0))
+    hm.logs.debug_log('b_0 = {}'.format(b_0))
     
     #===========================================================================
     # Load Radiata Pine data.
@@ -633,7 +637,22 @@ if __name__ == '__main__':
     samples_per_chain = 20000
     nburn = 2000
     np.random.seed(2)
+
+    hm.logs.info_log('Radiata Pine example')
+
+    if model_1:
+        hm.logs.info_log('Using Model 1')
+    else:
+        hm.logs.info_log('Using Model 2')
+
+    hm.logs.debug_log('-- Selected Parameters --')
+
+    hm.logs.debug_log('Number of chains = {}'.format(nchains))
+    hm.logs.debug_log('Samples per chain = {}'.format(samples_per_chain))
+    hm.logs.debug_log('Burn in = {}'.format(nburn))
     
+    hm.logs.debug_log('-------------------------')
+
     # Run example.
     samples = run_example(model_1, nchains, samples_per_chain, nburn, 
                           plot_corner=True, plot_surface=True)
