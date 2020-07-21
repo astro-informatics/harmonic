@@ -163,7 +163,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Instantiate the evidence class
     hm.logs.info_log('Compute evidence...')
     cal_ev = hm.Evidence(nchains, model)
-    sample_fraction = 10
 
     for chain_iteration in range(chain_iterations):
         hm.logs.info_log('Run sampling for chain subiteration {}...'.format(
@@ -176,7 +175,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
                                     args=[inv_cov])
         (pos, prob, rstate) = sampler.run_mcmc(pos, \
-                             (samples_per_chain-nburn)/sample_fraction, \
+                             (samples_per_chain-nburn)/chain_iterations, \
                               rstate0=rstate) 
         samples = np.ascontiguousarray(sampler.chain[:,:,:])
         lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])
@@ -186,8 +185,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         # Add these new chains to running sum
         cal_ev.add_chains(chains)
-
-    # ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
 
     cal_ev.serialize(".test.gaussian_dim_{}.dat".format(ndim))
 
@@ -270,7 +267,7 @@ if __name__ == '__main__':
     nchains = 2*ndim
     samples_per_chain = 10000
     nburn = 7000
-    chain_iterations = 50
+    chain_iterations = 200
     np.random.seed(2)
 
     hm.logs.info_log('nD Guassian example')
