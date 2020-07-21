@@ -211,258 +211,245 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Run many realisations for each Tau value.
     """
-    n_realisations = 25
     for i_tau, tau_prior in enumerate(tau_array):
         hm.logs.info_log('Considering tau = {}...'.format(tau_prior))
 
         prior_params = (0.0, tau_prior, 1E-3, 1E-3)
 
-        #=======================================================================
-        # Begin multiple realisations of estimator
-        #=======================================================================
+        #===================================================================
+        # Run Emcee to recover posterior sampels 
+        #===================================================================
+        hm.logs.info_log('Run sampling...')
         """
-        Set up and run multiple simulations
+        Feed emcee the ln_posterior function, starting positions and recover 
+        chains.
         """
-        for i_real in range(n_realisations):
+        pos = [np.array([x_mean, 1.0/x_std**2]) \
+               + x_std * np.random.randn(ndim) / np.sqrt(x_n) \
+               for i in range(nchains)]
+        sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
+            args=(x_mean, x_std, x_n, prior_params))
+        rstate = np.random.get_state()
+        sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
+        samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
+        lnprob = np.ascontiguousarray(sampler.lnprobability[:,nburn:])
 
-            if n_realisations > 1:
-                hm.logs.info_log('Realisation number = {}/{}'
-                    .format(i_real, n_realisations))
+        #===================================================================
+        # Configure emcee chains for harmonic
+        #===================================================================
+        hm.logs.info_log('Configure chains...')
+        """
+        Configure chains for the cross validation stage.
+        """
+        chains = hm.Chains(ndim)
+        chains.add_chains_3d(samples, lnprob)
+        chains_train, chains_test = hm.utils.split_data(chains, \
+            training_proportion=training_proportion)
 
-            #===================================================================
-            # Run Emcee to recover posterior sampels 
-            #===================================================================
-            hm.logs.info_log('Run sampling...')
-            """
-            Feed emcee the ln_posterior function, starting positions and recover 
-            chains.
-            """
-            pos = [np.array([x_mean, 1.0/x_std**2]) \
-                   + x_std * np.random.randn(ndim) / np.sqrt(x_n) \
-                   for i in range(nchains)]
-            sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
-                args=(x_mean, x_std, x_n, prior_params))
-            rstate = np.random.get_state()
-            sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
-            samples = np.ascontiguousarray(sampler.chain[:,nburn:,:])
-            lnprob = np.ascontiguousarray(sampler.lnprobability[:,nburn:])
+        #===================================================================
+        # Perform cross-validation
+        #===================================================================
+        hm.logs.info_log('Perform cross-validation...')
+        """
+        There are several different machine learning models. 
+        Cross-validation allows the software to select the optimal model 
+        and the optimal model hyper-parameters for a given situation.
+        """
+        validation_variances_MGMM = \
+            hm.utils.cross_validation(chains_train,
+                domains_MGMM, \
+                hyper_parameters_MGMM, \
+                nfold=nfold,
+                modelClass=hm.model.ModifiedGaussianMixtureModel, \
+                seed=0)
+        hm.logs.debug_log('validation_variances_MGMM = {}'
+            .format(validation_variances_MGMM))
+        best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
+        best_hyper_param_MGMM = \
+            hyper_parameters_MGMM[best_hyper_param_MGMM_ind]
 
-            #===================================================================
-            # Configure emcee chains for harmonic
-            #===================================================================
-            hm.logs.info_log('Configure chains...')
-            """
-            Configure chains for the cross validation stage.
-            """
-            chains = hm.Chains(ndim)
-            chains.add_chains_3d(samples, lnprob)
-            chains_train, chains_test = hm.utils.split_data(chains, \
-                training_proportion=training_proportion)
+        validation_variances_sphere = \
+            hm.utils.cross_validation(chains_train,
+                domains_sphere, \
+                hyper_parameters_sphere, nfold=nfold,
+                modelClass=hm.model.HyperSphere,
+                seed=0)
+        hm.logs.debug_log('validation_variances_sphere = {}'
+            .format(validation_variances_sphere))
+        best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
+        best_hyper_param_sphere = \
+            hyper_parameters_sphere[best_hyper_param_sphere_ind]
 
-            #===================================================================
-            # Perform cross-validation
-            #===================================================================
-            hm.logs.info_log('Perform cross-validation...')
-            """
-            There are several different machine learning models. 
-            Cross-validation allows the software to select the optimal model 
-            and the optimal model hyper-parameters for a given situation.
-            """
-            validation_variances_MGMM = \
-                hm.utils.cross_validation(chains_train,
-                    domains_MGMM, \
-                    hyper_parameters_MGMM, \
-                    nfold=nfold,
-                    modelClass=hm.model.ModifiedGaussianMixtureModel, \
-                    seed=0)
-            hm.logs.debug_log('validation_variances_MGMM = {}'
-                .format(validation_variances_MGMM))
-            best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
-            best_hyper_param_MGMM = \
-                hyper_parameters_MGMM[best_hyper_param_MGMM_ind]
+        #===================================================================
+        # Fit optimal model hyper-parameters
+        #===================================================================
+        hm.logs.info_log('Fit model...')
+        """
+        Fit model by selecing the configuration of hyper-parameters which 
+        minimises the validation variances.
+        """
+        best_var_MGMM = \
+            validation_variances_MGMM[best_hyper_param_MGMM_ind]
+        best_var_sphere = \
+            validation_variances_sphere[best_hyper_param_sphere_ind]
+        if best_var_MGMM < best_var_sphere:
+            hm.logs.debug_log('Using MGMM with hyper_parameters = {}'
+                .format(best_hyper_param_MGMM))
+            model = hm.model.ModifiedGaussianMixtureModel(ndim, \
+                domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
+        else:
+            hm.logs.debug_log('Using HyperSphere')
+            model = hm.model.HyperSphere(ndim, domains_sphere, \
+                hyper_parameters=best_hyper_param_sphere)
+        fit_success = model.fit(chains_train.samples,
+                                chains_train.ln_posterior)
+        hm.logs.debug_log('Fit success = {}'.format(fit_success))
 
-            validation_variances_sphere = \
-                hm.utils.cross_validation(chains_train,
-                    domains_sphere, \
-                    hyper_parameters_sphere, nfold=nfold,
-                    modelClass=hm.model.HyperSphere,
-                    seed=0)
-            hm.logs.debug_log('validation_variances_sphere = {}'
-                .format(validation_variances_sphere))
-            best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
-            best_hyper_param_sphere = \
-                hyper_parameters_sphere[best_hyper_param_sphere_ind]
+        #===================================================================
+        # Computing evidence using learnt model and emcee chains
+        #===================================================================
+        hm.logs.info_log('Compute evidence...')
+        """
+        Instantiates the evidence class with a given model. Adds some chains 
+        and computes the log-space evidence (marginal likelihood).
+        """
+        ev = hm.Evidence(chains_test.nchains, model)
+        ev.add_chains(chains_test)
+        ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
-            #===================================================================
-            # Fit optimal model hyper-parameters
-            #===================================================================
-            hm.logs.info_log('Fit model...')
-            """
-            Fit model by selecing the configuration of hyper-parameters which 
-            minimises the validation variances.
-            """
-            best_var_MGMM = \
-                validation_variances_MGMM[best_hyper_param_MGMM_ind]
-            best_var_sphere = \
-                validation_variances_sphere[best_hyper_param_sphere_ind]
-            if best_var_MGMM < best_var_sphere:
-                hm.logs.debug_log('Using MGMM with hyper_parameters = {}'
-                    .format(best_hyper_param_MGMM))
-                model = hm.model.ModifiedGaussianMixtureModel(ndim, \
-                    domains_MGMM, hyper_parameters=best_hyper_param_MGMM)
-            else:
-                hm.logs.debug_log('Using HyperSphere')
-                model = hm.model.HyperSphere(ndim, domains_sphere, \
-                    hyper_parameters=best_hyper_param_sphere)
-            fit_success = model.fit(chains_train.samples,
-                                    chains_train.ln_posterior)
-            hm.logs.debug_log('Fit success = {}'.format(fit_success))
+        # Compute analytic evidence.
+        ln_evidence_analytic = ln_analytic_evidence(x_mean, \
+            x_std, x_n, prior_params)
+        evidence_analytic = np.exp(ln_evidence_analytic)
 
-            #===================================================================
-            # Computing evidence using learnt model and emcee chains
-            #===================================================================
-            hm.logs.info_log('Compute evidence...')
-            """
-            Instantiates the evidence class with a given model. Adds some chains 
-            and computes the log-space evidence (marginal likelihood).
-            """
-            ev = hm.Evidence(chains_test.nchains, model)
-            ev.add_chains(chains_test)
-            ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
+        # Collate values.
+        summary[i_tau, 0] = tau_prior
+        summary[i_tau, 1] = ln_evidence_analytic
+        summary[i_tau, 2] = ln_evidence
+        summary[i_tau, 3] = ln_evidence_std
 
-            # Compute analytic evidence.
-            ln_evidence_analytic = ln_analytic_evidence(x_mean, \
-                x_std, x_n, prior_params)
-            evidence_analytic = np.exp(ln_evidence_analytic)
+        # ==================================================================
+        # Display evidence computation results.
+        # ==================================================================
+        hm.logs.info_log('Evidence: analytic = {}, estimated = {}'
+            .format(evidence_analytic, np.exp(ln_evidence)))
+        hm.logs.info_log('Evidence: std = {}, std / estimated = {}'
+            .format(np.exp(ln_evidence_std), \
+                    np.exp(ln_evidence_std - ln_evidence)))
+        diff = np.log(np.abs(evidence_analytic - np.exp(ln_evidence)))
+        hm.logs.info_log('Evidence: 100 * |analytic - estimated| / estimated = {}%'
+            .format(100.0 * np.exp(diff - ln_evidence)))
 
-            # Collate values.
-            summary[i_tau, 0] = tau_prior
-            summary[i_tau, 1] = ln_evidence_analytic
-            summary[i_tau, 2] = ln_evidence
-            summary[i_tau, 3] = ln_evidence_std
+        # ==================================================================
+        # Display logarithmic evidence computation results.
+        # ==================================================================
+        hm.logs.debug_log('Ln Evidence: analytic = {}, estimated = {}'
+            .format(ln_evidence_analytic, ln_evidence))
+        diff = np.abs(ln_evidence_analytic - ln_evidence)
+        hm.logs.debug_log('Ln Evidence: 100 * |analytic - estimated| / estimated = {}%'
+                          .format(diff/ln_evidence))
 
-            # ==================================================================
-            # Display evidence computation results.
-            # ==================================================================
-            hm.logs.info_log('Evidence: analytic = {}, estimated = {}'
-                .format(evidence_analytic, np.exp(ln_evidence)))
-            hm.logs.info_log('Evidence: std = {}, std / estimated = {}'
-                .format(np.exp(ln_evidence_std), \
-                        np.exp(ln_evidence_std - ln_evidence)))
-            diff = np.log(np.abs(evidence_analytic - np.exp(ln_evidence)))
-            hm.logs.info_log('Evidence: 100 * |analytic - estimated| / estimated = {}%'
-                .format(100.0 * np.exp(diff - ln_evidence)))
+        #===========================================================================
+        # Display more technical details
+        #===========================================================================
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('Technical Details')
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
+            .format(ev.lnargmax, ev.lnargmin))
+        hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
+            .format(ev.lnprobmax, ev.lnprobmin))
+        hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
+            .format(ev.lnpredictmax, ev.lnpredictmin))
+        hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('shift = {}, shift setting = {}'
+            .format(ev.shift_value, ev.shift))
+        hm.logs.debug_log('running sum total = {}'
+            .format(sum(ev.running_sum)))
+        hm.logs.debug_log('running sum = \n{}'
+            .format(ev.running_sum))
+        hm.logs.debug_log('nsamples per chain = \n{}'
+            .format(ev.nsamples_per_chain))
+        hm.logs.debug_log('nsamples eff per chain = \n{}'
+            .format(ev.nsamples_eff_per_chain))
+        hm.logs.debug_log('===============================')
 
-            # ==================================================================
-            # Display logarithmic evidence computation results.
-            # ==================================================================
-            hm.logs.debug_log('Ln Evidence: analytic = {}, estimated = {}'
-                .format(ln_evidence_analytic, ln_evidence))
-            diff = np.abs(ln_evidence_analytic - ln_evidence)
-            hm.logs.debug_log('Ln Evidence: 100 * |analytic - estimated| / estimated = {}%'
-                              .format(diff/ln_evidence))
+        # Create corner/triangle plot.
+        if plot_corner:
 
-            #===========================================================================
-            # Display more technical details
-            #===========================================================================
-            hm.logs.debug_log('---------------------------------')
-            hm.logs.debug_log('Technical Details')
-            hm.logs.debug_log('---------------------------------')
-            hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
-                .format(ev.lnargmax, ev.lnargmin))
-            hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
-                .format(ev.lnprobmax, ev.lnprobmin))
-            hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
-                .format(ev.lnpredictmax, ev.lnpredictmin))
-            hm.logs.debug_log('---------------------------------')
-            hm.logs.debug_log('shift = {}, shift setting = {}'
-                .format(ev.shift_value, ev.shift))
-            hm.logs.debug_log('running sum total = {}'
-                .format(sum(ev.running_sum)))
-            hm.logs.debug_log('running sum = \n{}'
-                .format(ev.running_sum))
-            hm.logs.debug_log('nsamples per chain = \n{}'
-                .format(ev.nsamples_per_chain))
-            hm.logs.debug_log('nsamples eff per chain = \n{}'
-                .format(ev.nsamples_eff_per_chain))
-            hm.logs.debug_log('===============================')
+            labels = [r'$\mu$', r'$\tau$']
+            utils.plot_corner(samples.reshape((-1, ndim)), labels)
+            if savefigs:
+                plt.savefig('examples/plots/normalgamma_corner_tau' +
+                            str(tau_prior) +
+                            '.pdf',
+                            bbox_inches='tight')
 
-            # Create corner/triangle plot.
-            if plot_corner:
+            labels = [r'\mu', r'\tau']
+            utils.plot_getdist(samples.reshape((-1, ndim)), labels)
+            if savefigs:
+                plt.savefig('examples/plots/normalgamma_getdist_tau' +
+                            str(tau_prior) +
+                            '.pdf',
+                            bbox_inches='tight')
 
-                labels = [r'$\mu$', r'$\tau$']
-                utils.plot_corner(samples.reshape((-1, ndim)), labels)
-                if savefigs:
-                    plt.savefig('examples/plots/normalgamma_corner_tau' +
-                                str(tau_prior) +
-                                '.pdf',
-                                bbox_inches='tight')
+            plt.show(block=False)
+            created_plots = True
 
-                labels = [r'\mu', r'\tau']
-                utils.plot_getdist(samples.reshape((-1, ndim)), labels)
-                if savefigs:
-                    plt.savefig('examples/plots/normalgamma_getdist_tau' +
-                                str(tau_prior) +
-                                '.pdf',
-                                bbox_inches='tight')
+        if plot_surface:
 
-                plt.show(block=False)
-                created_plots = True
+            # Evaluate posterior on grid.
+            ln_posterior_func = partial(ln_posterior,
+                x_mean=x_mean, x_std=x_std, x_n=x_n,
+                prior_params=prior_params)
+            ln_posterior_grid, x_grid, y_grid = \
+                utils.eval_func_on_grid(ln_posterior_func,
+                                        xmin=-0.6, xmax=0.6,
+                                        ymin=0.4, ymax=1.8,
+                                        nx=500, ny=500)
 
-            if plot_surface:
+            # Plot posterior image.
+            ax = utils.plot_image(np.exp(ln_posterior_grid),
+                                  x_grid, y_grid,
+                                  samples=None,
+                                  #samples.reshape((-1,ndim)),
+                                  colorbar_label=r'$\mathcal{L}$')
+            # ax.set_clim(vmin=0.0, vmax=0.003)
+            if savefigs:
+                plt.savefig('examples/plots/' +
+                            'normalgamma_posterior_image' +
+                            str(tau_prior) + '.png',
+                            bbox_inches='tight')
 
-                # Evaluate posterior on grid.
-                ln_posterior_func = partial(ln_posterior,
-                    x_mean=x_mean, x_std=x_std, x_n=x_n,
-                    prior_params=prior_params)
-                ln_posterior_grid, x_grid, y_grid = \
-                    utils.eval_func_on_grid(ln_posterior_func,
-                                            xmin=-0.6, xmax=0.6,
-                                            ymin=0.4, ymax=1.8,
-                                            nx=500, ny=500)
+            # Evaluate model on grid.
+            model_grid, x_grid, y_grid = \
+                utils.eval_func_on_grid(model.predict,
+                                        xmin=-0.6, xmax=0.6,
+                                        ymin=0.4, ymax=1.8,
+                                        nx=500, ny=500)
 
-                # Plot posterior image.
-                ax = utils.plot_image(np.exp(ln_posterior_grid),
-                                      x_grid, y_grid,
-                                      samples=None,
-                                      #samples.reshape((-1,ndim)),
-                                      colorbar_label=r'$\mathcal{L}$')
-                # ax.set_clim(vmin=0.0, vmax=0.003)
-                if savefigs:
-                    plt.savefig('examples/plots/' +
-                                'normalgamma_posterior_image' +
-                                str(tau_prior) + '.png',
-                                bbox_inches='tight')
+            # Plot model.
+            ax = utils.plot_image(model_grid, x_grid, y_grid,
+                colorbar_label=r'$\log \varphi$')
+            # ax.set_clim(vmin=-2.0, vmax=2.0)
+            if savefigs:
+                plt.savefig('examples/plots/' +
+                            'normalgamma_model_image' +
+                            str(tau_prior) +
+                            '.png',
+                            bbox_inches='tight')
 
-                # Evaluate model on grid.
-                model_grid, x_grid, y_grid = \
-                    utils.eval_func_on_grid(model.predict,
-                                            xmin=-0.6, xmax=0.6,
-                                            ymin=0.4, ymax=1.8,
-                                            nx=500, ny=500)
-
-                # Plot model.
-                ax = utils.plot_image(model_grid, x_grid, y_grid,
-                    colorbar_label=r'$\log \varphi$')
-                # ax.set_clim(vmin=-2.0, vmax=2.0)
-                if savefigs:
-                    plt.savefig('examples/plots/' +
-                                'normalgamma_model_image' +
-                                str(tau_prior) +
-                                '.png',
-                                bbox_inches='tight')
-
-                # Plot exponential of model.
-                ax = utils.plot_image(np.exp(model_grid),
-                                      x_grid, y_grid,
-                                      colorbar_label=r'$\varphi$')
-                # ax.set_clim(vmin=0.0, vmax=10.0)
-                if savefigs:
-                    plt.savefig('examples/plots/' +
-                                'normalgamma_modelexp_image' +
-                                str(tau_prior) +
-                                '.png',
-                                bbox_inches='tight')
+            # Plot exponential of model.
+            ax = utils.plot_image(np.exp(model_grid),
+                                  x_grid, y_grid,
+                                  colorbar_label=r'$\varphi$')
+            # ax.set_clim(vmin=0.0, vmax=10.0)
+            if savefigs:
+                plt.savefig('examples/plots/' +
+                            'normalgamma_modelexp_image' +
+                            str(tau_prior) +
+                            '.png',
+                            bbox_inches='tight')
 
     # Display summary results.
     hm.logs.info_log('tau_prior | ln_evidence_analytic | ln_evidence =')
@@ -508,7 +495,7 @@ if __name__ == '__main__':
     nchains = 200
     samples_per_chain = 1500
     nburn = 500
-    np.random.seed(2)
+    np.random.seed(1)
 
     hm.logs.info_log('Normal-Gamma example') 
 
