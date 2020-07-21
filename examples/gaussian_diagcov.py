@@ -118,172 +118,147 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Begin primary iterations
     # ==========================================================================
 
-    # Run multiple realisations.
-    n_realisations = 1
-    evidence_inv_summary = np.zeros((n_realisations,3))
     # Start timer.
     clock = time.clock()
-    for i_realisation in range(n_realisations):
 
-        if n_realisations > 0:
-            hm.logs.info_log('Realisation = {}/{}'
-                .format(i_realisation, n_realisations))
+    # ======================================================================
+    # Recover a set of MCMC samples from the posterior 
+    # ======================================================================
 
-        # ======================================================================
-        # Recover a set of MCMC samples from the posterior 
-        # ======================================================================
+    burn_iterations = 50
+    pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))
+    rstate = np.random.get_state() # Set random state to be repeatable.
 
-        burn_iterations = 50
-        pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))
-        rstate = np.random.get_state() # Set random state to be repeatable.
-        for burn_iteration in range(burn_iterations):
-            hm.logs.info_log('Run burn sampling for burning subiteration {}...'.format(
-                    burn_iteration+1))
-            # Clear memory
-            if burn_iteration > 0:
-                del sampler, prob
-                gc.collect()
-            # Run the emcee sampler from previous endpoint
-            sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
-                                        args=[inv_cov])
-            if burn_iteration < burn_iterations:
-                (pos, prob, rstate) = sampler.run_mcmc(pos, nburn/burn_iterations, \
-                                              rstate0=rstate) 
-            else:
-                (pos, prob, rstate) = sampler.run_mcmc(pos, samples_per_chain-nburn, \
-                                              rstate0=rstate) 
-
-        # ======================================================================
-        # Configure chains
-        # ======================================================================
-        chains = hm.Chains(ndim)
-        samples = []
-        lnprob = []
-
-        # ======================================================================
-        # Train hyper-spherical model 
-        # ======================================================================
-        model = hm.model.HyperSphere(ndim, domains_sphere)
-        model.set_R(max_r_prob)
-        model.fitted = True
-        
-        # ======================================================================
-        # Compute ln evidence by iteratively adding chains
-        # ======================================================================
-        # Instantiate the evidence class
-        hm.logs.info_log('Compute evidence...')
-        cal_ev = hm.Evidence(nchains, model)
-
-        for chain_iteration in range(chain_iterations):
-            hm.logs.info_log('Run sampling for chain subiteration {}...'.format(
-                    chain_iteration+1))
-
-            # Clear memory
-            del chains, samples, lnprob, sampler, prob
+    for burn_iteration in range(burn_iterations):
+        hm.logs.info_log('Run burn sampling for burning subiteration {}...'.format(
+                burn_iteration+1))
+        # Clear memory
+        if burn_iteration > 0:
+            del sampler, prob
             gc.collect()
-            # Run the emcee sampler from previous endpoint
-            sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
-                                        args=[inv_cov])
-            (pos, prob, rstate) = sampler.run_mcmc(pos, (samples_per_chain-nburn)/10, \
-                                              rstate0=rstate) 
-            samples = np.ascontiguousarray(sampler.chain[:,:,:])
-            lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])
-            # Create a new chains class and add the new chains
-            chains = hm.Chains(ndim)
-            chains.add_chains_3d(samples, lnprob)
+        # Run the emcee sampler from previous endpoint
+        sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
+                                    args=[inv_cov])
 
-            # Add these new chains to running sum
-            cal_ev.add_chains(chains)
+        (pos, prob, rstate) = sampler.run_mcmc(pos, nburn/burn_iterations, \
+                                      rstate0=rstate) 
 
-        # ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
+    # ======================================================================
+    # Configure chains
+    # ======================================================================
+    chains = hm.Chains(ndim)
+    samples = []
+    lnprob = []
 
-        cal_ev.serialize(".test.gaussian_dim_{}.dat".format(ndim))
+    # ======================================================================
+    # Train hyper-spherical model 
+    # ======================================================================
+    model = hm.model.HyperSphere(ndim, domains_sphere)
+    model.set_R(max_r_prob)
+    model.fitted = True
+    
+    # ======================================================================
+    # Compute ln evidence by iteratively adding chains
+    # ======================================================================
+    # Instantiate the evidence class
+    hm.logs.info_log('Compute evidence...')
+    cal_ev = hm.Evidence(nchains, model)
+    sample_fraction = 10
 
-        # ======================================================================
-        # Display logarithmic inverse evidence computation results.
-        # ======================================================================
-        hm.logs.info_log('Ln Inv Evidence: analytic = {}, estimate = {}'
-            .format(ln_rho, cal_ev.ln_evidence_inv))
-        hm.logs.info_log('Ln Inv Evidence: 100 * |analytic - estimate| / |analytic| = {}%'
-            .format(100.0 * np.abs( (cal_ev.ln_evidence_inv - ln_rho) \
-                                                                 / ln_rho ))) 
-        # ======================================================================
-        # Display inverse evidence computation results.
-        # ======================================================================
-        hm.logs.debug_log('---------------------------------')
-        hm.logs.debug_log('Inv Evidence: analytic = {}, estimate = {}'
-            .format(np.exp(ln_rho), cal_ev.evidence_inv))
-        hm.logs.debug_log('Inv Evidence: std = {}, std / estimate = {}'
-            .format(np.sqrt(cal_ev.evidence_inv_var), \
-                    np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv))
-        hm.logs.info_log("Inv Evidence: 100 * |analytic - estimate| / estimate = {}%"
-            .format(100.0 * np.abs( np.exp(ln_rho) - cal_ev.evidence_inv ) \
-                                                   / cal_ev.evidence_inv ) )
+    for chain_iteration in range(chain_iterations):
+        hm.logs.info_log('Run sampling for chain subiteration {}...'.format(
+                chain_iteration+1))
 
-        #===========================================================================
-        # Display more technical details
-        #===========================================================================
-        hm.logs.debug_log('---------------------------------')
-        hm.logs.debug_log('Technical Details')
-        hm.logs.debug_log('---------------------------------')
-        hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
-            .format(ev.lnargmax, ev.lnargmin))
-        hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
-            .format(ev.lnprobmax, ev.lnprobmin))
-        hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
-            .format(ev.lnpredictmax, ev.lnpredictmin))
-        hm.logs.debug_log('---------------------------------')
-        hm.logs.debug_log('shift = {}, shift setting = {}'
-            .format(ev.shift_value, ev.shift))
-        hm.logs.debug_log('running sum total = {}'
-            .format(sum(ev.running_sum)))
-        hm.logs.debug_log('running sum = \n{}'
-            .format(ev.running_sum))
-        hm.logs.debug_log('nsamples per chain = \n{}'
-            .format(ev.nsamples_per_chain))
-        hm.logs.debug_log('nsamples eff per chain = \n{}'
-            .format(ev.nsamples_eff_per_chain))
-        hm.logs.debug_log('===============================')
+        # Clear memory
+        del chains, samples, lnprob, sampler, prob
+        gc.collect()
+        # Run the emcee sampler from previous endpoint
+        sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, \
+                                    args=[inv_cov])
+        (pos, prob, rstate) = sampler.run_mcmc(pos, \
+                             (samples_per_chain-nburn)/sample_fraction, \
+                              rstate0=rstate) 
+        samples = np.ascontiguousarray(sampler.chain[:,:,:])
+        lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])
+        # Create a new chains class and add the new chains
+        chains = hm.Chains(ndim)
+        chains.add_chains_3d(samples, lnprob)
+
+        # Add these new chains to running sum
+        cal_ev.add_chains(chains)
+
+    # ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()
+
+    cal_ev.serialize(".test.gaussian_dim_{}.dat".format(ndim))
+
+    # ======================================================================
+    # Display logarithmic inverse evidence computation results.
+    # ======================================================================
+    hm.logs.info_log('Ln Inv Evidence: analytic = {}, estimate = {}'
+        .format(ln_rho, cal_ev.ln_evidence_inv))
+    hm.logs.info_log('Ln Inv Evidence: 100 * |analytic - estimate| / |analytic| = {}%'
+        .format(100.0 * np.abs( (cal_ev.ln_evidence_inv - ln_rho) \
+                                                             / ln_rho ))) 
+    # ======================================================================
+    # Display inverse evidence computation results.
+    # ======================================================================
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('Inv Evidence: analytic = {}, estimate = {}'
+        .format(np.exp(ln_rho), cal_ev.evidence_inv))
+    hm.logs.debug_log('Inv Evidence: std = {}, std / estimate = {}'
+        .format(np.sqrt(cal_ev.evidence_inv_var), \
+                np.sqrt(cal_ev.evidence_inv_var)/cal_ev.evidence_inv))
+    hm.logs.info_log("Inv Evidence: 100 * |analytic - estimate| / estimate = {}%"
+        .format(100.0 * np.abs( np.exp(ln_rho) - cal_ev.evidence_inv ) \
+                                               / cal_ev.evidence_inv ) )
+
+    #===========================================================================
+    # Display more technical details
+    #===========================================================================
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('Technical Details')
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('lnargmax = {}, lnargmin = {}'
+        .format(cal_ev.lnargmax, cal_ev.lnargmin))
+    hm.logs.debug_log('lnprobmax = {}, lnprobmin = {}'
+        .format(cal_ev.lnprobmax, cal_ev.lnprobmin))
+    hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
+        .format(cal_ev.lnpredictmax, cal_ev.lnpredictmin))
+    hm.logs.debug_log('---------------------------------')
+    hm.logs.debug_log('shift = {}, shift setting = {}'
+        .format(cal_ev.shift_value, cal_ev.shift))
+    hm.logs.debug_log('running sum total = {}'
+        .format(sum(cal_ev.running_sum)))
+    hm.logs.debug_log('running sum = \n{}'
+        .format(cal_ev.running_sum))
+    hm.logs.debug_log('nsamples per chain = \n{}'
+        .format(cal_ev.nsamples_per_chain))
+    hm.logs.debug_log('nsamples eff per chain = \n{}'
+        .format(cal_ev.nsamples_eff_per_chain))
+    hm.logs.debug_log('===============================')
+    
+    # ======================================================================
+    # Create corner/triangle plot.
+    # ======================================================================
+    created_plots = False
+    if plot_corner and i_realisation == 0:
         
-        # ======================================================================
-        # Create corner/triangle plot.
-        # ======================================================================
-        created_plots = False
-        if plot_corner and i_realisation == 0:
-            
-            utils.plot_corner(samples.reshape((-1, ndim)))
+        utils.plot_corner(samples.reshape((-1, ndim)))
 
-            if savefigs:
-                plt.savefig('examples/plots/nD_gaussian_corner.png',
-                            bbox_inches='tight')
+        if savefigs:
+            plt.savefig('examples/plots/nD_gaussian_corner.png',
+                        bbox_inches='tight')
 
-            plt.show(block=False)
-            created_plots = True
-
-        evidence_inv_summary[i_realisation,0] = cal_ev.evidence_inv
-        evidence_inv_summary[i_realisation,1] = cal_ev.evidence_inv_var
-        evidence_inv_summary[i_realisation,2] = cal_ev.evidence_inv_var_var
-
+        plt.show(block=False)
+        created_plots = True
 
     clock = time.clock() - clock
     hm.logs.info_log('Execution_time = {}s'.format(clock))
-
-    if n_realisations > 1:
-        np.savetxt("examples/data/nD_gaussian_evidence_inv" +
-                   "_realisations.dat",
-                   evidence_inv_summary)
-        evidence_inv_analytic_summary = np.zeros(1)
-        evidence_inv_analytic_summary[0] = np.exp(ln_rho)
-        np.savetxt("examples/data/nD_gaussian_evidence_inv" +
-                   "_analytic.dat",
-                   evidence_inv_analytic_summary)
 
     if created_plots:
         input("\nPress Enter to continue...")
     
     return samples
-
-
 
 if __name__ == '__main__':
 
