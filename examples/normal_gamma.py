@@ -212,6 +212,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Run many realisations for each Tau value.
     """
     for i_tau, tau_prior in enumerate(tau_array):
+        
         hm.logs.info_log('Considering tau = {}...'.format(tau_prior))
 
         prior_params = (0.0, tau_prior, 1E-3, 1E-3)
