@@ -44,7 +44,7 @@ setup(
     prefix='.',
     url='https://github.com/astro-informatics/harmonic',
     author='Jason McEwen & Constributors',
-    author_email='author_email@gmail.com',
+    author_email='jason.mcewen@ucl.ac.uk',
     install_requires=required,
     description='Python package for efficient Bayesian evidence computation',
     long_description=long_description,
