@@ -70,6 +70,14 @@ examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_ev
 
 `pytest --cov-report term --cov=harmonic --cov-config=.coveragerc`
 
+## Make pip installable
+
+'python setup.py bdist_wheel --universal'
+
+'twine upload --repository-url https://test.pypi.org/legacy/ dist/*'
+
+'pip install -i https://test.pypi.org/simple/ harmonic'
+
 
 ## License
 
