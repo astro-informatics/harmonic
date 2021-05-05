@@ -7,6 +7,8 @@ import scipy.optimize as so
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
 import logs as lg 
+import pickle
+
 
 class Model(metaclass=abc.ABCMeta):
     """Base abstract class for posterior model.
@@ -84,6 +86,42 @@ class Model(metaclass=abc.ABCMeta):
             (bool): Whether the model has been fitted.
 
         """
+
+    def serialize(self, filename):
+        """Serialize evidence object.
+
+        Args:
+
+            filename (string): Name of file to save evidence object.
+
+        """
+
+        file = open(filename, "wb")
+        pickle.dump(self, file)
+        file.close()
+
+        return
+
+
+    @classmethod
+    def deserialize(self, filename):
+        """Deserialize Evidence object from file.
+
+        Args:
+
+            filename (string): Name of file from which to read evidence object.
+
+        Returns:
+
+            (Evidence): Evidence object deserialized from file.
+
+        """
+        file = open(filename,"rb")
+        ev = pickle.load(file)
+        file.close()
+
+        return ev
+
 
 
 #===============================================================================

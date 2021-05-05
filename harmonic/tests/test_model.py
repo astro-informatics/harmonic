@@ -734,5 +734,62 @@ def test_ModifiedGaussianMixtureModel_fit():
 
     return
 
+def test_model_serialization():
+
+    ndim = 2
+    domain = [np.array([1E-1,1E1])]
+
+    sphere = md.HyperSphere(ndim, domain)
+
+    nsamples = 10000
+
+    with pytest.raises(ValueError):
+        sphere.fit(np.ones((nsamples,ndim+1)),np.ones(nsamples))
+    with pytest.raises(ValueError):
+        sphere.fit(np.ones((nsamples,ndim)),np.ones(nsamples+1))
+
+    X = np.ones((nsamples,ndim))
+    Y = np.ones(nsamples)
+    
+    X[0,0] = np.nan
+    with pytest.raises(ValueError):
+        sphere.fit(X,Y)
+
+    np.random.seed(30)
+    X = np.random.randn(nsamples,ndim)
+    Y = -np.sum(X*X,axis=1)/2.0
+
+    success, _ = sphere.fit(X, Y)
+    assert success == True
+    assert sphere.R         == pytest.approx(1.910259417) 
+    assert sphere.fitted    == True
+
+    np.random.seed(30)
+    X = np.random.randn(nsamples,ndim)+1.0
+    Y = -np.sum((X-1.0)**2,axis=1)/2.0
+
+    del sphere
+    sphere = md.HyperSphere(ndim, domain)
+    success, _ = sphere.fit(X, Y)
+    assert success == True
+    assert sphere.R         == pytest.approx(1.910259417)
+
+    np.random.seed(30)
+    X = np.random.randn(nsamples,ndim)
+    X[:,1] = X[:,1]*0.5
+    Y = -X[:,0]*X[:,0]/2.0 - X[:,1]*X[:,1]/(2.0*0.25)
+
+    del sphere
+    sphere = md.HyperSphere(ndim, domain)
+    success, _ = sphere.fit(X, Y)
+    assert success == True
+    assert sphere.R         == pytest.approx(1.910259417)
+
+    # Serialize model
+    sphere.serialize(".test.dat")
+
+    # Deserialize model
+    sphere2 = md.HyperSphere.deserialize(".test.dat")
+    assert sphere2.R == sphere.R 
 
 
