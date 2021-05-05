@@ -177,7 +177,7 @@ def cross_validation(chains,
     cdef set posible_models
     cdef list indexes, indexes_val, indexes_fit, hyper_parameter
 
-    cdef np.ndarray[double, ndim=2, mode='c'] validation_variances = \
+    cdef np.ndarray[double, ndim=2, mode='c'] ln_validation_variances = \
             np.zeros((nfold,len(hyper_parameters)))
 
     if seed > 0:
@@ -220,6 +220,6 @@ def cross_validation(chains,
             lg.debug_log('cross_validation: evidence_inv_var_var = {}'
                   .format(ev.evidence_inv_var_var))
 
-            validation_variances[i_fold,i_val] = ev.ln_evidence_inv_var
+            ln_validation_variances[i_fold,i_val] = ev.ln_evidence_inv_var
 
-    return np.nanmean(validation_variances, axis=0)
+    return np.nanmean(ln_validation_variances, axis=0)
