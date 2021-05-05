@@ -144,8 +144,8 @@ def cross_validation(chains,
     First, splits data into nfold chunks. Second, fits the model using each of 
     the hyper parameters given using all but one of the chunks (the validation 
     chunk). This procedure is performed for all the chunks and the average 
-    (mean) variance from all the chunks is computed and return.  This can be 
-    used to decide which hyper parameters list was better.
+    (mean) log-space variance from all the chunks is computed and returned.  
+    This can be used to decide which hyper parameters list was better.
 
     Args:
 
@@ -165,7 +165,7 @@ def cross_validation(chains,
 
     Returns:
 
-        (list): Mean validation variance (averaged over nfolds) for each hyperparameter.
+        (list): Mean log validation variance (averaged over nfolds) for each hyperparameter.
 
     Raises:
 
@@ -177,7 +177,7 @@ def cross_validation(chains,
     cdef set posible_models
     cdef list indexes, indexes_val, indexes_fit, hyper_parameter
 
-    cdef np.ndarray[double, ndim=2, mode='c'] validation_variances = \
+    cdef np.ndarray[double, ndim=2, mode='c'] ln_validation_variances = \
             np.zeros((nfold,len(hyper_parameters)))
 
     if seed > 0:
@@ -220,6 +220,6 @@ def cross_validation(chains,
             lg.debug_log('cross_validation: evidence_inv_var_var = {}'
                   .format(ev.evidence_inv_var_var))
 
-            validation_variances[i_fold,i_val] = ev.evidence_inv_var
+            ln_validation_variances[i_fold,i_val] = ev.ln_evidence_inv_var
 
-    return np.mean(validation_variances, axis=0)
+    return np.nanmean(ln_validation_variances, axis=0)
