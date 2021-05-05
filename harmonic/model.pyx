@@ -88,11 +88,11 @@ class Model(metaclass=abc.ABCMeta):
         """
 
     def serialize(self, filename):
-        """Serialize evidence object.
+        """Serialize Model object.
 
         Args:
 
-            filename (string): Name of file to save evidence object.
+            filename (string): Name of file to save model object.
 
         """
 
@@ -105,22 +105,22 @@ class Model(metaclass=abc.ABCMeta):
 
     @classmethod
     def deserialize(self, filename):
-        """Deserialize Evidence object from file.
+        """Deserialize Model object from file.
 
         Args:
 
-            filename (string): Name of file from which to read evidence object.
+            filename (string): Name of file from which to read model object.
 
         Returns:
 
-            (Evidence): Evidence object deserialized from file.
+            (Model): Model object deserialized from file.
 
         """
         file = open(filename,"rb")
-        ev = pickle.load(file)
+        model = pickle.load(file)
         file.close()
 
-        return ev
+        return model
 
 
 
