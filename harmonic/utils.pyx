@@ -220,6 +220,6 @@ def cross_validation(chains,
             lg.debug_log('cross_validation: evidence_inv_var_var = {}'
                   .format(ev.evidence_inv_var_var))
 
-            validation_variances[i_fold,i_val] = ev.evidence_inv_var
+            validation_variances[i_fold,i_val] = ev.ln_evidence_inv_var
 
-    return np.mean(validation_variances, axis=0)
+    return np.nanmean(validation_variances, axis=0)
