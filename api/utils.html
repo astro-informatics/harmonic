@@ -206,8 +206,8 @@ validation and training data.</p>
 <p>First, splits data into nfold chunks. Second, fits the model using each of
 the hyper parameters given using all but one of the chunks (the validation
 chunk). This procedure is performed for all the chunks and the average
-(mean) variance from all the chunks is computed and return.  This can be
-used to decide which hyper parameters list was better.</p>
+(mean) log-space variance from all the chunks is computed and returned.
+This can be used to decide which hyper parameters list was better.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -225,7 +225,7 @@ KernelDensityEstimate).</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Mean validation variance (averaged over nfolds) for each hyperparameter.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Mean log validation variance (averaged over nfolds) for each hyperparameter.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">(list)</p>
