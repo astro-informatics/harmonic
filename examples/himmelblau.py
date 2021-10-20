@@ -112,7 +112,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             .format(ndim))
 
     # Set parameters.
-    savefigs = False
+    savefigs = True
     nfold = 2
     nhyper = 2
     step = -2
