@@ -185,7 +185,7 @@ def plot_surface(func_eval_grid, x_grid, y_grid, samples=None, vals=None,
     ax.view_init(elev=15.0, azim=110.0)
     ax.set_xlabel('$x_0$')
     ax.set_ylabel('$x_1$')
-    ax.set_zlim(zmin=contour_z_offset)
+    ax.set_zlim(bottom=contour_z_offset)
 
     return ax
 
