@@ -82,10 +82,9 @@ def ln_posterior(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, verbose=True, 
-                plot_corner=False, plot_surface=False):
-    """
-    Run Himmelblau example.
+                nburn=500, plot_corner=False, plot_surface=False):
+    """Run Himmelblau example.
+    
     Args: 
         - ndim: 
             Dimension.
@@ -99,8 +98,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             Plot marginalised distributions if true.
         - plot_surface: 
             Plot surface and samples if true.
-        - verbose: 
-            If True then display intermediate results.
+
     Returns:
         - None.
     """
@@ -164,7 +162,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                     hyper_parameters, \
                                     nfold=nfold, \
                                     modelClass=hm.model.KernelDensityEstimate, \
-                                    # verbose=verbose, \
                                     seed=0)
         hm.logs.debug_log('Validation variances = {}'
             .format(validation_variances))
@@ -363,4 +360,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=True, verbose=True)
+                          plot_corner=True, plot_surface=True)
