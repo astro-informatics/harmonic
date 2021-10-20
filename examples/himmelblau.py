@@ -10,7 +10,7 @@ sys.path.append("examples")
 import utils
 
 
-def ln_prior_uniform(x, xmin=-5.0, xmax=5.0, ymin=-5.0, ymax=5.0):
+def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
     """Compute log_e of uniform prior.
 
     Args:
@@ -231,8 +231,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior)
             ln_posterior_grid, x_grid, y_grid = \
                 utils.eval_func_on_grid(ln_posterior_func, 
-                                        xmin=-5.0, xmax=5.0, 
-                                        ymin=-5.0, ymax=5.0, 
+                                        xmin=-6.0, xmax=6.0, 
+                                        ymin=-6.0, ymax=6.0, 
                                         nx=1000, ny=1000)
             dx = x_grid[0,1] - x_grid[0,0]
             dy = y_grid[1,0] - y_grid[0,0]
