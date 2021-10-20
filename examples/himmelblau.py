@@ -139,7 +139,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 .format(i_realisation, n_realisations))
         
         # Set up and run sampler.
-        hm.logs.debug_log('Run sampling...')
+        hm.logs.info_log('Run sampling...')
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim))*10.0-5.0
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, 
                                         args=[xmin, xmax, ymin, ymax])
@@ -157,7 +157,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                                         training_proportion=0.5)
         
         # Perform cross-validation.
-        hm.logs.debug_log('Perform cross-validation...')
+        hm.logs.info_log('Perform cross-validation...')
         validation_variances = \
             hm.utils.cross_validation(chains_train, \
                                     domain, \
@@ -174,7 +174,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             .format(best_hyper_param))
 
         # Fit model.
-        hm.logs.debug_log('Fit model...')
+        hm.logs.info_log('Fit model...')
         model = hm.model.KernelDensityEstimate(ndim, 
                                             domain, 
                                             hyper_parameters=best_hyper_param)
@@ -182,14 +182,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.debug_log('Fit success = {}'.format(fit_success))    
         
         # Use chains and model to compute evidence.
-        hm.logs.debug_log('Compute evidence...')
+        hm.logs.info_log('Compute evidence...')
         ev = hm.Evidence(chains_test.nchains, model)    
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
         
         # Compute analytic evidence.
         if ndim == 2:
-            hm.logs.debug_log('Compute evidence by high-resolution numerical \
+            hm.logs.info_log('Compute evidence by high-resolution numerical \
                               integration...')
             ln_posterior_func = partial(ln_posterior, xmin=xmin, xmax=xmax, 
                                         ymin=ymin, ymax=ymax)
@@ -215,7 +215,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                      np.exp(ln_evidence_std - ln_evidence)))
         diff = np.log( np.abs(evidence_numerical_integration \
                      - np.exp(ln_evidence)))
-        hm.logs.debug_log('Evidence: \
+        hm.logs.info_log('Evidence: \
             100 * |numerical - estimate| / estimate = {}%'
             .format(100.0 * np.exp(diff - ln_evidence)))
         # ======================================================================
