@@ -186,7 +186,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         if n_realisations > 1:
             hm.logs.info_log('Realisation number = {}/{}'
-                .format(i_realisation, n_realisations))
+                .format(i_realisation+1, n_realisations))
         
         #=======================================================================
         # Run Emcee to recover posterior sampels 
