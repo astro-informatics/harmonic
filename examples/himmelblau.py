@@ -397,9 +397,9 @@ if __name__ == '__main__':
     
     # Define parameters.
     ndim = 2
-    nchains = 400
-    samples_per_chain = 8000
-    nburn = 3000
+    nchains = 200
+    samples_per_chain = 5000
+    nburn = 2000
     np.random.seed(20)
     
     hm.logs.info_log('Himmelblau example')
