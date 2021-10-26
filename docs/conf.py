@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Harmonic'
-copyright = '2020, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price'
+copyright = '2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price'
 author = 'Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price'
 
 # The short X.Y version
@@ -45,11 +45,19 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.githubpages',
     'sphinx_rtd_theme',
+    'sphinx_rtd_dark_mode',
     'nbsphinx',
     'IPython.sphinxext.ipython_console_highlighting',
-#    'sphinx_autodoc_typehints',
-#    'numpydoc'
+    'sphinx_tabs.tabs',
+    'sphinx_git',
+    'sphinxcontrib.bibtex',
+    'sphinxcontrib.texfigure',
+    'sphinx.ext.autosectionlabel',
 ]
+
+bibtex_bibfiles = ['assets/refs.bib']
+bibtex_default_style = 'unsrt'
+
 nbsphinx_execute = 'never'
 napoleon_google_docstring = True
 napoleon_include_init_with_doc = True
@@ -86,7 +94,8 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
-
+default_dark_mode = False
+sphinx_tabs_disable_css_loading = True
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -94,10 +103,15 @@ pygments_style = None
 # a list of builtin themes.
 #
 import sphinx_rtd_theme
-#html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
+html_logo = "assets/harm_badge.png"
+# html_logo = "assets/harm_logo.png"
+html_theme_options = {
+    'logo_only': True,
+    'display_version': True,
+    # 'style_nav_header_background': '#C48EDC',
+}
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -108,6 +122,10 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_css_files = [
+    'css/custom.css',
+    'css/custom_tabs.css',
+]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -172,7 +190,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'Harmonic', 'Harmonic Documentation',
-     author, 'Harmonic', 'One line description of project.',
+     author, 'Harmonic', 'Learnt harmonic mean estimator',
      'Miscellaneous'),
 ]
 

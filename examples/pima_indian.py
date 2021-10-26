@@ -386,7 +386,7 @@ if __name__ == '__main__':
     hm.logs.debug_log('Number of chains = {}'.format(nchains))
     hm.logs.debug_log('Samples per chain = {}'.format(samples_per_chain))
     hm.logs.debug_log('Burn in = {}'.format(nburn))
-    hm.logs.debug_log('Tau = {}'.format(Tau))
+    hm.logs.debug_log('Tau = {}'.format(tau))
     
     hm.logs.debug_log('-------------------------')
     
