@@ -22,7 +22,7 @@ The harmonic mean is an infamous estimator for the Bayesian evidence, first prop
 
 How to Use This Guide
 ---------------------
-To get started you will first need to follow the :ref:`installation guide <Installation>`, following which it is recommended you run the testing suite to ensure your installation has been successful. Next, we have provided a :ref:`mini-tutorial <Jupyter Notebooks>`, comprised of 4 interactive notebooks, which will provide a step-by-step guide to get Harmonic up and running for your particular application. Finally, to see how Harmonic can be applied to various popular benchmark problems one should look to the :ref:`pathological examples <Pathological Examples>` page. An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
+To get started you will first need to follow the :ref:`installation guide <Installation>`, following which it is recommended you run the testing suite to ensure your installation has been successful. Next, we have provided a :ref:`mini-tutorial <Jupyter Notebooks>`, comprised of 4 interactive notebooks, which will provide a step-by-step guide to get **Harmonic** up and running for your particular application. Finally, to see how **Harmonic** can be applied to various popular benchmark problems one should look to the :ref:`pathological examples <Pathological Examples>` page. An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
 
 Basic Usage
 -----------

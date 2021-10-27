@@ -23,7 +23,7 @@ where for data mean :math:`\bar{x}` we have defined,
 
 This therefore allows one to easily compare evidence estimates to the true evidence -- as is done here. A DAG for this problem is presented below.
 
-.. image:: /assets/dags/hbm_normal_gamma.pdf
+.. image:: /assets/dags/hbm_normal_gamma.png
   :width: 43 %
   :align: center
 
@@ -111,7 +111,7 @@ where the initial positions are drawn randomly from a uniform area of size repre
 
 Cross-Validation 
 ==========================
-The cross validation step allows Harmonic to copute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples.
+The cross-validation step allows **Harmonic** to compute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples.
 
 There are two main stages to this cross-validation process. First the MCMC chains (in this case from emcee) are configured
 
