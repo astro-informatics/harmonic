@@ -281,6 +281,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.debug_log('lnpredictmax = {}, lnpredictmin = {}'
             .format(ev.lnpredictmax, ev.lnpredictmin))
         hm.logs.debug_log('---------------------------------')
+        hm.logs.debug_log('shift = {}, shift setting = {}'
+            .format(ev.shift_value, ev.shift))
         # hm.logs.debug_log('shift = {}, max shift = {}' # need to ask what to do about these
         #     .format(ev.mean_shift, ev.max_shift))
         hm.logs.debug_log('running sum total = {}'
@@ -397,8 +399,8 @@ if __name__ == '__main__':
     
     # Define parameters.
     ndim = 2
-    nchains = 200
-    samples_per_chain = 5000
+    nchains =35
+    samples_per_chain = 3000
     nburn = 2000
     np.random.seed(20)
     
