@@ -16,7 +16,7 @@ A single estimator of the reciprocal marginal likelihood can then be constructed
 
   \hat{\rho} = \frac{\sum_{j=1}^{C} w_j \hat{\rho}_j} {\sum_{j=1}^{C} w_j },
 
-where the estimator :math:`\hat{\rho}_j` of chain :math:`j` is weighted by the number of samples in the chain, i.e.\ :math:`w_j = N_j`.  It is straightforward to see that the estimator of the reciprocal marginal likelihood is unbiased, *i.e.* :math:`\mathbb{E}(\hat{\rho})= \rho$, since :math:`\mathbb{E}(\hat{\rho}_j) = \rho`.
+where the estimator :math:`\hat{\rho}_j` of chain :math:`j` is weighted by the number of samples in the chain, i.e.\ :math:`w_j = N_j`.  It is straightforward to see that the estimator of the reciprocal marginal likelihood is unbiased, *i.e.* :math:`\mathbb{E}(\hat{\rho})= \rho`, since :math:`\mathbb{E}(\hat{\rho}_j) = \rho`.
 
 The variance of the estimator :math:`\hat{\rho}` is related to the population variance :math:`\sigma^2 = \mathbb{E}\bigl[ (\hat{\rho}_i - \mathbb{E}(\hat{\rho}_i))^2 \bigr]` by
 

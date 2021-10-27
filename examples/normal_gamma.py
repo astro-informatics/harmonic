@@ -203,7 +203,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 	summary = np.empty((len(tau_array), 4), dtype=float)
 
 	# Start timer.
-	clock = time.clock()
+	clock = time.process_time()
 
 	#===========================================================================
 	# Loop over all values of Tau one wishes to consider
@@ -478,7 +478,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 	#===========================================================================
 	# End Timer.
-	clock = time.clock() - clock
+	clock = time.process_time() - clock
 	hm.logs.info_log('execution_time = {}s'.format(clock))
 
 

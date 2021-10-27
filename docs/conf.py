@@ -105,7 +105,8 @@ sphinx_tabs_disable_css_loading = True
 import sphinx_rtd_theme
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_logo = "assets/harm_badge.png"
+# html_logo = "assets/harm_badge.png"
+html_logo = "assets/harm_badge_simple.png"
 # html_logo = "assets/harm_logo.png"
 html_theme_options = {
     'logo_only': True,
@@ -211,6 +212,8 @@ epub_title = project
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
+
+suppress_warnings = [ 'autosectionlabel.*']
 
 
 # -- Extension configuration -------------------------------------------------

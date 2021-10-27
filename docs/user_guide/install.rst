@@ -60,7 +60,7 @@ or alternatively with code-coverage by running
    pytest --cov-report term --cov=harmonic --cov-config=.coveragerc
 
 Dependencies
--------
+------------
 
 This project has a variety of dependencies which are managed *via* `PyPi <https://pypi.org>`_. Some dependencies are required for **Harmonic** core functionality, others are required only for the testing suites and documentation. To install project dependencies simply run 
 

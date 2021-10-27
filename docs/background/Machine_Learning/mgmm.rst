@@ -4,7 +4,7 @@ Consider the target distribution defined by the modified Gaussian mixture model
 
 .. math:: \varphi(\theta) = \sum_{k=1}^K \frac{w_k}{(2\pi)^{d/2} \vert \Sigma_k \vert^{1/2} s_k^d} \exp \biggl( \frac{- \bigl(\theta - \bar{\theta}_k\bigr)^\text{T} \Sigma_k^{-1} \bigl(\theta - \bar{\theta}_k\bigr)}{2 s_k^2}\biggr),
 
-for :math:`K` components, with centres :math:`\bar{\theta}_k` and covariances :math:`\Sigma_k^{-1}`, where the relative scale of each component is controlled by :math:`s_k$ and the weights are specified by
+for :math:`K` components, with centres :math:`\bar{\theta}_k` and covariances :math:`\Sigma_k^{-1}`, where the relative scale of each component is controlled by :math:`s_k` and the weights are specified by
 
 .. math:: w_k = \frac{\exp(z_k)}{\sum_{k^\prime=1}^K \exp(z_{k^\prime})}.
 
