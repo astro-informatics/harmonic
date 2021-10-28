@@ -1,10 +1,3 @@
-**************************
-Code Analysis
-**************************
-
-Theoretical Considerations
-==========================
-
 We consider another example where the original harmonic mean estimator was shown to fail catastrophically. In particular, we consider non-nested linear regression models for the **Radiata pine** data, which is another common benchmark data-set, and show that our learnt harmonic mean estimator is highly accurate.
 
 For :math:`n=42` trees, the Radiata pine data-set includes measurements of the maximum compression strength parallel to the grain :math:`y_i`, density :math:`x_i` and resin-adjusted density :math:`z_i`, for specimen :math:`i \in \{1, \ldots, n\}`.  The question at hand is whether density or resin-adjusted density is a better predictor of compression strength. This motivates two Gaussian linear regression models:
@@ -56,9 +49,6 @@ where :math:`x = (x_1, \dots, x_n)^\text{T}` and :math:`y = (y_1, \dots, y_n)^\t
 .. image:: /assets/dags/hbm_radiata_pine.pdf
 	:width: 50 %
 	:align: center
-
-Log-Likelihood, log-Prior and log-Posterior
-==========================
 
 The log-likelihood function is given by
 
@@ -130,9 +120,6 @@ Further as discussed we can explicitly calculate the analytic evidence by defini
 
     return ln_evidence
 	
-
-MCMC Sampling
-==========================
 The first step of our evidence computation requires recovering a relatively small number of samples from the given posterior. This can be done in whatever way the user wishes, the only requirement being that a set of chains each with associated samples is provided for subsequent steps.
 In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/current/>`_ python package. Utilizing emcee this example recovers samples via 
 
@@ -156,9 +143,6 @@ In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/curr
 
 where the initial positions are drawn randomly from the support of each covariate prior.
 
-Evidence estimation
-==========================
-
 We adopt the hyper-spherical model, and fit the model hyper-parameters through cross-validation as in other examples. This learnt model is then used with the harmonic mean estimator to construct a robust computation of the Bayesian evidence by
 
 .. code-block:: python
@@ -166,8 +150,3 @@ We adopt the hyper-spherical model, and fit the model hyper-parameters through c
    ev = hm.Evidence(chains_test.nchains, model)    
    ev.add_chains(chains_test)
    ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-
-
-
-
-

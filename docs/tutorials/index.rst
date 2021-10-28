@@ -5,8 +5,6 @@ These python notebooks can be found in the main code repository, under *notebook
 
 One should note that Harmonic acts on chains of posterior samples to infer the evidence, and is thus agnostic to the select sampler. In these notebooks we adopt the popular and highly accessible `emcee  <http://dfm.io/emcee/current/>`_ package for sampling, though alternate (perhaps custom) samplers are equally applicable.
 
-.. automodule:: harmonic
-
 .. toctree::
    :maxdepth: 1
    :caption: Tutorials:

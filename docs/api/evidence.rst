@@ -1,8 +1,3 @@
-.. _api-evidence:
-
-Evidence
-========
-
 .. autoclass:: harmonic.Evidence
    :members:
 

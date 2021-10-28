@@ -213,7 +213,7 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
-suppress_warnings = [ 'autosectionlabel.*']
+suppress_warnings = [ 'autosectionlabel.*', 'autodoc','autodoc.import_object']
 
 
 # -- Extension configuration -------------------------------------------------

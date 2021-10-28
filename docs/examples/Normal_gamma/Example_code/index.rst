@@ -1,6 +1,3 @@
-**************************
-Code Analysis
-**************************
 The Normal-Gamma distirbution is an interesting example as it is one for which the original harmonic mean estimator catastrophically failed. Further it is claimed that the harmonic mean evidence estimator is insensitive to the prior and should be avoided -- a question addressed within this example. The Normal-Gamma posterior configuration is composed of a likelihood defined as
 
 .. math:: \mathcal{L}(\mathbf{x}|\mu,\tau) = \prod_{i=1}^n p(x_i \vert \mu, \tau)
@@ -26,10 +23,6 @@ This therefore allows one to easily compare evidence estimates to the true evide
 .. image:: /assets/dags/hbm_normal_gamma.pdf
   :width: 43 %
   :align: center
-
-
-Log-Likelihood, log-Prior and log-Posterior
-==========================
 
 The log-likelihood function is given by
 
@@ -92,9 +85,6 @@ Further as discussed we can explicitly calculate the analytic evidence by defini
       
    		return ln_z
 	
-
-MCMC Sampling
-==========================
 The first step of our evidence computation requires recovering a relatively small number of samples from the given posterior. This can be done in whatever way the user wishes, the only requirement being that a set of chains each with associated samples is provided for subsequent steps.
 In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/current/>`_ python package. Utilizing emcee this example recovers samples via 
 
@@ -109,8 +99,6 @@ In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/curr
 
 where the initial positions are drawn randomly from a uniform area of size representative of the region over which the posterior has large support.
 
-Cross-Validation 
-==========================
 The cross validation step allows Harmonic to copute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples.
 
 There are two main stages to this cross-validation process. First the MCMC chains (in this case from emcee) are configured
@@ -150,9 +138,6 @@ before being used as training data to train a network to predict the optimal mod
 
 In this case we perform cross-validation for both the MGMM and hyper-sphere model classes, from which one can select the optimal model class and the optimal set of hyper-parameters associated with that class.
 
-Evidence estimation
-==========================
-
 Finally the now sucessfully trained network is used to make a prediction (fit) the optimal (learnt) container function :math:`\psi` -- *i.e.* the optimal hyper-parameter configuration and optimal model class -- by
 
 .. code-block:: python
@@ -176,8 +161,3 @@ This container function is then used with the harmonic mean estimator to constru
    ev = hm.Evidence(chains_test.nchains, model)    
    ev.add_chains(chains_test)
    ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-
-
-
-
-

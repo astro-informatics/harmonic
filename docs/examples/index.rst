@@ -1,9 +1,7 @@
 **************************
-Pathological Examples
+Benchmark Examples
 **************************
 To demonstrate the efficacy of **Harmonic** we have included a variety of common evidence estimation examples, where the posterior function is particularly pathological. These examples are somewhat standard benchmarks, and in many cases have historically highlight the failings of the vanilla harmonic mean estimator. Complexity increases from left to right, culminating in the logistic regression and non-nested linear regressions of the Pima Indian and Radiata Pine benchmarks respectively. See `Friel and Wyse (2011)  <https://arxiv.org/pdf/1111.1957.pdf>`_ for an extensive review of various estimators applied to these benchmarks.
-
-.. automodule:: harmonic
 
 .. tabs:: 
 	

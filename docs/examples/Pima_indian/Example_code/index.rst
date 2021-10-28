@@ -1,10 +1,3 @@
-**************************
-Code Analysis
-**************************
-
-Theoretical Considerations
-==========================
-
 We consider the comparison of two logistic regression models using the **Pima Indians** data, which is another common benchmark problem for comparing estimators of the marginal likelihood.  The original harmonic mean estimator has been shown to fail catastrophically for this example, whereas we show here that our learnt harmonic mean estimator is highly accurate.
 
 The Pima Indians data, originally from the National Institute of Diabetes and Digestive and Kidney Diseases, were compiled from a study of indicators of diabetes in :math:`n=532` Pima Indian women aged 21 or over.  Seven primary predictors of diabetes were recorded, including: number of prior pregnancies (NP);  plasma glucose concentration (PGC); diastolic blood pressure (BP); triceps skin fold thickness (TST); body mass index (BMI); diabetes pedigree function (DP); and age (AGE).
@@ -37,9 +30,6 @@ A graphical representation of Model 2 is illustrated below (Model 1 is similar b
 	:width: 50 %
 	:align: center
 
-Log-Likelihood, log-Prior and log-Posterior
-==========================
-
 The log-likelihood function is given by
 
 .. code-block:: python
@@ -70,8 +60,6 @@ We may then combine the log-likelihood and log-prior functions to define the log
 
     return ln_pr + ln_L
 
-MCMC Sampling
-==========================
 The first step of our evidence computation requires recovering a relatively small number of samples from the given posterior. This can be done in whatever way the user wishes, the only requirement being that a set of chains each with associated samples is provided for subsequent steps.
 In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/current/>`_ python package. Utilizing emcee this example recovers samples via 
 
@@ -102,8 +90,6 @@ In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/curr
 
 where the initial positions are drawn randomly from the support of each covariate prior.
 
-Cross-Validation 
-==========================
 The cross validation step allows Harmonic to copute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples. There are two main stages to this cross-validation process. First the MCMC chains (in this case from emcee) are configured
 
 .. code-block:: python
@@ -150,9 +136,6 @@ In this case we adopt cross-validation to select between the MGMM and Hyper-sphe
         model = hm.model.HyperSphere(
         ndim, domains_sphere, hyper_parameters=best_hyper_param_sphere)   
 
-Evidence estimation
-==========================
-
 Finally the now sucessfully trained network is used to make a prediction (fit) the optimal (learnt) container function :math:`\psi` -- *i.e.* the optimal hyper-parameter configuration -- by
 
 .. code-block:: python
@@ -166,6 +149,3 @@ This learnt container function is then used with the harmonic mean estimator to 
    ev = hm.Evidence(chains_test.nchains, model)    
    ev.add_chains(chains_test)
    ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-
-
-

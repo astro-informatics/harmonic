@@ -31,7 +31,7 @@ It is clear the estimator has an importance sampling interpretation where the im
 For importance sampling to be effective, one requires the sampling density to have fatter tails than the target distribution, *i.e.* to have greater probability mass in the tails of the distribution. Typically the prior has fatter tails than the posterior since the posterior updates our initial understanding of the underlying parameters :math:`\theta` that are encoded in the prior, in the presence of new data :math:`y`. For the harmonic mean estimator the importance sampling density (the posterior) typically does **not** have fatter tails than the target (the prior) and so importance sampling is not effective. This explains why the original harmonic mean estimator is problematic. A number of variants of the original harmonic mean estimator have been intorduced in an attempt to address this issue.
 
 Re-targeted harmonic mean
-====================
+=========================
 
 The original harmonic mean estimator was revised by `Gelfand (1994) <https://www.jstor.org/stable/pdf/2346123.pdf?casa_token=AB4ArghUKVEAAAAA:rEgBfQoBtpwJUFYmm07FvgnQoc9V5c07jEkctApAqlzZ1z9M16GCtDlGQsQfL5AzNgaz1YMLlN6-J7VQIy1xET9BtJyaQl_L2PEOXGjOd2MYiP7127g>`_ by introducing an arbitrary density :math:`\varphi(\theta)` to relate the reciprocal of the marginal likelihood to the likelihood through the following expectation:
 

@@ -1,6 +1,3 @@
-**************************
-Code Analysis
-**************************
 The `Rastrigin function  <https://www.sfu.ca/~ssurjano/rastr.html>`_ is a particularly tricky function often used for benchmarking of algorithms. The functional form is given by
 
 .. math:: \mathcal{L}(x) = 10 d + \sum_{i=1}^{d} \bigg [ x_i^2 - 10 \cos ( 2 \pi x_i ) \bigg ]
@@ -8,10 +5,6 @@ The `Rastrigin function  <https://www.sfu.ca/~ssurjano/rastr.html>`_ is a partic
 where :math:`d` is the dimension of the function and the input domain is taken in this case to be :math:`x_i \in [-6.0, 6.0] \: \; \forall i = 1, \dots, d`. The Rastrigin function is particularly pathological as it is highly multimodal however the maxima locations are regularly distributed which simplifies the problem somewhat. 
 
 .. note:: by definition the global minimum is trivially given by :math:`\mathcal{L}(x^{\text{min}}) = 0, \: \text{at} \: x^{\text{min}} = (0,\dots,0)`.
-
-
-Log-Likelihood, log-Prior and log-Posterior
-==========================
 
 The log-likelihood function is given by
 
@@ -54,9 +47,6 @@ Finally, combining the log-likelihood and log-prior functions we can define the 
     	else:
         	return ln_prior(x) + ln_L
 	
-
-MCMC Sampling
-==========================
 The first step of our evidence computation requires recovering a relatively small number of samples from the given posterior. This can be done in whatever way the user wishes, the only requirement being that a set of chains each with associated samples is provided for subsequent steps.
 In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/current/>`_ python package. Utilizing emcee this example recovers samples via 
 
@@ -71,8 +61,6 @@ In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/curr
 
 where the initial positions are drawn randomly from a uniform area of size representative of the region over which the posterior has large support.
 
-Cross-Validation 
-==========================
 The cross validation step allows Harmonic to copute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples.
 
 There are two main stages to this cross-validation process. First the MCMC chains (in this case from emcee) are configured
@@ -100,9 +88,6 @@ before being used as training data to train a network to predict optimal configu
 
 In this case we choose to used the Kernel Density Estimate (KDE) though others could be selected at this stage with ease.
 
-Evidence estimation
-==========================
-
 Finally the now sucessfully trained network is used to make a prediction (fit) the optimal (learnt) container function :math:`\psi` -- *i.e.* the optimal hyper-parameter configuration -- by
 
 .. code-block:: python
@@ -117,8 +102,3 @@ This container function is then used with the harmonic mean estimator to constru
    ev = hm.Evidence(chains_test.nchains, model)    
    ev.add_chains(chains_test)
    ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-
-
-
-
-
