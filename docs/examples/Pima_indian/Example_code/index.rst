@@ -26,7 +26,7 @@ with precision :math:`\tau`. Two different logistic regression models are consid
 
 A graphical representation of Model 2 is illustrated below (Model 1 is similar but does not include the AGE covariate).
 
-.. image:: /assets/dags/hbm_pima_indian.png
+.. image:: /assets/dags/hbm_pima_indian.svg
 	:width: 50 %
 	:align: center
 

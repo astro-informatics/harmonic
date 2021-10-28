@@ -20,7 +20,7 @@ where for data mean :math:`\bar{x}` we have defined,
 
 This therefore allows one to easily compare evidence estimates to the true evidence -- as is done here. A DAG for this problem is presented below.
 
-.. image:: /assets/dags/hbm_normal_gamma.png
+.. image:: /assets/dags/hbm_normal_gamma.svg
   :width: 43 %
   :align: center
 
