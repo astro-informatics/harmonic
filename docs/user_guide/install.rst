@@ -101,7 +101,7 @@ from the project root directory, where [-core] installs core requirementes, [-ex
 
 		* `sphinx <https://pypi.org/project/Sphinx/>`_ (>=4.2.0)
 		* `nbsphinx-link <https://pypi.org/project/nbsphinx-link/>`_ (>=1.3.0)
-		* `pandoc <https://pypi.org/project/pandoc/>`_ (>=1.1.0)
+		* `pandoc <https://pypi.org/project/pandoc/>`_ (>=1.19.2.1)
 		* `sphinx-rtd-theme <https://pypi.org/project/sphinx-rtd-theme/>`_ (>=1.0.0)
 		* `sphinx-toolbox <https://pypi.org/project/sphinx-toolbox/>`_ (>=2.15.0)
 		* `sphinx-tabs <https://pypi.org/project/sphinx-tabs/>`_ (>=3.2.0)
