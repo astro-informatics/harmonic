@@ -26,7 +26,7 @@ with precision :math:`\tau`. Two different logistic regression models are consid
 
 A graphical representation of Model 2 is illustrated below (Model 1 is similar but does not include the AGE covariate).
 
-.. image:: /assets/dags/hbm_pima_indian.pdf
+.. image:: /assets/dags/hbm_pima_indian.png
 	:width: 50 %
 	:align: center
 
@@ -90,7 +90,9 @@ In our examples we choose to use the excellent `emcee  <http://dfm.io/emcee/curr
 
 where the initial positions are drawn randomly from the support of each covariate prior.
 
-The cross validation step allows Harmonic to copute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples. There are two main stages to this cross-validation process. First the MCMC chains (in this case from emcee) are configured
+Cross-Validation 
+==========================
+The cross-validation step allows **Harmonic** to compute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples. There are two main stages to this cross-validation process. First the MCMC chains (in this case from emcee) are configured
 
 .. code-block:: python
 

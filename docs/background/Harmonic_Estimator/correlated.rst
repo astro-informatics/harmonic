@@ -4,7 +4,7 @@ We propose running a number of independent MCMC chains and using all of the corr
 
 Consider :math:`C` chains of samples, indexed by :math:`j = 1, 2, \ldots, C`, with chain :math:`j` containing :math:`N_j` samples.  The :math:`i^{\text{th}}` sample of chain :math:`j` is denoted :math:`\theta_{ij}`.  Since the chain of interest is typically clear from the context, for notational brevity we drop the chain index from the samples, *i.e.* we denotate samples by :math:`\theta_i` where the chain of interest is inferred from the context.
 
-An estimator of the reciprocal marginal likelihood can be compute from each independent chain by
+An estimator of the reciprocal marginal likelihood can be computed from each independent chain by
 
 .. math::
 
@@ -16,7 +16,7 @@ A single estimator of the reciprocal marginal likelihood can then be constructed
 
   \hat{\rho} = \frac{\sum_{j=1}^{C} w_j \hat{\rho}_j} {\sum_{j=1}^{C} w_j },
 
-where the estimator :math:`\hat{\rho}_j` of chain :math:`j` is weighted by the number of samples in the chain, i.e.\ :math:`w_j = N_j`.  It is straightforward to see that the estimator of the reciprocal marginal likelihood is unbiased, *i.e.* :math:`\mathbb{E}(\hat{\rho})= \rho`, since :math:`\mathbb{E}(\hat{\rho}_j) = \rho`.
+where the estimator :math:`\hat{\rho}_j` of chain :math:`j` is weighted by the number of samples in the chain, *i.e.* :math:`w_j = N_j`.  It is straightforward to see that the estimator of the reciprocal marginal likelihood is unbiased, *i.e.* :math:`\mathbb{E}(\hat{\rho})= \rho`, since :math:`\mathbb{E}(\hat{\rho}_j) = \rho`.
 
 The variance of the estimator :math:`\hat{\rho}` is related to the population variance :math:`\sigma^2 = \mathbb{E}\bigl[ (\hat{\rho}_i - \mathbb{E}(\hat{\rho}_i))^2 \bigr]` by
 

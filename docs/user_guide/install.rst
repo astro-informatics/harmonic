@@ -2,7 +2,7 @@
 
 Installation
 ============
-We recommend installing Harmonic through `PyPi <https://pypi.org>`_, however in some cases one may wish to install Harmonic directly from source, which is also relatively straightforward. In either case we recommend creating a fresh conda environment to avoid any dependency conflicts 
+We recommend installing **Harmonic** through `PyPi <https://pypi.org>`_, however in some cases one may wish to install **Harmonic** directly from source, which is also relatively straightforward. In either case we recommend creating a fresh conda environment to avoid any dependency conflicts 
 
 .. code-block:: bash
 
@@ -47,7 +47,7 @@ Once within a fresh environment Harmonic may be installed by the following.
 Testing
 -------
 
-The Harmonic test suite may be executed by running
+The **Harmonic** test suite may be executed by running
 
 .. code-block:: bash
 

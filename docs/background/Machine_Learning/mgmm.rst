@@ -1,4 +1,4 @@
-A modified Gaussian mixture model provides greater flexibility that the simple hypersphere model. In particular, it is much more effective for multimodal posterior distributions.
+A modified Gaussian mixture model provides greater flexibility than the simple hypersphere model. In particular, it is much more effective for multimodal posterior distributions.
 
 Consider the target distribution defined by the modified Gaussian mixture model
 
@@ -30,7 +30,7 @@ which include the following component from cluster :math:`k`:
 
 .. math:: C_{ik} = \frac{w_k}{(2\pi)^{d/2} \vert \Sigma_k \vert^{1/2} s_k^d}\, \exp \biggl(\frac{- \bigl(\theta_i - \bar{\theta}_k\bigr)^\text{T} \Sigma_k^{-1} \bigl(\theta_i - \bar{\theta}_k\bigr)}{2 s_k^2}\biggr)\frac{1}{\mathcal{L}(\theta_i) \pi(\theta_i)}.
 
-We solve this optimisation problem by stochastic gradient decent, which requires the gradients of the objective function. Denoting the total cost of the objective function by :math:`C = \sum_i C_i^2 + \frac{1}{2} \lambda \sum_{k=1}^K s_k^2`, it is straightforward to show that the gradients of the cost function with respective to the weightsgularise th :math:`z_k` and relative scales :math:`s_k` are given by
+We solve this optimisation problem by stochastic gradient decent, which requires the gradients of the objective function. Denoting the total cost of the objective function by :math:`C = \sum_i C_i^2 + \frac{1}{2} \lambda \sum_{k=1}^K s_k^2`, it is straightforward to show that the gradients of the cost function with respect to the weights :math:`z_k` and relative scales :math:`s_k` are given by
 
 .. math:: \frac{\partial C}{\partial z_k} = 2 \sum_i C_i (C_{ik} - w_k C_i),
 
