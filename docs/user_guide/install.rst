@@ -66,9 +66,9 @@ This project has a variety of dependencies which are managed *via* `PyPi <https:
 
 .. code-block:: bash
 
-    pip install -r requirements[x].txt
+    pip install -r requirements/requirements[x].txt
 
-from the project root directory, where an empty [x] installs core requirementes, [-examples] installs example requirements, and [-extra] installs requirements for coverage tests. Below is a categorical list of each dependencies.
+from the project root directory, where [-core] installs core requirementes, [-examples] installs example requirements, [-docs] installs documentation requirements and [-extra] installs requirements for coverage tests. Below is a categorical list of each dependencies.
 
 .. tabs::
 	
@@ -107,6 +107,8 @@ from the project root directory, where an empty [x] installs core requirementes,
 		* `sphinx-tabs <https://pypi.org/project/sphinx-tabs/>`_ (>=3.2.0)
 		* `sphinx-rtd-dark-mode <https://pypi.org/project/sphinx-rtd-dark-mode/>`_ (>=1.2.4)
 		* `sphinxcontrib-bibtex <https://pypi.org/project/sphinxcontrib-bibtex/>`_ (>=2.4.1)
+		* `sphinx-git <https://pypi.org/project/sphinx-git/>`_ (>=11.0.0)
+		* `sphinxcontrib-texfigure <https://pypi.org/project/sphinxcontrib-texfigure/>`_ (>=0.1.3)
 
 
 

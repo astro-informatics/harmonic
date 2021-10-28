@@ -15,28 +15,11 @@
 
 ### Set up conda environment
 
-```conda create --name harmonic python=3.6.1```
+```conda create --name harmonic python=3.8.0```
 
-### Install dependencies for harmonic package
+### Install dependencies and build Harmonic
 
-`pip install -r requirements.txt`
-
-You may need to update your chache to ensure old packages are not picked up:
-
-`hash -r`
-
-### Install dependencies for harmonic examples
-
-`pip install -r requirements-examples.txt`
-
-
-### Install dependencies for code coverage testing
-
-`pip install -r requirements-extra.txt`
-
-### Build harmonic
-
-`python setup.py build_ext --inplace`
+`bash getting_started.sh`
 
 Run tests
 
