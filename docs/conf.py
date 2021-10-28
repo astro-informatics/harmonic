@@ -106,7 +106,7 @@ import sphinx_rtd_theme
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # html_logo = "assets/harm_badge.png"
-html_logo = "assets/harm_badge_simple.png"
+html_logo = "assets/harm_badge_simple.svg"
 # html_logo = "assets/harm_logo.png"
 html_theme_options = {
     'logo_only': True,
