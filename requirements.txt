@@ -14,3 +14,5 @@ sphinx_toolbox==2.15.0
 sphinx-tabs==3.2.0
 sphinx-rtd-dark-mode==1.2.4
 sphinxcontrib-bibtex==2.4.1
+sphinx-git==11.0.0
+sphinxcontrib-texfigure==0.1.3
