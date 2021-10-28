@@ -6,8 +6,8 @@ We recommend installing **Harmonic** through `PyPi <https://pypi.org>`_, however
 
 .. code-block:: bash
 
-    conda create -n "env_name" python==3.8.0
-    source activate env_name
+    conda create -n "env_name" python=3.8.0
+    conda activate env_name
 
 Once within a fresh environment Harmonic may be installed by the following.
 
