@@ -132,7 +132,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                            xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
     
     # Start timer.
-   clock = time.process_time()
+    clock = time.process_time()
 
     #===========================================================================
     # Begin multiple realisations of estimator
@@ -399,8 +399,8 @@ if __name__ == '__main__':
     
     # Define parameters.
     ndim = 2
-    nchains =35
-    samples_per_chain = 3000
+    nchains = 100
+    samples_per_chain = 5000
     nburn = 2000
     np.random.seed(20)
     
