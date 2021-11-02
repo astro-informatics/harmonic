@@ -1,3 +1,4 @@
+![](docs/assets/harm_badge_simple.svg)
 # Harmonic
 
 [![Github](https://img.shields.io/badge/GitHub-harmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
