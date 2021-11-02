@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cross-Validation &mdash; Harmonic 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom_tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../../../_static/dark_mode_js/default_light.js"></script>
+        <script src="../../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html">
+            <img src="../../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../background/Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../background/Machine_Learning/index.html">Learnt Container Function</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Jupyter Notebooks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Benchmark Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">Namespaces</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/changes.html">GitHub History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Harmonic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Cross-Validation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/examples/Normal_gamma/Example_code/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<p>The Normal-Gamma distirbution is an interesting example as it is one for which the original harmonic mean estimator catastrophically failed. Further it is claimed that the harmonic mean evidence estimator is insensitive to the prior and should be avoided – a question addressed within this example. The Normal-Gamma posterior configuration is composed of a likelihood defined as</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}(\mathbf{x}|\mu,\tau) = \prod_{i=1}^n p(x_i \vert \mu, \tau)
+= \frac{\tau^{n/2}}{(2\pi)^{n/2}} e^{-\frac{\tau}{2}\sum_{i=1}^n(x_i-\mu)^2}
+=\frac{\tau^{n/2}}{(2\pi)^{n/2}} e^{-\frac{\tau}{2} n (s^2 + (\bar{x} - \mu)^2)}\]</div>
+<p>and a prior defined as</p>
+<div class="math notranslate nohighlight">
+\[\pi(\mu, \tau) = \frac{{\beta_0}^{\alpha_0}           \sqrt{\tau_0}}{\Gamma(\alpha_0)\sqrt{2\pi}}\tau^{\alpha_0-1/2} e^{-\beta_0\tau}
+e^{-\frac{\tau_0\tau(\mu-\mu_0)^2}{2}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha_0, \beta_0, \tau_0\)</span> and <span class="math notranslate nohighlight">\(\mu_0\)</span> are parameters that define the prior and <span class="math notranslate nohighlight">\(n\)</span> is the number of data points <span class="math notranslate nohighlight">\(x_i\)</span> we have.
+A useful property of this particular posterior is that it permits a closed for analytic expression for the evidence, given as</p>
+<div class="math notranslate nohighlight">
+\[z = \frac{\Gamma(\alpha_n)}{\Gamma(\alpha_0)}\frac{\beta^\alpha_0}{\beta_n^{\alpha_n}}\left(\frac{\tau_0}{\tau_n}\right)^{1/2}(2\pi)^{-n/2}\]</div>
+<p>where for data mean <span class="math notranslate nohighlight">\(\bar{x}\)</span> we have defined,</p>
+<div class="math notranslate nohighlight">
+\[\tau_n = \tau_0 + n, \quad \alpha_n = \alpha_0 + n/2, \quad b_n = b_0 +  \frac{1}{2}\sum_{i=1}^n(x_i - \bar{x})^2 + \frac{\tau_0 n(\bar{x}-\mu_0)^2}{2(\tau_0 + n)}\]</div>
+<p>This therefore allows one to easily compare evidence estimates to the true evidence – as is done here. A DAG for this problem is presented below.</p>
+<a class="reference internal image-reference" href="../../../_images/hbm_normal_gamma.svg"><img alt="../../../_images/hbm_normal_gamma.svg" class="align-center" src="../../../_images/hbm_normal_gamma.svg" width="43%" /></a>
+<p>The log-likelihood function is given by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_likelihood</span><span class="p">(</span><span class="n">x_mean</span><span class="p">,</span> <span class="n">x_std</span><span class="p">,</span> <span class="n">x_n</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
+
+     <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">x_n</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_std</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_mean</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">x_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">x_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The log-prior is given by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_prior</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">prior_params</span><span class="p">):</span>
+
+             <span class="k">if</span> <span class="n">tau</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                     <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+             <span class="n">mu_0</span><span class="p">,</span> <span class="n">tau_0</span><span class="p">,</span> <span class="n">alpha_0</span><span class="p">,</span> <span class="n">beta_0</span> <span class="o">=</span> <span class="n">prior_params</span>
+             <span class="n">ln_pr</span> <span class="o">=</span> <span class="n">alpha_0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">beta_0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tau_0</span><span class="p">)</span>
+             <span class="n">ln_pr</span> <span class="o">+=</span> <span class="o">-</span> <span class="n">sp</span><span class="o">.</span><span class="n">gammaln</span><span class="p">(</span><span class="n">alpha_0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+             <span class="n">ln_pr</span> <span class="o">+=</span> <span class="p">(</span><span class="n">alpha_0</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+             <span class="n">ln_pr</span> <span class="o">+=</span> <span class="o">-</span><span class="n">beta_0</span> <span class="o">*</span> <span class="n">tau</span>
+             <span class="n">ln_pr</span> <span class="o">+=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">tau_0</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu</span> <span class="o">-</span> <span class="n">mu_0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+             <span class="k">return</span> <span class="n">ln_pr</span>
+</pre></div>
+</div>
+<p>where the term <em>prior_params</em> is a tuple which stores the parameters <span class="math notranslate nohighlight">\(\alpha_0, \beta_0, \tau_0\)</span> and <span class="math notranslate nohighlight">\(\mu_0\)</span>.</p>
+<p>We may then combine the log-likelihood and log-prior functions to define the log-posterior function simply by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">x_mean</span><span class="p">,</span> <span class="n">x_std</span><span class="p">,</span> <span class="n">x_n</span><span class="p">,</span> <span class="n">prior_params</span><span class="p">):</span>
+
+             <span class="n">mu</span><span class="p">,</span> <span class="n">tau</span> <span class="o">=</span> <span class="n">theta</span>
+             <span class="n">ln_pr</span> <span class="o">=</span> <span class="n">ln_prior</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">prior_params</span><span class="p">)</span>
+
+             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">ln_pr</span><span class="p">):</span>
+                     <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+             <span class="n">ln_L</span> <span class="o">=</span> <span class="n">ln_likelihood</span><span class="p">(</span><span class="n">x_mean</span><span class="p">,</span> <span class="n">x_std</span><span class="p">,</span> <span class="n">x_n</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+
+             <span class="k">return</span>  <span class="n">ln_L</span> <span class="o">+</span> <span class="n">ln_pr</span>
+</pre></div>
+</div>
+<p>Further as discussed we can explicitly calculate the analytic evidence by defining a function such as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">x_mean</span><span class="p">,</span> <span class="n">x_std</span><span class="p">,</span> <span class="n">x_n</span><span class="p">,</span> <span class="n">prior_params</span><span class="p">):</span>
+
+             <span class="n">mu_0</span><span class="p">,</span> <span class="n">tau_0</span><span class="p">,</span> <span class="n">alpha_0</span><span class="p">,</span> <span class="n">beta_0</span> <span class="o">=</span> <span class="n">prior_params</span>
+             <span class="n">tau_n</span>  <span class="o">=</span> <span class="n">tau_0</span>  <span class="o">+</span> <span class="n">x_n</span>
+             <span class="n">alpha_n</span> <span class="o">=</span> <span class="n">alpha_0</span> <span class="o">+</span> <span class="n">x_n</span><span class="o">/</span><span class="mi">2</span>
+             <span class="n">beta_n</span>  <span class="o">=</span> <span class="n">beta_0</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">x_n</span> <span class="o">*</span> <span class="n">x_std</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">tau_0</span> <span class="o">*</span> <span class="n">x_n</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_mean</span> <span class="o">-</span> <span class="n">mu_0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">tau_0</span> <span class="o">+</span> <span class="n">x_n</span><span class="p">))</span>
+             <span class="n">ln_z</span>  <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">gammaln</span><span class="p">(</span><span class="n">alpha_n</span><span class="p">)</span> <span class="o">-</span> <span class="n">sp</span><span class="o">.</span><span class="n">gammaln</span><span class="p">(</span><span class="n">alpha_0</span><span class="p">)</span>
+             <span class="n">ln_z</span> <span class="o">+=</span> <span class="n">alpha_0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">beta_0</span><span class="p">)</span> <span class="o">-</span> <span class="n">alpha_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">beta_n</span><span class="p">)</span>
+             <span class="n">ln_z</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tau_0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tau_n</span><span class="p">)</span>
+             <span class="n">ln_z</span> <span class="o">-=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">x_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+             <span class="k">return</span> <span class="n">ln_z</span>
+</pre></div>
+</div>
+<p>The first step of our evidence computation requires recovering a relatively small number of samples from the given posterior. This can be done in whatever way the user wishes, the only requirement being that a set of chains each with associated samples is provided for subsequent steps.
+In our examples we choose to use the excellent <a class="reference external" href="http://dfm.io/emcee/current/">emcee</a> python package. Utilizing emcee this example recovers samples via</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_mean</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">x_std</span><span class="o">**</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">x_std</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_n</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nchains</span><span class="p">)]</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nchains</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">ln_posterior</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">x_mean</span><span class="p">,</span> <span class="n">x_std</span><span class="p">,</span> <span class="n">x_n</span><span class="p">,</span> <span class="n">prior_params</span><span class="p">))</span>
+<span class="n">rstate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">samples_per_chain</span><span class="p">,</span> <span class="n">rstate0</span><span class="o">=</span><span class="n">rstate</span><span class="p">)</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">[:,</span><span class="n">nburn</span><span class="p">:,:])</span>
+<span class="n">lnprob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">lnprobability</span><span class="p">[:,</span><span class="n">nburn</span><span class="p">:])</span>
+</pre></div>
+</div>
+<p>where the initial positions are drawn randomly from a uniform area of size representative of the region over which the posterior has large support.</p>
+<div class="section" id="cross-validation">
+<h1>Cross-Validation<a class="headerlink" href="#cross-validation" title="Permalink to this headline"></a></h1>
+<p>The cross-validation step allows <strong>Harmonic</strong> to compute the optimal hyper-parameter configuration for a certain class of model for a given set of posterior samples.</p>
+<p>There are two main stages to this cross-validation process. First the MCMC chains (in this case from emcee) are configured</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chains</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Chains</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+<span class="n">chains</span><span class="o">.</span><span class="n">add_chains_3d</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">lnprob</span><span class="p">)</span>
+<span class="n">chains_train</span><span class="p">,</span> <span class="n">chains_test</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">split_data</span><span class="p">(</span><span class="n">chains</span><span class="p">,</span> <span class="n">training_proportion</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>before being used as training data to train a network to predict the optimal model class and optimal configuration of the hyper-parameters associated with the model class. This is done by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#! Make predictions for MGMM model class</span>
+<span class="c1">#! -------------------------------------</span>
+<span class="n">validation_variances_MGMM</span> <span class="o">=</span>
+             <span class="n">hm</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">cross_validation</span><span class="p">(</span><span class="n">chains_train</span><span class="p">,</span>
+                 <span class="n">domains_MGMM</span><span class="p">,</span>
+                 <span class="n">hyper_parameters_MGMM</span><span class="p">,</span>
+                 <span class="n">nfold</span><span class="o">=</span><span class="n">nfold</span><span class="p">,</span>
+                 <span class="n">modelClass</span><span class="o">=</span><span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ModifiedGaussianMixtureModel</span><span class="p">,</span>
+                 <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">best_hyper_param_MGMM_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">validation_variances_MGMM</span><span class="p">)</span>
+<span class="n">best_hyper_param_MGMM</span> <span class="o">=</span> <span class="n">hyper_parameters_MGMM</span><span class="p">[</span><span class="n">best_hyper_param_MGMM_ind</span><span class="p">]</span>
+
+<span class="c1">#! Make predictions for Hyper-sphere model class</span>
+<span class="c1">#! ---------------------------------------------</span>
+<span class="n">validation_variances_sphere</span> <span class="o">=</span>
+             <span class="n">hm</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">cross_validation</span><span class="p">(</span><span class="n">chains_train</span><span class="p">,</span>
+                 <span class="n">domains_sphere</span><span class="p">,</span>
+                 <span class="n">hyper_parameters_sphere</span><span class="p">,</span> <span class="n">nfold</span><span class="o">=</span><span class="n">nfold</span><span class="p">,</span>
+                 <span class="n">modelClass</span><span class="o">=</span><span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">HyperSphere</span><span class="p">,</span>
+                 <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">best_hyper_param_sphere_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">validation_variances_sphere</span><span class="p">)</span>
+<span class="n">best_hyper_param_sphere</span> <span class="o">=</span> <span class="n">hyper_parameters_sphere</span><span class="p">[</span><span class="n">best_hyper_param_sphere_ind</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In this case we perform cross-validation for both the MGMM and hyper-sphere model classes, from which one can select the optimal model class and the optimal set of hyper-parameters associated with that class.</p>
+<p>Finally the now sucessfully trained network is used to make a prediction (fit) the optimal (learnt) container function <span class="math notranslate nohighlight">\(\psi\)</span> – <em>i.e.</em> the optimal hyper-parameter configuration and optimal model class – by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">best_var_MGMM</span> <span class="o">=</span> <span class="n">validation_variances_MGMM</span><span class="p">[</span><span class="n">best_hyper_param_MGMM_ind</span><span class="p">]</span>
+<span class="n">best_var_sphere</span> <span class="o">=</span> <span class="n">validation_variances_sphere</span><span class="p">[</span><span class="n">best_hyper_param_sphere_ind</span><span class="p">]</span>
+
+<span class="c1">#! Select the optimal (minimum variance) model class</span>
+<span class="c1">#! -------------------------------------------------</span>
+<span class="k">if</span> <span class="n">best_var_MGMM</span> <span class="o">&lt;</span> <span class="n">best_var_sphere</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ModifiedGaussianMixtureModel</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">domains_MGMM</span><span class="p">,</span> <span class="n">hyper_parameters</span><span class="o">=</span><span class="n">best_hyper_param_MGMM</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">HyperSphere</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">domains_sphere</span><span class="p">,</span> <span class="n">hyper_parameters</span><span class="o">=</span><span class="n">best_hyper_param_sphere</span><span class="p">)</span>
+<span class="n">fit_success</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">chains_train</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">chains_train</span><span class="o">.</span><span class="n">ln_posterior</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This container function is then used with the harmonic mean estimator to construct a robust computation of the Bayesian evidence by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ev</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span><span class="n">chains_test</span><span class="o">.</span><span class="n">nchains</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">chains_test</span><span class="p">)</span>
+<span class="n">ln_evidence</span><span class="p">,</span> <span class="n">ln_evidence_std</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compute_ln_evidence</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

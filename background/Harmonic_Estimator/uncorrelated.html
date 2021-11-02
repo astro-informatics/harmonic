@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; Harmonic 0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom_tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../../_static/dark_mode_js/default_light.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learnt Container Function</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Jupyter Notebooks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Benchmark Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">Namespaces</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/changes.html">GitHub History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harmonic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/background/Harmonic_Estimator/uncorrelated.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<p>MCMC algorithms that are typically used to sample the posterior distribution result in correlated samples. By suitably thinning the MCMC chain (discarding all but every <span class="math notranslate nohighlight">\(t^{\text{th}}\)</span> sample), however, samples that are uncorrelated can be obtained. In this subsection we present estimators for the reciprocal marginal likelihod and its variance under the assumption of uncorrelated samples from the posterior.</p>
+<p>Consider the harmonic moments</p>
+<div class="math notranslate nohighlight">
+\[\mu_n = \mathbb{E}_{\text{P}(\theta | y)} \Biggl[\biggl(\frac{\varphi(\theta)}{\mathcal{L}(\theta) \pi(\theta)}\biggr)^n \Biggr],\]</div>
+<p>and corresponding central moments</p>
+<div class="math notranslate nohighlight">
+\[\mu_n^\prime = \mathbb{E}_{\text{P}(\theta | y)} \Biggl[\biggl(\frac{\varphi(\theta)}{\mathcal{L}(\theta) \pi(\theta)} - \mathbb{E}_{\text{P}(\theta | y)} \biggl(\frac{\varphi(\theta)}{\mathcal{L}(\theta)\pi(\theta)} \biggr)\biggr)^n\Biggr].\]</div>
+<p>We make use of the following harmonic moment estimators computed from samples of the posterior:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\mu}_n = \frac{1}{N} \sum_{i=1}^N \biggl(\frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)}\biggr)^n,\quad \theta_i \sim \text{P}(\theta | y),\]</div>
+<p>which are unbiased estimators of <span class="math notranslate nohighlight">\(\mu_n\)</span>, i.e. <span class="math notranslate nohighlight">\(\mathbb{E}(\hat{\mu}_n) = \mu_n\)</span>.</p>
+<p>The reciprocal marginal likelihood can then be estimated from samples of the posterior by</p>
+<div class="math notranslate nohighlight">
+\[\hat{\rho} = \hat{\mu}_1 = \frac{1}{N} \sum_{i=1}^N \frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)}, \quad \theta_i \sim \text{P}(\theta | y).\]</div>
+<p>The mean and variance of the estimator read, respecitvely,</p>
+<div class="math notranslate nohighlight">
+\[\mathbb{E}(\hat{\rho}) = \mathbb{E} \Biggl [\frac{1}{N} \sum_{i=1}^N
+\frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)} \Biggr ] = \mu_1 = \rho\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\text{var}(\hat{\rho}) = \text{var} \Biggl [ \frac{1}{N} \sum_{i=1}^N \frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)} \Biggr ] = \frac{1}{N} (\mu_2 - \mu_1 ^2 ).\]</div>
+<p>Note that the estimator is unbiased. The optimal target is given by the normalised posterior, <em>i.e.</em> <span class="math notranslate nohighlight">\(\varphi^\text{optimal}(\theta) = \mathcal{L}(\theta) \pi(\theta)/z\)</span>. It is straightforward to see that in this case</p>
+<div class="math notranslate nohighlight">
+\[\mu_n = \hat{\mu}_n = \frac{1}{z^n},\]</div>
+<p>and thus the target distribution is optimal since</p>
+<div class="math notranslate nohighlight">
+\[\text{var}(\hat{\rho}) = \frac{1}{N} (\mu_2 - \mu_1 ^2 ) = \frac{1}{N} (1/z^2 - (1/z) ^2 ) = 0.\]</div>
+<p>We are interested in not only an estimate of the reciprocal marginal likelihood but also its variance <span class="math notranslate nohighlight">\(\text{var}(\hat{\rho})\)</span>. It is clear that a suitable estimator of the variance is given by</p>
+<div class="math notranslate nohighlight">
+\[\hat{\sigma}^2 = \frac{1}{N-1} (\hat{\mu}_2 - \hat{\mu}_1 ^2 ) = \frac{1}{N(N-1)} \sum_{i=1}^N \biggl(\frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)}\biggr)^2 - \frac{\hat{\rho}^2}{N-1}.\]</div>
+<p>It follows that this estimator of the variance is unbiased since</p>
+<div class="math notranslate nohighlight">
+\[\mathbb{E}(\hat{\sigma}^2) = \frac{1}{N} (\mu_2 - \mu_1^2) = \text{var}(\hat{\rho}).\]</div>
+<p>The variance of the estimator <span class="math notranslate nohighlight">\(\hat{\sigma}^2\)</span> reads</p>
+<div class="math notranslate nohighlight">
+\[\text{var}(\hat{\sigma}^2) = \frac{1}{(N-1)^2} \biggl[ \frac{(N - 1)^2}{N^3} \mu_4^\prime - \frac{(N-1)(N-3)}{N^3} \mu_2^\prime{}^2 \biggr],\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu_n^\prime\)</span> are central moments, which follows by a well-known result for the variance of a sample variance, see <a class="reference external" href="https://link.springer.com/chapter/10.1007/978-3-642-57489-4_66">Rose (2002)</a> page 264. An unbiased estimator of <span class="math notranslate nohighlight">\(\text{var}(\hat{\sigma}^2)\)</span> can be constructioned from h-statistics, which provide unbiased estimators of central moments.</p>
+<p>While we have presented general estimators for uncorrelated samples here, generating uncorrelated samples requires thinning the MCMC chain, which is highly inefficient. It is generally recognised that thinning should be avoided when possible since it reduces the precision with which summaries of the MCMC chain can be computed. One may also consider estimators that do not require uncorrelated samples and so can make use of considerably more MCMC samples of the posterior.</p>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

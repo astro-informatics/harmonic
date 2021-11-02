@@ -1,4 +1,0 @@
-.. _tutorials-overview:
-
-Overview
-========

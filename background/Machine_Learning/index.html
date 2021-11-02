@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learnt Container Function &mdash; Harmonic 0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom_tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../../_static/dark_mode_js/default_light.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Jupyter Notebooks" href="../../tutorials/index.html" />
+    <link rel="prev" title="Harmonic Mean Estimator" href="../Harmonic_Estimator/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Learnt Container Function</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#learning-from-posterior-samples">Learning from posterior samples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Jupyter Notebooks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Benchmark Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">Namespaces</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/changes.html">GitHub History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harmonic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Learnt Container Function</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/background/Machine_Learning/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="learnt-container-function">
+<h1>Learnt Container Function<a class="headerlink" href="#learnt-container-function" title="Permalink to this headline"></a></h1>
+<p>As discussed in the harmonic mean estimator section one must select a (proper but otherwise arbitrary) <strong>container function</strong> <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>. This choice is pivotal to the accuracy of the harmonic mean estimator, and so must be chosen carefully. One might initially postulate that choosing <span class="math notranslate nohighlight">\(\varphi(\theta) = \pi(\theta)\)</span> would be a good choice – where <span class="math notranslate nohighlight">\(\pi(\theta)\)</span> is the prior distribution. However, provided the prior is (sensibly) not too informative, the posterior has few samples in low likelihood regions which carry very large weight, resulting in the variance of the estimator being notably large. It is then sensible to suggest functions <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> such that these low likelihood are sufficiently downweighted – <em>i.e.</em> container functions which minimize the variance of the harmonic mean estimator. This therefore motivates the development of a <strong>learnt container function</strong> which we will now discuss.</p>
+<div class="section" id="learning-from-posterior-samples">
+<h2>Learning from posterior samples<a class="headerlink" href="#learning-from-posterior-samples" title="Permalink to this headline"></a></h2>
+<p>Here we cover several functional forms for the container function <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> which are used throughout the code. Hyper-parameters of these models can be considered nodes of a conventional network, the values of which are learnt from a small sub-set of posterior samples.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Hyper-Sphere</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Kernel Density Estimator</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Modified Gaussian Mixtures</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><p>The simplest model one may wish to consider is a hypersphere, much like the truncated harmonic mean estimator. However, here we learn the optimal radius of the hypersphere.</p>
+<p>Consider the target distribution defined by the normalised hypersphere</p>
+<div class="math notranslate nohighlight">
+\[\varphi(\theta) = \frac{1}{V_\mathcal{S}}  I_\mathcal{S}(\theta),\]</div>
+<p>where the indicator function <span class="math notranslate nohighlight">\(I_\mathcal{S}(\theta)\)</span> is unity if <span class="math notranslate nohighlight">\(\theta\)</span> is within a hypersphere of radius <span class="math notranslate nohighlight">\(R\)</span>, centred on <span class="math notranslate nohighlight">\(\bar{\theta}\)</span> with covariance <span class="math notranslate nohighlight">\(\Sigma\)</span>, <em>i.e</em>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}I_\mathcal{S}(\theta) =
+\begin{cases}
+  1, &amp; \bigl(\theta - \bar{\theta}\bigr)^\text{T} \Sigma^{-1} \bigl(\theta - \bar{\theta} \bigr) &lt; R^2 \\
+  0, &amp; \text{otherwise}
+\end{cases}.\end{split}\]</div>
+<p>The values of <span class="math notranslate nohighlight">\(\bar{\theta}\)</span> and <span class="math notranslate nohighlight">\(\Sigma\)</span> can be computed directly from the training samples.  Often a diagonal approximation of <span class="math notranslate nohighlight">\(\Sigma\)</span> is considered for computational efficiency. The volume of the hypersphere required to normalise the distribution is given by</p>
+<div class="math notranslate nohighlight">
+\[V_\mathcal{S} = \frac{\pi^{d/2}}{\Gamma(d/2 + 1)} R^d \, \vert \Sigma \vert^{1/2}.\]</div>
+<p>Recall that <span class="math notranslate nohighlight">\(d\)</span> is the dimension of the parameter space, <em>i.e.</em> <span class="math notranslate nohighlight">\(\theta \in \mathbb{R}^d\)</span>, and note that <span class="math notranslate nohighlight">\(\Gamma(\cdot)\)</span> is the Gamma function. To estimate the radius of the hypersphere we pose the following optimisation problem to minimise the variance of the learnt harmonic mean estimator, while also constraining it be be unbiased:</p>
+<div class="math notranslate nohighlight">
+\[\min_R \: \hat{\sigma}^2 \quad \text{s.t.} \quad \hat{\rho} = \hat{\mu}_1.\]</div>
+<p>By minimising the variance of the estimator we ensure, on one hand, that the tails of the learnt target are not so wide that they are broader than the posterior, and, on the other hand, that they are not so narrow that very few samples are effectively retained in the estimator.</p>
+<p>This optimisation problem is equivalent to minimising the estimator of the second harmonic moment:</p>
+<div class="math notranslate nohighlight">
+\[\min_R \: \hat{\mu}_2.\]</div>
+<p>Writing out the cost function explicitly in terms of the posterior samples, the optimisation problem reads</p>
+<div class="math notranslate nohighlight">
+\[\min_R \: \sum_i C_i^2,\]</div>
+<p>with costs for each sample given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}C_i = \frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)} \propto
+\begin{cases}
+  \frac{1}{\mathcal{L}(\theta_i) \pi(\theta_i) R^d}, &amp; \bigl(\theta - \bar{\theta}\bigr)^\text{T} \Sigma^{-1} \bigl(\theta - \bar{\theta} \bigr) &lt; R^2 \\
+  0,                                                 &amp; \text{otherwise}
+\end{cases}.\end{split}\]</div>
+<p>This one-dimensional optimisation problem can be solved by straightforward techniques, such as the <a class="reference external" href="https://en.wikipedia.org/wiki/Brent%27s_method">Brent hybrid</a> root-finding algorithm.</p>
+<p>While the learnt hypersphere model is very simple, it is good pedagogical illustration of the general procedure for learning target distributions. First, construct a normalised model.  Second, train the model to learn its parameters by solving an optimisation problem to minimise the variance of the estimator while ensuring it is unbiased. If required, set hyperparameters or compare alternative models by cross-validation.</p>
+<p>While the simple learnt hypersphere model may be sufficient in some settings, it is not effective for multimodal posterior distributions or for posteriors with narrow curving degeneracies. For such scenarios we consider alternative learnt models.</p>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><p>Kernel density estimation (KDE) provides another alternative model to learn an effective target distribution. In particular, it can be used to effectively model narrow curving posterior degeneracies.</p>
+<p>Consider the target distribution defined by the kernel density function</p>
+<div class="math notranslate nohighlight">
+\[\varphi(\theta) = \frac{1}{N} \sum_i \frac{1}{V_{K}} K(\theta - \theta_i),\]</div>
+<p>with kernel</p>
+<div class="math notranslate nohighlight">
+\[K(\theta) = k\biggl(\frac{\theta^\text{T} \Sigma_K^{-1} \theta}{R^2} \biggr),\]</div>
+<p>where <span class="math notranslate nohighlight">\(k(\theta) = 1\)</span> if <span class="math notranslate nohighlight">\(\vert \theta \vert &lt; 1/2\)</span> and 0 otherwise.  The volume of the kernel is given by</p>
+<div class="math notranslate nohighlight">
+\[V_{K} = \frac{\pi^{d/2}}{\Gamma(d/2+1)} R^d \vert \Sigma_K \vert^{1/2}.\]</div>
+<p>The kernel covariance <span class="math notranslate nohighlight">\(\Sigma_K\)</span> can be computed directly from the training samples, for example by estimating the covariance or even simply by the separation between the lowest and highest samples in each dimension.  A diagonal representation is often considered for computational efficiency.</p>
+<p>The kernel radius <span class="math notranslate nohighlight">\(R\)</span> can be estimating by following a similar procedure to those outlined above for the hypersphere and modified Gaussian mixture model to minimise the variance of the resulting estimator. Alternatively, since there is only a single parameter cross-validation is also effective.</p>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><p>A modified Gaussian mixture model provides greater flexibility than the simple hypersphere model. In particular, it is much more effective for multimodal posterior distributions.</p>
+<p>Consider the target distribution defined by the modified Gaussian mixture model</p>
+<div class="math notranslate nohighlight">
+\[\varphi(\theta) = \sum_{k=1}^K \frac{w_k}{(2\pi)^{d/2} \vert \Sigma_k \vert^{1/2} s_k^d} \exp \biggl( \frac{- \bigl(\theta - \bar{\theta}_k\bigr)^\text{T} \Sigma_k^{-1} \bigl(\theta - \bar{\theta}_k\bigr)}{2 s_k^2}\biggr),\]</div>
+<p>for <span class="math notranslate nohighlight">\(K\)</span> components, with centres <span class="math notranslate nohighlight">\(\bar{\theta}_k\)</span> and covariances <span class="math notranslate nohighlight">\(\Sigma_k^{-1}\)</span>, where the relative scale of each component is controlled by <span class="math notranslate nohighlight">\(s_k\)</span> and the weights are specified by</p>
+<div class="math notranslate nohighlight">
+\[w_k = \frac{\exp(z_k)}{\sum_{k^\prime=1}^K \exp(z_{k^\prime})}.\]</div>
+<p>Given <span class="math notranslate nohighlight">\(K\)</span>, the posterior training samples can be clustered by <span class="math notranslate nohighlight">\(K\)</span>-means.  The values of <span class="math notranslate nohighlight">\(\bar{\theta}_k\)</span> and <span class="math notranslate nohighlight">\(\Sigma_k\)</span> can then be computed by the samples in cluster <span class="math notranslate nohighlight">\(k\)</span>.  The model is modified relative to the usual Gaussian mixture model in that the cluster mean and covariance are estimated from the samples of each cluster, while the relative cluster scale and weights are fitted.  Moreover, as before, a bespoke training approach is adopted tailored to the problem of learning an effective model for the learnt harmonic mean estimator.</p>
+<p>To estimate the the weights <span class="math notranslate nohighlight">\(z_k\)</span>, which in turn define the weights <span class="math notranslate nohighlight">\(w_k\)</span>, and the relative scales <span class="math notranslate nohighlight">\(s_k\)</span> we again set up an optimisation problem to minimise the variance of the learnt harmonic mean estimator, while also constraining it to be unbiased.  We also regularise the relative scale parameters, resulting in the following optimisation problem:</p>
+<div class="math notranslate nohighlight">
+\[\min_{\{z_k,s_k\}_{k=1}^K} \: \hat{\sigma}^2 + \frac{1}{2} \lambda \sum_{k=1}^K s_k^2 \quad \text{s.t.} \quad \hat{\rho} = \hat{\mu}_1,\]</div>
+<p>for regularisation parameter <span class="math notranslate nohighlight">\(\lambda\)</span>. The problem may equivalently be written as</p>
+<div class="math notranslate nohighlight">
+\[\min_{\{z_k,s_k\}_{k=1}^K} \: \hat{\mu}_2 + \frac{1}{2} \lambda \sum_{k=1}^K s_k^2,\]</div>
+<p>or explicitly in terms of the posterior samples by</p>
+<div class="math notranslate nohighlight">
+\[\min_{\{z_k,s_k\}_{k=1}^K} \: \sum_i C_i^2 + \frac{1}{2} \lambda \sum_{k=1}^K s_k^2.\]</div>
+<p>The individual cost terms for each sample <span class="math notranslate nohighlight">\(i\)</span> are given by</p>
+<div class="math notranslate nohighlight">
+\[C_i = \frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)} = \sum_{k=1}^K C_{ik},\]</div>
+<p>which include the following component from cluster <span class="math notranslate nohighlight">\(k\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[C_{ik} = \frac{w_k}{(2\pi)^{d/2} \vert \Sigma_k \vert^{1/2} s_k^d}\, \exp \biggl(\frac{- \bigl(\theta_i - \bar{\theta}_k\bigr)^\text{T} \Sigma_k^{-1} \bigl(\theta_i - \bar{\theta}_k\bigr)}{2 s_k^2}\biggr)\frac{1}{\mathcal{L}(\theta_i) \pi(\theta_i)}.\]</div>
+<p>We solve this optimisation problem by stochastic gradient decent, which requires the gradients of the objective function. Denoting the total cost of the objective function by <span class="math notranslate nohighlight">\(C = \sum_i C_i^2 + \frac{1}{2} \lambda \sum_{k=1}^K s_k^2\)</span>, it is straightforward to show that the gradients of the cost function with respect to the weights <span class="math notranslate nohighlight">\(z_k\)</span> and relative scales <span class="math notranslate nohighlight">\(s_k\)</span> are given by</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial C}{\partial z_k} = 2 \sum_i C_i (C_{ik} - w_k C_i),\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial C}{\partial s_k} = 2 \sum_i \frac{C_i C_{ik}}{s_k^3}\Bigl( \bigl(\theta_i - \bar{\theta}_k\bigr)^\text{T} \Sigma_k^{-1} \bigl(\theta_i - \bar{\theta}_k\bigr) - d s_k^2 \Bigr),\]</div>
+<p>respectively.</p>
+<p>The general procedure to learn the target distribution is the same as before: first, construct a normalised model; second, train the model by solving an optimisation problem to minimise the variance of the resulting learnt harmonic mean estimator. In this case we regularise the relative scale parameters and then solve by stochastic gradient descent. The number of clusters <span class="math notranslate nohighlight">\(K\)</span> can be deteremined by cross-validation.</p>
+<p>While the modified Gaussian mixture model can effectively handle multimodal distributions, alternative models are better suited to narrow curving posterior degeneracies.</p>
+</div></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This list of models is by no means comprehensive, and bespoke models may be implemented which perform better (<em>i.e.</em> lower cross-validation variance) in specific use-cases.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../Harmonic_Estimator/index.html" class="btn btn-neutral float-left" title="Harmonic Mean Estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../tutorials/index.html" class="btn btn-neutral float-right" title="Jupyter Notebooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

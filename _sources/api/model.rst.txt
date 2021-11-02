@@ -1,9 +1,3 @@
-.. _api-model:
-
-Model
-=====
-
-
 .. autoclass:: harmonic.model.HyperSphere
    :members:
 

@@ -1,70 +1,45 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; Harmonic 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom_tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="../_static/dark_mode_js/default_light.js"></script>
+        <script src="../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Overview" href="overview.html" />
-    <link rel="prev" title="harmonic" href="../index.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+    <link rel="next" title="Harmonic Mean Estimator" href="../background/Harmonic_Estimator/index.html" />
+    <link rel="prev" title="Harmonic" href="../index.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
-            <a href="../index.html" class="icon icon-home"> Harmonic
-          
-
-          
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
                 0.1
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -72,121 +47,61 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">User Guide</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installing-dependencies">Installing dependencies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#dependencies-for-examples">Dependencies for examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dependencies-required-for-coverage-testing">Dependencies required for coverage testing</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#building-from-source">Building from source</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#code-coverage">Code coverage</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Code coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 </ul>
 </li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/checkpointing.html">Checkpointing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/cross-validation_hyper-parameters.html">Cross-validation for hyper-parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/cross-validation_learnt_model.html">Cross-validation for learnt model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learnt Container Function</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Examples</span></p>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../examples/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Jupyter Notebooks</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API</span></p>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/chains.html">Chains</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/model.html">Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/evidence.html">Evidence</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/logs.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Benchmark Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">Namespaces</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/changes.html">GitHub History</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Harmonic</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
       <li>Installation</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/user_guide/install.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   
 <style>
 /* CSS overrides for sphinx_rtd_theme */
@@ -212,122 +127,117 @@
 }
 </style>
 <div class="section" id="installation">
-<span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installing-dependencies">
-<span id="dependencies"></span><h2>Installing dependencies<a class="headerlink" href="#installing-dependencies" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
+<span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
+<p>We recommend installing <strong>Harmonic</strong> through <a class="reference external" href="https://pypi.org">PyPi</a>, however in some cases one may wish to install <strong>Harmonic</strong> directly from source, which is also relatively straightforward. In either case we recommend creating a fresh conda environment to avoid any dependency conflicts</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n harmonic <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8.0
+conda activate harmonic
 </pre></div>
 </div>
-<div class="section" id="dependencies-for-examples">
-<h3>Dependencies for examples<a class="headerlink" href="#dependencies-for-examples" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements-examples.txt
+<p>Once within a fresh environment Harmonic may be installed by the following.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">PyPi</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">GitHub</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install harmonic
 </pre></div>
 </div>
-</div>
-<div class="section" id="dependencies-required-for-coverage-testing">
-<h3>Dependencies required for coverage testing<a class="headerlink" href="#dependencies-required-for-coverage-testing" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements-extra.txt
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="building-from-source">
-<span id="source"></span><h2>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/astro-informatics/harmonic
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/astro-informatics/harmonic
 <span class="nb">cd</span> harmonic
 python setup.py build_ext --inplace
 </pre></div>
 </div>
-<div class="section" id="code-coverage">
-<h3>Code coverage<a class="headerlink" href="#code-coverage" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py build_ext --inplace --define CYTHON_TRACE
+<p>Alternatively, if one wishes to inspect code coverage they should run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/astro-informatics/harmonic
+<span class="nb">cd</span> harmonic
+python setup.py build_ext --inplace --define CYTHON_TRACE
 </pre></div>
 </div>
+<p>To import Harmonic from outside of the install directory one should run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e .
+</pre></div>
 </div>
-</div>
+<p>from the root directory.</p>
+</div></div>
 <div class="section" id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline"></a></h2>
+<p>The <strong>Harmonic</strong> test suite may be executed by running</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
 </pre></div>
 </div>
-<div class="section" id="id1">
-<h3>Code coverage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>or alternatively with code-coverage by running</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest --cov-report term --cov<span class="o">=</span>harmonic --cov-config<span class="o">=</span>.coveragerc
 </pre></div>
 </div>
 </div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
+<p>This project has a variety of dependencies which are managed <em>via</em> <a class="reference external" href="https://pypi.org">PyPi</a>. Some dependencies are required for <strong>Harmonic</strong> core functionality, others are required only for the testing suites and documentation. To install project dependencies simply run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash getting_started.sh
+</pre></div>
+</div>
+<p>from the project root directory. In the requirements directory one can find a breakdown of requirements, where [-core] installs core requirementes, [-examples] installs example requirements, [-docs] installs documentation requirements and [-extra] installs requirements for coverage tests. Below is a categorical list of each dependencies.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">Harmonic Core</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">Examples</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">Test Suite</button><button aria-controls="panel-1-1-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-3" name="1-3" role="tab" tabindex="-1">Notebooks</button><button aria-controls="panel-1-1-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-4" name="1-4" role="tab" tabindex="-1">Documentation</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><ul class="simple">
+<li><p>python (&gt;=3.8.12)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/scikit-learn/">scikit-learn</a> (&gt;=0.22.2.post1)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> (&gt;=1.4.1)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/colorlog/">colorlog</a> (&gt;=4.1.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/PyYAML/">pyyaml</a> (&gt;=3.12)</p></li>
+</ul>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/emcee/">emcee</a> (&gt;=3.1.1)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/matplotlib/">matplotlib</a> (&gt;=3.4.3)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/corner/">corner</a> (&gt;=2.2.1)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/GetDist/">getdist</a> (&gt;=1.3.2)</p></li>
+</ul>
+</div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/pytest-cov/">pytest-cov</a> (&gt;=3.0.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/codecov/">codecov</a> (&gt;=2.1.12)</p></li>
+</ul>
+</div><div aria-labelledby="tab-1-1-3" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-3" name="1-3" role="tabpanel" tabindex="0"><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/ipython/">ipython</a> (&gt;=7.16.1)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/jupyter/">jupyter</a> (&gt;=1.0.0)</p></li>
+</ul>
+</div><div aria-labelledby="tab-1-1-4" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-4" name="1-4" role="tabpanel" tabindex="0"><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/Sphinx/">sphinx</a> (&gt;=4.2.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/nbsphinx-link/">nbsphinx-link</a> (&gt;=1.3.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pandoc/">pandoc</a> (&gt;=1.19.2.1)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/sphinx-rtd-theme/">sphinx-rtd-theme</a> (&gt;=1.0.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/sphinx-toolbox/">sphinx-toolbox</a> (&gt;=2.15.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/sphinx-tabs/">sphinx-tabs</a> (&gt;=3.2.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/sphinx-rtd-dark-mode/">sphinx-rtd-dark-mode</a> (&gt;=1.2.4)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/sphinxcontrib-bibtex/">sphinxcontrib-bibtex</a> (&gt;=2.4.1)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/sphinx-git/">sphinx-git</a> (&gt;=11.0.0)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/sphinxcontrib-texfigure/">sphinxcontrib-texfigure</a> (&gt;=0.1.3)</p></li>
+</ul>
+</div></div>
 </div>
 </div>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="overview.html" class="btn btn-neutral float-right" title="Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../index.html" class="btn btn-neutral" title="harmonic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Harmonic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../background/Harmonic_Estimator/index.html" class="btn btn-neutral float-right" title="Harmonic Mean Estimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price.
-
-    </p>
+    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.1',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-      <script type="text/javascript" src="../None"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
