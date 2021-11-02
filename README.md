@@ -1,4 +1,6 @@
-![test](docs/assets/harm_badge_simple.svg)
+<!-- ![test](docs/assets/harm_badge_simple.svg) -->
+<img src="docs/assets/harm_badge_simple.svg" width="150"/>
+
 
 # Harmonic
 
