@@ -1,4 +1,4 @@
-# Harmonic
+# Harmonic <img src="./docs/assets/harm_badge_simple.svg" width="48">
 
 [![Github](https://img.shields.io/badge/GitHub-harmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
 [![Build Status](https://travis-ci.com/astro-informatics/harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/harmonic)
@@ -7,11 +7,6 @@
 [![License](http://img.shields.io/badge/license-GPL-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)
 [![License](http://img.shields.io/badge/license-Extension-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt)
 [![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
-
-
-![alt text](./docs/assets/harm_badge_simple.svg)
-
-<img src="./docs/assets/harm_badge_simple.svg" width="48">
 
 
 ## Installation
