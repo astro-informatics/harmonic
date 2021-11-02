@@ -17,9 +17,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - uses: actions/checkout@v2
-    - uses: maxheld83/pandoc@v2
     - name: Install dependencies
       run: |
+        sudo apt install pandoc
         python -m pip install --upgrade pip
         bash getting_started.sh       
     
