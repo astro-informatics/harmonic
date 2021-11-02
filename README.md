@@ -9,7 +9,7 @@
 [![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
 
 
-
+![alt text](https://github.com/astro-informatics/harmonic/tree/Feature/Complete_documentation/docs/assets/harm_badge_simple.svg?raw=true)
 
 ## Installation
 
@@ -67,7 +67,7 @@ examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_ev
 harmonic is released under the GPL-3 license (see [LICENSE.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)), subject to the non-commercical use condition (see [LICENSE_EXT.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt))
 
      harmonic
-     Copyright (C) 2020 Jason McEwen & contributors
+     Copyright (C) 2021 Jason McEwen & contributors
 
      This program is released under the GPL-3 license (see LICENSE.txt), 
      subject to a non-commercical use condition (see LICENSE_EXT.txt).
