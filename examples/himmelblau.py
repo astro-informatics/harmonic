@@ -8,6 +8,7 @@ sys.path.append(".")
 import harmonic as hm
 sys.path.append("examples")
 import utils
+from datetime import datetime
 
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
@@ -141,6 +142,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Set up and run multiple simulations
     """
     n_realisations = 2
+    now = datetime.now().strftime("%Y%m%d%H%M%S")
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -302,12 +304,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/himmelblau_corner.png',
+                plt.savefig(f'examples/plots/{now}_himmelblau_corner_{n_realisations}_{nchains}_{samples_per_chain}.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/himmelblau_getdist.png',
+                plt.savefig(f'examples/plots/{now}_himmelblau_getdist_{n_realisations}_{nchains}_{samples_per_chain}.png',
                             bbox_inches='tight')
             
             plt.show(block=False)  
@@ -325,7 +327,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # ax.set_zlim(-100.0, 0.0)                
             ax.set_zlabel(r'$\log \mathcal{L}$')        
             if savefigs:
-                plt.savefig('examples/plots/himmelblau_lnposterior_surface.png',
+                plt.savefig(f'examples/plots/{now}_himmelblau_lnposterior_surface_{n_realisations}_{nchains}_{samples_per_chain}.png',
                             bbox_inches='tight')
             
             # Plot posterior image.
@@ -335,7 +337,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   plot_contour=True)
             # ax.set_clim(vmin=0.0, vmax=0.003)
             if savefigs:
-                plt.savefig('examples/plots/himmelblau_posterior_image.png',
+                plt.savefig(f'examples/plots/{now}_himmelblau_posterior_image_{n_realisations}_{nchains}_{samples_per_chain}.png',
                             bbox_inches='tight')
 
             # Evaluate model on grid.
@@ -350,7 +352,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\log \varphi$') 
             # ax.set_clim(vmin=-2.0, vmax=2.0)
             if savefigs:
-                plt.savefig('examples/plots/himmelblau_model_image.png',
+                plt.savefig(f'examples/plots/{now}_himmelblau_model_image_{n_realisations}_{nchains}_{samples_per_chain}.png',
                             bbox_inches='tight')
             
             # Plot exponential of model.
@@ -358,7 +360,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\varphi$')
             # ax.set_clim(vmin=0.0, vmax=10.0)        
             if savefigs:
-                plt.savefig('examples/plots/himmelblau_modelexp_image.png',
+                plt.savefig(f'examples/plots/{now}_himmelblau_modelexp_image_{n_realisations}_{nchains}_{samples_per_chain}.png',
                             bbox_inches='tight')
 
             plt.show(block=False)  
@@ -377,13 +379,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Save out realisations of statistics for analysis.
     if n_realisations > 1:
-        np.savetxt("examples/data/himmelblau_evidence_inv" +
-                   "_realisations.dat",
+        np.savetxt(f"examples/data/{now}_himmelblau_evidence_inv" +
+                   f"_realisations_{n_realisations}_{nchains}_{samples_per_chain}.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-        np.savetxt("examples/data/himmelblau_evidence_inv" +
-                   "_analytic.dat",
+        np.savetxt(f"examples/data/{now}_himmelblau_evidence_inv" +
+                   f"_analytic_{n_realisations}_{nchains}_{samples_per_chain}.dat",
                    evidence_inv_analytic_summary)
 
     if created_plots:
