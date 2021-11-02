@@ -1,4 +1,4 @@
-# Harmonic <img src="./docs/assets/harm_badge_simple.svg" width="48">
+# <a href="url"><img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52" ></a> Harmonic
 
 [![Github](https://img.shields.io/badge/GitHub-harmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
 [![Build Status](https://travis-ci.com/astro-informatics/harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/harmonic)
