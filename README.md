@@ -9,7 +9,7 @@
 [![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
 
 
-![alt text](https://raw.githubusercontent.com/astro-informatics/harmonic/tree/Feature/Complete_documentation/docs/assets/harm_badge_simple.png)
+![alt text](./docs/assets/harm_badge_simple.png)
 
 ## Installation
 
