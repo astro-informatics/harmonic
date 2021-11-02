@@ -6,8 +6,8 @@ Harmonic
 .. |GitHub| image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
    :target: https://github.com/astro-informatics/harmonic
 
-.. |Build Status| image:: https://travis-ci.com/astro-informatics/harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master
-   :target: https://travis-ci.com/astro-informatics/harmonic
+.. |Build Status| image:: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg
+   :target: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml
 
 .. |CodeCov| image:: https://codecov.io/gh/astro-informatics/harmonic/branch/master/graph/badge.svg?token=1s4SATphHV
    :target: https://codecov.io/gh/astro-informatics/harmonic
