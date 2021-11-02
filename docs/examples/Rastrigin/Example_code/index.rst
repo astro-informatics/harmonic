@@ -82,8 +82,7 @@ before being used as training data to train a network to predict optimal configu
 	                                      domain, 
 	                                      hyper_parameters, 
 	                                      nfold=nfold, 
-	                                      modelClass=hm.model.KernelDensityEstimate, 
-	                                      verbose=verbose, 
+	                                      modelClass=hm.model.KernelDensityEstimate,  
 	                                      seed=0)
    best_hyper_param_ind = np.argmin(validation_variances)
    best_hyper_param = hyper_parameters[best_hyper_param_ind]

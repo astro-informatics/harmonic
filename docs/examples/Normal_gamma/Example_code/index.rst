@@ -123,7 +123,7 @@ before being used as training data to train a network to predict the optimal mod
                     hyper_parameters_MGMM, 
                     nfold=nfold,
                     modelClass=hm.model.ModifiedGaussianMixtureModel, 
-                    verbose=False, seed=0)
+                    seed=0)
    best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
    best_hyper_param_MGMM = hyper_parameters_MGMM[best_hyper_param_MGMM_ind]
 
@@ -134,7 +134,7 @@ before being used as training data to train a network to predict the optimal mod
                     domains_sphere, 
                     hyper_parameters_sphere, nfold=nfold,
                     modelClass=hm.model.HyperSphere,
-                    verbose=False, seed=0)
+                    seed=0)
    best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
    best_hyper_param_sphere = hyper_parameters_sphere[best_hyper_param_sphere_ind]
 
