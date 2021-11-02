@@ -66,9 +66,9 @@ This project has a variety of dependencies which are managed *via* `PyPi <https:
 
 .. code-block:: bash
 
-    pip install -r requirements/requirements[x].txt
+    bash getting_started.sh
 
-from the project root directory, where [-core] installs core requirementes, [-examples] installs example requirements, [-docs] installs documentation requirements and [-extra] installs requirements for coverage tests. Below is a categorical list of each dependencies.
+from the project root directory. In the requirements directory one can find a breakdown of requirements, where [-core] installs core requirementes, [-examples] installs example requirements, [-docs] installs documentation requirements and [-extra] installs requirements for coverage tests. Below is a categorical list of each dependencies.
 
 .. tabs::
 	
