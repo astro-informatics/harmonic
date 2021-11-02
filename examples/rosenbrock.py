@@ -172,7 +172,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         ln_prior = partial(ln_prior_gaussian, mu=mu, sigma=sigma)
 
     # Start timer.
-    clock = time.clock()
+    clock = time.process_time()
 
     #===========================================================================
     # Begin multiple realisations of estimator
@@ -290,8 +290,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     np.exp(ln_evidence_std - ln_evidence)))
         diff = np.log(np.abs(evidence_numerical_integration - \
                                                     np.exp(ln_evidence)))
-        hm.logs.info_log('Evidence: 100 * |numerical - estimate| / estimate = {}%'
-            .format(100.0 * np.exp(diff - ln_evidence)))
+        hm.logs.info_log('Evidence: |numerical - estimate| / estimate = {}'
+            .format(np.exp(diff - ln_evidence)))
 
         # ======================================================================
         # Display inverse evidence computation results.
@@ -305,8 +305,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             .format(ev.kurtosis, np.sqrt(2.0/(ev.n_eff-1))))    
         hm.logs.debug_log('Inv Evidence: sqrt( var(var) )/ var = {}'
             .format(np.sqrt(ev.evidence_inv_var_var)/ev.evidence_inv_var))    
-        hm.logs.info_log('Inv Evidence: 100 * |numerical - estimate| / estimate = {}%'
-            .format(100.0 * np.abs(1.0 / evidence_numerical_integration \
+        hm.logs.info_log('Inv Evidence: |numerical - estimate| / estimate = {}'
+            .format(np.abs(1.0 / evidence_numerical_integration \
                     - ev.evidence_inv) / ev.evidence_inv))
 
         #===========================================================================
@@ -409,7 +409,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     #===========================================================================
     # End Timer.
-    clock = time.clock() - clock
+    clock = time.process_time() - clock
     hm.logs.info_log('Execution time = {}s'.format(clock))
 
     #===========================================================================

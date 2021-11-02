@@ -99,7 +99,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     inv_cov = np.linalg.inv(cov)    
 
     # Start timer.
-    clock = time.clock()
+    clock = time.process_time()
     
     # Run multiple realisations.
     n_realisations = 100
@@ -323,7 +323,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         evidence_inv_summary[i_realisation,1] = ev.evidence_inv_var
         evidence_inv_summary[i_realisation,2] = ev.evidence_inv_var_var
         
-    clock = time.clock() - clock
+    clock = time.process_time() - clock
     hm.logs.info_log('Execution_time = {}s'.format(clock))
 
     if n_realisations > 1:

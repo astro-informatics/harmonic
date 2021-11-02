@@ -119,7 +119,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # ==========================================================================
 
     # Start timer.
-    clock = time.clock()
+    clock = time.process_time()
 
     # ======================================================================
     # Recover a set of MCMC samples from the posterior 
@@ -249,7 +249,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         plt.show(block=False)
         created_plots = True
 
-    clock = time.clock() - clock
+    clock = time.process_time() - clock
     hm.logs.info_log('Execution_time = {}s'.format(clock))
 
     if created_plots:

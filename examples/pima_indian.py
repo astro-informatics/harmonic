@@ -209,7 +209,7 @@ def run_example(model_1=True, tau=1.0,
         pos = np.c_[pos_0, pos_1, pos_2, pos_3, pos_4, pos_5]
 
     # Start Timer.
-    clock = time.clock()
+    clock = time.process_time()
 
     #===========================================================================
     # Run Emcee to recover posterior sampels 
@@ -319,7 +319,7 @@ def run_example(model_1=True, tau=1.0,
 
     #===========================================================================
     # End Timer.
-    clock = time.clock() - clock
+    clock = time.process_time() - clock
     hm.logs.info_log('Execution time = {}s'.format(clock))
 
     #===========================================================================
@@ -386,7 +386,7 @@ if __name__ == '__main__':
     hm.logs.debug_log('Number of chains = {}'.format(nchains))
     hm.logs.debug_log('Samples per chain = {}'.format(samples_per_chain))
     hm.logs.debug_log('Burn in = {}'.format(nburn))
-    hm.logs.debug_log('Tau = {}'.format(Tau))
+    hm.logs.debug_log('Tau = {}'.format(tau))
     
     hm.logs.debug_log('-------------------------')
     

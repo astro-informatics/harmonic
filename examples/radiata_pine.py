@@ -387,7 +387,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     pos = np.c_[pos_alpha, pos_beta, pos_tau]
      
     # Start timer.
-    clock = time.clock()
+    clock = time.process_time()
 
     #===========================================================================
     # Run Emcee to recover posterior sampels 
@@ -451,7 +451,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
 
     #===========================================================================
     # End Timer.
-    clock = time.clock() - clock
+    clock = time.process_time() - clock
     hm.logs.info_log('execution_time = {}s'.format(clock))
     
     #===========================================================================

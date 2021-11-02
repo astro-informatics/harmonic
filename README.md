@@ -1,4 +1,4 @@
-# Harmonic
+# <a href="url"><img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52" ></a> Harmonic
 
 [![Github](https://img.shields.io/badge/GitHub-harmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
 [![Build Status](https://travis-ci.com/astro-informatics/harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/harmonic)
@@ -9,34 +9,15 @@
 [![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
 
 
-
-
 ## Installation
 
 ### Set up conda environment
 
-```conda create --name harmonic python=3.6.1```
+```conda create --name harmonic python=3.8.0```
 
-### Install dependencies for harmonic package
+### Install dependencies and build Harmonic
 
-`pip install -r requirements.txt`
-
-You may need to update your chache to ensure old packages are not picked up:
-
-`hash -r`
-
-### Install dependencies for harmonic examples
-
-`pip install -r requirements-examples.txt`
-
-
-### Install dependencies for code coverage testing
-
-`pip install -r requirements-extra.txt`
-
-### Build harmonic
-
-`python setup.py build_ext --inplace`
+`bash getting_started.sh`
 
 Run tests
 
@@ -84,7 +65,7 @@ examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_ev
 harmonic is released under the GPL-3 license (see [LICENSE.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)), subject to the non-commercical use condition (see [LICENSE_EXT.txt](https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt))
 
      harmonic
-     Copyright (C) 2020 Jason McEwen & contributors
+     Copyright (C) 2021 Jason McEwen & contributors
 
      This program is released under the GPL-3 license (see LICENSE.txt), 
      subject to a non-commercical use condition (see LICENSE_EXT.txt).
