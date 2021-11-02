@@ -9,7 +9,7 @@
 [![Arxiv](http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat)](https://arxiv.org/abs/20XX.XXXXX)
 
 
-![alt text](./docs/assets/harm_badge_simple.svg)
+![alt text](./docs/assets/harm_badge_simple.svg =250x250)
 
 ## Installation
 
