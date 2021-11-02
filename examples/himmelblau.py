@@ -116,8 +116,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     nhyper = 2
     step = -2
     domain = []
-    hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
-    hm.logs.debug_log('Hyper-parameters = {}'.format(hyper_parameters))
+    hyper_parameters_KDE = [[10**(R)] for R in range(-nhyper+step,step)]
+    # Define Hypersphere (sphere) hyperparameters
+    hyper_parameters_sphere = [None]
+    domains_sphere = [np.array([1E-2,1E1])]
+    hm.logs.debug_log('Hyper-parameters = {}'.format(hyper_parameters_sphere))
     """
     Set prior parameters.
     """
@@ -187,19 +190,30 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         allows the software to select the optimal model and the optimal model 
         hyper-parameters for a given situation.
         """
-        validation_variances = \
-            hm.utils.cross_validation(chains_train, \
-                                    domain, \
-                                    hyper_parameters, \
-                                    nfold=nfold, \
-                                    modelClass=hm.model.KernelDensityEstimate, \
-                                    seed=0)
-        hm.logs.debug_log('Validation variances = {}'
-            .format(validation_variances))
-        best_hyper_param_ind = np.argmin(validation_variances)
-        best_hyper_param = hyper_parameters[best_hyper_param_ind]
-        hm.logs.debug_log('Best hyper parameter = {}'
-            .format(best_hyper_param))
+        # validation_variances = \
+        #     hm.utils.cross_validation(chains_train, \
+        #                             domain, \
+        #                             hyper_parameters, \
+        #                             nfold=nfold, \
+        #                             modelClass=hm.model.KernelDensityEstimate, \
+        #                             seed=0)
+        # hm.logs.debug_log('Validation variances = {}'
+        #     .format(validation_variances))
+        # best_hyper_param_ind = np.argmin(validation_variances)
+        # best_hyper_param = hyper_parameters[best_hyper_param_ind]
+        # hm.logs.debug_log('Best hyper parameter = {}'
+        #     .format(best_hyper_param))
+        validation_variances_sphere = \
+            hm.utils.cross_validation(
+                    chains_train, \
+                    domains_sphere, \
+                    hyper_parameters_sphere, \
+                    nfold=nfold, \
+                    modelClass=hm.model.HyperSphere, \
+                    seed=0)
+
+        best_hyper_param_ind_sphere = np.argmin(validation_variances_sphere)
+        best_hyper_param_sphere = hyper_parameters_sphere[best_hyper_param_ind_sphere]
 
         #=======================================================================
         # Fit optimal model hyper-parameters
@@ -209,12 +223,14 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         Fit model by selecing the configuration of hyper-parameters which 
         minimises the validation variances.
         """
-        model = hm.model.KernelDensityEstimate(ndim, 
-                                            domain, 
-                                            hyper_parameters=best_hyper_param)
+        # model = hm.model.KernelDensityEstimate(ndim, 
+        #                                     domain, 
+        #                                     hyper_parameters=best_hyper_param)
+        # fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
+        # hm.logs.debug_log('Fit success = {}'.format(fit_success))    
+        model = hm.model.HyperSphere(ndim, domains_sphere, 
+                                     hyper_parameters=best_hyper_param_sphere)
         fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-        hm.logs.debug_log('Fit success = {}'.format(fit_success))    
-        
         #=======================================================================
         # Computing evidence using learnt model and emcee chains
         #=======================================================================

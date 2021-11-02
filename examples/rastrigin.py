@@ -200,9 +200,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         hm.logs.debug_log('Validation variances = {}'
             .format(validation_variances))
         best_hyper_param_ind = np.argmin(validation_variances)
-        best_hyper_param = hyper_parameters[best_hyper_param_ind]
+        best_hyper_param = hyper_parameters[best_hyper_param_ind]    
+        best_var = validation_variances[best_hyper_param_ind]
         hm.logs.debug_log('Best hyper-parameter = {}'
             .format(best_hyper_param))
+        hm.logs.debug_log('Best model-var = {}'
+            .format(best_var))
 
         #=======================================================================
         # Fit optimal model hyper-parameters
