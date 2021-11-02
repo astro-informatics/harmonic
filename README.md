@@ -1,7 +1,7 @@
 # <a href="url"><img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52" ></a> Harmonic
 
 [![Github](https://img.shields.io/badge/GitHub-harmonic-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic)
-[![Build Status](https://travis-ci.com/astro-informatics/harmonic.svg?token=quDUMr3yVpQwGYxko5xh&branch=master)](https://travis-ci.com/astro-informatics/harmonic)
+[![Build Status](https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg)](https://github.com/astro-informatics/harmonic/actions/workflows/python.yml)
 [![docs](http://img.shields.io/badge/docs-built-brightgreen.svg?style=flat)](https://astro-informatics.github.io/harmonic/)
 [![codecov](https://codecov.io/gh/astro-informatics/harmonic/branch/master/graph/badge.svg?token=1s4SATphHV)](https://codecov.io/gh/astro-informatics/harmonic)
 [![License](http://img.shields.io/badge/license-GPL-blue.svg?style=flat)](https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt)
