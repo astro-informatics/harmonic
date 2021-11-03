@@ -218,7 +218,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 		prior_params = (0.0, tau_prior, 1E-3, 1E-3)
 
 		#===================================================================
-		# Run Emcee to recover posterior sampels 
+		# Run Emcee to recover posterior samples 
 		#===================================================================
 		hm.logs.info_log('Run sampling...')
 		"""

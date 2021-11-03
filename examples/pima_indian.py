@@ -212,7 +212,7 @@ def run_example(model_1=True, tau=1.0,
     clock = time.process_time()
 
     #===========================================================================
-    # Run Emcee to recover posterior sampels 
+    # Run Emcee to recover posterior samples 
     #===========================================================================
     hm.logs.info_log('Run sampling...')
     """
