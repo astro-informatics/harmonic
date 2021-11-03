@@ -40,7 +40,7 @@ setup(
                  'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
                  ],
     name = "harmonic",
-    version = "0.34",
+    version = "1.0.0",
     prefix='.',
     url='https://github.com/astro-informatics/harmonic',
     author='Jason McEwen & Contributors',
