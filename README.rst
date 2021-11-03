@@ -1,7 +1,7 @@
 |logo| Harmonic
 =================================================================================================================
 
-.. image:: ./docs/assets/harm_badge_simple.svg
+.. image:: https://raw.githubusercontent.com/astro-informatics/harmonic/master/docs/assets/harm_badge_simple.svg?sanitize=true
     :width: 52%
     :height: 52%
     :align: center
