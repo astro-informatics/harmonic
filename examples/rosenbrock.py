@@ -209,7 +209,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
         hm.logs.info_log('Configure chains...')
         """
-        Configure chains for the cross validation stage.
+        Configure chains for the cross-validation stage.
         """
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)

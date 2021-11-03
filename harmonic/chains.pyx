@@ -233,7 +233,7 @@ class Chains:
 
     def get_sub_chains(self, list chains_wanted):
         """Creates a new chain instance with the chains indexed in chains_wanted. 
-        (Useful for cross validation.)
+        (Useful for cross-validation.)
 
         Args:
 

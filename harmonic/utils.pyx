@@ -85,7 +85,7 @@ def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
 
     Args:
 
-        i_fold (long): Cross validation iteration to perform.
+        i_fold (long): Cross-validation iteration to perform.
 
         nchains_in_val_set (long): The number of chains that will go in each
             validation set. 
