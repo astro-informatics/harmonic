@@ -44,7 +44,7 @@ The likelihood for Model 1 is given by
                               &= \Bigl(\frac{\tau}{2\pi}\Bigr)^{n/2} \exp\biggl(- \frac{\tau}{2} \sum_{i=1}^n \bigl(y_i - \alpha - \beta (x_i - \bar{x})\bigr)^2\biggr),
         \end{align}
 
-where :math:`x = (x_1, \dots, x_n)^\text{T}` and :math:`y = (y_1, \dots, y_n)^\text{T}`.  For Model 2, the priors adopted for :math:`(\gamma, \delta, \lambda)` are the same as those adopted for :math:`(\alpha, \beta, \tau)` of Model 1, respectively, with the same hyperparameters.  The likelihood for Model 2 again takes an identical form to Model 1, and is presented in the DAG below.
+where :math:`x = (x_1, \dots, x_n)^\text{T}` and :math:`y = (y_1, \dots, y_n)^\text{T}`.  For Model 2, the priors adopted for :math:`(\gamma, \delta, \lambda)` are the same as those adopted for :math:`(\alpha, \beta, \tau)` of Model 1, respectively, with the same hyper-parameters.  The likelihood for Model 2 again takes an identical form to Model 1, and is presented in the DAG below.
 
 .. image:: /assets/dags/hbm_radiata_pine.svg
 	:width: 50 %

@@ -59,6 +59,9 @@ examples/data/rastrigin_evidence_inv_realisations.dat examples/data/rastrigin_ev
 
 'pip install -i https://test.pypi.org/simple/ harmonic'
 
+## Contributors
+
+[Jason McEwen](http://www.jasonmcewen.org/), [Christopher Wallis](https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en), [Matthew Price](https://scholar.google.co.uk/citations?user=w7_VDLQAAAAJ&hl=en&authuser=1), [Matthew Docherty](https://mdochertyastro.com/) 
 
 ## License
 

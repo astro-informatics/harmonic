@@ -161,7 +161,7 @@ def test_add_chains_2d_and_copy():
     assert chains.ln_posterior[random_sample]       \
         == ln_posterior2[random_sample-nsamples1*nchains1]
 
-    chains2 = chains.copy()
+    chains2 = chains.shallowcopy()
 
     assert chains2.nchains  == nchains1 + nchains2
     assert chains2.nsamples \
@@ -463,7 +463,7 @@ def test_add():
         chains1.add(ch.Chains(ndim+1))
 
     # Copy chain1 and then add chains2.
-    chains_added = chains1.copy()
+    chains_added = chains1.shallowcopy()
     chains_added.add(chains2)
     
     # Checks on added object.
@@ -512,7 +512,7 @@ def test_nsamples_per_chain():
     chains2.add_chains_2d(samples2, ln_posterior2, nchains2)
 
     # Copy chain1 and then add chains2.
-    chains_added = chains1.copy()
+    chains_added = chains1.shallowcopy()
     chains_added.add(chains2)
     
     nsamples_per_chain = chains_added.nsamples_per_chain()
@@ -587,7 +587,7 @@ def test_split_into_blocks():
     ln_posterior3 = np.random.randn(nsamples3)
     chains.add_chain(samples3, ln_posterior3)            
     
-    chains_blocked = chains.copy()
+    chains_blocked = chains.shallowcopy()
 
     with pytest.raises(ValueError):
         chains_blocked.split_into_blocks(2)

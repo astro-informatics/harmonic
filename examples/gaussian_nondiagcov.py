@@ -353,7 +353,7 @@ if __name__ == '__main__':
     nburn = 500     
     np.random.seed(10)
 
-    hm.logs.info_log('Non-diagonal Covariance Guassian example')
+    hm.logs.info_log('Non-diagonal Covariance Gaussian example')
 
     hm.logs.debug_log('-- Selected Parameters --')
 

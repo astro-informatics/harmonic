@@ -390,7 +390,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     clock = time.process_time()
 
     #===========================================================================
-    # Run Emcee to recover posterior sampels 
+    # Run Emcee to recover posterior samples 
     #===========================================================================
     hm.logs.info_log('Run sampling...')
     """
@@ -412,7 +412,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     #===========================================================================
     hm.logs.info_log('Configure chains...')
     """
-    Configure chains for the cross validation stage.
+    Configure chains for the cross-validation stage.
     """
     chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, lnprob)
@@ -426,7 +426,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     """
     This could simply use the cross-validation results to choose the model which 
     has the smallest validation variance -- i.e. the best model for the job. Here
-    however we manually select the hypersphere model.
+    however we manually select the hyper-sphere model.
     """
 
     hm.logs.info_log('Using HyperSphere')

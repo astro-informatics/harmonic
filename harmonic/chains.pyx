@@ -233,7 +233,7 @@ class Chains:
 
     def get_sub_chains(self, list chains_wanted):
         """Creates a new chain instance with the chains indexed in chains_wanted. 
-        (Useful for cross validation.)
+        (Useful for cross-validation.)
 
         Args:
 
@@ -328,11 +328,18 @@ class Chains:
         return        
 
 
-    def copy(self):
-        """Performs deep copy of the chain class (calls the module copy).
+    def shallowcopy(self):
+        """Performs shallow copy of the chain class (calls the module copy).
 
         """
         return copy.copy(self)
+
+
+    def deepcopy(self):
+        """Performs deep copy of the chain class (calls the module copy).
+
+        """
+        return copy.deepcopy(self)
 
 
     def nsamples_per_chain(self):

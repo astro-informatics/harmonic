@@ -69,7 +69,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 nburn=500, chain_iterations=1, 
                 plot_corner=False, plot_surface=False):
     """
-    Run nD Gaussian example with generalized covariance matrix.
+    Run nD Gaussian example with generalised covariance matrix.
 
     Args:
 
@@ -270,7 +270,7 @@ if __name__ == '__main__':
     chain_iterations = 200
     np.random.seed(2)
 
-    hm.logs.info_log('nD Guassian example')
+    hm.logs.info_log('nD Gaussian example')
 
     hm.logs.debug_log('-- Selected Parameters --')
 
