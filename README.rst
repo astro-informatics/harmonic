@@ -1,10 +1,9 @@
 |logo| Harmonic
 =================================================================================================================
 
-.. |logo| image:: https://raw.githubusercontent.com/astro-informatics/harmonic/master/docs/assets/harm_badge_simple.svg?sanitize=true
-     :width: 52
-     :height: 52
-     :align: center
+.. |logo| raw:: html
+
+   <img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52">
 
 .. image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
     :target: https://github.com/astro-informatics/harmonic
