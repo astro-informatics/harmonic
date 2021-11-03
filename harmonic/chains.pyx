@@ -328,11 +328,18 @@ class Chains:
         return        
 
 
-    def copy(self):
-        """Performs deep copy of the chain class (calls the module copy).
+    def shallowcopy(self):
+        """Performs shallow copy of the chain class (calls the module copy).
 
         """
         return copy.copy(self)
+
+
+    def deepcopy(self):
+        """Performs deep copy of the chain class (calls the module copy).
+
+        """
+        return copy.deepcopy(self)
 
 
     def nsamples_per_chain(self):
