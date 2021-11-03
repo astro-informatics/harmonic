@@ -31,7 +31,7 @@ The analytic evidence is given by
 
     return ln_norm_lik
 
-where the covariance is initialized by the function 
+where the covariance is initialised by the function 
 
 .. code-block:: python
 
