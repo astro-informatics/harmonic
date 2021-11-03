@@ -529,7 +529,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Compute-samples-using-emcee">
 <h2>Compute samples using emcee<a class="headerlink" href="#Compute-samples-using-emcee" title="Permalink to this headline"></a></h2>
 <p>We then sample from the posterior using an MCMC algorithm. While any MCMC approach can be used we sample using the <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> package.</p>
-<p>First we will need to define and initialize some variables.</p>
+<p>First we will need to define and initialise some variables.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -541,7 +541,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">samples_per_chain</span> <span class="o">=</span> <span class="mi">5000</span>    <span class="c1"># number of samples per chain</span>
 <span class="n">nburn</span> <span class="o">=</span> <span class="mi">2000</span>                <span class="c1"># number of samples to discard as burn in</span>
 
-<span class="c1"># Initialize random seed</span>
+<span class="c1"># initialise random seed</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="c1"># Rosenbrock hyper-parameters</span>
@@ -612,7 +612,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Train-the-machine-learning-model">
 <h3>Train the machine learning model<a class="headerlink" href="#Train-the-machine-learning-model" title="Permalink to this headline"></a></h3>
 <p>Now consider <code class="docutils literal notranslate"><span class="pre">chains_train</span></code> and use the chains to train the model. Here we will use the Kernel Density Estimation model.</p>
-<p>We will perform cross validation to select appropriate model hyperparamters. First we define the cross validation set-up, including a set of hyper-parameters to consider.</p>
+<p>We will perform cross-validation to select appropriate model hyper-paramters. First we define the cross-validation set-up, including a set of hyper-parameters to consider.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -627,7 +627,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>Cross validation is then performing using harmonic untils to select the best hyper-parameter.</p>
+<p>Cross-validation is then performing using harmonic untils to select the best hyper-parameter.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>

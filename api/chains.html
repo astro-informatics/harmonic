@@ -254,8 +254,8 @@ posterior values.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="harmonic.Chains.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Chains.copy" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="harmonic.Chains.deepcopy">
+<span class="sig-name descname"><span class="pre">deepcopy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Chains.deepcopy" title="Permalink to this definition"></a></dt>
 <dd><p>Performs deep copy of the chain class (calls the module copy).</p>
 </dd></dl>
 
@@ -285,7 +285,7 @@ the chain samples can be accessed by self.samples[start:end,:].</p>
 <dt class="sig sig-object py" id="harmonic.Chains.get_sub_chains">
 <span class="sig-name descname"><span class="pre">get_sub_chains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chains_wanted</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Chains.get_sub_chains" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a new chain instance with the chains indexed in chains_wanted.
-(Useful for cross validation.)</p>
+(Useful for cross-validation.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>chains_wanted</strong> (<em>list</em>) – List of indexes of chains that the new
@@ -338,6 +338,12 @@ chain instance will contain.</p>
     each chain.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.Chains.shallowcopy">
+<span class="sig-name descname"><span class="pre">shallowcopy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Chains.shallowcopy" title="Permalink to this definition"></a></dt>
+<dd><p>Performs shallow copy of the chain class (calls the module copy).</p>
 </dd></dl>
 
 <dl class="py method">

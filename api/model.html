@@ -135,8 +135,8 @@
 2 containing the lower and upper bound of the radius of the
 hyper-sphere.</p></li>
 <li><p><strong>hyper_parameters</strong> (<em>None</em>) – Should not be set as there are no
-hyperparameters for this model (in general, however, models can
-have hyperparameters).</p></li>
+hyper-parameters for this model (in general, however, models can
+have hyper-parameters).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -219,7 +219,7 @@ sample in X.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.model.HyperSphere.set_R">
 <span class="sig-name descname"><span class="pre">set_R</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.HyperSphere.set_R" title="Permalink to this definition"></a></dt>
-<dd><p>Set the radius of the hypersphere and calculate its volume.</p>
+<dd><p>Set the radius of the hyper-sphere and calculate its volume.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>R</strong> (<em>double</em>) – The radius of the hyper-sphere.</p>
@@ -227,7 +227,7 @@ sample in X.</p></li>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – If the radius is a NaN.</p></li>
-<li><p><strong>ValueError</strong> – If the Raises is not positive.</p></li>
+<li><p><strong>ValueError</strong> – If the radius is not positive.</p></li>
 </ul>
 </dd>
 </dl>
@@ -276,7 +276,7 @@ covariance matrix that defines the ellipse.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.model.HyperSphere.set_precomputed_values">
 <span class="sig-name descname"><span class="pre">set_precomputed_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.HyperSphere.set_precomputed_values" title="Permalink to this definition"></a></dt>
-<dd><p>Precompute volume of the hyper sphere (scaled ellipse) and squared radius.</p>
+<dd><p>Precompute volume of the hyper-sphere (scaled ellipse) and squared radius.</p>
 </dd></dl>
 
 </dd></dl>
@@ -289,7 +289,7 @@ density estimation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.model.KernelDensityEstimate.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Constructor setting the hyperparameters and domains of the model.</p>
+<dd><p>Constructor setting the hyper-parameters and domains of the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -297,7 +297,7 @@ density estimation.</p>
 <li><p><strong>domains</strong> (<em>list</em>) – List of length 0 since domain not considered for
 Kernel Density Estimation.</p></li>
 <li><p><strong>hyper_parameters</strong> (<em>list</em>) – A list of length 1 containing the diameter
-in scaled units of the hyper spheres to use in the Kernel
+in scaled units of the hyper-spheres to use in the Kernel
 Density Estimate.</p></li>
 </ul>
 </dd>
@@ -319,7 +319,7 @@ Density Estimate.</p></li>
 <p>Set the scales of the model from the samples.</p>
 <p>Create the dictionary containing all the information on which samples
 are in which pixel in a grid where each pixel size is the same as the
-diameter of the hyper spheres to be placed on each sample.</p>
+diameter of the hyper-spheres to be placed on each sample.</p>
 <p>The key is an index of the grid (c type ordering) and the value is a
 list containing the indexes in the sample array of all the samples in
 that index 3.</p>
@@ -398,7 +398,7 @@ posterior value.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.model.KernelDensityEstimate.set_scales">
 <span class="sig-name descname"><span class="pre">set_scales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.set_scales" title="Permalink to this definition"></a></dt>
-<dd><p>Set the scales of the hyper spheres based on the min and max sample in each
+<dd><p>Set the scales of the hyper-spheres based on the min and max sample in each
 dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -421,7 +421,7 @@ modified Gaussian mixture model.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.model.ModifiedGaussianMixtureModel.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[3,</span> <span class="pre">1e-08,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Constructor setting the hyper parameters and domains of the model of the
+<dd><p>Constructor setting the hyper-parameters and domains of the model of the
 MGMM which models the posterior as a group of Gaussians.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -432,9 +432,9 @@ parameter of the covariance matrix, i.e. the range of alpha,
 where C’ = alpha * C_samples, and C_samples is the diagonal of
 the covariance in the samples in each cluster.</p></li>
 <li><p><strong>hyper_parameters</strong> (<em>list</em>) – A list of length 5, the first of which
-should be nummber of clusters, the second is the regularisation
+should be number of clusters, the second is the regularisation
 parameter gamma, the third is the learning rate, the fourth is
-the maximum number of terations and the fifth is the batch
+the maximum number of iterations and the fifth is the batch
 size.</p></li>
 </ul>
 </dd>

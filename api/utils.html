@@ -125,10 +125,10 @@
 <dd><p>Perform n-fold validation for given model using chains to be split into
 validation and training data.</p>
 <p>First, splits data into nfold chunks. Second, fits the model using each of
-the hyper parameters given using all but one of the chunks (the validation
+the hyper-parameters given using all but one of the chunks (the validation
 chunk). This procedure is performed for all the chunks and the average
 (mean) log-space variance from all the chunks is computed and returned.
-This can be used to decide which hyper parameters list was better.</p>
+This can be used to decide which hyper-parameters list was better.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -144,7 +144,7 @@ KernelDensityEstimate).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Mean log validation variance (averaged over nfolds) for each hyperparameter.</p>
+<dd class="field-even"><p>Mean log validation variance (averaged over nfolds) for each hyper-parameter.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>(list)</p>
@@ -200,12 +200,12 @@ chains to be used to calculate the evidence (e.g. testing).</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="harmonic.utils.validation_fit_indexes">
 <span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">validation_fit_indexes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_fold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nchains_in_val_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.validation_fit_indexes" title="Permalink to this definition"></a></dt>
-<dd><p>Pull out the correct indexes for the chains of the validation and training
+<dd><p>Extract the correct indexes for the chains of the validation and training
 sets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i_fold</strong> (<em>long</em>) – Cross validation iteration to perform.</p></li>
+<li><p><strong>i_fold</strong> (<em>long</em>) – Cross-validation iteration to perform.</p></li>
 <li><p><strong>nchains_in_val_set</strong> (<em>long</em>) – The number of chains that will go in each
 validation set.</p></li>
 <li><p><strong>nfold</strong> (<em>long</em>) – Number of fold validation sets to be made.</p></li>

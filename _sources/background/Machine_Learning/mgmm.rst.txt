@@ -1,4 +1,4 @@
-A modified Gaussian mixture model provides greater flexibility than the simple hypersphere model. In particular, it is much more effective for multimodal posterior distributions.
+A modified Gaussian mixture model provides greater flexibility than the simple hyper-sphere model. In particular, it is much more effective for multimodal posterior distributions.
 
 Consider the target distribution defined by the modified Gaussian mixture model
 

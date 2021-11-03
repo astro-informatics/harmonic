@@ -461,7 +461,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">samples_per_chain</span> <span class="o">=</span> <span class="mi">5000</span>    <span class="c1"># number of samples per chain</span>
 <span class="n">nburn</span> <span class="o">=</span> <span class="mi">2000</span>                <span class="c1"># number of samples to discard as burn in</span>
 
-<span class="c1"># Initialize random seed</span>
+<span class="c1"># initialise random seed</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Create covariance matrix</span>
@@ -476,7 +476,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Instantiate hypersphere model</span>
+<span></span><span class="c1"># Instantiate hyper-sphere model</span>
 <span class="n">domains_sphere</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1E0</span><span class="p">,</span><span class="mf">1E0</span><span class="p">])]</span> <span class="c1"># Not used since not training model.</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">HyperSphere</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">domains_sphere</span><span class="p">)</span>
 
