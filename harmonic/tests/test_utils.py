@@ -174,7 +174,7 @@ def test_cross_validation():
 
     hyper_parameters_HS   = [None for R in range(3)]
     hyper_parameters_KDE  = [[10**R] for R in range(-2,0)]
-    hyper_parameters_MGMM = [[nguassians,1E-30,0.1*nguassians*nguassians,30,1] for nguassians in range(1,4)]
+    hyper_parameters_MGMM = [[ngaussians,1E-30,0.1*ngaussians*ngaussians,30,1] for ngaussians in range(1,4)]
 
     chains = ch.Chains(ndim)
 
