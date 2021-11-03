@@ -1,5 +1,10 @@
-<a href="url"><img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52" ></a> Harmonic
+|logo| Harmonic
 =================================================================================================================
+
+.. |logo| image:: ./docs/assets/harm_badge_simple.svg
+    :width: 52%
+    :height: 52%
+    :align: center
 
 .. image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
     :target: https://github.com/astro-informatics/harmonic
