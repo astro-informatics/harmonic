@@ -80,7 +80,7 @@ def split_data(chains not None, double training_proportion=0.5):
 
 def validation_fit_indexes(long i_fold, long nchains_in_val_set, long nfold,
                            list indexes):
-    """Pull out the correct indexes for the chains of the validation and training 
+    """Extract the correct indexes for the chains of the validation and training 
     sets.
 
     Args:
@@ -142,10 +142,10 @@ def cross_validation(chains,
     validation and training data.
     
     First, splits data into nfold chunks. Second, fits the model using each of 
-    the hyper parameters given using all but one of the chunks (the validation 
+    the hyper-parameters given using all but one of the chunks (the validation 
     chunk). This procedure is performed for all the chunks and the average 
     (mean) log-space variance from all the chunks is computed and returned.  
-    This can be used to decide which hyper parameters list was better.
+    This can be used to decide which hyper-parameters list was better.
 
     Args:
 
@@ -165,7 +165,7 @@ def cross_validation(chains,
 
     Returns:
 
-        (list): Mean log validation variance (averaged over nfolds) for each hyperparameter.
+        (list): Mean log validation variance (averaged over nfolds) for each hyper-parameter.
 
     Raises:
 

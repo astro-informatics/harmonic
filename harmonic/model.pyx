@@ -21,9 +21,9 @@ class Model(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def __init__(self, long ndim, list domains not None, hyper_parameters=None):
-        """Constructor setting the hyper parameters and domains of the model.
+        """Constructor setting the hyper-parameters and domains of the model.
         
-        Must be implemented by derivied class (currently abstract).
+        Must be implemented by derived class (currently abstract).
         
         Args: 
 
@@ -31,10 +31,10 @@ class Model(metaclass=abc.ABCMeta):
 
             domains (list): List of 1D numpy ndarrays containing the domains
                 for each parameter of model. Each domain is of length two,
-                specifying a lower and upper bound for real hyper parameters
+                specifying a lower and upper bound for real hyper-parameters
                 but can be different in other cases if required.
 
-            hyper_parameters (list): Hyperparameters for model.
+            hyper_parameters (list): Hyper-parameters for model.
 
         """
 
@@ -44,7 +44,7 @@ class Model(metaclass=abc.ABCMeta):
             np.ndarray[double, ndim=1, mode="c"] Y):
         """Fit the parameters of the model.
         
-        Must be implemented by derivied class (currently abstract).
+        Must be implemented by derived class (currently abstract).
         
         Args:
 
@@ -64,7 +64,7 @@ class Model(metaclass=abc.ABCMeta):
     def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
         """Predict the value of the posterior at point x.
         
-        Must be implemented by derivied class (since abstract).
+        Must be implemented by derived class (since abstract).
         
         Args: 
 
@@ -125,12 +125,12 @@ class Model(metaclass=abc.ABCMeta):
 
 
 #===============================================================================
-# Hyper sphere model 
+# Hyper-sphere model 
 #===============================================================================
 
 cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
                                          centre, inv_covariance, mean_shift):
-    """Evaluate objective function forthe HyperSphere model.
+    """Evaluate objective function for the HyperSphere model.
 
     Objective function is given by the variance of the estimator (subject to a 
     linear transformation that does not depend on the radius of the sphere, 
@@ -138,7 +138,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
 
     Args:
 
-        R_squared (double): Radius of the hyper sphere squared.
+        R_squared (double): Radius of the hyper-sphere squared.
 
         X (double ndarray[nsamples, ndim]): Sample x coordinates.
 
@@ -204,8 +204,8 @@ class HyperSphere(Model):
                 hyper-sphere.
 
             hyper_parameters (None): Should not be set as there are no
-                hyperparameters for this model (in general, however, models can
-                have hyperparameters).
+                hyper-parameters for this model (in general, however, models can
+                have hyper-parameters).
                 
         Raises:
 
@@ -218,7 +218,7 @@ class HyperSphere(Model):
         """
         
         if hyper_parameters != None:
-            raise ValueError("HyperSphere model has no hyperparameters.")
+            raise ValueError("HyperSphere model has no hyper-parameters.")
         if len(domains) != 1:
             raise ValueError("HyperSphere model domains list should " +
                 "be length 1.")
@@ -248,7 +248,7 @@ class HyperSphere(Model):
 
 
     def set_R(self, double R):
-        """Set the radius of the hypersphere and calculate its volume.
+        """Set the radius of the hyper-sphere and calculate its volume.
 
         Args:
 
@@ -258,7 +258,7 @@ class HyperSphere(Model):
 
             ValueError: If the radius is a NaN.
 
-            ValueError: If the Raises is not positive.
+            ValueError: If the radius is not positive.
 
         """
 
@@ -274,7 +274,7 @@ class HyperSphere(Model):
 
 
     def set_precomputed_values(self):
-        """Precompute volume of the hyper sphere (scaled ellipse) and squared radius.
+        """Precompute volume of the hyper-sphere (scaled ellipse) and squared radius.
 
         """
         
@@ -287,7 +287,7 @@ class HyperSphere(Model):
         self.R_squared = self.R*self.R
         
         # Compute log_e(1/volume).        
-        # First compute volume of hypersphere then adjust for transformation 
+        # First compute volume of hyper-sphere then adjust for transformation 
         # by C^{1/2} to give hyper-ellipse by multiplying by det(C)^0.5.        
         volume_hypersphere = (self.ndim/2)*log(np.pi) \
             + self.ndim*log(self.R) - sp.gammaln(self.ndim/2+1)
@@ -488,7 +488,7 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
 
         ngrid (long): Number of pixels in each dimension in the grid.
 
-        D (double): Diameter of the hyper sphere.
+        D (double): Diameter of the hyper-sphere.
 
     """
 
@@ -543,10 +543,10 @@ cdef KernelDensityEstimate_loop_round_and_search(long index, long i_dim,
         inv_scales (double ndarray[ndim]): 1.0/delta_x_i where delta_x_i is the
             difference between the max and min of the sample in dimension i.
 
-        radius_squared (double): Radius squared of the local hypersphere.
+        radius_squared (double): Radius squared of the local hyper-sphere.
 
         count (long*): Pointer to the count integer that counts how many
-            hyper spheres the postion x falls inside.
+            hyper-spheres the postion x falls inside.
 
     """
     # this does create looping boundry conditions but doesn't matter in 
@@ -589,10 +589,10 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
         inv_scales (double ndarray[ndim]): 1.0/delta_x_i where delta_x_i is the
             difference between the max and min of the sample in dimension i.
 
-        radius_squared (double): Radius squared of the local hypersphere.
+        radius_squared (double): Radius squared of the local hyper-sphere.
 
         count (long*): Pointer to the count integer that counts how many
-            hyper spheres the postion x falls inside.
+            hyper-spheres the postion x falls inside.
 
     """
     
@@ -620,7 +620,7 @@ class KernelDensityEstimate(Model):
 
     def __init__(self, long ndim, list domains not None, 
                   hyper_parameters=[0.1]):
-        """Constructor setting the hyperparameters and domains of the model.
+        """Constructor setting the hyper-parameters and domains of the model.
 
         Args:
 
@@ -630,7 +630,7 @@ class KernelDensityEstimate(Model):
                 Kernel Density Estimation.
 
             hyper_parameters (list): A list of length 1 containing the diameter
-                in scaled units of the hyper spheres to use in the Kernel
+                in scaled units of the hyper-spheres to use in the Kernel
                 Density Estimate.
 
         Raises:
@@ -644,7 +644,7 @@ class KernelDensityEstimate(Model):
         """
 
         if len(hyper_parameters) != 1:
-            raise ValueError("Kernel Density Estimate hyper parameter list \
+            raise ValueError("Kernel Density Estimate hyper-parameter list \
                 should be length 1.")
         if len(domains) != 0:
             raise ValueError("Kernel Density Estimate domains list should be \
@@ -685,7 +685,7 @@ class KernelDensityEstimate(Model):
         
 
     def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
-        """Set the scales of the hyper spheres based on the min and max sample in each
+        """Set the scales of the hyper-spheres based on the min and max sample in each
         dimension.
 
         Args:
@@ -761,7 +761,7 @@ class KernelDensityEstimate(Model):
 
         Create the dictionary containing all the information on which samples 
         are in which pixel in a grid where each pixel size is the same as the 
-        diameter of the hyper spheres to be placed on each sample. 
+        diameter of the hyper-spheres to be placed on each sample. 
 
         The key is an index of the grid (c type ordering) and the value is a 
         list containing the indexes in the sample array of all the samples in 
@@ -771,12 +771,10 @@ class KernelDensityEstimate(Model):
 
         Args:
 
-
             X (double ndarray[nsamples, ndim]): Sample x coordinates.
 
             Y (double ndarray[nsamples]): Target log_e posterior values for each
                 sample in X.
-
 
         Returns:
 
@@ -797,8 +795,7 @@ class KernelDensityEstimate(Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim")
 
-        self.samples = X.copy() # TODO consider functionality for shallow copy 
-                                # to save mem
+        self.samples = X.copy()
 
         self.set_scales(self.samples)
 
@@ -862,7 +859,7 @@ cdef np.ndarray[double, ndim=1, mode="c"] beta_to_weights(\
 
     Args:
 
-        beta (double ndarray[ngaussians]): Veta values to be converted.
+        beta (double ndarray[ngaussians]): Beta values to be converted.
 
         ngaussians (long): The number of Gaussians in the model.
 
@@ -967,7 +964,7 @@ cdef double evaluate_one_gaussian(np.ndarray[double, ndim=1, mode="c"] x, \
         x (double ndarray[ndim]): Postion where the Gaussian is to be
             evaluated.
 
-        mu (double ndarray[ndim]): Center of the Gaussian.
+        mu (double ndarray[ndim]): Centre of the Gaussian.
 
         inv_covariance (double ndarray[ndim]): Diagonal of inverse
             covariance matrix.
@@ -1007,7 +1004,7 @@ def evaluate_one_gaussian_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
         x (double ndarray[ndim]): Postion where the Gaussian is to be
             evaluated.
 
-        mu (double ndarray[ndim]): Center of the Gaussian.
+        mu (double ndarray[ndim]): Centre of the Gaussian.
 
         inv_covariance (double ndarray[ndim]): Diagonal of inverse
             covariance matrix.
@@ -1038,7 +1035,7 @@ cdef double delta_theta_ij(np.ndarray[double, ndim=1, mode="c"] x, \
 
         x (double ndarray[ndim]): Position of current sample.
 
-        mu (double ndarray[ndim]): Center of the Gaussian.
+        mu (double ndarray[ndim]): Centre of the Gaussian.
 
         inv_covariance (double ndarray[ndim]): Diagonal of inverse
             covariance matrix.
@@ -1072,7 +1069,7 @@ def delta_theta_ij_wrap(np.ndarray[double, ndim=1, mode="c"] x, \
 
         x (double ndarray[ndim]): Position of current sample.
 
-        mu (double ndarray[ndim]): Center of the Gaussian.
+        mu (double ndarray[ndim]): Centre of the Gaussian.
 
         inv_covariance (double ndarray[ndim]): Diagonal of inverse
             covariance matrix.
@@ -1099,7 +1096,7 @@ cdef double calculate_I_ij(np.ndarray[double, ndim=1, mode="c"] x, \
 
         x (double ndarray[ndim]): Position of current sample.
 
-        mu (double ndarray[ndim]): Center of the Gaussian.
+        mu (double ndarray[ndim]): Centre of the Gaussian.
 
         inv_covariance (double ndarray[ndim]): Diagonal of inverse
             covariance matrix.
@@ -1159,7 +1156,7 @@ cdef double calculate_I_i(np.ndarray[double, ndim=1, mode="c"] x, \
 
         alphas (double ndarray[ngaussians]): Current values of alpha.
 
-        weights (double ndarray[ngaussians]): Crrent values of the (linear)
+        weights (double ndarray[ngaussians]): Current values of the (linear)
             weights.
 
         ln_Pi (double): Current ln posterior.
@@ -1218,7 +1215,7 @@ cdef void gradient_i1i2(np.ndarray[double, ndim=1, mode="c"] grad_alpha, \
 
         alphas (double ndarray[ngaussians]): Current values of alpha.
 
-        weights (double ndarray[ngaussians]): Crrent values of the (linear)
+        weights (double ndarray[ngaussians]): Current values of the (linear)
             weights.
 
         Y (double ndarray[nsamples]): Y values.
@@ -1305,7 +1302,7 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
 
         alphas (double ndarray[ngaussians]): Current values of alpha.
 
-        weights (double ndarray[ngaussians]): Crrent values of the (linear)
+        weights (double ndarray[ngaussians]): Current values of the (linear)
             weights.
 
         Y (double ndarray[nsamples]): Y values.
@@ -1354,7 +1351,7 @@ class ModifiedGaussianMixtureModel(Model):
 
     def __init__(self, long ndim, list domains not None, 
                  hyper_parameters=[3,1E-8,None,None,None]):        
-        """Constructor setting the hyper parameters and domains of the model of the
+        """Constructor setting the hyper-parameters and domains of the model of the
         MGMM which models the posterior as a group of Gaussians.
 
         Args:
@@ -1367,9 +1364,9 @@ class ModifiedGaussianMixtureModel(Model):
                 the covariance in the samples in each cluster.
 
             hyper_parameters (list): A list of length 5, the first of which
-                should be nummber of clusters, the second is the regularisation
+                should be number of clusters, the second is the regularisation
                 parameter gamma, the third is the learning rate, the fourth is
-                the maximum number of terations and the fifth is the batch
+                the maximum number of iterations and the fifth is the batch
                 size.
 
         Raises:
@@ -1632,7 +1629,6 @@ class ModifiedGaussianMixtureModel(Model):
         stochastic descent.
 
         Args:
-
 
             X (double ndarray[nsamples, ndim]): Sample x coordinates.
 

@@ -6,9 +6,9 @@ import harmonic
 import colorlog
 
 def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
-    """Initialize and configure logging.
+    """initialise and configure logging.
     
-    Should be called at the beginning of code to initialize and configure the 
+    Should be called at the beginning of code to initialise and configure the 
     desired logging level. Logging levels can be ints in [0,50] where 10 is 
     debug logging and 50 is critical logging.
 
@@ -56,7 +56,7 @@ def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
 
 
 def debug_log(message):
-    """Log a debug message (e.g. for background logs to assist debugging)
+    """Log a debug message (e.g. for background logs to assist debugging).
 
     Args:
 
@@ -79,7 +79,7 @@ def warning_log(message):
     logger.warning(message)
 
 def critical_log(message):
-    """Log a critical message (e.g. core code failures etc)
+    """Log a critical message (e.g. core code failures etc).
 
     Args:
 
@@ -91,7 +91,7 @@ def critical_log(message):
 
 def info_log(message):
     """Log an information message (e.g. evidence value printing, run completion 
-    etc.)
+    etc).
 
     Args:
 
