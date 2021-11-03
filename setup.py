@@ -8,6 +8,14 @@ from Cython.Build import cythonize
 
 import numpy
 
+def read_requirements(file):
+    with open(file) as f:
+        return f.read().splitlines()
+
+def read_file(file):
+   with open(file) as f:
+        return f.read()
+
 # clean previous build
 for root, dirs, files in os.walk("./harmonic/", topdown=False):
     for name in dirs:
@@ -16,11 +24,9 @@ for root, dirs, files in os.walk("./harmonic/", topdown=False):
 
 from os import path
 this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, '.pip_readme.md'), encoding='utf-8') as f:
-    long_description = f.read()
-with open(path.join(this_directory, 'requirements/requirements-core.txt'), encoding='utf-8') as f:
-    required = f.read().splitlines()
 
+long_description = read_file(".pip_readme.rst")
+required = read_requirements("requirements/requirements-core.txt")
 
 include_dirs = [
     numpy.get_include(),
@@ -40,15 +46,15 @@ setup(
                  'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
                  ],
     name = "harmonic",
-    version = "0.13",
+    version = "0.21",
     prefix='.',
     url='https://github.com/astro-informatics/harmonic',
-    author='Jason McEwen & Constributors',
+    author='Jason McEwen & Contributors',
     author_email='jason.mcewen@ucl.ac.uk',
     install_requires=required,
     description='Python package for efficient Bayesian evidence computation',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type = "text/x-rst",
+    long_description = long_description,
     packages=setuptools.find_packages(where='src'),
     cmdclass={'build_ext': build_ext},
     ext_modules=cythonize([

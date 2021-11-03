@@ -1,5 +1,7 @@
 [report]
-omit = *test_*
+ignore:
+    *test_*
+    *log*
 
 [run]
 plugins = Cython.Coverage
