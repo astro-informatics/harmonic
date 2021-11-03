@@ -29,11 +29,14 @@ Attribution
 Please cite McEwen et al 2021 if this code package has been of use in any project. A link will be provided 
 shortly upon submission. A BibTeX entry for the paper is:
 
-     @article{harmonic,
-     author = {{McEwen}, J.~D. and {Wallis}, C.~G.~R. and {Price}, M.~A.},
-     title = {Machine learning assisted marginal likelihood estimation: learnt harmonic mean estimator},
-     journal = {Bayesian Analysis in prep},
-     year = 2021
+.. code-block:: 
+
+     @article{harmonic, 
+        author = {{McEwen}, J.~D. and {Wallis}, C.~G.~R. and {Price}, M.~A.},
+         title = {Machine learning assisted marginal likelihood estimation: 
+                 learnt harmonic mean estimator},
+       journal = {Bayesian Analysis in prep},
+          year = 2021
      }
 
 License
@@ -41,6 +44,8 @@ License
 
 Harmonic is released under the GPL-3 license (see `LICENSE.txt <https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt>`_), subject to 
 the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt>`_)
+
+.. code-block::
 
      harmonic
      Copyright (C) 2021 Jason McEwen & contributors

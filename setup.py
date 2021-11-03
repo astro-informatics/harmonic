@@ -8,14 +8,6 @@ from Cython.Build import cythonize
 
 import numpy
 
-def read_requirements(file):
-    with open(file) as f:
-        return f.read().splitlines()
-
-def read_file(file):
-   with open(file) as f:
-        return f.read()
-
 # clean previous build
 for root, dirs, files in os.walk("./harmonic/", topdown=False):
     for name in dirs:
@@ -25,28 +17,30 @@ for root, dirs, files in os.walk("./harmonic/", topdown=False):
 from os import path
 this_directory = path.abspath(path.dirname(__file__))
 
+def read_requirements(file):
+    with open(file) as f:
+        return f.read().splitlines()
+
+def read_file(file):
+   with open(file) as f:
+        return f.read()
+
 long_description = read_file(".pip_readme.rst")
 required = read_requirements("requirements/requirements-core.txt")
 
-include_dirs = [
-    numpy.get_include(),
-#    os.environ['code']+"ssht/include/c",
-    ]
+include_dirs = [numpy.get_include(),]
 
-extra_link_args=[
-#    "-L"+os.environ['code']+"ssht/lib/c",
-#    "-L"+os.environ['FFTW']+"/lib",
-]
+extra_link_args=[]
 
 setup(
-    classifiers=['Programming Language :: Python :: 3',
+    classifiers=['Programming Language :: Python :: 3.8',
                  'Operating System :: OS Independent',
                  'Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',
                  'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
                  ],
     name = "harmonic",
-    version = "0.21",
+    version = "0.34",
     prefix='.',
     url='https://github.com/astro-informatics/harmonic',
     author='Jason McEwen & Contributors',
