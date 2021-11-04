@@ -9,7 +9,7 @@ Harmonic
 .. |Build Status| image:: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg
    :target: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml
 
-.. |CodeCov| image:: https://codecov.io/gh/astro-informatics/harmonic/branch/master/graph/badge.svg?token=1s4SATphHV
+.. |CodeCov| image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
    :target: https://codecov.io/gh/astro-informatics/harmonic
 
 .. |ArXiv| image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
