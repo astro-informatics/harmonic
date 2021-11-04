@@ -7,7 +7,7 @@ harmonic
     :target: https://github.com/astro-informatics/harmonic
 .. image:: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg
     :target: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml
-.. image:: https://codecov.io/gh/astro-informatics/harmonic/branch/master/graph/badge.svg?token=1s4SATphHV
+.. image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
     :target: https://codecov.io/gh/astro-informatics/harmonic
 .. image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
     :target: https://arxiv.org/abs/20XX.XXXXX
@@ -42,8 +42,8 @@ shortly upon submission. A BibTeX entry for the paper is:
 License
 -------
 
-Harmonic is released under the GPL-3 license (see `LICENSE.txt <https://github.com/astro-informatics/harmonic/blob/master/LICENSE.txt>`_), subject to 
-the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro-informatics/harmonic/blob/master/LICENSE_EXT.txt>`_)
+Harmonic is released under the GPL-3 license (see `LICENSE.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE.txt>`_), subject to 
+the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE_EXT.txt>`_)
 
 .. code-block::
 
