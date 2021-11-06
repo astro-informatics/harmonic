@@ -50,7 +50,7 @@ setup(
     description='Python package for efficient Bayesian evidence computation',
     long_description_content_type = "text/x-rst",
     long_description = long_description,
-    packages=setuptools.find_packages(where='src'),
+    packages=['harmonic'],
     cmdclass={'build_ext': build_ext},
     ext_modules=cythonize([
     Extension(
