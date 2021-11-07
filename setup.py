@@ -55,7 +55,7 @@ setup(
     ext_modules=cythonize([
     Extension(
         "harmonic.model",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/model.pyx"],
         include_dirs=include_dirs,
         libraries=[],
@@ -64,7 +64,7 @@ setup(
     ),        
     Extension(
         "harmonic.chains",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/chains.pyx"],
         include_dirs=include_dirs,
         libraries=[],
@@ -73,7 +73,7 @@ setup(
     ),
     Extension(
         "harmonic.utils",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/utils.pyx"],
         include_dirs=include_dirs,
         libraries=[],
@@ -82,7 +82,7 @@ setup(
     ),
     Extension(
         "harmonic.logs",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/logs.py"],
         include_dirs=include_dirs,
         libraries=[],
@@ -91,7 +91,7 @@ setup(
     ),
     Extension(
         "harmonic.evidence",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/evidence.pyx"],
         include_dirs=include_dirs,
         libraries=[],
