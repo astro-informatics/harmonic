@@ -8,7 +8,6 @@ sys.path.append(".")
 import harmonic as hm
 sys.path.append("examples")
 import utils
-from datetime import datetime
 
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
@@ -110,17 +109,17 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Configure machine learning parameters
     """
-    # Set parameters.
     savefigs = True
-    nfold = 2
-    nhyper = 2
-    step = -2
-    domain = []
-    hyper_parameters_KDE = [[10**(R)] for R in range(-nhyper+step,step)]
-    # Define Hypersphere (sphere) hyperparameters
-    hyper_parameters_sphere = [None]
-    domains_sphere = [np.array([1E-2,1E1])]
-    hm.logs.debug_log('Hyper-parameters = {}'.format(hyper_parameters_sphere))
+    # Set parameters
+    nfold=2
+    # KDE
+    domains_KDE = []
+    hyper_parameters_KDE = [[0.01]]
+    hm.logs.debug_log('Hyper-parameters KDE= {}'.format(hyper_parameters_KDE))
+    # MGMM
+    domains_MGMM = [np.array([1E-1,6E0])]
+    hyper_parameters_MGMM=[[4, 1E-8, 2, 10, 10]]
+    hm.logs.debug_log('Hyper-parameters MGMM= {}'.format(hyper_parameters_MGMM))
     """
     Set prior parameters.
     """
@@ -144,14 +143,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 2
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
+    n_realisations = 3
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
-
         if n_realisations > 1:
             hm.logs.info_log('Realisation number = {}/{}'
-                .format(i_realisation+1, n_realisations))
+                .format(i_realisation+1, n_realisations)) #n_real iterator on 1
         
         #=======================================================================
         # Run Emcee to recover posterior samples
@@ -190,30 +187,29 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         allows the software to select the optimal model and the optimal model 
         hyper-parameters for a given situation.
         """
-        # validation_variances = \
-        #     hm.utils.cross_validation(chains_train, \
-        #                             domain, \
-        #                             hyper_parameters, \
-        #                             nfold=nfold, \
-        #                             modelClass=hm.model.KernelDensityEstimate, \
-        #                             seed=0)
-        # hm.logs.debug_log('Validation variances = {}'
-        #     .format(validation_variances))
-        # best_hyper_param_ind = np.argmin(validation_variances)
-        # best_hyper_param = hyper_parameters[best_hyper_param_ind]
-        # hm.logs.debug_log('Best hyper parameter = {}'
-        #     .format(best_hyper_param))
-        validation_variances_sphere = \
+        validation_variances_KDE = \
             hm.utils.cross_validation(
                     chains_train, \
-                    domains_sphere, \
-                    hyper_parameters_sphere, \
+                    domains_KDE, \
+                    hyper_parameters_KDE, \
                     nfold=nfold, \
-                    modelClass=hm.model.HyperSphere, \
+                    modelClass=hm.model.KernelDensityEstimate, \
                     seed=0)
+        best_hyper_param_ind_KDE = np.argmin(validation_variances_KDE)
+        best_hyper_param_KDE = hyper_parameters_KDE[best_hyper_param_ind_KDE]
+        best_var_KDE = validation_variances_KDE[best_hyper_param_ind_KDE]
 
-        best_hyper_param_ind_sphere = np.argmin(validation_variances_sphere)
-        best_hyper_param_sphere = hyper_parameters_sphere[best_hyper_param_ind_sphere]
+        validation_variances_MGMM = \
+            hm.utils.cross_validation(
+                    chains_train, \
+                    domains_MGMM, \
+                    hyper_parameters_MGMM, \
+                    nfold=nfold, \
+                    modelClass=hm.model.ModifiedGaussianMixtureModel, \
+                    seed=0)
+        best_hyper_param_ind_MGMM = np.argmin(validation_variances_MGMM)
+        best_hyper_param_MGMM = hyper_parameters_MGMM[best_hyper_param_ind_MGMM]
+        best_var_MGMM = validation_variances_MGMM[best_hyper_param_ind_MGMM]
 
         #=======================================================================
         # Fit optimal model hyper-parameters
@@ -223,13 +219,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         Fit model by selecing the configuration of hyper-parameters which 
         minimises the validation variances.
         """
-        # model = hm.model.KernelDensityEstimate(ndim, 
-        #                                     domain, 
-        #                                     hyper_parameters=best_hyper_param)
-        # fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-        # hm.logs.debug_log('Fit success = {}'.format(fit_success))    
-        model = hm.model.HyperSphere(ndim, domains_sphere, 
-                                     hyper_parameters=best_hyper_param_sphere)
+        if best_var_MGMM < best_var_KDE:                        
+            model = hm.model.ModifiedGaussianMixtureModel(ndim, domains_MGMM, 
+                                     hyper_parameters=best_hyper_param_MGMM)
+            hm.logs.info_log('Using MGMM model!')
+  
+        else:                       
+            model = hm.model.KernelDensityEstimate(ndim, domains_KDE, 
+                                        hyper_parameters=best_hyper_param_KDE)
+            hm.logs.info_log('Using KDE model!')
         fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
         #=======================================================================
         # Computing evidence using learnt model and emcee chains
@@ -320,12 +318,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig(f'examples/plots/{now}_himmelblau_corner_{n_realisations}_{nchains}_{samples_per_chain}.png',
+                plt.savefig('examples/plots/himmelblau_corner.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig(f'examples/plots/{now}_himmelblau_getdist_{n_realisations}_{nchains}_{samples_per_chain}.png',
+                plt.savefig('examples/plots/himmelblau_getdist.png',
                             bbox_inches='tight')
             
             plt.show(block=False)  
@@ -339,11 +337,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid, 
                                     samples[i_chain,:,:].reshape((-1, ndim)), 
                                     lnprob[i_chain,:].reshape((-1, 1)),
-                                    contour_z_offset=-850)
-            # ax.set_zlim(-100.0, 0.0)                
+                                    contour_z_offset=-850)              
             ax.set_zlabel(r'$\log \mathcal{L}$')        
             if savefigs:
-                plt.savefig(f'examples/plots/{now}_himmelblau_lnposterior_surface_{n_realisations}_{nchains}_{samples_per_chain}.png',
+                plt.savefig('examples/plots/himmelblau_lnposterior_surface.png',
                             bbox_inches='tight')
             
             # Plot posterior image.
@@ -351,9 +348,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   samples.reshape((-1,ndim)),
                                   colorbar_label=r'$\mathcal{L}$',
                                   plot_contour=True)
-            # ax.set_clim(vmin=0.0, vmax=0.003)
             if savefigs:
-                plt.savefig(f'examples/plots/{now}_himmelblau_posterior_image_{n_realisations}_{nchains}_{samples_per_chain}.png',
+                plt.savefig('examples/plots/himmelblau_posterior_image.png',
                             bbox_inches='tight')
 
             # Evaluate model on grid.
@@ -366,17 +362,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Plot model.
             ax = utils.plot_image(model_grid, x_grid, y_grid, 
                                   colorbar_label=r'$\log \varphi$') 
-            # ax.set_clim(vmin=-2.0, vmax=2.0)
             if savefigs:
-                plt.savefig(f'examples/plots/{now}_himmelblau_model_image_{n_realisations}_{nchains}_{samples_per_chain}.png',
+                plt.savefig('examples/plots/himmelblau_model_image.png',
                             bbox_inches='tight')
             
             # Plot exponential of model.
             ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                                  colorbar_label=r'$\varphi$')
-            # ax.set_clim(vmin=0.0, vmax=10.0)        
+                                  colorbar_label=r'$\varphi$')       
             if savefigs:
-                plt.savefig(f'examples/plots/{now}_himmelblau_modelexp_image_{n_realisations}_{nchains}_{samples_per_chain}.png',
+                plt.savefig('examples/plots/himmelblau_modelexp_image.png',
                             bbox_inches='tight')
 
             plt.show(block=False)  
@@ -395,13 +389,13 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Save out realisations of statistics for analysis.
     if n_realisations > 1:
-        np.savetxt(f"examples/data/{now}_himmelblau_evidence_inv" +
-                   f"_realisations_{n_realisations}_{nchains}_{samples_per_chain}.dat",
+        np.savetxt("examples/data/himmelblau_evidence_inv" +
+                   "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-        np.savetxt(f"examples/data/{now}_himmelblau_evidence_inv" +
-                   f"_analytic_{n_realisations}_{nchains}_{samples_per_chain}.dat",
+        np.savetxt("examples/data/himmelblau_evidence_inv" +
+                   "_analytic.dat",
                    evidence_inv_analytic_summary)
 
     if created_plots:
@@ -417,7 +411,7 @@ if __name__ == '__main__':
     
     # Define parameters.
     ndim = 2
-    nchains = 100
+    nchains = 200
     samples_per_chain = 5000
     nburn = 2000
     np.random.seed(20)
