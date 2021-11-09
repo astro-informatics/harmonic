@@ -79,8 +79,8 @@ def ln_posterior(x, ln_prior):
 
 
 
-def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, plot_corner=False, plot_surface=False):
+def run_example(ndim=2, nchains=200, samples_per_chain=5000, 
+                nburn=2000, plot_corner=False, plot_surface=False):
     """Run Himmelblau example.
 
     Args:
@@ -110,7 +110,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Configure machine learning parameters
     """
     savefigs = True
-    # Set parameters
+    # Set default parameters for both models
     nfold=2
     # KDE
     domains_KDE = []
