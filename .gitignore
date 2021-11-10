@@ -11,4 +11,5 @@ logs/*.log
 .test.dat
 notebooks/.ipynb_checkpoints/
 notebooks/.temp.*
+.vscode/
 

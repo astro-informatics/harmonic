@@ -45,16 +45,17 @@ setup(
     url='https://github.com/astro-informatics/harmonic',
     author='Jason McEwen & Contributors',
     author_email='jason.mcewen@ucl.ac.uk',
+    license='GNU General Public License v3 (GPLv3)',
     install_requires=required,
     description='Python package for efficient Bayesian evidence computation',
     long_description_content_type = "text/x-rst",
     long_description = long_description,
-    packages=setuptools.find_packages(where='src'),
+    packages=['harmonic'],
     cmdclass={'build_ext': build_ext},
     ext_modules=cythonize([
     Extension(
         "harmonic.model",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/model.pyx"],
         include_dirs=include_dirs,
         libraries=[],
@@ -63,7 +64,7 @@ setup(
     ),        
     Extension(
         "harmonic.chains",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/chains.pyx"],
         include_dirs=include_dirs,
         libraries=[],
@@ -72,7 +73,7 @@ setup(
     ),
     Extension(
         "harmonic.utils",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/utils.pyx"],
         include_dirs=include_dirs,
         libraries=[],
@@ -81,7 +82,7 @@ setup(
     ),
     Extension(
         "harmonic.logs",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/logs.py"],
         include_dirs=include_dirs,
         libraries=[],
@@ -90,7 +91,7 @@ setup(
     ),
     Extension(
         "harmonic.evidence",
-        package_dir=['src'],
+        package_dir=['harmonic'],
         sources=["harmonic/evidence.pyx"],
         include_dirs=include_dirs,
         libraries=[],
