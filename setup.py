@@ -33,14 +33,15 @@ include_dirs = [numpy.get_include(),]
 extra_link_args=[]
 
 setup(
-    classifiers=['Programming Language :: Python :: 3.8',
+    classifiers=['Programming Language :: Python :: 3.7',
+                 'Programming Language :: Python :: 3.8',
                  'Operating System :: OS Independent',
                  'Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',
                  'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
                  ],
     name = "harmonic",
-    version = "1.0.0",
+    version = "1.0.1",
     prefix='.',
     url='https://github.com/astro-informatics/harmonic',
     author='Jason McEwen & Contributors',
