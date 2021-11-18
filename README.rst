@@ -28,7 +28,7 @@ See comprehensive documentation at `Harmonic Documentation <https://astro-inform
 Contributors
 ------------
 
-`Jason McEwen <http://www.jasonmcewen.org/>`_, `Christopher Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew Price <https://scholar.google.co.uk/citations?user=w7_VDLQAAAAJ&hl=en&authuser=1>`_, `Matthew Docherty <https://mdochertyastro.com/>`_
+`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://scholar.google.co.uk/citations?user=w7_VDLQAAAAJ&hl=en&authuser=1>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_
 
 Attribution
 -----------
@@ -55,7 +55,7 @@ the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro
 .. code-block::
 
      harmonic
-     Copyright (C) 2021 Jason McEwen, Christopher Wallis, Matthew Price, Matthew Docherty & contributors
+     Copyright (C) 2021 Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & contributors
 
      This program is released under the GPL-3 license (see LICENSE.txt), 
      subject to a non-commercial use condition (see LICENSE_EXT.txt).
