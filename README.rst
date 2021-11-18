@@ -1,10 +1,3 @@
-|logo| Harmonic
-=================================================================================================================
-
-.. |logo| raw:: html
-
-   <img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52">
-
 .. image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
     :target: https://github.com/astro-informatics/harmonic
 .. image:: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg
@@ -21,6 +14,13 @@
     :target: https://badge.fury.io/py/harmonic
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
+
+|logo| Harmonic
+=================================================================================================================
+
+.. |logo| raw:: html
+
+   <img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52">
 
 ``harmonic`` is an open source and fully documented python implementation of the Learnt Harmonic Mean estimator for the 
 Bayesian evidence or marginal likelihood. In practice one uses chains gathered separately through MCMC sampling software 
