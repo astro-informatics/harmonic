@@ -1,7 +1,7 @@
 Harmonic
 ========
 
-|GitHub| |Build Status| |CodeCov| |ArXiv| |GPL license|
+|GitHub| |Build Status| |CodeCov| |ArXiv| |GPL license| |Docs| |PyPI|
 
 .. |GitHub| image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
    :target: https://github.com/astro-informatics/harmonic
@@ -17,6 +17,12 @@ Harmonic
 
 .. |GPL license| image:: https://img.shields.io/badge/License-GPL-blue.svg
    :target: http://perso.crans.org/besson/LICENSE.html
+
+.. |Docs| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
+   :target: https://astro-informatics.github.io/harmonic/
+
+.. |PyPI| image:: https://badge.fury.io/py/harmonic.svg
+   :target: https://badge.fury.io/py/harmonic
 
 The harmonic mean is an infamous estimator for the Bayesian evidence, first proposed by `Newton and Raftery (1994)  <https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x>`_. Whilst the harmonic mean estimator is asymptotically consistent it can fail catastrophically, depending on how one configures the estimator. By integrating bespoke machine learning techniques, **Harmonic** overcomes this hurdle by learning from disperate samples of the posterior. Our learnt estimator is agnostic to the sampler, provides accurate estimates of the variance and variance in the variance, and can scale into thousands of dimensions.
 
