@@ -16,7 +16,7 @@
 .. image:: https://img.shields.io/badge/License-GPL-blue.svg
     :target: http://perso.crans.org/besson/LICENSE.html
 
-Harmonic is an open source and fully documented python implementation of the Learnt Harmonic Mean estimator for the 
+``harmonic`` is an open source and fully documented python implementation of the Learnt Harmonic Mean estimator for the 
 Bayesian evidence or marginal likelihood. In practice one uses chains gathered separately through MCMC sampling software 
 to train one of the Harmonic machine learning models which then stabilize the harmonic mean estimator.
 
@@ -49,13 +49,13 @@ shortly upon submission. A BibTeX entry for the paper is:
 License
 -------
 
-Harmonic is released under the GPL-3 license (see `LICENSE.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE.txt>`_), subject to 
+``harmonic`` is released under the GPL-3 license (see `LICENSE.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE.txt>`_), subject to 
 the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE_EXT.txt>`_)
 
 .. code-block::
 
      harmonic
-     Copyright (C) 2021 Jason McEwen & contributors
+     Copyright (C) 2021 Jason McEwen, Christopher Wallis, Matthew Price, Matthew Docherty & contributors
 
      This program is released under the GPL-3 license (see LICENSE.txt), 
      subject to a non-commercial use condition (see LICENSE_EXT.txt).
