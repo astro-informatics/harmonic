@@ -16,7 +16,9 @@
 .. image:: https://img.shields.io/badge/License-GPL-blue.svg
     :target: http://perso.crans.org/besson/LICENSE.html
 .. image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
-    :target: http://perso.crans.org/besson/LICENSE.html
+    :target: https://astro-informatics.github.io/harmonic/
+.. image:: https://badge.fury.io/py/ansicolortags.svg
+    :target: https://pypi.python.org/pypi/harmonic/
 
 ``harmonic`` is an open source and fully documented python implementation of the Learnt Harmonic Mean estimator for the 
 Bayesian evidence or marginal likelihood. In practice one uses chains gathered separately through MCMC sampling software 
