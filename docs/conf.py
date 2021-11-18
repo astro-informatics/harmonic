@@ -20,8 +20,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Harmonic'
-copyright = '2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price'
-author = 'Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price'
+copyright = '2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty'
+author = 'Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty'
 
 # The short X.Y version
 version = '1.0.1'
@@ -170,7 +170,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Harmonic.tex', 'Harmonic Documentation',
-     'Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price', 'manual'),
+     'Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty', 'manual'),
 ]
 
 

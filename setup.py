@@ -45,7 +45,7 @@ setup(
     version = "1.0.1",
     prefix='.',
     url='https://github.com/astro-informatics/harmonic',
-    author='Jason McEwen & Contributors',
+    author='Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & Contributors',
     author_email='jason.mcewen@ucl.ac.uk',
     license='GNU General Public License v3 (GPLv3)',
     install_requires=required,

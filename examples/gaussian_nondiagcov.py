@@ -108,7 +108,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         
         if n_realisations > 0:
             hm.logs.info_log('Realisation = {}/{}'
-                .format(i_realisation, n_realisations))
+                .format(i_realisation+1, n_realisations))
 
         # Set up and run sampler.
         hm.logs.info_log('Run sampling...')

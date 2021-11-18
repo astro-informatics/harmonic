@@ -14,4 +14,4 @@ Software: harmonic
 
 License: See LICENSE.txt (GPL-3)
 
-Licensor: Jason McEwen & contributors
+Licensor: Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & contributors
