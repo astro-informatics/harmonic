@@ -13,8 +13,8 @@ harmonic
     :target: http://perso.crans.org/besson/LICENSE.html
 .. image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
     :target: https://astro-informatics.github.io/harmonic/
-.. image:: https://badge.fury.io/py/harmonic.svg
-    :target: https://badge.fury.io/py/harmonic
+.. .. image:: https://badge.fury.io/py/harmonic.svg
+..     :target: https://badge.fury.io/py/harmonic
 
 
 **Python package to efficiently compute the Learnt Harmonic Mean estimator of the Bayesian evidence**
