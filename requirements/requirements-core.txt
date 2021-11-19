@@ -1,4 +1,4 @@
-numpy==1.16.1
+numpy==1.19.2
 cython==0.29.17
 ipython==7.16.1
 jupyter==1.0.0
