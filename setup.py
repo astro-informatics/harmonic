@@ -38,8 +38,7 @@ setup(
                  'Programming Language :: Python :: 3.8',
                  'Operating System :: OS Independent',
                  'Intended Audience :: Developers',
-                 'Intended Audience :: Science/Research',
-                 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
+                 'Intended Audience :: Science/Research'
                  ],
     name = "harmonic",
     version = "1.0.2",
