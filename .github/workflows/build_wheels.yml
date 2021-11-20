@@ -2,17 +2,15 @@ name: build
 
 on: [push, pull_request]
 
-  workflow_dispatch:
-
 jobs:
 
   build:
-    name: build
+    name: build_wheels
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: ['3.6', '3.7', '3.8']
         architecture: ['x64']
 
