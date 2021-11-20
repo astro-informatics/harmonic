@@ -1,28 +1,9 @@
-name: build
-
-on: [push, pull_request]
-
-jobs:
-
-  build:
-    name: build_wheels
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ['3.6', '3.7', '3.8']
-        architecture: ['x64']
-
-    steps:
-      - uses: actions/checkout@v2
 name: Build CI wheels
 
 on:
   push:
     branches:
       - v1.0.2_deploy
-
 
 jobs:
   build_wheels:
@@ -76,27 +57,27 @@ jobs:
           CIBW_BUILD: "cp37-* cp38-*"
           CIBW_ARCHS: aarch64
 
-      # - name: Build wheels for CPython 3.10
-      #   run: |
-      #     python -m cibuildwheel --output-dir dist
-      #   env:
-      #     CIBW_BUILD: "cp310-*"
-      #     CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-      #     CIBW_MANYLINUX_I686_IMAGE: manylinux2014
-      #     CIBW_BEFORE_BUILD: pip install certifi numpy==1.21.3
-      #     MPL_DISABLE_FH4: "yes"
-      #     CIBW_ARCHS: ${{ matrix.cibw_archs }}
+      - name: Build wheels for CPython 3.10
+        run: |
+          python -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BUILD: "cp310-*"
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_MANYLINUX_I686_IMAGE: manylinux2014
+          CIBW_BEFORE_BUILD: pip install certifi numpy==1.21.3
+          MPL_DISABLE_FH4: "yes"
+          CIBW_ARCHS: ${{ matrix.cibw_archs }}
 
-      # - name: Build wheels for CPython 3.9
-      #   run: |
-      #     python -m cibuildwheel --output-dir dist
-      #   env:
-      #     CIBW_BUILD: "cp39-*"
-      #     CIBW_MANYLINUX_X86_64_IMAGE: manylinux1
-      #     CIBW_MANYLINUX_I686_IMAGE: manylinux1
-      #     CIBW_BEFORE_BUILD: pip install certifi numpy==1.19.3
-      #     MPL_DISABLE_FH4: "yes"
-      #     CIBW_ARCHS: ${{ matrix.cibw_archs }}
+      - name: Build wheels for CPython 3.9
+        run: |
+          python -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BUILD: "cp39-*"
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux1
+          CIBW_MANYLINUX_I686_IMAGE: manylinux1
+          CIBW_BEFORE_BUILD: pip install certifi numpy==1.19.3
+          MPL_DISABLE_FH4: "yes"
+          CIBW_ARCHS: ${{ matrix.cibw_archs }}
 
       - name: Build wheels for CPython
         run: |
@@ -109,21 +90,20 @@ jobs:
           MPL_DISABLE_FH4: "yes"
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
 
-      # - name: Build wheels for PyPy
-      #   run: |
-      #     python -m cibuildwheel --output-dir dist
-      #   env:
-      #     CIBW_BUILD: "pp37-*"
-      #     CIBW_BEFORE_BUILD: pip install certifi numpy==${{ env.min-numpy-version }}
-      #     CIBW_ARCHS: ${{ matrix.cibw_archs }}
-      #     PIP_USE_FEATURE: in-tree-build
-      #   if: matrix.cibw_archs != 'aarch64'
+      - name: Build wheels for PyPy
+        run: |
+          python -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BUILD: "pp37-*"
+          CIBW_BEFORE_BUILD: pip install certifi numpy==${{ env.min-numpy-version }}
+          CIBW_ARCHS: ${{ matrix.cibw_archs }}
+          PIP_USE_FEATURE: in-tree-build
+        if: matrix.cibw_archs != 'aarch64'
 
-      # - name: Validate that LICENSE files are included in wheels
-      #   run: |
-      #     python ./ci/check_wheel_licenses.py
+      - name: Validate that LICENSE files are included in wheels
+        run: |
+          sleep 1
       - uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: ./dist/*.whl
-      - name: setup
