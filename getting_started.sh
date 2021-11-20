@@ -2,10 +2,16 @@
 
 # Install core and extra requirements
 
-pip install -r requirements/requirements-core.txt
-pip install -r requirements/requirements-examples.txt
-pip install -r requirements/requirements-extra.txt
-pip install -r requirements/requirements-docs.txt
+echo -ne 'Building Dependencies... \r'
+pip install -q -r requirements/requirements-core.txt
+echo -ne 'Building Dependencies... #####               (25%)\r'
+pip install -q -r requirements/requirements-examples.txt
+echo -ne 'Building Dependencies... ##########          (50%)\r'
+pip install -q -r requirements/requirements-extra.txt
+echo -ne 'Building Dependencies... ###############     (75%)\r'
+pip install -q -r requirements/requirements-docs.txt
+echo -ne 'Building Dependencies... ####################(100%)\r'
+echo -ne '\n'
 
 # Install specific converter for building tutorial documentation
 
