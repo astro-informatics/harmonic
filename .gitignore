@@ -12,4 +12,5 @@ logs/*.log
 notebooks/.ipynb_checkpoints/
 notebooks/.temp.*
 .vscode/
-
+docs/assets/static_notebooks/.ipynb_checkpoints/
+docs/assets/static_notebooks/.temp.*
