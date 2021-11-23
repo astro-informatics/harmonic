@@ -1,4 +1,4 @@
-The simplest model one may wish to consider is a hyper-sphere, much like the truncated harmonic mean estimator. However, here we learn the optimal radius of the hyper-sphere.
+The simplest model one may wish to consider is a hyper-sphere, much like the truncated harmonic mean estimator. However, here we learn the optimal radius of the hyper-sphere, rather than setting the radius based on arbitrary level-sets of the posterior as in `Robert and Wraith (2009) <https://aip.scitation.org/doi/pdf/10.1063/1.3275622?casa_token=-zryxMRjTG4AAAAA:R5AtxFgs17dICu_rs2nCHELMxiOTl1-KtGm-yKhq4uv3Xz45Pa1imaUUpOFfFGqeFqwOAqNMIuNy>`_.
 
 Consider the target distribution defined by the normalised hyper-sphere
 
@@ -12,7 +12,7 @@ where the indicator function :math:`I_\mathcal{S}(\theta)` is unity if :math:`\t
               0, & \text{otherwise}
             \end{cases}.
 
-The values of :math:`\bar{\theta}` and :math:`\Sigma` can be computed directly from the training samples.  Often a diagonal approximation of :math:`\Sigma` is considered for computational efficiency. The volume of the hyper-sphere required to normalise the distribution is given by
+The values of :math:`\bar{\theta}` and :math:`\Sigma` can be computed directly from the training samples. Often, although not always, a diagonal approximation of :math:`\Sigma` is considered for computational efficiency. The volume of the hyper-sphere required to normalise the distribution is given by
 
 .. math:: V_\mathcal{S} = \frac{\pi^{d/2}}{\Gamma(d/2 + 1)} R^d \, \vert \Sigma \vert^{1/2}.
 
