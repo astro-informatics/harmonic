@@ -392,6 +392,7 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
+<p><a class="reference external" href="https://colab.research.google.com/github/astro-informatics/harmonic/blob/Feature%2FInteractive_notebooks/notebooks/basic_usage.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <div class="section" id="Basic-usage">
 <h1>Basic usage<a class="headerlink" href="#Basic-usage" title="Permalink to this headline"></a></h1>
 <p>In this tutorial we demonstrate basic usage of harmonic, using <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> as the sampler.</p>
@@ -399,7 +400,7 @@ div.rendered_html tbody tr:hover {
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline"></a></h2>
 <p>To begin with we need to import packages needed.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -408,9 +409,9 @@ div.rendered_html tbody tr:hover {
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../../..&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../examples&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../../examples&quot;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 </pre></div>
 </div>
@@ -419,12 +420,12 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Define-Bayesian-posterior-function">
 <h2>Define Bayesian posterior function<a class="headerlink" href="#Define-Bayesian-posterior-function" title="Permalink to this headline"></a></h2>
 <p>Now we will need to define the log-posterior function of interest.</p>
-<p>As a working example for this tutorial we consider a likelihood given by the Rosenbrock function</p>
+<p>As a working example for this tutorial we consider a likelihood given by the <a class="reference external" href="https://en.wikipedia.org/wiki/Rosenbrock_function">Rosenbrock function</a></p>
 <div class="math notranslate nohighlight">
 \[f(x) = \sum_{i=1}^{d-1} \bigg [ b(x_{i+1} - x_{i}^2)^2 + (x_i - a)^2 \bigg ]\]</div>
-<p>where <span class="math notranslate nohighlight">\(d\)</span> is the dimension of the function and the input domain is usually taken to be <span class="math notranslate nohighlight">\(x_i \in [-5.0, 10.0], \: \; \forall i = 1, \dots, d\)</span>. The Rosenbrock function is a common benchmark example since it is known to be a difficult project due to the shallow curving degenercy. The likelihood is then implemented as follows. For the hyperpamaters we adopt the common values <span class="math notranslate nohighlight">\(a=1.0\)</span> and <span class="math notranslate nohighlight">\(b=100.0\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(d\)</span> is the dimension of the function and the input domain is usually taken to be <span class="math notranslate nohighlight">\(x_i \in [-5.0, 10.0], \: \; \forall i = 1, \dots, d\)</span>. The Rosenbrock function is a common benchmark example since it is known to be a difficult project due to the shallow curving degenercy. The likelihood is then implemented as follows. For the hyper-parameters we adopt the common values <span class="math notranslate nohighlight">\(a=1.0\)</span> and <span class="math notranslate nohighlight">\(b=100.0\)</span>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -456,9 +457,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>We adopt a uniform prior over the paramter support <span class="math notranslate nohighlight">\(x_i \in [-5.0, 10.0]\)</span>, which is implemented as follows.</p>
+<p>We adopt a uniform prior over the parameter support <span class="math notranslate nohighlight">\(x_i \in [-5.0, 10.0]\)</span>, which is implemented as follows.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -492,7 +493,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>The likelihood and prior are combined to form the log posterior function as follows.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -530,7 +531,7 @@ div.rendered_html tbody tr:hover {
 <p>We then sample from the posterior using an MCMC algorithm. While any MCMC approach can be used we sample using the <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> package.</p>
 <p>First we will need to define and initialise some variables.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -558,7 +559,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Now we need to run the sampler.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -585,7 +586,7 @@ div.rendered_html tbody tr:hover {
 <h3>Collating samples using harmonic.chains class<a class="headerlink" href="#Collating-samples-using-harmonic.chains-class" title="Permalink to this headline"></a></h3>
 <p>We first configure the chains into a harmonic-friendly shape, which we do as follows.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -597,7 +598,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Since we will subsequently learn the target distribution <span class="math notranslate nohighlight">\(\varphi\)</span> we split the samples into training and inference sets (we often use the common machine learning terminology “test” for the inference data-set).</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -613,7 +614,7 @@ div.rendered_html tbody tr:hover {
 <p>For simplicity we will manually select hyper-parameters and train a machine learning model using <code class="docutils literal notranslate"><span class="pre">chains_train</span></code>. See other tutorials that use cross-validation to select hyper-parameters and different models.</p>
 <p>Simply select the model we wish to adopt and fit the model.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -629,7 +630,7 @@ div.rendered_html tbody tr:hover {
 <h3>Compute the Bayesian evidence<a class="headerlink" href="#Compute-the-Bayesian-evidence" title="Permalink to this headline"></a></h3>
 <p>Finally we simply compute the learnt harmonic mean estimator as follows.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -651,7 +652,7 @@ div.rendered_html tbody tr:hover {
 <h3>Numerical integration<a class="headerlink" href="#Numerical-integration" title="Permalink to this headline"></a></h3>
 <p>For this 2D model, we can compute the evidence by brute force numerical integration to compare to the value computed by harmonic. (Of course, numerical integration is not typically possible for higher dimensional models.)</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -670,7 +671,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Let’s compare the value computed by harmonic and by numerical integration.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -697,7 +698,7 @@ nsigma = 0.07323275126692534
 <p>Out of interest let’s also plot the posterior using these samples to see what we’re working with!</p>
 <p>We can plot the surface defined by the posterior evaluated over the grid.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -714,12 +715,12 @@ nsigma = 0.07323275126692534
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_basic_usage_32_0.png" src="../_images/tutorials_basic_usage_32_0.png" />
+<img alt="../_images/tutorials_basic_usage_33_0.png" src="../_images/tutorials_basic_usage_33_0.png" />
 </div>
 </div>
 <p>Alternatively, we can plot using a triangle plot of joint and marginalised distibutions using <a class="reference external" href="https://getdist.readthedocs.io/">getdist</a>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -731,7 +732,7 @@ nsigma = 0.07323275126692534
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_basic_usage_34_0.png" src="../_images/tutorials_basic_usage_34_0.png" />
+<img alt="../_images/tutorials_basic_usage_35_0.png" src="../_images/tutorials_basic_usage_35_0.png" />
 </div>
 </div>
 </div>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; Harmonic 1.0.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom_tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="../../_static/dark_mode_js/default_light.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../background/Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../background/Machine_Learning/index.html">Learnt Container Function</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Jupyter Notebooks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Benchmark Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">Namespaces</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/changes.html">GitHub History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harmonic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/assets/static_notebooks/checkpointing.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<dl>
+<dt>{</dt><dd><dl>
+<dt>“cells”: [</dt><dd><dl>
+<dt>{</dt><dd><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“[![Open In Colab](<a class="reference external" href="https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/astro-informatics/harmonic/blob/Feature%2FInteractive_notebooks/notebooks/checkpointing.ipynb">https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/astro-informatics/harmonic/blob/Feature%2FInteractive_notebooks/notebooks/checkpointing.ipynb</a>)”</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“# Checkpointing”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“During high-dimensional Bayesian analysis, which is typically computationally heavy, one must frequently run sampling and/or evidence estimation for long periods of time. n”,
+“n”,
+“One issue often encountered is that the computing facilities may go offline or timeout during this period, thus discarding any values computed already. n”,
+“n”,
+“To avoid this issue harmonic supports <em>checkpointing</em>, which allows the user to periodically <em>save</em> the progress of the computation, and then resume from the saved point (the <em>checkpoint</em>). n”,
+“n”,
+“This example illustrates how one may use harmonic with checkpointing.n”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“## Basic problem setupn”,
+“n”,
+“As always, import the relevant python modules.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 11,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“import numpy as npn”,
+“import emceen”,
+“import sysn”,
+“sys.path.insert(0, ‘../../..’)n”,
+“import harmonic as hm”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“Define a Bayesian posterior function (here we’ll use a simple Gaussian example).”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 12,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“def ln_posterior(x, inv_cov):n”,
+”    &quot;&quot;&quot;Compute log_e of n dimensional multivariate gaussian.n”,
+”    n”,
+”    Args: n”,
+”    n”,
+”        x: Position at which to evaluate prior. n”,
+”        n”,
+”    Returns:n”,
+”    n”,
+”        double: Value of posterior at x.n”,
+”        n”,
+”    &quot;&quot;&quot;n”,
+”    return -np.dot(x,np.dot(inv_cov,x))/2.0   n”,
+“n”,
+“def init_cov(ndim): n”,
+”    &quot;&quot;&quot;Initialise random diagonal covariance matrix.n”,
+”    n”,
+”    Args: n”,
+”    n”,
+”        ndim: Dimension of Gaussian.n”,
+”        n”,
+”    Returns:n”,
+”    n”,
+”        cov: Covariance matrix of shape (ndim,ndim).n”,
+”        n”,
+”    &quot;&quot;&quot;n”,
+”    cov = np.zeros((ndim,ndim))n”,
+”    diag_cov = np.ones(ndim)n”,
+”    np.fill_diagonal(cov, diag_cov)n”,
+”    return cov”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“Note that the final function init_cov is used to randomly assign a diagonal covariance proportional to the identiy matrix.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“Then define parameters for [emcee](<a class="reference external" href="https://emcee.readthedocs.io/en/stable/">https://emcee.readthedocs.io/en/stable/</a>) and the covariance of our Gaussian example.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 13,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“# Define parameters for emcee samplingn”,
+“ndim = 10                   # number of dimensionsn”,
+“nchains = 200               # total number of chains to computen”,
+“samples_per_chain = 5000    # number of samples per chainn”,
+“nburn = 2000                # number of samples to discard as burn inn”,
+“n”,
+“# initialise random seedn”,
+“np.random.seed(1)n”,
+“n”,
+“# Create covariance matrix n”,
+“cov = init_cov(ndim)n”,
+“inv_cov = np.linalg.inv(cov) “</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“For absolute simplicity let’s use the harmonic HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 14,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“# Instantiate hyper-sphere modeln”,
+“domains_sphere = [np.array([1E0,1E0])] # Not used since not training model.n”,
+“model = hm.model.HyperSphere(ndim, domains_sphere) n”,
+“n”,
+“# Fit model by hand by fixing radiusn”,
+“model.set_R(np.sqrt(ndim)) # A good rule of thumb for a Gaussian with a diagonal covariancen”,
+“model.fitted = True”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“## Checkpointingn”,
+“n”,
+“Now we need to run the sampler to collect samples but we wish to checkpoint periodically to protect against system crashes or timeouts. One simple way to do this is to execute the following loop.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 15,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“# Set initial random position and staten”,
+“pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1   n”,
+“rstate = np.random.get_state()n”,
+“n”,
+“# Define how often to checkpoint the evidence classn”,
+“chain_iterations = 10n”,
+“n”,
+“# Instantiate the evidence classn”,
+“cal_ev = hm.Evidence(nchains, model)n”,
+“n”,
+“for chain_i in range(chain_iterations):n”,
+”    # Run the emcee sampler from previous endpointn”,
+”    sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[inv_cov])n”,
+”    (pos, prob, rstate) = sampler.run_mcmc(pos, samples_per_chain/chain_iterations, rstate0=rstate)n”,
+”    n”,
+”    # Collect and format samplesn”,
+”    samples = np.ascontiguousarray(sampler.chain[:,:,:])n”,
+”    lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])n”,
+”    chains = hm.Chains(ndim)n”,
+”    chains.add_chains_3d(samples, lnprob)n”,
+”    n”,
+”    # 1) Deserialize the Evidence classn”,
+”    if chain_i &gt; 0:n”,
+”        cal_ev = hm.Evidence.deserialize(&quot;.temp.gaussian_example_{}.dat&quot;.format(ndim))n”,
+”    n”,
+”    # 2) Add these new chains to Evidence classn”,
+”    cal_ev.add_chains(chains)n”,
+”    n”,
+”    # 3) Serialize the Evidence Class n”,
+”    cal_ev.serialize(&quot;.temp.gaussian_example_{}.dat&quot;.format(ndim))n”,
+”    n”,
+”    # Clear memory n”,
+”    del chains, samples, lnprob, sampler, prob”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“Of course, it is not typically necessary to deserialize the Evidence class following each checkpoint but only if execution halts.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“## Compute the Bayesian evidencen”,
+“n”,
+“Finally we simply compute the learnt harmonic mean estimator.  Here, we elect to compute the evidence in log space.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 16,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“## Results”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“For the simple Gaussian example considered, it’s also straightforward to compute the evidence analytically.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 17,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“def ln_analytic_evidence(ndim, cov):n”,
+”    &quot;&quot;&quot;Compute analytic ln_e evidence.n”,
+”    n”,
+”    Args: n”,
+”    n”,
+”        ndim: Dimensionality of the multivariate Gaussian posteriorn”,
+”        n”,
+”        cov: Covariance matrix dimension nxn.  n”,
+”        n”,
+”    Returns:n”,
+”    n”,
+”        double: Value of posterior at x.n”,
+”        n”,
+”    &quot;&quot;&quot;n”,
+”    ln_norm_lik = -0.5*ndim*np.log(2*np.pi)-0.5*np.log(np.linalg.det(cov))   n”,
+”    return -ln_norm_lik”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“Let’s also compute the evidence analytically so that we can compare it to the value computed by harmonic.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 18,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“ln_evidence_analytic = ln_analytic_evidence(ndim, cov)”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“Let’s compare the value computed by harmonic and analytically.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 19,
+“metadata”: {},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“ln_evidence_err = np.log(np.exp(ln_evidence) + np.exp(ln_evidence_std)) - ln_evidence”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: 20,
+“metadata”: {},
+“outputs”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“name”: “stdout”,
+“output_type”: “stream”,
+“text”: [</p>
+<blockquote>
+<div><p>“ln_evidence (harmonic) = 9.191328725973255 +/- 0.0032251202241564414n”,
+“ln_evidence (analytic) = 9.189385332046726n”,
+“nsigma = 0.6025803044405069n”</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>],
+“source”: [</p>
+<blockquote>
+<div><p>“print(‘ln_evidence (harmonic) = {} +/- {}’.format(ln_evidence, ln_evidence_err))n”,
+“print(‘ln_evidence (analytic) = {}’.format(ln_evidence_analytic))n”,
+“print(‘nsigma = {}’.format(np.abs(ln_evidence - ln_evidence_analytic) / ln_evidence_err))”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {},
+“source”: [</p>
+<blockquote>
+<div><p>“As expected, the evidence computed by harmonic is close to that computed analytically.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</dd>
+</dl>
+<p>],
+“metadata”: {</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“kernelspec”: {</dt><dd><p>“display_name”: “Python 3”,
+“language”: “python”,
+“name”: “python3”</p>
+</dd>
+</dl>
+<p>},
+“language_info”: {</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“codemirror_mode”: {</dt><dd><p>“name”: “ipython”,
+“version”: 3</p>
+</dd>
+</dl>
+<p>},
+“file_extension”: “.py”,
+“mimetype”: “text/x-python”,
+“name”: “python”,
+“nbconvert_exporter”: “python”,
+“pygments_lexer”: “ipython3”,
+“version”: “3.8.12”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>},
+“nbformat”: 4,
+“nbformat_minor”: 4</p>
+</dd>
+</dl>
+<p>}</p>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

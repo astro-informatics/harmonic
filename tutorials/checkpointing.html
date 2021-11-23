@@ -382,6 +382,7 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
+<p><a class="reference external" href="https://colab.research.google.com/github/astro-informatics/harmonic/blob/Feature%2FInteractive_notebooks/notebooks/checkpointing.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <div class="section" id="Checkpointing">
 <h1>Checkpointing<a class="headerlink" href="#Checkpointing" title="Permalink to this headline"></a></h1>
 <p>During high-dimensional Bayesian analysis, which is typically computationally heavy, one must frequently run sampling and/or evidence estimation for long periods of time.</p>
@@ -392,26 +393,21 @@ div.rendered_html tbody tr:hover {
 <h2>Basic problem setup<a class="headerlink" href="#Basic-problem-setup" title="Permalink to this headline"></a></h2>
 <p>As always, import the relevant python modules.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">emcee</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../../..&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../examples&quot;</span><span class="p">)</span>
-<span class="kn">import</span> <span class="nn">utils</span>
 </pre></div>
 </div>
 </div>
-<p>Define a Bayesian posterior function (here we’ll use a simple gaussian example).</p>
+<p>Define a Bayesian posterior function (here we’ll use a simple Gaussian example).</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -449,9 +445,9 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <p>Note that the final function init_cov is used to randomly assign a diagonal covariance proportional to the identiy matrix.</p>
-<p>Then define parameters for emcee and the covariance of our Gaussian example.</p>
+<p>Then define parameters for <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> and the covariance of our Gaussian example.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -472,7 +468,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>For absolute simplicity let’s use the harmonic HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -491,7 +487,7 @@ div.rendered_html tbody tr:hover {
 <h2>Checkpointing<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <p>Now we need to run the sampler to collect samples but we wish to checkpoint periodically to protect against system crashes or timeouts. One simple way to do this is to execute the following loop.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -537,7 +533,7 @@ div.rendered_html tbody tr:hover {
 <h2>Compute the Bayesian evidence<a class="headerlink" href="#Compute-the-Bayesian-evidence" title="Permalink to this headline"></a></h2>
 <p>Finally we simply compute the learnt harmonic mean estimator. Here, we elect to compute the evidence in log space.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -550,7 +546,7 @@ div.rendered_html tbody tr:hover {
 <h2>Results<a class="headerlink" href="#Results" title="Permalink to this headline"></a></h2>
 <p>For the simple Gaussian example considered, it’s also straightforward to compute the evidence analytically.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -575,7 +571,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Let’s also compute the evidence analytically so that we can compare it to the value computed by harmonic.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -585,7 +581,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Let’s compare the value computed by harmonic and analytically.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -594,7 +590,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>

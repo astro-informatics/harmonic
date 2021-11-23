@@ -392,6 +392,7 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
+<p><a class="reference external" href="https://colab.research.google.com/github/astro-informatics/harmonic/blob/Feature%2FInteractive_notebooks/notebooks/cross_validation_learnt_model.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <div class="section" id="Model-Cross-validation">
 <h1>Model Cross-validation<a class="headerlink" href="#Model-Cross-validation" title="Permalink to this headline"></a></h1>
 <p>In this tutorial we demonstrate the usage of harmonic’s cross-validation function to select the learnt model to use, in additional to its hyper-parameters. Again, we use <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> as the sampler.</p>
@@ -408,9 +409,9 @@ div.rendered_html tbody tr:hover {
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../../..&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../examples&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../../examples&quot;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 </pre></div>
 </div>
@@ -419,7 +420,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Define-Bayesian-posterior-function">
 <h2>Define Bayesian posterior function<a class="headerlink" href="#Define-Bayesian-posterior-function" title="Permalink to this headline"></a></h2>
 <p>Now we will need to define the log-posterior function of interest.</p>
-<p>As a working example for this tutorial we consider a likelihood given by the Rastrigin function</p>
+<p>As a working example for this tutorial we consider a likelihood given by the <a class="reference external" href="https://en.wikipedia.org/wiki/Rastrigin_function">Rastrigin function</a></p>
 <div class="math notranslate nohighlight">
 \[f(x) = 10 d + \sum_{i=1}^{d} \bigg [ x_i^2 - 10 \cos ( 2 \pi x_i ) \bigg ]\]</div>
 <p>where <span class="math notranslate nohighlight">\(d\)</span> is the dimension of the function and the input domain is usually taken to be <span class="math notranslate nohighlight">\(x_i \in [-6.0, 6.0], \: \; \forall i = 1, \dots, d\)</span>. The Rastrigin function is a common benchmark example since it is known to be a difficult project due to its high multimodality. The likelihood is then implemented as follows.</p>
@@ -599,7 +600,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Select-and-train-the-machine-learning-model">
 <h3>Select and train the machine learning model<a class="headerlink" href="#Select-and-train-the-machine-learning-model" title="Permalink to this headline"></a></h3>
 <p>Now consider <code class="docutils literal notranslate"><span class="pre">chains_train</span></code> and use the chains to train the model. Here we will leverage cross-validation to select the best model of those considered.</p>
-<p>We will perform cross-validation to select the most appropriate model and then select the hyperparameters of said model. First we define the sets of hyper-parameters for each model,</p>
+<p>We will perform cross-validation to select the most appropriate model and then select the hyper-parameters of said model. First we define the sets of hyper-parameters for each model.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -612,13 +613,13 @@ div.rendered_html tbody tr:hover {
 <span class="n">domains_KDE</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># no defined domain for KDE estimate</span>
 <span class="n">hyper_parameters_KDE</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">R</span><span class="p">)]</span> <span class="k">for</span> <span class="n">R</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">nhyper</span><span class="o">+</span><span class="n">step</span><span class="p">,</span><span class="n">step</span><span class="p">)]</span>
 
-<span class="c1"># Define Hypersphere (sphere) hyperparameters</span>
+<span class="c1"># Define Hypersphere (sphere) hyper-parameters</span>
 <span class="n">hyper_parameters_sphere</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
 <span class="n">domains_sphere</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1E-2</span><span class="p">,</span><span class="mf">1E1</span><span class="p">])]</span>
 </pre></div>
 </div>
 </div>
-<p>Cross-validation is then performing using harmonic untils to select the best hyper-parameter configuration for each model.</p>
+<p>Cross-validation is then performing using harmonic utils to select the best hyper-parameter configuration for each model.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -651,7 +652,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>Now that we have the minimal validation variances for each model (over the given domains) we can compare them to one another to select the model with best model.</p>
+<p>Now that we have the minimal validation variances for each model (over the given domains) we can compare them to one another to select the best model.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -677,8 +678,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-best_var_sphere = 0.3538416248794466
-best_var_KDE = 0.12162880479094236
+best_var_sphere = -1.177544440353161
+best_var_KDE = -2.1282111698343407
 Using Kernel Density Estimate model!
 </pre></div></div>
 </div>
@@ -782,7 +783,7 @@ nsigma = 0.7828266573455539
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_cross-validation_learnt_model_36_0.png" src="../_images/tutorials_cross-validation_learnt_model_36_0.png" />
+<img alt="../_images/tutorials_cross-validation_learnt_model_37_0.png" src="../_images/tutorials_cross-validation_learnt_model_37_0.png" />
 </div>
 </div>
 <p>Alternatively, we can plot using a triangle plot of joint and marginalised distibutions using <a class="reference external" href="https://getdist.readthedocs.io/">getdist</a>.</p>
@@ -807,7 +808,7 @@ WARNING:root:fine_bins_2D not large enough for optimal density
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_cross-validation_learnt_model_38_1.png" src="../_images/tutorials_cross-validation_learnt_model_38_1.png" />
+<img alt="../_images/tutorials_cross-validation_learnt_model_39_1.png" src="../_images/tutorials_cross-validation_learnt_model_39_1.png" />
 </div>
 </div>
 </div>
