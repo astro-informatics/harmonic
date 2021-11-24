@@ -24,11 +24,13 @@
 Harmonic
 ========
 
-The harmonic mean is an infamous estimator for the Bayesian evidence, first proposed by `Newton and Raftery (1994)  <https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x>`_. Whilst the harmonic mean estimator is asymptotically consistent it can fail catastrophically, depending on how one configures the estimator. By integrating bespoke machine learning techniques, **harmonic** overcomes this hurdle by learning from disperate samples of the posterior. Our learnt estimator is agnostic to the sampler, provides accurate estimates of the variance and variance in the variance, and can scale into thousands of dimensions.
+We resurrect the infamous harmonic mean estimator for computing the marginal likelihood and solve its problematic large variance.  The marginal likelihood is a key component of Bayesian model selection since it is required to evaluate model posterior probabilities;  however, its computation is challenging.  The original harmonic mean estimator, first proposed in 1994 by Newton and Raftery, involves computing the harmonic mean of the likelihood given samples from the posterior.  It was immediately realised that the original estimator can fail catastrophically since its variance can become very large and may not be finite.  A number of variants of the harmonic mean estimator have been proposed to address this issue although none have proven fully satisfactory. 
+
+We present the *learnt harmonic mean estimator*, a variant of the original estimator that solves its large variance problem.  This is achieved by interpreting the harmonic mean estimator as importance sampling and introducing a new target distribution.  The new target distribution is learned to approximate the optimal but inaccessible target, while minimising the variance of the resulting estimator.  Since the estimator requires samples of the posterior only it is agnostic to the strategy used to generate posterior samples. 
 
 How to use this guide
 ---------------------
-To get started you will first need to follow the :ref:`installation guide <Installation>`, following which it is recommended you run the testing suite to ensure your installation has been successful. Next, we have provided a :ref:`mini-tutorial <Jupyter Notebooks>`, comprised of 4 interactive notebooks, which will provide a step-by-step guide to get **harmonic** up and running for your particular application. Finally, to see how **harmonic** can be applied to various popular benchmark problems one should look to the :ref:`benchmark examples <Benchmark Examples>` page. An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
+To get started, follow the :ref:`installation guide <Installation>`.  For a brief background of the *learnt harmonic mean estimator*  please see the :ref:`background <Background>` section of this guide, which provides sufficient background to inform the practioner.  For further background details please see the related paper (`McEwen et al. 2021 <TBC>`_).  We have also provided :ref:`tutorials <Jupyter Notebooks>`, comprised of a number of interactive notebooks that provide a step-by-step guide to get **harmonic** up and running for your particular application.  An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
 
 Basic usage
 -----------
@@ -38,7 +40,7 @@ First you will want to install **harmonic**, which is as simple as running:
    
    pip install harmonic
 
-Now, suppose you have collected many samples, perhaps through `emcee <https://emcee.readthedocs.io/en/stable/>`_ or another sampler, from some generic :math:`n`-dimensional posterior and *a posteriori* wish to compute the evidence which we will assume is non-analytic, you would do something like:
+Now, suppose you have collected many posterior samples, perhaps drawn using `emcee <https://emcee.readthedocs.io/en/stable/>`_ or another sampler, and *a posteriori* wish to compute the evidence, you would do something like:
 
 .. code-block:: python
       
