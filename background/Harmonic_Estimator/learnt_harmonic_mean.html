@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learnt Harmonic Mean Estimator &mdash; Harmonic 1.0.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom_tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../../_static/dark_mode_js/default_light.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Learning an Optimal Target Distribution" href="../Machine_Learning/index.html" />
+    <link rel="prev" title="Re-targeted Harmonic Mean Estimator" href="retargetd_harmonic_mean.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Learnt Harmonic Mean Estimator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#optimal-importance-sampling-target">Optimal importance sampling target</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#learned-the-optimal-sampling-target">Learned the optimal sampling target</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/checkpointing.html">Checkpointing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">Namespaces</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harmonic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Learnt Harmonic Mean Estimator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/background/Harmonic_Estimator/learnt_harmonic_mean.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="learnt-harmonic-mean-estimator">
+<h1>Learnt Harmonic Mean Estimator<a class="headerlink" href="#learnt-harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
+<p>It is well-known that the original harmonic mean estimator can fail catastrophically since the variance of the estimator may be become very large. However, this issue can be resolved by introducing an alternative (normalised) target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> (<a class="reference external" href="https://www.jstor.org/stable/pdf/2346123.pdf?casa_token=vIU0gg6sEy4AAAAA:21VkKf6fPFzhg2KlajF0DsILPRn4_muIES1RyGW0xaUGaPijW-YPOl5gxZIFPbadT0PeYbgcLAnuqlqSJCalFgu8W-wyrglxZCMMqzptM2sGkcG0hloG">Gelfand and Dey, 1994</a>), yielding what we term here the <em>re-targeted harmonic mean estimator</em>. From the importance sampling interpretation of the harmonic mean estimator, the re-targeted estimator follows by replacing the importance sampling target of the prior <span class="math notranslate nohighlight">\(\pi(\theta)\)</span> with the target <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>, where the posterior <span class="math notranslate nohighlight">\(P(\theta | y)\)</span> plays the role of the importance sampling density.</p>
+<p>It remains to select a suitable target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>. On one hand, to ensure the variance of the resulting estimator is well-behaved, the target distribution should have narrower tails that the importance sampling density, <em>i.e.</em> the target <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> should have narrower tails than the posterior <span class="math notranslate nohighlight">\(P(\theta | y)\)</span>. On the other hand, to ensure the resulting estimator is efficient and makes use of as many samples from the posterior as possible, the target distribution should not be too narrow.</p>
+<div class="section" id="optimal-importance-sampling-target">
+<h2>Optimal importance sampling target<a class="headerlink" href="#optimal-importance-sampling-target" title="Permalink to this headline"></a></h2>
+<p>Consider the importance sampling target distribution given by the (normalised) posterior itself:</p>
+<div class="math notranslate nohighlight">
+\[\varphi^\text{optimal}(\theta) = \frac{\mathcal{L}(\theta) \pi(\theta)}{z}\]</div>
+<p>This estimator is optimal in the sense of having zero variance, which is clearly apparent by substituting the target density into the re-targeted harmonic mean estimator discussed previously. Each term contributing to the summation is simply <span class="math notranslate nohighlight">\(1/z\)</span>, hence the estimator <span class="math notranslate nohighlight">\(\hat{\rho}\)</span> is unbiased, with zero variance.</p>
+<p>Recall that the target density must be normalised.  Hence, the optimal estimator given by the normalised posterior is not accessible in practice since it requires the marginal likelihood – the very term we are attempting to estimate – to be known.  While the optimal estimator therefore cannot be used in practice, it can nevertheless be used to inform the construction of other estimators based on alternative importance sampling target distributions.</p>
+</div>
+<div class="section" id="learned-the-optimal-sampling-target">
+<h2>Learned the optimal sampling target<a class="headerlink" href="#learned-the-optimal-sampling-target" title="Permalink to this headline"></a></h2>
+<p>We propose learning the target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> from samples of the posterior. Samples from the posterior can be split into training and evaluation (<em>cf.</em> test) sets. Machine learning (ML) techniques can then be applied to learn an approximate model of the normalised posterior from the training samples, with the constraint that the tails of the learnt target are narrower than the posterior, <em>i.e.</em></p>
+<div class="math notranslate nohighlight">
+\[\varphi(\theta) \stackrel{\text{ML}}{\simeq} \varphi^\text{optimal}(\theta) = \frac{\mathcal{L}(\theta) \pi(\theta)}{z}.\]</div>
+<p>We term this approach the <em>learnt harmonic mean estimator</em>.</p>
+<p>We are interested not only in an estimator for the marginal likelihood but also in an estimate of the variance of this estimator, and its variance. Such additional estimators are useful in their own right and can also provide valuable sanity checks that the resulting marginal likelihood estimator is well-behaved. We present corresponding estimators for the cases of uncorrelated and correlated samples.
+Harmonic mean estimators provide an estimation of the reciprocal of the marginal likelihood.  We therefore also consider estimation of the marginal likelihood itself and its variance from the reciprocal estimators.  Moreover, we present expressions to also estimate the Bayes factor, and its variance, to compare two models.
+Finally, we present models to learn the normalised target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> by approximating the posterior distribution, with the constraint that the target has narrower tails than the posterior, and discuss how to train such models. Training involves constructing objective functions that penalise models that would result in estimators with a large variance, with appropriate regularisation.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="retargetd_harmonic_mean.html" class="btn btn-neutral float-left" title="Re-targeted Harmonic Mean Estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Machine_Learning/index.html" class="btn btn-neutral float-right" title="Learning an Optimal Target Distribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

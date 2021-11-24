@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Checkpointing" href="checkpointing.html" />
-    <link rel="prev" title="Jupyter Notebooks" href="index.html" /> 
+    <link rel="next" title="Hyper-parameter Cross-validation" href="cross-validation_hyper-parameters.html" />
+    <link rel="prev" title="Bayes Factors" href="../background/Bayes_Factors/bayes_factors.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,40 +53,36 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/install.html">Installation</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learnt Container Function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Import-packages">Import packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Define-Bayesian-posterior-function">Define Bayesian posterior function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Compute-samples-using-emcee">Compute samples using emcee</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Compute-evidence-using-harmonic">Compute evidence using harmonic</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Collating-samples-using-harmonic.chains-class">Collating samples using harmonic.chains class</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Train-the-machine-learning-model">Train the machine learning model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Compute-the-Bayesian-evidence">Compute the Bayesian evidence</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Import-packages">Import packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-Bayesian-posterior-function">Define Bayesian posterior function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Compute-samples-using-emcee">Compute samples using emcee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Compute-evidence-using-harmonic">Compute evidence using harmonic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Collating-samples-into-harmonic">Collating samples into harmonic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Train-the-machine-learning-model">Train the machine learning model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Compute-the-Bayesian-evidence">Compute the Bayesian evidence</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#Results">Results</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Numerical-integration">Numerical integration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Posterior-plot">Posterior plot</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="checkpointing.html">Checkpointing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Results">Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Numerical-integration">Numerical integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Posterior-triangle-plot">Posterior triangle plot</a></li>
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Benchmark Examples</a></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -107,7 +103,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
       <li>Basic usage</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/tutorials/basic_usage.nblink.txt" rel="nofollow"> View page source</a>
@@ -396,19 +391,21 @@ div.rendered_html tbody tr:hover {
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline"></a></h2>
 <p>To begin with we need to import packages needed.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">emcee</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../../..&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../../examples&quot;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">emcee</span>
+<span class="kn">import</span> <span class="nn">scipy.special</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">gc</span>
 </pre></div>
 </div>
 </div>
@@ -416,108 +413,29 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Define-Bayesian-posterior-function">
 <h2>Define Bayesian posterior function<a class="headerlink" href="#Define-Bayesian-posterior-function" title="Permalink to this headline"></a></h2>
 <p>Now we will need to define the log-posterior function of interest.</p>
-<p>As a working example for this tutorial we consider a likelihood given by the <a class="reference external" href="https://en.wikipedia.org/wiki/Rosenbrock_function">Rosenbrock function</a></p>
+<p>As a working example for this basic tutorial we consider a log-likelihood given a standard 2-dimensional Gaussian</p>
 <div class="math notranslate nohighlight">
-\[f(x) = \sum_{i=1}^{d-1} \bigg [ b(x_{i+1} - x_{i}^2)^2 + (x_i - a)^2 \bigg ]\]</div>
-<p>where <span class="math notranslate nohighlight">\(d\)</span> is the dimension of the function and the input domain is usually taken to be <span class="math notranslate nohighlight">\(x_i \in [-5.0, 10.0], \: \; \forall i = 1, \dots, d\)</span>. The Rosenbrock function is a common benchmark example since it is known to be a difficult project due to the shallow curving degenercy. The likelihood is then implemented as follows. For the hyper-parameters we adopt the common values <span class="math notranslate nohighlight">\(a=1.0\)</span> and <span class="math notranslate nohighlight">\(b=100.0\)</span>.</p>
+\[f(x) = -\frac{1}{2}x^{T}\Sigma^{-1}x\]</div>
+<p>where for simplicity we have taken the mean <span class="math notranslate nohighlight">\(\mu=0\)</span> and dropped scaling factors, and assume a trivial uniform prior over an infinite interval. Under such conditions the log-posterior is given by</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">ln_likelihood</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">100.0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute log_e of likelihood defined by Rosenbrock function.</span>
-
-<span class="sd">    Args:</span>
-
-<span class="sd">        x: Position at which to evaluate likelihood.</span>
-
-<span class="sd">        a: First parameter of Rosenbrock function.</span>
-
-<span class="sd">        b: First parameter of Rosenbrock function.</span>
-
-<span class="sd">    Returns:</span>
-
-<span class="sd">        double: Value of Rosenbrock at specified point.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">ndim</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
-
-    <span class="n">f</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="k">for</span> <span class="n">i_dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">f</span> <span class="o">+=</span> <span class="n">b</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i_dim</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i_dim</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i_dim</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span>
-
-    <span class="k">return</span> <span class="o">-</span><span class="n">f</span>
-</pre></div>
-</div>
-</div>
-<p>We adopt a uniform prior over the parameter support <span class="math notranslate nohighlight">\(x_i \in [-5.0, 10.0]\)</span>, which is implemented as follows.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">ln_prior_uniform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">15.0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute log_e of uniform prior.</span>
-
-<span class="sd">    Args:</span>
-
-<span class="sd">        x: Position at which to evaluate prior.</span>
-
-<span class="sd">        xmin: Uniform prior minimum x edge (first dimension).</span>
-
-<span class="sd">        xmax: Uniform prior maximum x edge (first dimension).</span>
-
-<span class="sd">        ymin: Uniform prior minimum y edge (second dimension).</span>
-
-<span class="sd">        ymax: Uniform prior maximum y edge (second dimension).</span>
-
-<span class="sd">    Returns:</span>
-
-<span class="sd">        double: Value of prior at specified point.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">xmin</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">xmax</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">ymin</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ymax</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span> <span class="p">(</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mf">0.0</span>
-</pre></div>
-</div>
-</div>
-<p>The likelihood and prior are combined to form the log posterior function as follows.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ln_prior</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">100.0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute log_e of posterior.</span>
+<span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute log_e of posterior of n dimensional multivariate Gaussian.</span>
 
 <span class="sd">    Args:</span>
 
 <span class="sd">        x: Position at which to evaluate posterior.</span>
 
-<span class="sd">        a: First parameter of Rosenbrock function.</span>
-
-<span class="sd">        b: First parameter of Rosenbrock function.</span>
-
-<span class="sd">        ln_prior: Prior function.</span>
-
 <span class="sd">    Returns:</span>
 
-<span class="sd">        double: Posterior at specified point.</span>
+<span class="sd">        double: Value of posterior at x.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">ln_L</span> <span class="o">=</span> <span class="n">ln_likelihood</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">ln_L</span><span class="p">):</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">ln_prior</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">ln_L</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_cov</span><span class="p">,</span><span class="n">x</span><span class="p">))</span><span class="o">/</span><span class="mf">2.0</span>
 </pre></div>
 </div>
 </div>
@@ -527,44 +445,35 @@ div.rendered_html tbody tr:hover {
 <p>We then sample from the posterior using an MCMC algorithm. While any MCMC approach can be used we sample using the <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> package.</p>
 <p>First we will need to define and initialise some variables.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Define parameters for emcee sampling</span>
-<span class="n">ndim</span> <span class="o">=</span> <span class="mi">2</span>                    <span class="c1"># number of dimensions</span>
-<span class="n">nchains</span> <span class="o">=</span> <span class="mi">200</span>               <span class="c1"># total number of chains to compute</span>
+<span class="n">ndim</span> <span class="o">=</span> <span class="mi">2</span>                    <span class="c1"># Dimensions</span>
+<span class="n">nchains</span> <span class="o">=</span> <span class="mi">200</span>                <span class="c1"># total number of chains to compute</span>
 <span class="n">samples_per_chain</span> <span class="o">=</span> <span class="mi">5000</span>    <span class="c1"># number of samples per chain</span>
 <span class="n">nburn</span> <span class="o">=</span> <span class="mi">2000</span>                <span class="c1"># number of samples to discard as burn in</span>
 
-<span class="c1"># initialise random seed</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="c1"># Rosenbrock hyper-parameters</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mf">1.0</span>
-<span class="n">b</span> <span class="o">=</span> <span class="mf">100.0</span>
-
-<span class="c1"># Define ln_prior function</span>
-<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>
-<span class="n">xmax</span> <span class="o">=</span> <span class="mf">10.0</span>
-<span class="n">ymin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.0</span>
-<span class="n">ymax</span> <span class="o">=</span> <span class="mf">15.0</span>
-<span class="n">ln_prior</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">ln_prior_uniform</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">)</span>
+<span class="c1"># Construct a trivial inverse covariance (identity matrix)</span>
+<span class="n">inv_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ndim</span><span class="p">,</span><span class="n">ndim</span><span class="p">))</span>
+<span class="n">diag_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">inv_cov</span><span class="p">,</span> <span class="n">diag_cov</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>Now we need to run the sampler.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Set initial random position and state</span>
-<span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span> <span class="o">*</span> <span class="n">nchains</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">nchains</span><span class="p">,</span> <span class="n">ndim</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.1</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">ndim</span> <span class="o">*</span> <span class="n">nchains</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">nchains</span><span class="p">,</span> <span class="n">ndim</span><span class="p">))</span>
 <span class="n">rstate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
 
 <span class="c1"># Instantiate and execute sampler</span>
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nchains</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">ln_posterior</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ln_prior</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nchains</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">ln_posterior</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">inv_cov</span><span class="p">])</span>
 <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">samples_per_chain</span><span class="p">,</span> <span class="n">rstate0</span><span class="o">=</span><span class="n">rstate</span><span class="p">)</span>
 
 <span class="c1"># Collect samples into contiguous numpy arrays (discarding burn in)</span>
@@ -578,11 +487,11 @@ div.rendered_html tbody tr:hover {
 <h2>Compute evidence using harmonic<a class="headerlink" href="#Compute-evidence-using-harmonic" title="Permalink to this headline"></a></h2>
 <p>The harmonic package requires only posterior samples. There are no constraints on the type of sampling algorithm used.</p>
 <p>Once we have posterior samples to hand, they can be post-processed using harmonic to compute the Bayesian evidence.</p>
-<div class="section" id="Collating-samples-using-harmonic.chains-class">
-<h3>Collating samples using harmonic.chains class<a class="headerlink" href="#Collating-samples-using-harmonic.chains-class" title="Permalink to this headline"></a></h3>
+<div class="section" id="Collating-samples-into-harmonic">
+<h3>Collating samples into harmonic<a class="headerlink" href="#Collating-samples-into-harmonic" title="Permalink to this headline"></a></h3>
 <p>We first configure the chains into a harmonic-friendly shape, which we do as follows.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -592,14 +501,13 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>Since we will subsequently learn the target distribution <span class="math notranslate nohighlight">\(\varphi\)</span> we split the samples into training and inference sets (we often use the common machine learning terminology “test” for the inference data-set).</p>
+<p>Since we will subsequently learn the target distribution <span class="math notranslate nohighlight">\(\varphi\)</span> we split the samples into training and inference sets (we often use the common machine learning terminology <em>test</em> for the inference data-set).</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Split the chains into the ones which will be used to train the machine</span>
-<span class="c1"># learning model and for inference</span>
+<span></span><span class="c1"># Split the chains into the ones which will be used to train and peform inference</span>
 <span class="n">chains_train</span><span class="p">,</span> <span class="n">chains_infer</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">split_data</span><span class="p">(</span><span class="n">chains</span><span class="p">,</span> <span class="n">training_proportion</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -610,13 +518,16 @@ div.rendered_html tbody tr:hover {
 <p>For simplicity we will manually select hyper-parameters and train a machine learning model using <code class="docutils literal notranslate"><span class="pre">chains_train</span></code>. See other tutorials that use cross-validation to select hyper-parameters and different models.</p>
 <p>Simply select the model we wish to adopt and fit the model.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">domain</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># not used for KDE model</span>
-<span class="n">kde_diameter</span> <span class="o">=</span> <span class="mf">0.001</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">KernelDensityEstimate</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">hyper_parameters</span><span class="o">=</span><span class="p">[</span><span class="n">kde_diameter</span><span class="p">])</span>
+<span></span><span class="n">domains</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1E-1</span><span class="p">,</span><span class="mf">1E1</span><span class="p">])]</span>  <span class="c1"># hyper-sphere bounding domain</span>
+
+<span class="c1"># Select model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">HyperSphere</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">domains</span><span class="p">)</span>
+
+<span class="c1"># Train model</span>
 <span class="n">fit_success</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">chains_train</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">chains_train</span><span class="o">.</span><span class="n">ln_posterior</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -626,14 +537,14 @@ div.rendered_html tbody tr:hover {
 <h3>Compute the Bayesian evidence<a class="headerlink" href="#Compute-the-Bayesian-evidence" title="Permalink to this headline"></a></h3>
 <p>Finally we simply compute the learnt harmonic mean estimator as follows.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Instantiate harmonic&#39;s evidence class</span>
 <span class="n">ev</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span><span class="n">chains_infer</span><span class="o">.</span><span class="n">nchains</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
-<span class="c1"># Pass the evidence class the inference chains and compute the evidence!</span>
+<span class="c1"># Pass the evidence class the inference chains and compute the log of the evidence!</span>
 <span class="n">ev</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">chains_infer</span><span class="p">)</span>
 <span class="n">evidence</span><span class="p">,</span> <span class="n">evidence_std</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compute_evidence</span><span class="p">()</span>
 </pre></div>
@@ -646,34 +557,43 @@ div.rendered_html tbody tr:hover {
 <p>Let’s check the evidence value computed and also plot the posterior.</p>
 <div class="section" id="Numerical-integration">
 <h3>Numerical integration<a class="headerlink" href="#Numerical-integration" title="Permalink to this headline"></a></h3>
-<p>For this 2D model, we can compute the evidence by brute force numerical integration to compare to the value computed by harmonic. (Of course, numerical integration is not typically possible for higher dimensional models.)</p>
+<p>As this is a standard 2-dimensional Gaussian the evidence is analytic and given by</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ln_posterior_func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">ln_posterior</span><span class="p">,</span> <span class="n">ln_prior</span><span class="o">=</span><span class="n">ln_prior</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
-<span class="n">ln_posterior_grid</span><span class="p">,</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">eval_func_on_grid</span><span class="p">(</span>
-                                        <span class="n">ln_posterior_func</span><span class="p">,</span>
-                                        <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
-                                        <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
-                                        <span class="n">nx</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">dx</span> <span class="o">=</span> <span class="n">x_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">dy</span> <span class="o">=</span> <span class="n">y_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">evidence_numerical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_posterior_grid</span><span class="p">))</span><span class="o">*</span><span class="n">dx</span><span class="o">*</span><span class="n">dy</span>
-<span class="n">ln_evidence_numerical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">evidence_numerical</span><span class="p">)</span>
+<span></span><span class="k">def</span> <span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute analytic evidence for nD Gaussian.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        ndim: Dimension of Gaussian.</span>
+
+<span class="sd">        cov: Covariance matrix.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        double: Analytic evidence.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ln_norm_lik</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">ndim</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">cov</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ln_norm_lik</span>
+
+<span class="n">evidence_analytic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <p>Let’s compare the value computed by harmonic and by numerical integration.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;evidence (harmonic) = </span><span class="si">{}</span><span class="s1"> +/- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evidence</span><span class="p">,</span> <span class="n">evidence_std</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;evidence (numerical integration) = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evidence_numerical</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;nsigma = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">evidence</span> <span class="o">-</span> <span class="n">evidence_numerical</span><span class="p">)</span> <span class="o">/</span> <span class="n">evidence_std</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;evidence (analytic) = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evidence_analytic</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;nsigma = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">evidence</span> <span class="o">-</span> <span class="n">evidence_analytic</span><span class="p">)</span> <span class="o">/</span> <span class="n">evidence_std</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -682,41 +602,18 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-evidence (harmonic) = 0.31445923801957426 +/- 0.006538434524987667
-evidence (numerical integration) = 0.31493806556881776
-nsigma = 0.07323275126692534
+evidence (harmonic) = 6.281511345668665 +/- 0.017399502833142635
+evidence (analytic) = 6.283185307179585
+nsigma = 0.09620743345214797
 </pre></div></div>
 </div>
 <p>As expected, the evidence computed by harmonic is close to that computed by numerical integration.</p>
 </div>
-<div class="section" id="Posterior-plot">
-<h3>Posterior plot<a class="headerlink" href="#Posterior-plot" title="Permalink to this headline"></a></h3>
-<p>Out of interest let’s also plot the posterior using these samples to see what we’re working with!</p>
-<p>We can plot the surface defined by the posterior evaluated over the grid.</p>
+<div class="section" id="Posterior-triangle-plot">
+<h3>Posterior triangle plot<a class="headerlink" href="#Posterior-triangle-plot" title="Permalink to this headline"></a></h3>
+<p>Out of interest let’s also plot slices of the posterior using these samples to see what we’re working with!</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">ln_posterior_grid</span><span class="p">,</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">,</span>
-                        <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)),</span>
-                        <span class="n">lnprob</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log P$&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorials_basic_usage_33_0.png" src="../_images/tutorials_basic_usage_33_0.png" />
-</div>
-</div>
-<p>Alternatively, we can plot using a triangle plot of joint and marginalised distibutions using <a class="reference external" href="https://getdist.readthedocs.io/">getdist</a>.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -728,7 +625,7 @@ nsigma = 0.07323275126692534
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_basic_usage_35_0.png" src="../_images/tutorials_basic_usage_35_0.png" />
+<img alt="../_images/tutorials_basic_usage_27_0.png" src="../_images/tutorials_basic_usage_27_0.png" />
 </div>
 </div>
 </div>
@@ -739,8 +636,8 @@ nsigma = 0.07323275126692534
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Jupyter Notebooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="checkpointing.html" class="btn btn-neutral float-right" title="Checkpointing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../background/Bayes_Factors/bayes_factors.html" class="btn btn-neutral float-left" title="Bayes Factors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cross-validation_hyper-parameters.html" class="btn btn-neutral float-right" title="Hyper-parameter Cross-validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

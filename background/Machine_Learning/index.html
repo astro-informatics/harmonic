@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learnt Container Function &mdash; Harmonic 1.0.2 documentation</title>
+  <title>Learning an Optimal Target Distribution &mdash; Harmonic 1.0.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Jupyter Notebooks" href="../../tutorials/index.html" />
-    <link rel="prev" title="Harmonic Mean Estimator" href="../Harmonic_Estimator/index.html" /> 
+    <link rel="next" title="Bayes Factors" href="../Bayes_Factors/bayes_factors.html" />
+    <link rel="prev" title="Learnt Harmonic Mean Estimator" href="../Harmonic_Estimator/learnt_harmonic_mean.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,21 +54,23 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Learnt Container Function</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Learning an Optimal Target Distribution</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#learning-from-posterior-samples">Learning from posterior samples</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Jupyter Notebooks</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Benchmark Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -89,7 +91,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Learnt Container Function</li>
+      <li>Learning an Optimal Target Distribution</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/background/Machine_Learning/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -123,9 +125,11 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="learnt-container-function">
-<h1>Learnt Container Function<a class="headerlink" href="#learnt-container-function" title="Permalink to this headline"></a></h1>
-<p>As discussed in the harmonic mean estimator section one must select a (proper but otherwise arbitrary) <strong>target distribution</strong> <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>. This choice is pivotal to the accuracy of the harmonic mean estimator, and so must be chosen carefully. One might initially postulate that choosing <span class="math notranslate nohighlight">\(\varphi(\theta) = \pi(\theta)\)</span> would be a good choice – where <span class="math notranslate nohighlight">\(\pi(\theta)\)</span> is the prior distribution. However, provided the prior is (perhaps sensibly) not too informative, the posterior has few samples in low likelihood regions which carry very large weight, resulting in the variance of the estimator being notably large. It is then sensible to suggest functions <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> such that these low likelihood are sufficiently downweighted – <em>i.e.</em> target distributions which minimize the variance of the harmonic mean estimator. This therefore motivates the development of a <strong>learnt models of the target distribution</strong> which we will now discuss.</p>
+<div class="section" id="learning-an-optimal-target-distribution">
+<h1>Learning an Optimal Target Distribution<a class="headerlink" href="#learning-an-optimal-target-distribution" title="Permalink to this headline"></a></h1>
+<p>While we have described estimators to compute the marginal likelihood and Bayes factors based on a learnt target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>, we have yet to consider the critical task of learning the target distribution.  As discussed, the ideal target distribution is the posterior itself.  However, since the target must be normalised, use of the posterior would require knowledge of the marginal likelihood – precisely the quantity that we attempting to estimate.  Instead,
+one can learn an approximation of the posterior that is normalised.  The approximation itself does not need to be highly accurate.  More critically, the learned target approximating the posterior must exhibit narrower tails than the posterior to avoid the problematic scenario of the original harmonic mean that can result in very large variance.</p>
+<p>We present three examples of models that can be used to learn appropriate target distributions and discuss how to train them, although other models can of course be considered.  Samples of the posterior are split into training and evaluation (<em>cf.</em> test) sets.  The training set is used to learn the target distribution, after which the evaluation set, combined with the learnt target, is used to estimate the marginal likelihood.  To train the models we typically construct and solve an optimisation problem to minimise the variance of the estimator, while ensuring it is unbiased.  We typically solve the resulting optimisation problem by stochastic gradient descent.  To set hyperparameters, we advocate cross-validation.</p>
 <div class="section" id="learning-from-posterior-samples">
 <h2>Learning from posterior samples<a class="headerlink" href="#learning-from-posterior-samples" title="Permalink to this headline"></a></h2>
 <p>Here we cover several functional forms for the learned model <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> which are used throughout the code. Hyper-parameters of these models can be considered nodes of a conventional network, the values of which are learnt from a small sub-set of posterior samples.</p>
@@ -220,8 +224,8 @@ While the modified Gaussian mixture model can effectively handle multimodal dist
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../Harmonic_Estimator/index.html" class="btn btn-neutral float-left" title="Harmonic Mean Estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../tutorials/index.html" class="btn btn-neutral float-right" title="Jupyter Notebooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../Harmonic_Estimator/learnt_harmonic_mean.html" class="btn btn-neutral float-left" title="Learnt Harmonic Mean Estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Bayes_Factors/bayes_factors.html" class="btn btn-neutral float-right" title="Bayes Factors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

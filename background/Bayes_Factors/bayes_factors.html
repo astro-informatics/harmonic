@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; Harmonic 1.0.2 documentation</title>
+  <title>Bayes Factors &mdash; Harmonic 1.0.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -25,7 +25,9 @@
         <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Basic usage" href="../../tutorials/basic_usage.html" />
+    <link rel="prev" title="Learning an Optimal Target Distribution" href="../Machine_Learning/index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,12 +54,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Learning an Optimal Target Distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Bayes Factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -85,9 +87,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>&lt;no title&gt;</li>
+      <li>Bayes Factors</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/background/Machine_Learning/kde.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/background/Bayes_Factors/bayes_factors.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -119,23 +121,55 @@
     text-align: unset;
 }
 </style>
-<p>Kernel density estimation (KDE) provides another alternative model to learn an effective target distribution. In particular, it can be used to effectively model narrow curving posterior degeneracies.</p>
-<p>Consider the target distribution defined by the kernel density function</p>
+<div class="section" id="bayes-factors">
+<h1>Bayes Factors<a class="headerlink" href="#bayes-factors" title="Permalink to this headline"></a></h1>
+<p>We have so far considered the estimation of the reciprocal marginal likelihood and related variances only.  However it is the marginal likelihood itself (not its reciprocal), or the Bayes factors computed to compare two models, that is typically of direct interest.  We therefore consider how to compute these quantities of interest and a measure of their variance.</p>
+<p>First, consider the mean and variance of the function <span class="math notranslate nohighlight">\(f(X,Y) = X/Y\)</span> of two uncorrelated random variables <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(Y\)</span>, which by Taylor expansion to second order are given by</p>
 <div class="math notranslate nohighlight">
-\[\varphi(\theta) = \frac{1}{N} \sum_i \frac{1}{V_{K}} K(\theta - \theta_i),\]</div>
-<p>with kernel</p>
+\[\mathbb{E}\biggl(\frac{X}{Y}\biggr) \simeq \frac{\mathbb{E}(X)}{\mathbb{E}(Y)} + \frac{\mathbb{E}(X)}{\mathbb{E}(Y)^3} \sigma_Y^2
+\qquad \quad
+\text{and}
+\qquad \quad
+\text{var}\biggl(\frac{X}{Y}\biggr) \simeq \frac{1}{\mathbb{E}(Y)^2} \sigma_X^2 + \frac{\mathbb{E}(X)^2}{\mathbb{E}(Y)^4} \sigma_Y^2,\]</div>
+<p>respectively, where <span class="math notranslate nohighlight">\(\sigma_X = \mathbb{E}\bigl[ (X - \mathbb{E}(X))^2 \bigr]\)</span> and <span class="math notranslate nohighlight">\(\sigma_Y = \mathbb{E}\bigl[ (Y - \mathbb{E}(Y))^2 \bigr]\)</span>.
+Using this result the marginal likelihood and its variance can be estimated from the reciprocal estimators by making use of the relations</p>
 <div class="math notranslate nohighlight">
-\[K(\theta) = k\biggl(\frac{\theta^\text{T} \Sigma_K^{-1} \theta}{R^2} \biggr),\]</div>
-<p>where <span class="math notranslate nohighlight">\(k(\theta) = 1\)</span> if <span class="math notranslate nohighlight">\(\vert \theta \vert &lt; 1/2\)</span> and 0 otherwise.  The volume of the kernel is given by</p>
+\[\mathbb{E}( z )
+= \mathbb{E}\biggl(\frac{1}{{\rho}}\biggr)
+\simeq \frac{1}{\mathbb{E}({\rho})} \biggl( 1 + \frac{\sigma_{\rho}^2}{\mathbb{E}({\rho})^2} \biggr)
+= \hat{z}
+\qquad \quad
+\text{and}
+\qquad \quad
+\text{var}\biggl(\frac{1}{{\rho}}\biggr)
+\simeq \frac{\sigma_{\rho}^2}{\mathbb{E}({\rho})^4}
+= \hat{\epsilon}^2,\]</div>
+<p>respectively, by considering the case <span class="math notranslate nohighlight">\(X=1\)</span> and <span class="math notranslate nohighlight">\(Y = \rho\)</span>.</p>
+<p>Typically it is the Bayes factor given by the ratio of marginal likelihoods that is of most interest in order to compare models.  Again using the expressions above for the mean and variance of the function <span class="math notranslate nohighlight">\(f(X,Y) = X/Y\)</span>, this time for the case <span class="math notranslate nohighlight">\(X = \rho_2\)</span> and <span class="math notranslate nohighlight">\(Y = \rho_1\)</span>, the Bayes factor and its variance can be estimated directly from the reciprocal marginal likelihood estimates and variances by making use of the relations</p>
 <div class="math notranslate nohighlight">
-\[V_{K} = \frac{\pi^{d/2}}{\Gamma(d/2+1)} R^d \vert \Sigma_K \vert^{1/2}.\]</div>
-<p>The kernel covariance <span class="math notranslate nohighlight">\(\Sigma_K\)</span> can be computed directly from the training samples, for example by estimating the covariance or even simply by the separation between the lowest and highest samples in each dimension.  A diagonal representation is often, although not always, considered for computational efficiency.</p>
-<p>The kernel radius <span class="math notranslate nohighlight">\(R\)</span> can be estimating by following a similar procedure to those outlined above for the hyper-sphere and modified Gaussian mixture model to minimise the variance of the resulting estimator. Alternatively, since there is only a single parameter cross-validation is also effective.</p>
+\[\mathbb{E}\biggl(\frac{z_1}{z_2}\biggr)
+=
+\mathbb{E}\biggr(\frac{\rho_2}{\rho_1}\biggr)
+\simeq
+\frac{\mathbb{E}({\rho_2})}{\mathbb{E}({\rho_1})}
+\biggl( 1 + \frac{\sigma_{\rho_1}^2}{\mathbb{E}({\rho_1})^2}  \biggr)\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\text{var}\biggl(\frac{z_1}{z_2}\biggr)
+=
+\text{var}\biggl(\frac{{\rho_2}}{{\rho_1}}\biggr)
+\simeq
+\frac{\mathbb{E}({\rho_1})^2 \sigma_{\rho_2}^2+ \mathbb{E}({\rho_2})^2 \sigma_{\rho_1}^2}{\mathbb{E}({\rho_1})^4},\]</div>
+<p>respectively.</p>
+</div>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../Machine_Learning/index.html" class="btn btn-neutral float-left" title="Learning an Optimal Target Distribution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../tutorials/basic_usage.html" class="btn btn-neutral float-right" title="Basic usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

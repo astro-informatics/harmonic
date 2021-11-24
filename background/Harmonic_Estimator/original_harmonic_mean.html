@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harmonic Mean Estimator &mdash; Harmonic 1.0.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom_tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../../_static/dark_mode_js/default_light.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Re-targeted Harmonic Mean Estimator" href="retargetd_harmonic_mean.html" />
+    <link rel="prev" title="Installation" href="../../user_guide/install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Harmonic Mean Estimator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#importance-sampling-interpretation">Importance sampling interpretation:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/checkpointing.html">Checkpointing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">Namespaces</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harmonic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Harmonic Mean Estimator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/background/Harmonic_Estimator/original_harmonic_mean.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="harmonic-mean-estimator">
+<h1>Harmonic Mean Estimator<a class="headerlink" href="#harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
+<p>The harmonic mean estimator was first proposed by <a class="reference external" href="https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x">Newton &amp; Raftery (1994)</a> who showed that the marginal likelihood <span class="math notranslate nohighlight">\(z\)</span> can be estimated from the harmonic mean of the likelihood, given posterior samples. This follows by considering the expectation of the reciprocal of the likelihood with respect to the posterior distribution:</p>
+<div class="math notranslate nohighlight">
+\[\rho = \mathbb{E}_{\text{P}(\theta | y)} \biggl[\frac{1}{\mathcal{L}(\theta)} \biggr] = \int \,\text{d} \theta\frac{1}{\mathcal{L}(\theta)} \text{P}(\theta | y) = \int \,\text{d} \theta \frac{1}{\mathcal{L}(\theta)} \frac{\mathcal{L}(\theta) \pi(\theta)}{z} = \frac{1}{z},\]</div>
+<p>where the final line follows since the prior <span class="math notranslate nohighlight">\(\pi(\theta)\)</span> is a normalised probability distribution. This relationship between the marginal likelihood and the harmonic mean motivates the <strong>orignal harmonic mean estimator</strong>:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\rho} = \frac{1}{N} \sum_{i=1}^{N} \frac{1}{\mathcal{L}(\theta_i)}, \quad \theta_i \sim \text{P}(\theta | y),\]</div>
+<p>where <span class="math notranslate nohighlight">\(N\)</span> specifies the number of samples <span class="math notranslate nohighlight">\(\theta_i\)</span> drawn from the posterior, and from which the evidence may naively be estimated by <span class="math notranslate nohighlight">\(\hat{z} = 1 / \hat{\rho}\)</span>. For now we simply consider the estimation of the reciprocal of the evidence <span class="math notranslate nohighlight">\(\hat{\rho}\)</span> and discuss estimation of the marginal likelihood and Bayes factors later.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>As immediately realised by Neal (1994), this estimator can fail catastrophically since its variance can become very large and may not be finite. Review articles that consider a number of alternative methods to estimate the marginal likelihood have also found that the harmonic mean estimator is not robust and can be highly inaccurate, see <em>e.g.</em> <a class="reference external" href="http://adsabs.harvard.edu/pdf/2007ASPC..371..224C">Clyde (2007)</a> and <a class="reference external" href="https://arxiv.org/pdf/1111.1957.pdf">Friel (2012)</a>. To understand why the estimator can lead to extremely large variance we consider an importance sampling interpretation of the harmonic mean estimator.</p>
+</div>
+<div class="section" id="importance-sampling-interpretation">
+<h2>Importance sampling interpretation:<a class="headerlink" href="#importance-sampling-interpretation" title="Permalink to this headline"></a></h2>
+<p>The harmonic mean estimator can be interpreted as importance sampling.  Consider the reciprocal marginal likelihood, which may be expressed in terms of the prior and posterior by</p>
+<div class="math notranslate nohighlight">
+\[\rho = \int \,\text{d} \theta \: \frac{1}{\mathcal{L}(\theta)} \: \text{P}(\theta | y) = \int \,\text{d} \theta \: \frac{1}{z} \: \frac{\pi(\theta)}{\text{P}(\theta | y)} \: \text{P}(\theta | y).\]</div>
+<p>It is clear the estimator has an importance sampling interpretation where the importance sampling target distribution is the prior <span class="math notranslate nohighlight">\(\pi(\theta)\)</span>, while the sampling density is the posterior <span class="math notranslate nohighlight">\(\text{P}(\theta | y)\)</span>, in contrast to typical importance sampling scenarios.</p>
+<p>For importance sampling to be effective, one requires the sampling density to have fatter tails than the target distribution, <em>i.e.</em> to have greater probability mass in the tails of the distribution. Typically the prior has fatter tails than the posterior since the posterior updates our initial understanding of the underlying parameters <span class="math notranslate nohighlight">\(\theta\)</span> that are encoded in the prior, in the presence of new data <span class="math notranslate nohighlight">\(y\)</span>. For the harmonic mean estimator the importance sampling density (the posterior) typically does <strong>not</strong> have fatter tails than the target (the prior) and so importance sampling is not effective. This explains why the original harmonic mean estimator can be problematic. A number of variants of the original harmonic mean estimator have been intorduced in an attempt to address this issue.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../user_guide/install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="retargetd_harmonic_mean.html" class="btn btn-neutral float-right" title="Re-targeted Harmonic Mean Estimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

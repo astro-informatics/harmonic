@@ -26,7 +26,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Benchmark Examples" href="../examples/index.html" />
+    <link rel="next" title="Checkpointing" href="checkpointing.html" />
     <link rel="prev" title="Hyper-parameter Cross-validation" href="cross-validation_hyper-parameters.html" /> 
 </head>
 
@@ -53,40 +53,36 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/install.html">Installation</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learnt Container Function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Jupyter Notebooks</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="basic_usage.html">Basic usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="checkpointing.html">Checkpointing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Model Cross-validation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Import-packages">Import packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Define-Bayesian-posterior-function">Define Bayesian posterior function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Compute-samples-using-emcee">Compute samples using emcee</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Compute-evidence-using-harmonic">Compute evidence using harmonic</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Collating-samples-using-harmonic.chains-class">Collating samples using harmonic.chains class</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Select-and-train-the-machine-learning-model">Select and train the machine learning model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Compute-the-Bayesian-evidence">Compute the Bayesian evidence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Cross-validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Import-packages">Import packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-Bayesian-posterior-function">Define Bayesian posterior function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Compute-samples-using-emcee">Compute samples using emcee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Compute-evidence-using-harmonic">Compute evidence using harmonic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Collating-samples-using-harmonic.chains-class">Collating samples using harmonic.chains class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Select-and-train-the-machine-learning-model">Select and train the machine learning model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Compute-the-Bayesian-evidence">Compute the Bayesian evidence</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#Results">Results</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Numerical-integration">Numerical integration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Posterior-plot">Posterior plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Results">Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Numerical-integration">Numerical integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Posterior-triangle-plot">Posterior triangle plot</a></li>
 </ul>
 </li>
 </ul>
 </li>
-</ul>
-</li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Benchmark Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -107,7 +103,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Jupyter Notebooks</a> &raquo;</li>
       <li>Model Cross-validation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/tutorials/cross-validation_learnt_model.nblink.txt" rel="nofollow"> View page source</a>
@@ -757,32 +752,9 @@ nsigma = 0.7828266573455539
 </div>
 <p>As expected, the evidence computed by harmonic is close to that computed by numerical integration.</p>
 </div>
-<div class="section" id="Posterior-plot">
-<h3>Posterior plot<a class="headerlink" href="#Posterior-plot" title="Permalink to this headline"></a></h3>
-<p>Out of interest let’s also plot the posterior using these samples to see what we’re working with!</p>
-<p>We can plot the surface defined by the posterior evaluated over the grid.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">ln_posterior_grid</span><span class="p">,</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">,</span>
-                        <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)),</span>
-                        <span class="n">lnprob</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log P$&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorials_cross-validation_learnt_model_37_0.png" src="../_images/tutorials_cross-validation_learnt_model_37_0.png" />
-</div>
-</div>
-<p>Alternatively, we can plot using a triangle plot of joint and marginalised distibutions using <a class="reference external" href="https://getdist.readthedocs.io/">getdist</a>.</p>
+<div class="section" id="Posterior-triangle-plot">
+<h3>Posterior triangle plot<a class="headerlink" href="#Posterior-triangle-plot" title="Permalink to this headline"></a></h3>
+<p>Out of interest let’s also plot slices the posterior using these samples to see what we’re working with!</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
@@ -804,7 +776,7 @@ WARNING:root:fine_bins_2D not large enough for optimal density
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_cross-validation_learnt_model_39_1.png" src="../_images/tutorials_cross-validation_learnt_model_39_1.png" />
+<img alt="../_images/tutorials_cross-validation_learnt_model_36_1.png" src="../_images/tutorials_cross-validation_learnt_model_36_1.png" />
 </div>
 </div>
 </div>
@@ -816,7 +788,7 @@ WARNING:root:fine_bins_2D not large enough for optimal density
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="cross-validation_hyper-parameters.html" class="btn btn-neutral float-left" title="Hyper-parameter Cross-validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../examples/index.html" class="btn btn-neutral float-right" title="Benchmark Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="checkpointing.html" class="btn btn-neutral float-right" title="Checkpointing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Harmonic Mean Estimator" href="../background/Harmonic_Estimator/index.html" />
+    <link rel="next" title="Harmonic Mean Estimator" href="../background/Harmonic_Estimator/original_harmonic_mean.html" />
     <link rel="prev" title="Harmonic" href="../index.html" /> 
 </head>
 
@@ -55,18 +55,20 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Mathematics</span></p>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/index.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learnt Container Function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Jupyter Notebooks</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Benchmark Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/basic_usage.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -123,16 +125,7 @@
 </style>
 <div class="section" id="installation">
 <span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
-<p>We recommend installing <strong>harmonic</strong> through <a class="reference external" href="https://pypi.org">PyPi</a>, however in some cases one may wish to install <strong>harmonic</strong> directly from source, which is also relatively straightforward. In either case we strongly recommend creating a fresh conda environment to avoid any dependency conflicts,</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n harmonic_env <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8.0
-conda activate harmonic_env
-</pre></div>
-</div>
-<p>Once within a fresh environment <strong>harmonic</strong> may be installed by the following.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For installing from source a conda environment is required by the installation bash script, due to a pandoc dependency.</p>
-</div>
+<p>We recommend installing <strong>harmonic</strong> through <a class="reference external" href="https://pypi.org">PyPi</a>, however in some cases one may wish to install <strong>harmonic</strong> directly from source, which is also relatively straightforward.</p>
 <div class="section" id="quick-install-pypi">
 <h2>Quick Install (PyPi)<a class="headerlink" href="#quick-install-pypi" title="Permalink to this headline"></a></h2>
 <p>Install <strong>harmonic</strong> from PyPi with a single command</p>
@@ -147,7 +140,12 @@ conda activate harmonic_env
 </div>
 <div class="section" id="install-from-source-github">
 <h2>Install from Source (GitHub)<a class="headerlink" href="#install-from-source-github" title="Permalink to this headline"></a></h2>
-<p>Install <strong>harmonic</strong> from source by cloning the GitHub repository</p>
+<p>When installing from source we recommend working within an existing conda environment, or creating a fresh conda environment to avoid any dependency conflicts,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n harmonic_env <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8.0
+conda activate harmonic_env
+</pre></div>
+</div>
+<p>Once within a fresh environment <strong>harmonic</strong> may be installed by cloning the GitHub repository</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/astro-informatics/harmonic
 <span class="nb">cd</span> harmonic
 </pre></div>
@@ -160,6 +158,10 @@ conda activate harmonic_env
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For installing from source a conda environment is required by the installation bash script, which is recommended, due to a pandoc dependency.</p>
+</div>
 </div>
 </div>
 
@@ -168,7 +170,7 @@ conda activate harmonic_env
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="Harmonic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../background/Harmonic_Estimator/index.html" class="btn btn-neutral float-right" title="Harmonic Mean Estimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../background/Harmonic_Estimator/original_harmonic_mean.html" class="btn btn-neutral float-right" title="Harmonic Mean Estimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
