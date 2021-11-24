@@ -11,7 +11,7 @@ We recommend installing **harmonic** through `PyPi <https://pypi.org>`_, however
 
 Once within a fresh environment **harmonic** may be installed by the following.
 
-.. note:: For installing from source a conda environment is required by the installation bash script, due to a pandas dependency.
+.. note:: For installing from source a conda environment is required by the installation bash script, due to a pandoc dependency.
 
 Quick Install (PyPi)
 --------------------
