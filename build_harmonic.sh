@@ -20,4 +20,4 @@ conda install pandoc=1.19.2.1 -y
 # Build Harmonic
 
 python setup.py build_ext --inplace
-pip install .
+pip install -e .
