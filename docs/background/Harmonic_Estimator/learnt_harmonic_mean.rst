@@ -20,7 +20,7 @@ This estimator is optimal in the sense of having zero variance, which is clearly
 
 Recall that the target density must be normalised.  Hence, the optimal estimator given by the normalised posterior is not accessible in practice since it requires the marginal likelihood -- the very term we are attempting to estimate -- to be known.  While the optimal estimator therefore cannot be used in practice, it can nevertheless be used to inform the construction of other estimators based on alternative importance sampling target distributions.
 
-Learn the optimal sampling target
+Learning a suitable target distribution
 ===================================
 
 We propose learning the target distribution :math:`\varphi(\theta)` from samples of the posterior. Samples from the posterior can be split into training and evaluation (*cf.* test) sets. Machine learning (ML) techniques can then be applied to learn an approximate model of the normalised posterior from the training samples, with the constraint that the tails of the learnt target are narrower than the posterior, *i.e.*
