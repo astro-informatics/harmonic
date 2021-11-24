@@ -1,7 +1,7 @@
 **************************
 Namespaces
 **************************
-Automatically generated documentation for harmonic APIs. All functionality is accessible through a pip installation of the **Harmonic** package.
+Automatically generated documentation for **harmonic** APIs. All functionality is accessible through a pip installation of the **harmonic** package.
 
 .. tabs:: 
 	

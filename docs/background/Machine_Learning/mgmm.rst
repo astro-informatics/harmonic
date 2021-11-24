@@ -6,9 +6,9 @@ Consider the target distribution defined by the modified Gaussian mixture model
 
 for :math:`K` components, with centres :math:`\bar{\theta}_k` and covariances :math:`\Sigma_k^{-1}`, where the relative scale of each component is controlled by :math:`s_k` and the weights are specified by
 
-.. math:: w_k = \frac{\exp(z_k)}{\sum_{k^\prime=1}^K \exp(z_{k^\prime})}.
+.. math:: w_k = \frac{\exp(z_k)}{\sum_{k^\prime=1}^K \exp(z_{k^\prime})},
 
-Given :math:`K`, the posterior training samples can be clustered by :math:`K`-means.  The values of :math:`\bar{\theta}_k` and :math:`\Sigma_k` can then be computed by the samples in cluster :math:`k`.  The model is modified relative to the usual Gaussian mixture model in that the cluster mean and covariance are estimated from the samples of each cluster, while the relative cluster scale and weights are fitted.  Moreover, as before, a bespoke training approach is adopted tailored to the problem of learning an effective model for the learnt harmonic mean estimator.
+which in turn depend on weights :math:`z_k`. Given :math:`K`, the posterior training samples can be clustered by :math:`K`-means.  The values of :math:`\bar{\theta}_k` and :math:`\Sigma_k` can then be computed by the samples in cluster :math:`k`.  The model is modified relative to the usual Gaussian mixture model in that the cluster mean and covariance are estimated from the samples of each cluster, while the relative cluster scale and weights are fitted.  Moreover, as before, a bespoke training approach is adopted tailored to the problem of learning an effective model for the learnt harmonic mean estimator.
 
 To estimate the the weights :math:`z_k`, which in turn define the weights :math:`w_k`, and the relative scales :math:`s_k` we again set up an optimisation problem to minimise the variance of the learnt harmonic mean estimator, while also constraining it to be unbiased.  We also regularise the relative scale parameters, resulting in the following optimisation problem:
 
@@ -40,6 +40,5 @@ and
 
 respectively.
 
-The general procedure to learn the target distribution is the same as before: first, construct a normalised model; second, train the model by solving an optimisation problem to minimise the variance of the resulting learnt harmonic mean estimator. In this case we regularise the relative scale parameters and then solve by stochastic gradient descent. The number of clusters :math:`K` can be deteremined by cross-validation.
-
+The general procedure to learn the target distribution is the same as before: first, construct a normalised model; second, train the model by solving an optimisation problem to minimise the variance of the resulting learnt harmonic mean estimator. In this case we regularise the relative scale parameters and then solve by stochastic gradient descent. The number of clusters :math:`K` can be deteremined by cross-validation (or other methods).
 While the modified Gaussian mixture model can effectively handle multimodal distributions, alternative models are better suited to narrow curving posterior degeneracies.

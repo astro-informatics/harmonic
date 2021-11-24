@@ -2,16 +2,16 @@
     :target: https://github.com/astro-informatics/harmonic
 .. image:: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg
     :target: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml
-.. image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
-    :target: https://codecov.io/gh/astro-informatics/harmonic
-.. image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
-    :target: https://arxiv.org/abs/20XX.XXXXX
-.. image:: https://img.shields.io/badge/License-GPL-blue.svg
-    :target: http://perso.crans.org/besson/LICENSE.html
 .. image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
     :target: https://astro-informatics.github.io/harmonic/
+.. image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
+    :target: https://codecov.io/gh/astro-informatics/harmonic
 .. image:: https://badge.fury.io/py/harmonic.svg
     :target: https://badge.fury.io/py/harmonic
+.. image:: https://img.shields.io/badge/License-GPL-blue.svg
+    :target: http://perso.crans.org/besson/LICENSE.html
+.. image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
+    :target: https://arxiv.org/abs/20XX.XXXXX
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
@@ -27,6 +27,38 @@ Bayesian evidence or marginal likelihood. In practice one uses chains gathered s
 to train one of the Harmonic machine learning models which then stabilize the harmonic mean estimator. Basic usage is
 highlighted in this `Interactive Demo <https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/basic_usage.ipynb>`_. 
 
+Installation
+-------------
+
+Quick Install (PyPi)
+^^^^^^^^^^^^^^^^^^^^
+The harmonic package can be quickly be installed by running
+
+.. code-block:: bash
+    
+    pip install harmonic
+
+Install From Source (GitHub)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The harmonic package can also be installed from source by running
+
+.. code-block:: bash
+
+    git clone https://github.com/astro-informatics/harmonic
+    cd harmonic
+
+and running the install script, within the root directory, with one command 
+
+.. code-block:: bash
+
+    bash build_harmonic.sh
+
+To check the install has worked correctly run the unit tests with 
+
+.. code-block:: bash
+
+    pytest 
+    
 Documentation
 -------------
 
