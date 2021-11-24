@@ -19,44 +19,45 @@ harmonic
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
 
-**Python package to efficiently compute the Learnt Harmonic Mean estimator of the Bayesian evidence**
+**Python package to efficiently compute the learnt harmonic mean estimator of the Bayesian evidence**
 
 
-Harmonic is an open source and fully documented python implementation of the Learnt Harmonic Mean estimator for the 
-Bayesian evidence or marginal likelihood. In practice one uses chains gathered separately through MCMC sampling software 
-to train one of the Harmonic machine learning models which then stabilize the harmonic mean estimator.
+``harmonic`` is an open source, well tested and documented Python implementation of the *learnt harmonic mean estimator* (`McEwen et al. 2021 <TBC>`_) to compute the marginal likelihood (Bayesian evidence), required for Bayesian model selection.
+
+While ``harmonic`` requires only posterior samples, and so is agnostic to the technique used to perform Markov chain Monte Carlo (MCMC) sampling, ``harmonic`` works exceptionally well with MCMC sampling techniques that naturally provide samples from multiple chains by their ensemble nature, such as affine invariant ensemble samplers.  We therefore advocate use of `harmonic` with the popular `emcee <https://github.com/dfm/emcee>`_ code implementing the affine invariant sampler of `Goodman & Weare (2010) <https://cims.nyu.edu/~weare/papers/d13.pdf>`_.
+
+Basic usage is highlighted in this `interactive demo <https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/basic_usage.ipynb>`_. 
 
 Documentation
 -------------
 
-See comprehensive documentation at `Harmonic Documentation <https://astro-informatics.github.io/harmonic/>`_.
+Comprehensive  `documentation for harmonic <https://astro-informatics.github.io/harmonic/>`_ is available.
 
-Attribution
------------
+Please cite `McEwen et al. (2021) <TBC>`_ if this code package has been of use in your project. 
 
-Please cite McEwen et al 2021 if this code package has been of use in any project. A link will be provided 
-shortly upon submission. A BibTeX entry for the paper is:
+A BibTeX entry for the paper is:
 
 .. code-block:: 
 
      @article{harmonic, 
-        author = {{McEwen}, J.~D. and {Wallis}, C.~G.~R. and {Price}, M.~A.},
-         title = {Machine learning assisted marginal likelihood estimation: 
-                 learnt harmonic mean estimator},
-       journal = {Bayesian Analysis in prep},
+        author = {Jason~D.~McEwen and Christopher~G.~R.~Wallis and Matthew~A.~Price and Matthew~M.~Docherty},
+         title = {Machine learning assisted Bayesian model comparison: learnt harmonic mean estimator},
+       journal = {ArXiv},
+        eprint = {arXiv:XXXX.XXXX},
           year = 2021
      }
 
 License
 -------
 
-Harmonic is released under the GPL-3 license (see `LICENSE.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE.txt>`_), subject to 
+``harmonic`` is released under the GPL-3 license (see `LICENSE.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE.txt>`_), subject to 
 the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro-informatics/harmonic/blob/main/LICENSE_EXT.txt>`_)
 
 .. code-block::
 
      harmonic
-     Copyright (C) 2021 Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & contributors
+     Copyright (C) 2021 Jason D. McEwen, Christopher G. R. Wallis, 
+     Matthew A. Price, Matthew M. Docherty & contributors
 
      This program is released under the GPL-3 license (see LICENSE.txt), 
      subject to a non-commercial use condition (see LICENSE_EXT.txt).

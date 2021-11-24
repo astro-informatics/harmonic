@@ -1,5 +1,5 @@
 ***********************
-Harmonic Mean Estimator
+Harmonic mean estimator
 ***********************
 
 The harmonic mean estimator was first proposed by `Newton \& Raftery (1994) <https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x>`_ who showed that the marginal likelihood :math:`z` can be estimated from the harmonic mean of the likelihood, given posterior samples. This follows by considering the expectation of the reciprocal of the likelihood with respect to the posterior distribution:
@@ -19,7 +19,7 @@ where :math:`N` specifies the number of samples :math:`\theta_i` drawn from the 
 .. warning:: As immediately realised by Neal (1994), this estimator can fail catastrophically since its variance can become very large and may not be finite. Review articles that consider a number of alternative methods to estimate the marginal likelihood have also found that the harmonic mean estimator is not robust and can be highly inaccurate, see *e.g.* `Clyde (2007) <http://adsabs.harvard.edu/pdf/2007ASPC..371..224C>`_ and `Friel (2012) <https://arxiv.org/pdf/1111.1957.pdf>`_. To understand why the estimator can lead to extremely large variance we consider an importance sampling interpretation of the harmonic mean estimator.
 
 
-Importance sampling interpretation:
+Importance sampling interpretation
 ===================================
 
 The harmonic mean estimator can be interpreted as importance sampling.  Consider the reciprocal marginal likelihood, which may be expressed in terms of the prior and posterior by
