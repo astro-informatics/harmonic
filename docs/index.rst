@@ -1,4 +1,4 @@
-|GitHub| |Build Status| |CodeCov| |ArXiv| |GPL license| |Docs| |PyPI|
+|GitHub| |Build Status| |Docs| |CodeCov| |PyPI| |GPL license| |ArXiv|
 
 .. |GitHub| image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
    :target: https://github.com/astro-informatics/harmonic
@@ -24,15 +24,21 @@
 Harmonic
 ========
 
-The harmonic mean is an infamous estimator for the Bayesian evidence, first proposed by `Newton and Raftery (1994)  <https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x>`_. Whilst the harmonic mean estimator is asymptotically consistent it can fail catastrophically, depending on how one configures the estimator. By integrating bespoke machine learning techniques, **Harmonic** overcomes this hurdle by learning from disperate samples of the posterior. Our learnt estimator is agnostic to the sampler, provides accurate estimates of the variance and variance in the variance, and can scale into thousands of dimensions.
+The harmonic mean is an infamous estimator for the Bayesian evidence, first proposed by `Newton and Raftery (1994)  <https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x>`_. Whilst the harmonic mean estimator is asymptotically consistent it can fail catastrophically, depending on how one configures the estimator. By integrating bespoke machine learning techniques, **harmonic** overcomes this hurdle by learning from disperate samples of the posterior. Our learnt estimator is agnostic to the sampler, provides accurate estimates of the variance and variance in the variance, and can scale into thousands of dimensions.
 
 How to Use This Guide
 ---------------------
-To get started you will first need to follow the :ref:`installation guide <Installation>`, following which it is recommended you run the testing suite to ensure your installation has been successful. Next, we have provided a :ref:`mini-tutorial <Jupyter Notebooks>`, comprised of 4 interactive notebooks, which will provide a step-by-step guide to get Harmonic up and running for your particular application. Finally, to see how Harmonic can be applied to various popular benchmark problems one should look to the :ref:`benchmark examples <Benchmark Examples>` page. An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
+To get started you will first need to follow the :ref:`installation guide <Installation>`, following which it is recommended you run the testing suite to ensure your installation has been successful. Next, we have provided a :ref:`mini-tutorial <Jupyter Notebooks>`, comprised of 4 interactive notebooks, which will provide a step-by-step guide to get **harmonic** up and running for your particular application. Finally, to see how **harmonic** can be applied to various popular benchmark problems one should look to the :ref:`benchmark examples <Benchmark Examples>` page. An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
 
 Basic Usage
 -----------
-Suppose you have collected many samples, perhaps through `emcee <https://emcee.readthedocs.io/en/stable/>`_ or another sampler, from some generic :math:`n`-dimensional posterior and *a posteriori* wish to compute the evidence which we will assume is non-analytic, you would do something like:
+First you will want to install **harmonic**, which is as simple as running:
+
+.. code-block:: bash
+   
+   pip install harmonic
+
+Now, suppose you have collected many samples, perhaps through `emcee <https://emcee.readthedocs.io/en/stable/>`_ or another sampler, from some generic :math:`n`-dimensional posterior and *a posteriori* wish to compute the evidence which we will assume is non-analytic, you would do something like:
 
 .. code-block:: python
       
@@ -104,13 +110,6 @@ Referencing
    :caption: API
 
    api/index
-
-.. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Changelog
-
-   api/changes
 
 
 

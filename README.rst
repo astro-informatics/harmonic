@@ -27,6 +27,38 @@ Bayesian evidence or marginal likelihood. In practice one uses chains gathered s
 to train one of the Harmonic machine learning models which then stabilize the harmonic mean estimator. Basic usage is
 highlighted in this `Interactive Demo <https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/basic_usage.ipynb>`_. 
 
+Installation
+-------------
+
+Quick Install (PyPi)
+^^^^^^^^^^^^^^^^^^^^
+The harmonic package can be quickly be installed by running
+
+.. code-block:: bash
+    
+    pip install harmonic
+
+Install From Source (GitHub)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The harmonic package can also be installed from source by running
+
+.. code-block:: bash
+
+    git clone https://github.com/astro-informatics/harmonic
+    cd harmonic
+
+and running the install script, within the root directory, with one command 
+
+.. code-block:: bash
+
+    bash build_harmonic.sh
+
+To check the install has worked correctly run the unit tests with 
+
+.. code-block:: bash
+
+    pytest 
+    
 Documentation
 -------------
 

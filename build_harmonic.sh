@@ -7,7 +7,7 @@ pip install -q -r requirements/requirements-core.txt
 echo -ne 'Building Dependencies... #####               (25%)\r'
 pip install -q -r requirements/requirements-examples.txt
 echo -ne 'Building Dependencies... ##########          (50%)\r'
-pip install -q -r requirements/requirements-extra.txt
+pip install -q -r requirements/requirements-test.txt
 echo -ne 'Building Dependencies... ###############     (75%)\r'
 pip install -q -r requirements/requirements-docs.txt
 echo -ne 'Building Dependencies... ####################(100%)\r'
@@ -20,3 +20,4 @@ conda install pandoc=1.19.2.1 -y
 # Build Harmonic
 
 python setup.py build_ext --inplace
+pip install .
