@@ -83,10 +83,13 @@ Referencing
 .. toctree::
    :hidden:
    :maxdepth: 2
-   :caption: Mathematics
+   :caption: Background
 
-   background/Harmonic_Estimator/index
+   background/Harmonic_Estimator/original_harmonic_mean
+   background/Harmonic_Estimator/retargetd_harmonic_mean
+   background/Harmonic_Estimator/learnt_harmonic_mean
    background/Machine_Learning/index
+   background/Bayes_Factors/bayes_factors
 
 
 .. toctree::
@@ -94,15 +97,11 @@ Referencing
    :maxdepth: 2
    :caption: Tutorials
    
-   tutorials/index
+   tutorials/basic_usage.nblink
+   tutorials/cross-validation_hyper-parameters.nblink
+   tutorials/cross-validation_learnt_model.nblink
+   tutorials/checkpointing.nblink
 
-   
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: Examples
-
-   examples/index
 
 .. toctree::
    :hidden:

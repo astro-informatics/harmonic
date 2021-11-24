@@ -29,6 +29,7 @@ highlighted in this `Interactive Demo <https://colab.research.google.com/github/
 
 Installation
 -------------
+The following are brief installation steps, for more details see the `installation documentation <https://astro-informatics.github.io/harmonic/user_guide/install.html>`_.
 
 Quick Install (PyPi)
 ^^^^^^^^^^^^^^^^^^^^
