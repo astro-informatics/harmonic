@@ -1,5 +1,5 @@
 ****************************************
-Learning an Optimal Target Distribution
+Learning an optimal target distribution
 ****************************************
 While we have described estimators to compute the marginal likelihood and Bayes factors based on a learnt target distribution :math:`\varphi(\theta)`, we have yet to consider the critical task of learning the target distribution.  As discussed, the ideal target distribution is the posterior itself.  However, since the target must be normalised, use of the posterior would require knowledge of the marginal likelihood -- precisely the quantity that we attempting to estimate.  Instead,
 one can learn an approximation of the posterior that is normalised.  The approximation itself does not need to be highly accurate.  More critically, the learned target approximating the posterior must exhibit narrower tails than the posterior to avoid the problematic scenario of the original harmonic mean that can result in very large variance.

@@ -26,11 +26,11 @@ Harmonic
 
 The harmonic mean is an infamous estimator for the Bayesian evidence, first proposed by `Newton and Raftery (1994)  <https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x>`_. Whilst the harmonic mean estimator is asymptotically consistent it can fail catastrophically, depending on how one configures the estimator. By integrating bespoke machine learning techniques, **harmonic** overcomes this hurdle by learning from disperate samples of the posterior. Our learnt estimator is agnostic to the sampler, provides accurate estimates of the variance and variance in the variance, and can scale into thousands of dimensions.
 
-How to Use This Guide
+How to use this guide
 ---------------------
 To get started you will first need to follow the :ref:`installation guide <Installation>`, following which it is recommended you run the testing suite to ensure your installation has been successful. Next, we have provided a :ref:`mini-tutorial <Jupyter Notebooks>`, comprised of 4 interactive notebooks, which will provide a step-by-step guide to get **harmonic** up and running for your particular application. Finally, to see how **harmonic** can be applied to various popular benchmark problems one should look to the :ref:`benchmark examples <Benchmark Examples>` page. An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
 
-Basic Usage
+Basic usage
 -----------
 First you will want to install **harmonic**, which is as simple as running:
 

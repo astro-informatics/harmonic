@@ -1,5 +1,5 @@
 **************
-Bayes Factors
+Bayes factors
 **************
 
 We have so far considered the estimation of the reciprocal marginal likelihood and related variances only.  However it is the marginal likelihood itself (not its reciprocal), or the Bayes factors computed to compare two models, that is typically of direct interest.  We therefore consider how to compute these quantities of interest and a measure of their variance.

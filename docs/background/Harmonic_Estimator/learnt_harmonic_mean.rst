@@ -1,6 +1,6 @@
 
 ******************************
-Learnt Harmonic Mean Estimator
+Learnt harmonic mean estimator
 ******************************
 
 It is well-known that the original harmonic mean estimator can fail catastrophically since the variance of the estimator may be become very large. However, this issue can be resolved by introducing an alternative (normalised) target distribution :math:`\varphi(\theta)` (`Gelfand and Dey, 1994 <https://www.jstor.org/stable/pdf/2346123.pdf?casa_token=vIU0gg6sEy4AAAAA:21VkKf6fPFzhg2KlajF0DsILPRn4_muIES1RyGW0xaUGaPijW-YPOl5gxZIFPbadT0PeYbgcLAnuqlqSJCalFgu8W-wyrglxZCMMqzptM2sGkcG0hloG>`_), yielding what we term here the *re-targeted harmonic mean estimator*. From the importance sampling interpretation of the harmonic mean estimator, the re-targeted estimator follows by replacing the importance sampling target of the prior :math:`\pi(\theta)` with the target :math:`\varphi(\theta)`, where the posterior :math:`P(\theta | y)` plays the role of the importance sampling density.
@@ -20,7 +20,7 @@ This estimator is optimal in the sense of having zero variance, which is clearly
 
 Recall that the target density must be normalised.  Hence, the optimal estimator given by the normalised posterior is not accessible in practice since it requires the marginal likelihood -- the very term we are attempting to estimate -- to be known.  While the optimal estimator therefore cannot be used in practice, it can nevertheless be used to inform the construction of other estimators based on alternative importance sampling target distributions.
 
-Learned the optimal sampling target
+Learn the optimal sampling target
 ===================================
 
 We propose learning the target distribution :math:`\varphi(\theta)` from samples of the posterior. Samples from the posterior can be split into training and evaluation (*cf.* test) sets. Machine learning (ML) techniques can then be applied to learn an approximate model of the normalised posterior from the training samples, with the constraint that the tails of the learnt target are narrower than the posterior, *i.e.*

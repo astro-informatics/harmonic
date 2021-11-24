@@ -4,7 +4,7 @@ Installation
 ============
 We recommend installing **harmonic** through `PyPi <https://pypi.org>`_, however in some cases one may wish to install **harmonic** directly from source, which is also relatively straightforward. 
 
-Quick Install (PyPi)
+Quick install (PyPi)
 --------------------
 Install **harmonic** from PyPi with a single command
 
@@ -21,7 +21,7 @@ Check that the package has installed by running
 and locate harmonic.
 
 
-Install from Source (GitHub)
+Install from source (GitHub)
 ----------------------------
 
 When installing from source we recommend working within an existing conda environment, or creating a fresh conda environment to avoid any dependency conflicts,
