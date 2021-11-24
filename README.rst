@@ -25,13 +25,13 @@
 ``harmonic`` is an open source and fully documented python implementation of the Learnt Harmonic Mean estimator for the 
 Bayesian evidence or marginal likelihood. In practice one uses chains gathered separately through MCMC sampling software 
 to train one of the Harmonic machine learning models which then stabilize the harmonic mean estimator. Basic usage is
-highlighted in this `Interactive Demo <https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/basic_usage.ipynb>`_. 
+highlighted in this `interactive demo <https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/basic_usage.ipynb>`_. 
 
 Installation
 -------------
 The following are brief installation steps, for more details see the `installation documentation <https://astro-informatics.github.io/harmonic/user_guide/install.html>`_.
 
-Quick Install (PyPi)
+Quick install (PyPi)
 ^^^^^^^^^^^^^^^^^^^^
 The harmonic package can be quickly be installed by running
 
@@ -39,7 +39,7 @@ The harmonic package can be quickly be installed by running
     
     pip install harmonic
 
-Install From Source (GitHub)
+Install from source (GitHub)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The harmonic package can also be installed from source by running
 
