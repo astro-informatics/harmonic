@@ -71,10 +71,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">Namespaces</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/changes.html">GitHub History</a></li>
-</ul>
 
         </div>
       </div>
@@ -126,7 +122,7 @@
 </style>
 <div class="section" id="benchmark-examples">
 <h1>Benchmark Examples<a class="headerlink" href="#benchmark-examples" title="Permalink to this headline"></a></h1>
-<p>To demonstrate the efficacy of <strong>Harmonic</strong> we have included a variety of common evidence estimation examples, where the posterior function is particularly pathological. These examples are somewhat standard benchmarks, and in many cases have historically highlight the failings of the vanilla harmonic mean estimator. Complexity increases from left to right, culminating in the logistic regression and non-nested linear regressions of the Pima Indian and Radiata Pine benchmarks respectively. See <a class="reference external" href="https://arxiv.org/pdf/1111.1957.pdf">Friel and Wyse (2011)</a> for an extensive review of various estimators applied to these benchmarks.</p>
+<p>To demonstrate the efficacy of <strong>harmonic</strong> we have included a variety of common evidence estimation examples, where the posterior function is particularly pathological. These examples are somewhat standard benchmarks, and in many cases have historically highlight the failings of the vanilla harmonic mean estimator. Complexity increases from left to right, culminating in the logistic regression and non-nested linear regressions of the Pima Indian and Radiata Pine benchmarks respectively. See <a class="reference external" href="https://arxiv.org/pdf/1111.1957.pdf">Friel and Wyse (2011)</a> for an extensive review of various estimators applied to these benchmarks.</p>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Gaussian</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Rosenbrock</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Rastrigin</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Normal Gamma</button><button aria-controls="panel-0-0-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-4" name="0-4" role="tab" tabindex="-1">Radiata Pine</button><button aria-controls="panel-0-0-5" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-5" name="0-5" role="tab" tabindex="-1">Pima Indian</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><p>A standard 2D Gaussian is a simple example often used for basic benchmarking and code validation. The 2D Gaussian posterior configuration here is composed of a likelihood defined as</p>
 <div class="math notranslate nohighlight">

@@ -68,10 +68,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api/index.html">Namespaces</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/changes.html">GitHub History</a></li>
-</ul>
 
         </div>
       </div>
@@ -121,7 +117,7 @@
     text-align: unset;
 }
 </style>
-<p>MCMC algorithms that are typically used to sample the posterior distribution result in correlated samples. By suitably thinning the MCMC chain (discarding all but every <span class="math notranslate nohighlight">\(t^{\text{th}}\)</span> sample), however, samples that are uncorrelated can be obtained. In this subsection we present estimators for the reciprocal marginal likelihod and its variance under the assumption of uncorrelated samples from the posterior.</p>
+<p>MCMC algorithms that are typically used to sample the posterior distribution result in correlated samples. By suitably thinning the MCMC chain (discarding all but every <span class="math notranslate nohighlight">\(t^{\text{th}}\)</span> sample), however, samples that are uncorrelated can be obtained. In this discussion we present estimators for the reciprocal marginal likelihod and its variance under the assumption of uncorrelated samples from the posterior.</p>
 <p>Consider the harmonic moments</p>
 <div class="math notranslate nohighlight">
 \[\mu_n = \mathbb{E}_{\text{P}(\theta | y)} \Biggl[\biggl(\frac{\varphi(\theta)}{\mathcal{L}(\theta) \pi(\theta)}\biggr)^n \Biggr],\]</div>
@@ -131,8 +127,8 @@
 <p>We make use of the following harmonic moment estimators computed from samples of the posterior:</p>
 <div class="math notranslate nohighlight">
 \[\hat{\mu}_n = \frac{1}{N} \sum_{i=1}^N \biggl(\frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)}\biggr)^n,\quad \theta_i \sim \text{P}(\theta | y),\]</div>
-<p>which are unbiased estimators of <span class="math notranslate nohighlight">\(\mu_n\)</span>, i.e. <span class="math notranslate nohighlight">\(\mathbb{E}(\hat{\mu}_n) = \mu_n\)</span>.</p>
-<p>The reciprocal marginal likelihood can then be estimated from samples of the posterior by</p>
+<p>which are unbiased estimators of <span class="math notranslate nohighlight">\(\mu_n\)</span>, i.e. <span class="math notranslate nohighlight">\(\mathbb{E}(\hat{\mu}_n) = \mu_n\)</span>.
+The reciprocal marginal likelihood can then be estimated from samples of the posterior by</p>
 <div class="math notranslate nohighlight">
 \[\hat{\rho} = \hat{\mu}_1 = \frac{1}{N} \sum_{i=1}^N \frac{\varphi(\theta_i)}{\mathcal{L}(\theta_i) \pi(\theta_i)}, \quad \theta_i \sim \text{P}(\theta | y).\]</div>
 <p>The mean and variance of the estimator read, respecitvely,</p>
@@ -158,7 +154,7 @@
 <div class="math notranslate nohighlight">
 \[\text{var}(\hat{\sigma}^2) = \frac{1}{(N-1)^2} \biggl[ \frac{(N - 1)^2}{N^3} \mu_4^\prime - \frac{(N-1)(N-3)}{N^3} \mu_2^\prime{}^2 \biggr],\]</div>
 <p>where <span class="math notranslate nohighlight">\(\mu_n^\prime\)</span> are central moments, which follows by a well-known result for the variance of a sample variance, see <a class="reference external" href="https://link.springer.com/chapter/10.1007/978-3-642-57489-4_66">Rose (2002)</a> page 264. An unbiased estimator of <span class="math notranslate nohighlight">\(\text{var}(\hat{\sigma}^2)\)</span> can be constructioned from h-statistics, which provide unbiased estimators of central moments.</p>
-<p>While we have presented general estimators for uncorrelated samples here, generating uncorrelated samples requires thinning the MCMC chain, which is highly inefficient. It is generally recognised that thinning should be avoided when possible since it reduces the precision with which summaries of the MCMC chain can be computed. One may also consider estimators that do not require uncorrelated samples and so can make use of considerably more MCMC samples of the posterior.</p>
+<p>While we have presented general estimators for uncorrelated samples here, generating uncorrelated samples requires thinning the MCMC chain, which is highly inefficient. It is generally recognised that thinning should be avoided when possible since it reduces the precision with which summaries of the MCMC chain can be computed (<a class="reference external" href="https://besjournals.onlinelibrary.wiley.com/doi/pdfdirect/10.1111/j.2041-210X.2011.00131.x">Link and Eaton, 2012</a>). One may also consider estimators that do not require uncorrelated samples and so can make use of considerably more MCMC samples of the posterior.</p>
 
 
            </div>

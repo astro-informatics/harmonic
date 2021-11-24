@@ -18,7 +18,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/tabs.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script src="../_static/dark_mode_js/default_light.js"></script>
         <script src="../_static/dark_mode_js/theme_switcher.js"></script>
@@ -51,8 +50,8 @@
               <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-install-pypi">Quick Install (PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-from-source-github">Install from Source (GitHub)</a></li>
 </ul>
 </li>
 </ul>
@@ -72,10 +71,6 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">Namespaces</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/changes.html">GitHub History</a></li>
 </ul>
 
         </div>
@@ -128,86 +123,43 @@
 </style>
 <div class="section" id="installation">
 <span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
-<p>We recommend installing <strong>Harmonic</strong> through <a class="reference external" href="https://pypi.org">PyPi</a>, however in some cases one may wish to install <strong>Harmonic</strong> directly from source, which is also relatively straightforward. In either case we recommend creating a fresh conda environment to avoid any dependency conflicts</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n harmonic <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8.0
-conda activate harmonic
+<p>We recommend installing <strong>harmonic</strong> through <a class="reference external" href="https://pypi.org">PyPi</a>, however in some cases one may wish to install <strong>harmonic</strong> directly from source, which is also relatively straightforward. In either case we strongly recommend creating a fresh conda environment to avoid any dependency conflicts,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n harmonic_env <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8.0
+conda activate harmonic_env
 </pre></div>
 </div>
-<p>Once within a fresh environment Harmonic may be installed by the following.</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">PyPi</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">GitHub</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install harmonic
+<p>Once within a fresh environment <strong>harmonic</strong> may be installed by the following.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For installing from source a conda environment is required by the installation bash script, due to a pandoc dependency.</p>
+</div>
+<div class="section" id="quick-install-pypi">
+<h2>Quick Install (PyPi)<a class="headerlink" href="#quick-install-pypi" title="Permalink to this headline"></a></h2>
+<p>Install <strong>harmonic</strong> from PyPi with a single command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install harmonic
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/astro-informatics/harmonic
-<span class="nb">cd</span> harmonic
-python setup.py build_ext --inplace
+<p>Check that the package has installed by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip list
 </pre></div>
 </div>
-<p>Alternatively, if one wishes to inspect code coverage they should run</p>
+<p>and locate harmonic.</p>
+</div>
+<div class="section" id="install-from-source-github">
+<h2>Install from Source (GitHub)<a class="headerlink" href="#install-from-source-github" title="Permalink to this headline"></a></h2>
+<p>Install <strong>harmonic</strong> from source by cloning the GitHub repository</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/astro-informatics/harmonic
 <span class="nb">cd</span> harmonic
-python setup.py build_ext --inplace --define CYTHON_TRACE
 </pre></div>
 </div>
-<p>To import Harmonic from outside of the install directory one should run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e .
+<p>and running the install script, within the root directory, with one command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash build_harmonic.sh
 </pre></div>
 </div>
-<p>from the root directory.</p>
-</div></div>
-<div class="section" id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline"></a></h2>
-<p>The <strong>Harmonic</strong> test suite may be executed by running</p>
+<p>To check the install has worked correctly run the unit tests with</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
 </pre></div>
 </div>
-<p>or alternatively with code-coverage by running</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest --cov-report term --cov<span class="o">=</span>harmonic --cov-config<span class="o">=</span>.coveragerc
-</pre></div>
-</div>
-</div>
-<div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
-<p>This project has a variety of dependencies which are managed <em>via</em> <a class="reference external" href="https://pypi.org">PyPi</a>. Some dependencies are required for <strong>Harmonic</strong> core functionality, others are required only for the testing suites and documentation. To install project dependencies simply run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash getting_started.sh
-</pre></div>
-</div>
-<p>from the project root directory. In the requirements directory one can find a breakdown of requirements, where [-core] installs core requirementes, [-examples] installs example requirements, [-docs] installs documentation requirements and [-extra] installs requirements for coverage tests. Below is a categorical list of each dependencies.</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">Harmonic Core</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">Examples</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">Test Suite</button><button aria-controls="panel-1-1-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-3" name="1-3" role="tab" tabindex="-1">Notebooks</button><button aria-controls="panel-1-1-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-4" name="1-4" role="tab" tabindex="-1">Documentation</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><ul class="simple">
-<li><p>python (&gt;=3.8.12)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/scikit-learn/">scikit-learn</a> (&gt;=0.22.2.post1)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> (&gt;=1.4.1)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/colorlog/">colorlog</a> (&gt;=4.1.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/PyYAML/">pyyaml</a> (&gt;=3.12)</p></li>
-</ul>
-</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><ul class="simple">
-<li><p><a class="reference external" href="https://pypi.org/project/emcee/">emcee</a> (&gt;=3.1.1)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/matplotlib/">matplotlib</a> (&gt;=3.4.3)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/corner/">corner</a> (&gt;=2.2.1)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/GetDist/">getdist</a> (&gt;=1.3.2)</p></li>
-</ul>
-</div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><ul class="simple">
-<li><p><a class="reference external" href="https://pypi.org/project/pytest-cov/">pytest-cov</a> (&gt;=3.0.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/codecov/">codecov</a> (&gt;=2.1.12)</p></li>
-</ul>
-</div><div aria-labelledby="tab-1-1-3" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-3" name="1-3" role="tabpanel" tabindex="0"><ul class="simple">
-<li><p><a class="reference external" href="https://pypi.org/project/ipython/">ipython</a> (&gt;=7.16.1)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/jupyter/">jupyter</a> (&gt;=1.0.0)</p></li>
-</ul>
-</div><div aria-labelledby="tab-1-1-4" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-4" name="1-4" role="tabpanel" tabindex="0"><ul class="simple">
-<li><p><a class="reference external" href="https://pypi.org/project/Sphinx/">sphinx</a> (&gt;=4.2.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/nbsphinx-link/">nbsphinx-link</a> (&gt;=1.3.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/pandoc/">pandoc</a> (&gt;=1.19.2.1)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/sphinx-rtd-theme/">sphinx-rtd-theme</a> (&gt;=1.0.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/sphinx-toolbox/">sphinx-toolbox</a> (&gt;=2.15.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/sphinx-tabs/">sphinx-tabs</a> (&gt;=3.2.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/sphinx-rtd-dark-mode/">sphinx-rtd-dark-mode</a> (&gt;=1.2.4)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/sphinxcontrib-bibtex/">sphinxcontrib-bibtex</a> (&gt;=2.4.1)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/sphinx-git/">sphinx-git</a> (&gt;=11.0.0)</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/sphinxcontrib-texfigure/">sphinxcontrib-texfigure</a> (&gt;=0.1.3)</p></li>
-</ul>
-</div></div>
 </div>
 </div>
 

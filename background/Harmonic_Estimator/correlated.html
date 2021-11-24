@@ -68,10 +68,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api/index.html">Namespaces</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/changes.html">GitHub History</a></li>
-</ul>
 
         </div>
       </div>
@@ -122,7 +118,7 @@
 }
 </style>
 <p>We present an estimator of the reciprocal marginal likelihood, an estimate of the variance of this estimator, and its variance. These estimators make use of correlated samples in order to avoid the loss of efficiency that results from thinning an MCMC chain.</p>
-<p>We propose running a number of independent MCMC chains and using all of the correlated samples within a given chain. A number of modern MCMC sampling techniques, such as affine invariance ensemble samplers naturally provide samples from multiple chains by their ensemble nature. Moreoever, excellent software implementations are readily available, such as the <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> code, which provides an implementation of the affine invariance ensember samplers proposed by <a class="reference external" href="https://msp.org/camcos/2010/5-1/camcos-v5-n1-p04-s.pdf">Goodman (2010)</a>. Alternatively, if only a single large chain is available then this can be broken into separate blocks, which are (approximately) indpendent for a suitably long block length. Subsequently, we use the terminology chains throughout to refer to both scenarios of running multiple MCMC chains or separating a single chain in blocks.</p>
+<p>We propose running a number of independent MCMC chains and using all of the correlated samples within a given chain. A number of modern MCMC sampling techniques, such as affine invariance ensemble samplers, naturally provide samples from multiple chains by their ensemble nature. Moreoever, excellent software implementations are readily available, such as the <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> code, which provides an implementation of the affine invariance ensember samplers proposed by <a class="reference external" href="https://msp.org/camcos/2010/5-1/camcos-v5-n1-p04-s.pdf">Goodman and Weare (2010)</a>. Alternatively, if only a single large chain is available then this can be broken into separate blocks, which are (approximately) indpendent for a suitably long block length. Subsequently, we use the terminology chains throughout to refer to both scenarios of running multiple MCMC chains or separating a single chain in blocks.</p>
 <p>Consider <span class="math notranslate nohighlight">\(C\)</span> chains of samples, indexed by <span class="math notranslate nohighlight">\(j = 1, 2, \ldots, C\)</span>, with chain <span class="math notranslate nohighlight">\(j\)</span> containing <span class="math notranslate nohighlight">\(N_j\)</span> samples.  The <span class="math notranslate nohighlight">\(i^{\text{th}}\)</span> sample of chain <span class="math notranslate nohighlight">\(j\)</span> is denoted <span class="math notranslate nohighlight">\(\theta_{ij}\)</span>.  Since the chain of interest is typically clear from the context, for notational brevity we drop the chain index from the samples, <em>i.e.</em> we denotate samples by <span class="math notranslate nohighlight">\(\theta_i\)</span> where the chain of interest is inferred from the context.</p>
 <p>An estimator of the reciprocal marginal likelihood can be computed from each independent chain by</p>
 <div class="math notranslate nohighlight">
