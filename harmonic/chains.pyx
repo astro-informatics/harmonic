@@ -485,7 +485,7 @@ class Chains:
             # print("chain = {}, start_indices_new = {}"
             #.format(i_chain, start_indices_new))
         
-        self.start_indices = start_indices_new
+        self.start_indices = start_indices_new.tolist()
         self.nchains = nblocks
         # print("nsamples_per_chain = {}".format(self.nsamples_per_chain()))
         
