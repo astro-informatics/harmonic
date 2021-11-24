@@ -2,16 +2,16 @@
     :target: https://github.com/astro-informatics/harmonic
 .. image:: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg
     :target: https://github.com/astro-informatics/harmonic/actions/workflows/python.yml
-.. image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
-    :target: https://codecov.io/gh/astro-informatics/harmonic
-.. image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
-    :target: https://arxiv.org/abs/20XX.XXXXX
-.. image:: https://img.shields.io/badge/License-GPL-blue.svg
-    :target: http://perso.crans.org/besson/LICENSE.html
 .. image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
     :target: https://astro-informatics.github.io/harmonic/
+.. image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
+    :target: https://codecov.io/gh/astro-informatics/harmonic
 .. image:: https://badge.fury.io/py/harmonic.svg
     :target: https://badge.fury.io/py/harmonic
+.. image:: https://img.shields.io/badge/License-GPL-blue.svg
+    :target: http://perso.crans.org/besson/LICENSE.html
+.. image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
+    :target: https://arxiv.org/abs/20XX.XXXXX
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
