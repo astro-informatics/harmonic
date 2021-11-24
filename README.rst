@@ -82,7 +82,7 @@ A BibTeX entry for the paper is:
 .. code-block:: 
 
      @article{harmonic, 
-        author = {Jason~.D.~McEwen and Christopher~G.~R.~Wallis and Matthew~A.~Price and Matthew~M.~Docherty},
+        author = {Jason.D.~McEwen and Christopher~G.~R.~Wallis and Matthew~A.~Price and Matthew~M.~Docherty},
          title = {Machine learning assisted Bayesian model comparison: learnt harmonic mean estimator},
        journal = {ArXiv},
         eprint = {arXiv:XXXX.XXXX},
