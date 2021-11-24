@@ -19,8 +19,6 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script src="_static/dark_mode_js/default_light.js"></script>
         <script src="_static/dark_mode_js/theme_switcher.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -54,17 +52,17 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="background/Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="background/Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background/Machine_Learning/index.html">Learning a suitable target distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background/Bayes_Factors/bayes_factors.html">Bayes factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/cross-validation_learnt_model.html">Model cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -123,18 +121,19 @@
 <p><a class="reference external" href="https://github.com/astro-informatics/harmonic"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat" /></a> <a class="reference external" href="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml"><img alt="Build Status" src="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg" /></a> <a class="reference external" href="https://astro-informatics.github.io/harmonic/"><img alt="Docs" src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" /></a> <a class="reference external" href="https://codecov.io/gh/astro-informatics/harmonic"><img alt="CodeCov" src="https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV" /></a> <a class="reference external" href="https://badge.fury.io/py/harmonic"><img alt="PyPI" src="https://badge.fury.io/py/harmonic.svg" /></a> <a class="reference external" href="http://perso.crans.org/besson/LICENSE.html"><img alt="GPL license" src="https://img.shields.io/badge/License-GPL-blue.svg" /></a> <a class="reference external" href="https://arxiv.org/abs/20XX.XXXXX"><img alt="ArXiv" src="http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat" /></a></p>
 <div class="section" id="harmonic">
 <h1>Harmonic<a class="headerlink" href="#harmonic" title="Permalink to this headline"></a></h1>
-<p>The harmonic mean is an infamous estimator for the Bayesian evidence, first proposed by <a class="reference external" href="https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x">Newton and Raftery (1994)</a>. Whilst the harmonic mean estimator is asymptotically consistent it can fail catastrophically, depending on how one configures the estimator. By integrating bespoke machine learning techniques, <strong>harmonic</strong> overcomes this hurdle by learning from disperate samples of the posterior. Our learnt estimator is agnostic to the sampler, provides accurate estimates of the variance and variance in the variance, and can scale into thousands of dimensions.</p>
+<p>We resurrect the infamous harmonic mean estimator for computing the marginal likelihood and solve its problematic large variance.  The marginal likelihood is a key component of Bayesian model selection since it is required to evaluate model posterior probabilities;  however, its computation is challenging.  The original harmonic mean estimator, first proposed in 1994 by Newton and Raftery, involves computing the harmonic mean of the likelihood given samples from the posterior.  It was immediately realised that the original estimator can fail catastrophically since its variance can become very large and may not be finite.  A number of variants of the harmonic mean estimator have been proposed to address this issue although none have proven fully satisfactory.</p>
+<p>We present the <em>learnt harmonic mean estimator</em>, a variant of the original estimator that solves its large variance problem.  This is achieved by interpreting the harmonic mean estimator as importance sampling and introducing a new target distribution.  The new target distribution is learned to approximate the optimal but inaccessible target, while minimising the variance of the resulting estimator.  Since the estimator requires samples of the posterior only it is agnostic to the strategy used to generate posterior samples.</p>
 <div class="section" id="how-to-use-this-guide">
-<h2>How to Use This Guide<a class="headerlink" href="#how-to-use-this-guide" title="Permalink to this headline"></a></h2>
-<p>To get started you will first need to follow the <a class="reference internal" href="user_guide/install.html#installation"><span class="std std-ref">installation guide</span></a>, following which it is recommended you run the testing suite to ensure your installation has been successful. Next, we have provided a <a class="reference internal" href="tutorials/index.html#jupyter-notebooks"><span class="std std-ref">mini-tutorial</span></a>, comprised of 4 interactive notebooks, which will provide a step-by-step guide to get <strong>harmonic</strong> up and running for your particular application. Finally, to see how <strong>harmonic</strong> can be applied to various popular benchmark problems one should look to the <span class="xref std std-ref">benchmark examples</span> page. An up-to-date catalog of the software functionality can be found on the <a class="reference internal" href="api/index.html#namespaces"><span class="std std-ref">API</span></a> page.</p>
+<h2>How to use this guide<a class="headerlink" href="#how-to-use-this-guide" title="Permalink to this headline"></a></h2>
+<p>To get started, follow the <a class="reference internal" href="user_guide/install.html#installation"><span class="std std-ref">installation guide</span></a>.  For a brief background of the <em>learnt harmonic mean estimator</em>  please see the <span class="xref std std-ref">background</span> section of this guide, which provides sufficient background to inform the practioner.  For further background details please see the related paper (<a class="reference external" href="TBC">McEwen et al. 2021</a>).  We have also provided <a class="reference internal" href="tutorials/index.html#jupyter-notebooks"><span class="std std-ref">tutorials</span></a>, comprised of a number of interactive notebooks that provide a step-by-step guide to get <strong>harmonic</strong> up and running for your particular application.  An up-to-date catalog of the software functionality can be found on the <a class="reference internal" href="api/index.html#namespaces"><span class="std std-ref">API</span></a> page.</p>
 </div>
 <div class="section" id="basic-usage">
-<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline"></a></h2>
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline"></a></h2>
 <p>First you will want to install <strong>harmonic</strong>, which is as simple as running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install harmonic
 </pre></div>
 </div>
-<p>Now, suppose you have collected many samples, perhaps through <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> or another sampler, from some generic <span class="math notranslate nohighlight">\(n\)</span>-dimensional posterior and <em>a posteriori</em> wish to compute the evidence which we will assume is non-analytic, you would do something like:</p>
+<p>Now, suppose you have collected many posterior samples, perhaps drawn using <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> or another sampler, and <em>a posteriori</em> wish to compute the evidence, you would do something like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
 
@@ -165,7 +164,7 @@
 <div class="section" id="referencing">
 <h2>Referencing<a class="headerlink" href="#referencing" title="Permalink to this headline"></a></h2>
 <p id="id1"><ul class="simple">
-<li id="id2"><p>J. D. McEwen, C. G. R. Wallis, and M. A. Price. Machine learning assisted marginal likelihood estimation: learnt harmonic mean estimator. <em>Bayesian analysis (in prep)</em>, October 2021.</p></li>
+<li id="id2"><p>Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, and Matthew M. Docherty. Machine learning assisted bayesian model comparison: learnt harmonic mean estimator. <em>ArXiv</em>, 2021. <a class="reference external" href="https://arxiv.org/abs/arXiv:XXXX.XXXX">arXiv:arXiv:XXXX.XXXX</a>.</p></li>
 </ul>
 </p>
 <div class="toctree-wrapper compound">

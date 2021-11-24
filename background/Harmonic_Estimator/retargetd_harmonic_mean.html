@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Re-targeted Harmonic Mean Estimator &mdash; Harmonic 1.0.2 documentation</title>
+  <title>Re-targeted harmonic mean estimator &mdash; Harmonic 1.0.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Learnt Harmonic Mean Estimator" href="learnt_harmonic_mean.html" />
-    <link rel="prev" title="Harmonic Mean Estimator" href="original_harmonic_mean.html" /> 
+    <link rel="next" title="Learnt harmonic mean estimator" href="learnt_harmonic_mean.html" />
+    <link rel="prev" title="Harmonic mean estimator" href="original_harmonic_mean.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,20 +55,20 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Re-targeted Harmonic Mean Estimator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#importance-sampling-interpretation">Importance sampling interpretation:</a></li>
+<li class="toctree-l1"><a class="reference internal" href="original_harmonic_mean.html">Harmonic mean estimator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Re-targeted harmonic mean estimator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#importance-sampling-interpretation">Importance sampling interpretation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learnt_harmonic_mean.html">Learnt harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning a suitable target distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -90,7 +90,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Re-targeted Harmonic Mean Estimator</li>
+      <li>Re-targeted harmonic mean estimator</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/background/Harmonic_Estimator/retargetd_harmonic_mean.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -125,7 +125,7 @@
 }
 </style>
 <div class="section" id="re-targeted-harmonic-mean-estimator">
-<h1>Re-targeted Harmonic Mean Estimator<a class="headerlink" href="#re-targeted-harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
+<h1>Re-targeted harmonic mean estimator<a class="headerlink" href="#re-targeted-harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
 <p>The original harmonic mean estimator was revised by <a class="reference external" href="https://www.jstor.org/stable/pdf/2346123.pdf?casa_token=AB4ArghUKVEAAAAA:rEgBfQoBtpwJUFYmm07FvgnQoc9V5c07jEkctApAqlzZ1z9M16GCtDlGQsQfL5AzNgaz1YMLlN6-J7VQIy1xET9BtJyaQl_L2PEOXGjOd2MYiP7127g">Gelfand (1994)</a> by introducing an arbitrary density <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> to relate the reciprocal of the marginal likelihood to the likelihood through the following expectation:</p>
 <div class="math notranslate nohighlight">
 \[\rho = \mathbb{E}_{\text{P}(\theta | y)} \biggl[\frac{\varphi(\theta)}{\mathcal{L}(\theta) \pi(\theta)} \biggr] = \int \,\text{d} \theta\frac{\varphi(\theta)}{\mathcal{L}(\theta) \pi(\theta)} \text{P}(\theta | y) = \int \,\text{d} \theta \frac{\varphi(\theta)}{\mathcal{L}(\theta) \pi(\theta)} \frac{\mathcal{L}(\theta) \pi(\theta)}{z} = \frac{1}{z},\]</div>
@@ -139,7 +139,7 @@
 \theta_i \sim \text{P}(\theta | y).\]</div>
 <p>The normalised density <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> can be interpreted as an alternative importance sampling target distribution, as we will see, hence we refer to this approach as the <em>re-targeted harmonic mean estimator</em>. Note that the original harmonic mean estimator is recovered for the target distribution <span class="math notranslate nohighlight">\(\varphi(\theta) = \pi(\theta)\)</span>.</p>
 <div class="section" id="importance-sampling-interpretation">
-<h2>Importance sampling interpretation:<a class="headerlink" href="#importance-sampling-interpretation" title="Permalink to this headline"></a></h2>
+<h2>Importance sampling interpretation<a class="headerlink" href="#importance-sampling-interpretation" title="Permalink to this headline"></a></h2>
 <p>With the introduction of the distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>, the importance sampling interpretation of the harmonic mean estimator reads</p>
 <div class="math notranslate nohighlight">
 \[\rho = \int \,\text{d} \theta \: \frac{\varphi(\theta)}{\mathcal{L}(\theta) \pi(\theta)} \: \text{P}(\theta | y) = \int \,\text{d} \theta \: \frac{1}{z} \: \frac{\varphi(\theta)}{\text{P}(\theta | y)} \: \text{P}(\theta | y).\]</div>
@@ -151,8 +151,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="original_harmonic_mean.html" class="btn btn-neutral float-left" title="Harmonic Mean Estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="learnt_harmonic_mean.html" class="btn btn-neutral float-right" title="Learnt Harmonic Mean Estimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="original_harmonic_mean.html" class="btn btn-neutral float-left" title="Harmonic mean estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="learnt_harmonic_mean.html" class="btn btn-neutral float-right" title="Learnt harmonic mean estimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

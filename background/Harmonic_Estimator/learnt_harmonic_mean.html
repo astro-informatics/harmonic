@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learnt Harmonic Mean Estimator &mdash; Harmonic 1.0.2 documentation</title>
+  <title>Learnt harmonic mean estimator &mdash; Harmonic 1.0.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Learning an Optimal Target Distribution" href="../Machine_Learning/index.html" />
-    <link rel="prev" title="Re-targeted Harmonic Mean Estimator" href="retargetd_harmonic_mean.html" /> 
+    <link rel="next" title="Learning a suitable target distribution" href="../Machine_Learning/index.html" />
+    <link rel="prev" title="Re-targeted harmonic mean estimator" href="retargetd_harmonic_mean.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,21 +55,21 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Learnt Harmonic Mean Estimator</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="original_harmonic_mean.html">Harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retargetd_harmonic_mean.html">Re-targeted harmonic mean estimator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Learnt harmonic mean estimator</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#optimal-importance-sampling-target">Optimal importance sampling target</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#learned-the-optimal-sampling-target">Learned the optimal sampling target</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#learning-a-suitable-target-distribution">Learning a suitable target distribution</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning a suitable target distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -91,7 +91,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Learnt Harmonic Mean Estimator</li>
+      <li>Learnt harmonic mean estimator</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/background/Harmonic_Estimator/learnt_harmonic_mean.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -126,7 +126,7 @@
 }
 </style>
 <div class="section" id="learnt-harmonic-mean-estimator">
-<h1>Learnt Harmonic Mean Estimator<a class="headerlink" href="#learnt-harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
+<h1>Learnt harmonic mean estimator<a class="headerlink" href="#learnt-harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
 <p>It is well-known that the original harmonic mean estimator can fail catastrophically since the variance of the estimator may be become very large. However, this issue can be resolved by introducing an alternative (normalised) target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> (<a class="reference external" href="https://www.jstor.org/stable/pdf/2346123.pdf?casa_token=vIU0gg6sEy4AAAAA:21VkKf6fPFzhg2KlajF0DsILPRn4_muIES1RyGW0xaUGaPijW-YPOl5gxZIFPbadT0PeYbgcLAnuqlqSJCalFgu8W-wyrglxZCMMqzptM2sGkcG0hloG">Gelfand and Dey, 1994</a>), yielding what we term here the <em>re-targeted harmonic mean estimator</em>. From the importance sampling interpretation of the harmonic mean estimator, the re-targeted estimator follows by replacing the importance sampling target of the prior <span class="math notranslate nohighlight">\(\pi(\theta)\)</span> with the target <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>, where the posterior <span class="math notranslate nohighlight">\(P(\theta | y)\)</span> plays the role of the importance sampling density.</p>
 <p>It remains to select a suitable target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>. On one hand, to ensure the variance of the resulting estimator is well-behaved, the target distribution should have narrower tails that the importance sampling density, <em>i.e.</em> the target <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> should have narrower tails than the posterior <span class="math notranslate nohighlight">\(P(\theta | y)\)</span>. On the other hand, to ensure the resulting estimator is efficient and makes use of as many samples from the posterior as possible, the target distribution should not be too narrow.</p>
 <div class="section" id="optimal-importance-sampling-target">
@@ -137,8 +137,8 @@
 <p>This estimator is optimal in the sense of having zero variance, which is clearly apparent by substituting the target density into the re-targeted harmonic mean estimator discussed previously. Each term contributing to the summation is simply <span class="math notranslate nohighlight">\(1/z\)</span>, hence the estimator <span class="math notranslate nohighlight">\(\hat{\rho}\)</span> is unbiased, with zero variance.</p>
 <p>Recall that the target density must be normalised.  Hence, the optimal estimator given by the normalised posterior is not accessible in practice since it requires the marginal likelihood – the very term we are attempting to estimate – to be known.  While the optimal estimator therefore cannot be used in practice, it can nevertheless be used to inform the construction of other estimators based on alternative importance sampling target distributions.</p>
 </div>
-<div class="section" id="learned-the-optimal-sampling-target">
-<h2>Learned the optimal sampling target<a class="headerlink" href="#learned-the-optimal-sampling-target" title="Permalink to this headline"></a></h2>
+<div class="section" id="learning-a-suitable-target-distribution">
+<h2>Learning a suitable target distribution<a class="headerlink" href="#learning-a-suitable-target-distribution" title="Permalink to this headline"></a></h2>
 <p>We propose learning the target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> from samples of the posterior. Samples from the posterior can be split into training and evaluation (<em>cf.</em> test) sets. Machine learning (ML) techniques can then be applied to learn an approximate model of the normalised posterior from the training samples, with the constraint that the tails of the learnt target are narrower than the posterior, <em>i.e.</em></p>
 <div class="math notranslate nohighlight">
 \[\varphi(\theta) \stackrel{\text{ML}}{\simeq} \varphi^\text{optimal}(\theta) = \frac{\mathcal{L}(\theta) \pi(\theta)}{z}.\]</div>
@@ -153,8 +153,8 @@ Finally, we present models to learn the normalised target distribution <span cla
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="retargetd_harmonic_mean.html" class="btn btn-neutral float-left" title="Re-targeted Harmonic Mean Estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../Machine_Learning/index.html" class="btn btn-neutral float-right" title="Learning an Optimal Target Distribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="retargetd_harmonic_mean.html" class="btn btn-neutral float-left" title="Re-targeted harmonic mean estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Machine_Learning/index.html" class="btn btn-neutral float-right" title="Learning a suitable target distribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

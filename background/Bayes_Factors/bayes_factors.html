@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bayes Factors &mdash; Harmonic 1.0.2 documentation</title>
+  <title>Bayes factors &mdash; Harmonic 1.0.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -27,7 +27,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Basic usage" href="../../tutorials/basic_usage.html" />
-    <link rel="prev" title="Learning an Optimal Target Distribution" href="../Machine_Learning/index.html" /> 
+    <link rel="prev" title="Learning a suitable target distribution" href="../Machine_Learning/index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,17 +55,17 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Bayes Factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/original_harmonic_mean.html">Harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/learnt_harmonic_mean.html">Learnt harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning a suitable target distribution</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Bayes factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter Cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -87,7 +87,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Bayes Factors</li>
+      <li>Bayes factors</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/background/Bayes_Factors/bayes_factors.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -122,7 +122,7 @@
 }
 </style>
 <div class="section" id="bayes-factors">
-<h1>Bayes Factors<a class="headerlink" href="#bayes-factors" title="Permalink to this headline"></a></h1>
+<h1>Bayes factors<a class="headerlink" href="#bayes-factors" title="Permalink to this headline"></a></h1>
 <p>We have so far considered the estimation of the reciprocal marginal likelihood and related variances only.  However it is the marginal likelihood itself (not its reciprocal), or the Bayes factors computed to compare two models, that is typically of direct interest.  We therefore consider how to compute these quantities of interest and a measure of their variance.</p>
 <p>First, consider the mean and variance of the function <span class="math notranslate nohighlight">\(f(X,Y) = X/Y\)</span> of two uncorrelated random variables <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(Y\)</span>, which by Taylor expansion to second order are given by</p>
 <div class="math notranslate nohighlight">
@@ -167,7 +167,7 @@ Using this result the marginal likelihood and its variance can be estimated from
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../Machine_Learning/index.html" class="btn btn-neutral float-left" title="Learning an Optimal Target Distribution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Machine_Learning/index.html" class="btn btn-neutral float-left" title="Learning a suitable target distribution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../../tutorials/basic_usage.html" class="btn btn-neutral float-right" title="Basic usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

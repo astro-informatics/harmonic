@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hyper-parameter Cross-validation &mdash; Harmonic 1.0.2 documentation</title>
+  <title>Hyper-parameter cross-validation &mdash; Harmonic 1.0.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -26,7 +26,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Model Cross-validation" href="cross-validation_learnt_model.html" />
+    <link rel="next" title="Model cross-validation" href="cross-validation_learnt_model.html" />
     <link rel="prev" title="Basic usage" href="basic_usage.html" /> 
 </head>
 
@@ -55,16 +55,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt Harmonic Mean Estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learning an Optimal Target Distribution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background/Bayes_Factors/bayes_factors.html">Bayes Factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learning a suitable target distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Bayes_Factors/bayes_factors.html">Bayes factors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Hyper-parameter Cross-validation</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hyper-parameter cross-validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Import-packages">Import packages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Define-Bayesian-posterior-function">Define Bayesian posterior function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Compute-samples-using-emcee">Compute samples using emcee</a></li>
@@ -81,7 +81,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cross-validation_learnt_model.html">Model Cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cross-validation_learnt_model.html">Model cross-validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -103,7 +103,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Hyper-parameter Cross-validation</li>
+      <li>Hyper-parameter cross-validation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/tutorials/cross-validation_hyper-parameters.nblink.txt" rel="nofollow"> View page source</a>
       </li>
@@ -384,8 +384,8 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <p><a class="reference external" href="https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/cross_validation_hyper_parameters.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<div class="section" id="Hyper-parameter-Cross-validation">
-<h1>Hyper-parameter Cross-validation<a class="headerlink" href="#Hyper-parameter-Cross-validation" title="Permalink to this headline"></a></h1>
+<div class="section" id="Hyper-parameter-cross-validation">
+<h1>Hyper-parameter cross-validation<a class="headerlink" href="#Hyper-parameter-cross-validation" title="Permalink to this headline"></a></h1>
 <p>In this tutorial we demonstrate basic usage of harmonic, using <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> as the sampler.</p>
 <p>The tutorial is very similar to the basic usage tutorial but here we use harmonic’s cross-validation functionality to select the hyper-parameters of the machine learning model used.</p>
 <div class="section" id="Import-packages">
@@ -748,7 +748,7 @@ nsigma = 0.07323275126692534
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="basic_usage.html" class="btn btn-neutral float-left" title="Basic usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="cross-validation_learnt_model.html" class="btn btn-neutral float-right" title="Model Cross-validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cross-validation_learnt_model.html" class="btn btn-neutral float-right" title="Model cross-validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
