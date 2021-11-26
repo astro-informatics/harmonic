@@ -1,6 +1,7 @@
 import numpy as np
 cimport numpy as np
 import copy
+import logs as lg 
 
 class Chains:
     """
@@ -250,8 +251,6 @@ class Chains:
                 i.e. outside of range 0 to nchains - 1.
 
         """
-
-        new_nchains = len(chains_wanted)
 
         for chain_index in chains_wanted:
             if chain_index < 0 or chain_index >= self.nchains:
