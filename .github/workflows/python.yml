@@ -1,4 +1,4 @@
-name: Harmonic
+name: Tests
 
 on: [push]
 
