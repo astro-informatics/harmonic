@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harmonic &mdash; Harmonic 1.0.2 documentation</title>
+  <title>Harmonic &mdash; Harmonic 1.0.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -36,7 +36,7 @@
             <img src="_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.0.2
+                1.0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -118,14 +118,14 @@
     text-align: unset;
 }
 </style>
-<p><a class="reference external" href="https://github.com/astro-informatics/harmonic"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat" /></a> <a class="reference external" href="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml"><img alt="Build Status" src="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg" /></a> <a class="reference external" href="https://astro-informatics.github.io/harmonic/"><img alt="Docs" src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" /></a> <a class="reference external" href="https://codecov.io/gh/astro-informatics/harmonic"><img alt="CodeCov" src="https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV" /></a> <a class="reference external" href="https://badge.fury.io/py/harmonic"><img alt="PyPI" src="https://badge.fury.io/py/harmonic.svg" /></a> <a class="reference external" href="http://perso.crans.org/besson/LICENSE.html"><img alt="GPL license" src="https://img.shields.io/badge/License-GPL-blue.svg" /></a> <a class="reference external" href="https://arxiv.org/abs/20XX.XXXXX"><img alt="ArXiv" src="http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat" /></a></p>
+<p><a class="reference external" href="https://github.com/astro-informatics/harmonic"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat" /></a> <a class="reference external" href="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml"><img alt="Build Status" src="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg" /></a> <a class="reference external" href="https://astro-informatics.github.io/harmonic/"><img alt="Docs" src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" /></a> <a class="reference external" href="https://codecov.io/gh/astro-informatics/harmonic"><img alt="CodeCov" src="https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV" /></a> <a class="reference external" href="https://badge.fury.io/py/harmonic"><img alt="PyPI" src="https://badge.fury.io/py/harmonic.svg" /></a> <a class="reference external" href="http://perso.crans.org/besson/LICENSE.html"><img alt="GPL license" src="https://img.shields.io/badge/License-GPL-blue.svg" /></a> <a class="reference external" href="https://arxiv.org/abs/2111.12720"><img alt="ArXiv" src="http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat" /></a></p>
 <div class="section" id="harmonic">
 <h1>Harmonic<a class="headerlink" href="#harmonic" title="Permalink to this headline"></a></h1>
-<p>We resurrect the infamous harmonic mean estimator for computing the marginal likelihood and solve its problematic large variance.  The marginal likelihood is a key component of Bayesian model selection since it is required to evaluate model posterior probabilities;  however, its computation is challenging.  The original harmonic mean estimator, first proposed in 1994 by Newton and Raftery, involves computing the harmonic mean of the likelihood given samples from the posterior.  It was immediately realised that the original estimator can fail catastrophically since its variance can become very large and may not be finite.  A number of variants of the harmonic mean estimator have been proposed to address this issue although none have proven fully satisfactory.</p>
+<p>We resurrect the infamous harmonic mean estimator for computing the marginal likelihood (Bayesian evidence) and solve its problematic large variance.  The marginal likelihood is a key component of Bayesian model selection since it is required to evaluate model posterior probabilities;  however, its computation is challenging.  The original harmonic mean estimator, first proposed in 1994 by Newton and Raftery, involves computing the harmonic mean of the likelihood given samples from the posterior.  It was immediately realised that the original estimator can fail catastrophically since its variance can become very large and may not be finite.  A number of variants of the harmonic mean estimator have been proposed to address this issue although none have proven fully satisfactory.</p>
 <p>We present the <em>learnt harmonic mean estimator</em>, a variant of the original estimator that solves its large variance problem.  This is achieved by interpreting the harmonic mean estimator as importance sampling and introducing a new target distribution.  The new target distribution is learned to approximate the optimal but inaccessible target, while minimising the variance of the resulting estimator.  Since the estimator requires samples of the posterior only it is agnostic to the strategy used to generate posterior samples.</p>
 <div class="section" id="how-to-use-this-guide">
 <h2>How to use this guide<a class="headerlink" href="#how-to-use-this-guide" title="Permalink to this headline"></a></h2>
-<p>To get started, follow the <a class="reference internal" href="user_guide/install.html#installation"><span class="std std-ref">installation guide</span></a>.  For a brief background of the <em>learnt harmonic mean estimator</em>  please see the <span class="xref std std-ref">background</span> section of this guide, which provides sufficient background to inform the practioner.  For further background details please see the related paper (<a class="reference external" href="TBC">McEwen et al. 2021</a>).  We have also provided <a class="reference internal" href="tutorials/index.html#jupyter-notebooks"><span class="std std-ref">tutorials</span></a>, comprised of a number of interactive notebooks that provide a step-by-step guide to get <strong>harmonic</strong> up and running for your particular application.  An up-to-date catalog of the software functionality can be found on the <a class="reference internal" href="api/index.html#namespaces"><span class="std std-ref">API</span></a> page.</p>
+<p>To get started, follow the <a class="reference internal" href="user_guide/install.html#installation"><span class="std std-ref">installation guide</span></a>.  For a brief background of the <em>learnt harmonic mean estimator</em>  please see the <span class="xref std std-ref">background</span> section of this guide, which provides sufficient background to inform the practioner.  For further background details please see the related paper (<a class="reference external" href="https://arxiv.org/abs/2111.12720">McEwen et al. 2021</a>).  We have also provided <a class="reference internal" href="tutorials/index.html#jupyter-notebooks"><span class="std std-ref">tutorials</span></a>, comprised of a number of interactive notebooks that provide a step-by-step guide to get <strong>harmonic</strong> up and running for your particular application.  An up-to-date catalog of the software functionality can be found on the <a class="reference internal" href="api/index.html#namespaces"><span class="std std-ref">API</span></a> page.</p>
 </div>
 <div class="section" id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline"></a></h2>
@@ -164,7 +164,7 @@
 <div class="section" id="referencing">
 <h2>Referencing<a class="headerlink" href="#referencing" title="Permalink to this headline"></a></h2>
 <p id="id1"><ul class="simple">
-<li id="id2"><p>Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, and Matthew M. Docherty. Machine learning assisted bayesian model comparison: learnt harmonic mean estimator. <em>ArXiv</em>, 2021. <a class="reference external" href="https://arxiv.org/abs/arXiv:XXXX.XXXX">arXiv:arXiv:XXXX.XXXX</a>.</p></li>
+<li id="id2"><p>Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, and Matthew M. Docherty. Machine learning assisted Bayesian model comparison: learnt harmonic mean estimator. <em>ArXiv</em>, 2021. <a class="reference external" href="https://arxiv.org/abs/arXiv:2111.12720">arXiv:arXiv:2111.12720</a>.</p></li>
 </ul>
 </p>
 <div class="toctree-wrapper compound">
