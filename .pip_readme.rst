@@ -33,6 +33,9 @@ Documentation
 
 Comprehensive  `documentation for harmonic <https://astro-informatics.github.io/harmonic/>`_ is available.
 
+Attribution
+-----------
+
 Please cite `McEwen et al. (2021) <https://arxiv.org/abs/2111.12720>`_ if this code package has been of use in your project. 
 
 A BibTeX entry for the paper is:
