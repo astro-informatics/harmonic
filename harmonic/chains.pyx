@@ -1,6 +1,7 @@
 import numpy as np
 cimport numpy as np
 import copy
+import logs as lg 
 
 class Chains:
     """
@@ -251,8 +252,6 @@ class Chains:
 
         """
 
-        new_nchains = len(chains_wanted)
-
         for chain_index in chains_wanted:
             if chain_index < 0 or chain_index >= self.nchains:
                 raise ValueError("chains_wanted contains index out of bounds")
@@ -440,53 +439,37 @@ class Chains:
             raise ValueError("nblocks must be greater then number of chains")
 
         nsamples_per_chain = np.array(self.nsamples_per_chain())        
-        # print("\n")
-        # print("nsamples_per_chain = {}".format(nsamples_per_chain))        
         rel_size_chain = nsamples_per_chain / self.nsamples        
-        # print("rel_size_chain = {}".format(rel_size_chain))        
         nblocks_per_chain = np.round(nblocks * rel_size_chain).astype(long)
         
         # Ensure no chains have zero blocks due to rounding.
         nblocks_per_chain[nblocks_per_chain == 0] = 1
-        # print("nblocks_per_chain = {}".format(nblocks_per_chain))
 
         # Potentially adjust blocks per chain due to rounding errors.
         target_offset = nblocks - np.ndarray.sum(nblocks_per_chain)
-        # print("target_offset = {}".format(target_offset))
         if target_offset != 0:            
             chain_to_adjust = np.argmax(nblocks_per_chain)
             nblocks_per_chain[chain_to_adjust] += target_offset
             if nblocks_per_chain[chain_to_adjust] < 1:
                 raise ValueError("Adjusted block number for chain less than 1.")
-        # print("nblocks_per_chain = {}".format(nblocks_per_chain))
+        lg.debug_log("nblocks_per_chain = {}".format(nblocks_per_chain))
         
         start_indices_new = np.array([0])
         cdef long i_chain
         for i_chain in range(self.nchains):
             start = self.start_indices[i_chain]
-            end = self.start_indices[i_chain+1]
-            
+            end = self.start_indices[i_chain+1]  
             step = long((end - start) // nblocks_per_chain[i_chain])
-            # print("chain = {}, start = {}".format(i_chain, start))
-            # print("chain = {}, end = {}".format(i_chain, end))
-            # print("chain = {}, step = {}".format(i_chain, step))
-
+            
             block_start_indices = start \
                 + np.array(range(nblocks_per_chain[i_chain]+1), dtype=long) \
-                * step
-            
+                * step    
             block_start_indices[-1] = end
-            # print("chain = {}, block_start_indices = {}"
-            #.format(i_chain, block_start_indices))
-
             start_indices_new = np.concatenate((start_indices_new, 
                                                 block_start_indices[1:]))
-
-            # print("chain = {}, start_indices_new = {}"
-            #.format(i_chain, start_indices_new))
         
         self.start_indices = start_indices_new.tolist()
         self.nchains = nblocks
-        # print("nsamples_per_chain = {}".format(self.nsamples_per_chain()))
+        lg.debug_log("nsamples_per_chain = {}".format(self.nsamples_per_chain()))
         
         return
