@@ -9,8 +9,8 @@
 .. |CodeCov| image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
    :target: https://codecov.io/gh/astro-informatics/harmonic
 
-.. |ArXiv| image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
-   :target: https://arxiv.org/abs/20XX.XXXXX
+.. |ArXiv| image:: http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat
+   :target: https://arxiv.org/abs/2111.12720
 
 .. |GPL license| image:: https://img.shields.io/badge/License-GPL-blue.svg
    :target: http://perso.crans.org/besson/LICENSE.html
@@ -30,7 +30,7 @@ We present the *learnt harmonic mean estimator*, a variant of the original estim
 
 How to use this guide
 ---------------------
-To get started, follow the :ref:`installation guide <Installation>`.  For a brief background of the *learnt harmonic mean estimator*  please see the :ref:`background <Background>` section of this guide, which provides sufficient background to inform the practioner.  For further background details please see the related paper (`McEwen et al. 2021 <TBC>`_).  We have also provided :ref:`tutorials <Jupyter Notebooks>`, comprised of a number of interactive notebooks that provide a step-by-step guide to get **harmonic** up and running for your particular application.  An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
+To get started, follow the :ref:`installation guide <Installation>`.  For a brief background of the *learnt harmonic mean estimator*  please see the :ref:`background <Background>` section of this guide, which provides sufficient background to inform the practioner.  For further background details please see the related paper (`McEwen et al. 2021 <https://arxiv.org/abs/2111.12720>`_).  We have also provided :ref:`tutorials <Jupyter Notebooks>`, comprised of a number of interactive notebooks that provide a step-by-step guide to get **harmonic** up and running for your particular application.  An up-to-date catalog of the software functionality can be found on the :ref:`API <Namespaces>` page. 
 
 Basic usage
 -----------

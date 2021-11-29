@@ -10,8 +10,8 @@
     :target: https://badge.fury.io/py/harmonic
 .. image:: https://img.shields.io/badge/License-GPL-blue.svg
     :target: http://perso.crans.org/besson/LICENSE.html
-.. image:: http://img.shields.io/badge/arXiv-20XX.XXXXX-orange.svg?style=flat
-    :target: https://arxiv.org/abs/20XX.XXXXX
+.. image:: http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat
+    :target: https://arxiv.org/abs/2111.12720
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
@@ -22,7 +22,7 @@
 
    <img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52">
 
-``harmonic`` is an open source, well tested and documented Python implementation of the *learnt harmonic mean estimator* (`McEwen et al. 2021 <TBC>`_) to compute the marginal likelihood (Bayesian evidence), required for Bayesian model selection.
+``harmonic`` is an open source, well tested and documented Python implementation of the *learnt harmonic mean estimator* (`McEwen et al. 2021 <https://arxiv.org/abs/2111.12720>`_) to compute the marginal likelihood (Bayesian evidence), required for Bayesian model selection.
 
 While ``harmonic`` requires only posterior samples, and so is agnostic to the technique used to perform Markov chain Monte Carlo (MCMC) sampling, ``harmonic`` works exceptionally well with MCMC sampling techniques that naturally provide samples from multiple chains by their ensemble nature, such as affine invariant ensemble samplers.  We therefore advocate use of `harmonic` with the popular `emcee <https://github.com/dfm/emcee>`_ code implementing the affine invariant sampler of `Goodman & Weare (2010) <https://cims.nyu.edu/~weare/papers/d13.pdf>`_.
 
@@ -75,7 +75,7 @@ Contributors
 Attribution
 ===========
 
-Please cite `McEwen et al. (2021) <TBC>`_ if this code package has been of use in your project. 
+Please cite `McEwen et al. (2021) <https://arxiv.org/abs/2111.12720>`_ if this code package has been of use in your project. 
 
 A BibTeX entry for the paper is:
 
@@ -85,7 +85,7 @@ A BibTeX entry for the paper is:
         author = {Jason~D.~McEwen and Christopher~G.~R.~Wallis and Matthew~A.~Price and Matthew~M.~Docherty},
          title = {Machine learning assisted {B}ayesian model comparison: learnt harmonic mean estimator},
        journal = {ArXiv},
-        eprint = {arXiv:XXXX.XXXX},
+        eprint = {arXiv:2111.12720},
           year = 2021
      }
 
