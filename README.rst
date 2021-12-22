@@ -70,7 +70,7 @@ Comprehensive  `documentation for harmonic <https://astro-informatics.github.io/
 Contributors
 ============
 
-`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://scholar.google.co.uk/citations?user=w7_VDLQAAAAJ&hl=en&authuser=1>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_
+`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://cosmomatt.github.io>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_
 
 Attribution
 ===========
