@@ -404,6 +404,38 @@ class Evidence:
         return (ln_evidence, ln_evidence_std)
 
 
+    def compute_ln_evidence_log_space_var(self):
+        """Compute log_e of evidence from the inverse evidence.
+
+        Returns:
+
+            (double, double): Tuple containing the following.
+
+                - ln_evidence (double): Estimate of log_e of evidence.
+
+                - ln_evidence_std (double): Estimate of standard deviation
+                    of log_e of evidence.
+        
+        """
+
+        self.check_basic_diagnostic()
+
+        ln_x = self.ln_evidence_inv_var - 2.0 * self.ln_evidence_inv
+        x = np.exp(ln_x)
+        ln_evidence = np.log( 1.0 + x ) - self.ln_evidence_inv
+        ln_evidence_std = 0.5*self.ln_evidence_inv_var \
+            - 2.0*self.ln_evidence_inv
+
+        # Taken from Matt Price's LaTeX document
+        n = np.exp(ln_evidence_std - ln_evidence)
+        diff_high = ln_evidence + np.log(1 + n) - ln_evidence
+        diff_low = ln_evidence - ln_evidence + np.log(1 - n)
+
+        std_ln_evidence = np.mean([diff_high,diff_low])
+
+        return (ln_evidence, std_ln_evidence)
+
+
     def serialize(self, filename):
         """Serialize evidence object.
 
