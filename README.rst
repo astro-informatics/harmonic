@@ -28,6 +28,13 @@ While ``harmonic`` requires only posterior samples, and so is agnostic to the te
 
 Basic usage is highlighted in this `interactive demo <https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/basic_usage.ipynb>`_. 
 
+Overview video
+==============
+
+.. image:: docs/assets/video_screenshot.png
+    :target: https://www.youtube.com/watch?v=RHoQItSA4J4
+
+
 Installation
 ============
 
@@ -70,7 +77,8 @@ Comprehensive  `documentation for harmonic <https://astro-informatics.github.io/
 Contributors
 ============
 
-`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://scholar.google.co.uk/citations?user=w7_VDLQAAAAJ&hl=en&authuser=1>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_
+`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://scholar.google.co.uk/citations?user=w7_VDLQAAAAJ&hl=en&authuser=1>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_, `Alessio Spurio Mancini <https://www.ucl.ac.uk/astrophysics/people/dr-alessio-spurio-mancini>`_
+
 
 Attribution
 ===========
