@@ -32,7 +32,7 @@ Overview video
 ==============
 
 .. image:: docs/assets/video_screenshot.png
-    :target: https://www.youtube.com/embed/RHoQItSA4J4
+    :target: https://www.youtube.com/watch?v=RHoQItSA4J4
 
 
 Installation
