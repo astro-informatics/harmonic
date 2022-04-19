@@ -323,7 +323,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
@@ -394,8 +394,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../../..&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
@@ -421,8 +420,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute log_e of posterior of n dimensional multivariate Gaussian.</span>
 
 <span class="sd">    Args:</span>
@@ -448,8 +446,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Define parameters for emcee sampling</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define parameters for emcee sampling</span>
 <span class="n">ndim</span> <span class="o">=</span> <span class="mi">2</span>                    <span class="c1"># Dimensions</span>
 <span class="n">nchains</span> <span class="o">=</span> <span class="mi">200</span>                <span class="c1"># total number of chains to compute</span>
 <span class="n">samples_per_chain</span> <span class="o">=</span> <span class="mi">5000</span>    <span class="c1"># number of samples per chain</span>
@@ -467,8 +464,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># initialise random seed</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialise random seed</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Set initial random position and state</span>
@@ -497,8 +493,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Instantiate harmonic&#39;s chains class</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate harmonic&#39;s chains class</span>
 <span class="n">chains</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Chains</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
 <span class="n">chains</span><span class="o">.</span><span class="n">add_chains_3d</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">lnprob</span><span class="p">)</span>
 </pre></div>
@@ -509,8 +504,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Split the chains into the ones which will be used to train and peform inference</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Split the chains into the ones which will be used to train and peform inference</span>
 <span class="n">chains_train</span><span class="p">,</span> <span class="n">chains_infer</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">split_data</span><span class="p">(</span><span class="n">chains</span><span class="p">,</span> <span class="n">training_proportion</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -524,8 +518,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">domains</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1E-1</span><span class="p">,</span><span class="mf">1E1</span><span class="p">])]</span>  <span class="c1"># hyper-sphere bounding domain</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">domains</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1E-1</span><span class="p">,</span><span class="mf">1E1</span><span class="p">])]</span>  <span class="c1"># hyper-sphere bounding domain</span>
 
 <span class="c1"># Select model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">HyperSphere</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">domains</span><span class="p">)</span>
@@ -543,8 +536,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Instantiate harmonic&#39;s evidence class</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate harmonic&#39;s evidence class</span>
 <span class="n">ev</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span><span class="n">chains_infer</span><span class="o">.</span><span class="n">nchains</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
 <span class="c1"># Pass the evidence class the inference chains and compute the log of the evidence!</span>
@@ -565,8 +557,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute analytic evidence for nD Gaussian.</span>
 
 <span class="sd">    Args:</span>
@@ -593,8 +584,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;evidence (harmonic) = </span><span class="si">{}</span><span class="s1"> +/- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evidence</span><span class="p">,</span> <span class="n">evidence_std</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;evidence (harmonic) = </span><span class="si">{}</span><span class="s1"> +/- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evidence</span><span class="p">,</span> <span class="n">evidence_std</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;evidence (analytic) = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evidence_analytic</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;nsigma = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">evidence</span> <span class="o">-</span> <span class="n">evidence_analytic</span><span class="p">)</span> <span class="o">/</span> <span class="n">evidence_std</span><span class="p">))</span>
 </pre></div>
@@ -619,8 +609,7 @@ nsigma = 0.10292108358453812
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">utils</span><span class="o">.</span><span class="n">plot_getdist</span><span class="p">(</span><span class="n">samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">utils</span><span class="o">.</span><span class="n">plot_getdist</span><span class="p">(</span><span class="n">samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
