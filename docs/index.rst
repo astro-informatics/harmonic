@@ -28,6 +28,8 @@ We resurrect the infamous harmonic mean estimator for computing the marginal lik
 
 We present the *learnt harmonic mean estimator*, a variant of the original estimator that solves its large variance problem.  This is achieved by interpreting the harmonic mean estimator as importance sampling and introducing a new target distribution.  The new target distribution is learned to approximate the optimal but inaccessible target, while minimising the variance of the resulting estimator.  Since the estimator requires samples of the posterior only it is agnostic to the strategy used to generate posterior samples. 
 
+For an accessible overview of the *learnt harmonic mean estimator* please see this `Towards Data Science article <https://towardsdatascience.com/learnt-harmonic-mean-estimator-for-bayesian-model-selection-47258bb0fc2e>`_.
+
 Overview video
 --------------
 
