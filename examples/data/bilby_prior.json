@@ -1,0 +1,205 @@
+{
+  "mass_1": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "Uniform",
+    "kwargs": {
+      "minimum": 5,
+      "maximum": 100,
+      "name": "mass_1",
+      "latex_label": "$m_1$",
+      "unit": null,
+      "boundary": null
+    }
+  },
+  "mass_2": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "Uniform",
+    "kwargs": {
+      "minimum": 5,
+      "maximum": 100,
+      "name": "mass_2",
+      "latex_label": "$m_2$",
+      "unit": null,
+      "boundary": null
+    }
+  },
+  "a_1": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 0.4,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "a_2": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 0.3,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "tilt_1": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 0.5,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "tilt_2": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 1.0,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "phi_12": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 1.7,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "phi_jl": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 0.3,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "luminosity_distance": {
+    "__prior__": true,
+    "__module__": "bilby.gw.prior",
+    "__name__": "UniformSourceFrame",
+    "kwargs": {
+      "minimum": 100.0,
+      "maximum": 5000.0,
+      "cosmology": {
+        "H0": {
+          "__astropy_quantity__": true,
+          "value": 67.74,
+          "unit": "km / (Mpc s)"
+        },
+        "Om0": 0.3075,
+        "Tcmb0": {
+          "__astropy_quantity__": true,
+          "value": 2.7255,
+          "unit": "K"
+        },
+        "Neff": 3.046,
+        "m_nu": {
+          "__astropy_quantity__": true,
+          "value": [
+            0.0,
+            0.0,
+            0.06
+          ],
+          "unit": "eV"
+        },
+        "Ob0": 0.0486,
+        "name": "Planck15",
+        "__cosmology__": true,
+        "__name__": "FlatLambdaCDM"
+      },
+      "name": "luminosity_distance",
+      "latex_label": "$d_L$",
+      "unit": "Mpc",
+      "boundary": null
+    }
+  },
+  "theta_jn": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "Sine",
+    "kwargs": {
+      "minimum": 0.0,
+      "maximum": 3.141592653589793,
+      "name": "theta_jn",
+      "latex_label": "$\\theta_{JN}$",
+      "unit": null,
+      "boundary": null
+    }
+  },
+  "psi": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 2.659,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "phase": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 1.3,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "geocent_time": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 1126259642.413,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "ra": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": 1.375,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "dec": {
+    "__prior__": true,
+    "__module__": "bilby.core.prior.analytical",
+    "__name__": "DeltaFunction",
+    "kwargs": {
+      "peak": -1.2108,
+      "name": null,
+      "latex_label": null,
+      "unit": null
+    }
+  },
+  "__prior_dict__": true,
+  "__module__": "bilby.gw.prior",
+  "__name__": "BBHPriorDict"
+}
