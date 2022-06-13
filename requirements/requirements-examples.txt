@@ -2,3 +2,7 @@ emcee==3.0.2
 matplotlib==3.2.1
 corner==2.0.1
 getdist==1.1.0
+# 4D GW example
+bilby==1.1.5
+lalsuite==7.5
+pymultinest==2.11
