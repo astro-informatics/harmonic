@@ -397,18 +397,32 @@ class Evidence:
 
         ln_x = self.ln_evidence_inv_var - 2.0 * self.ln_evidence_inv
         x = np.exp(ln_x)
-        self.ln_evidence = np.log( 1.0 + x ) - self.ln_evidence_inv
-        self.ln_evidence_std = 0.5*self.ln_evidence_inv_var \
+        ln_evidence = np.log( 1.0 + x ) - self.ln_evidence_inv
+        ln_evidence_std = 0.5*self.ln_evidence_inv_var \
             - 2.0*self.ln_evidence_inv
 
-        return (self.ln_evidence, self.ln_evidence_std)
+        return (ln_evidence, ln_evidence_std)
 
 
-    def convert_log_space_var(self):
-        """Convert log(var(z)) to var(log(z)).
+    def compute_ln_space_var(self, ln_evidence, ln_evidence_std):
+        """Convert log_e(var(z)) to var(log_e(z)).
+
+        Args:
+
+            ln_evidence (double): Estimate of log_e of evidence.
+            
+            ln_evidence_std (double): Estimate of log_e of standard
+                deviation of evidence.
+
+        Returns:
+
+            std_ln_evidence (double): Estimate of standard deviation of log_e of
+                evidence.
+
         """
-        std_ln_evidence = np.log(np.exp(self.ln_evidence) + \
-            np.exp(self.ln_evidence_std)) - self.ln_evidence
+        std_ln_evidence = np.log(np.exp(ln_evidence) \
+            + np.exp(ln_evidence_std)) - ln_evidence
+        
         return std_ln_evidence
 
 
