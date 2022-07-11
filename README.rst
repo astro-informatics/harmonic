@@ -101,7 +101,7 @@ A BibTeX entry for the paper is:
           year = 2021
      }
 
-Please _also_ cite `Spurio Mancini et al. (2022) <https://arxiv.org/abs/2207.04037>`_ if this code has been of use in a simulation-based inference project.
+Please *also* cite `Spurio Mancini et al. (2022) <https://arxiv.org/abs/2207.04037>`_ if this code has been of use in a simulation-based inference project.
 
 A BibTeX entry for the paper is:
 
