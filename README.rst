@@ -12,6 +12,8 @@
     :target: http://perso.crans.org/besson/LICENSE.html
 .. image:: http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat
     :target: https://arxiv.org/abs/2111.12720
+.. image:: http://img.shields.io/badge/arXiv-2207.04037-red.svg?style=flat
+    :target: https://arxiv.org/abs/2207.04037
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
@@ -79,7 +81,7 @@ Comprehensive  `documentation for harmonic <https://astro-informatics.github.io/
 Contributors
 ============
 
-`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://scholar.google.co.uk/citations?user=w7_VDLQAAAAJ&hl=en&authuser=1>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_, `Alessio Spurio Mancini <https://www.ucl.ac.uk/astrophysics/people/dr-alessio-spurio-mancini>`_
+`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://cosmomatt.github.io/>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_, `Alessio Spurio Mancini <https://www.alessiospuriomancini.com/>`_
 
 
 Attribution
@@ -99,6 +101,20 @@ A BibTeX entry for the paper is:
           year = 2021
      }
 
+Please *also* cite `Spurio Mancini et al. (2022) <https://arxiv.org/abs/2207.04037>`_ if this code has been of use in a simulation-based inference project.
+
+A BibTeX entry for the paper is:
+
+.. code-block::
+
+     @article{harmonic_sbi,
+        author = {Spurio Mancini, A. and Docherty, M. M. and Price, M. A. and McEwen, J. D.},
+         title = {{B}ayesian model comparison for simulation-based inference},
+       journal = {ArXiv},
+        eprint = {arXiv:2207.04037},
+          year = 2022
+     }
+
 License
 =======
 
@@ -109,7 +125,7 @@ the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro
 
      harmonic
      Copyright (C) 2021 Jason D. McEwen, Christopher G. R. Wallis, 
-     Matthew A. Price, Matthew M. Docherty & contributors
+     Matthew A. Price, Matthew M. Docherty, Alessio Spurio Mancini & contributors
 
      This program is released under the GPL-3 license (see LICENSE.txt), 
      subject to a non-commercial use condition (see LICENSE_EXT.txt).
