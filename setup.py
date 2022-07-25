@@ -26,7 +26,7 @@ def read_file(file):
         return f.read()
 
 long_description = read_file(".pip_readme.rst")
-required = read_requirements("new_requirements/requirements-core.txt")
+required = read_requirements("requirements/requirements-core.txt")
 
 include_dirs = [numpy.get_include(),]
 
