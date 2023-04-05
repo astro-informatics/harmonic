@@ -179,7 +179,7 @@ class Evidence:
         self.ln_kurtosis = kur_ln
 
         # Compute effective chain lengths.
-        for i in range(nchains):
+        for i_chains in range(nchains):
             n_eff += nsamples_per_chain[i_chains]*nsamples_per_chain[i_chains]
         n_eff = <double>nsamples*<double>nsamples/n_eff
         self.n_eff = n_eff
