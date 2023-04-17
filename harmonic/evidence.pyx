@@ -204,7 +204,7 @@ class Evidence:
         return
 
 
-    def add_chains(self, chains not None):
+    def add_chains(self, chains not None, bulk_calc=False):
         """Add new chains and calculate an estimate of the inverse evidence, its
         variance, and the variance of the variance.
 
@@ -247,14 +247,19 @@ class Evidence:
         cdef double mean_shift, max_shift, max_i
 
         lnargs = np.zeros_like(Y)
-
+        if bulk_calc:
+            lnpred = self.model.predict(X)
+            print(lnpred.shape)
         for i_chains in range(nchains):
             i_samples_start = chains.start_indices[i_chains]
-            i_samples_end = chains.start_indices[i_chains+1]
-
+            i_samples_end = chains.start_indices[i_chains+1
+            
             for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
+                if bulk_calc:
+                    lnpredict = lnpred[i_samples]
+                else:
+                    lnpredict = self.model.predict(X[i_samples,:])
 
-                lnpredict = self.model.predict(X[i_samples,:])
                 lnprob = Y[i_samples]
                 lnargs[i_samples] = lnpredict - lnprob
 
