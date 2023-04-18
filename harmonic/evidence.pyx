@@ -249,10 +249,10 @@ class Evidence:
         lnargs = np.zeros_like(Y)
         if bulk_calc:
             lnpred = self.model.predict(X)
-            print(lnpred.shape)
+            
         for i_chains in range(nchains):
             i_samples_start = chains.start_indices[i_chains]
-            i_samples_end = chains.start_indices[i_chains+1
+            i_samples_end = chains.start_indices[i_chains+1]
             
             for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
                 if bulk_calc:
