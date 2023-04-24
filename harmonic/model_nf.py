@@ -15,7 +15,7 @@ class NormalizingFlow(md.Model):
     def __init__(
         self,
         ndim_in,
-        flow=flows.NeuralSplineFlowLogProb(),
+        flow=flows.NVPFlowLogProb(),
         scaling=0.8,
         opt=optax.adam(learning_rate=0.001),
         hyper_parameters=None,

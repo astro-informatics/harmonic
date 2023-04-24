@@ -67,14 +67,14 @@ def make_nvp_fn(d=2, scale=1.0):
     return nvp
 
 
-class NeuralSplineFlowLogProb(nn.Module):
+class NVPFlowLogProb(nn.Module):
     @nn.compact
     def __call__(self, x, scale=1.0):
         nvp = make_nvp_fn(scale=scale)
         return nvp.log_prob(x)
 
 
-class NeuralSplineFlowSampler(nn.Module):
+class NVPFlowSampler(nn.Module):
     @nn.compact
     def __call__(self, key, n_samples, scale=1.0):
         nvp = make_nvp_fn(scale=scale)
