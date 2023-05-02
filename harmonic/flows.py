@@ -6,6 +6,7 @@ import tqdm
 import jax
 import jax.numpy as jnp
 import tensorflow_probability as tfp
+import flowMC
 
 tfp = tfp.substrates.jax
 tfd = tfp.distributions
