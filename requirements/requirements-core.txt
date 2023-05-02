@@ -6,4 +6,4 @@ scikit-learn>=1.1.1
 scipy>=1.8.1
 colorlog>=6.6.0
 pyyaml>=6.0
-flowMC @ https://github.com/alicjapolanska/flowMC.git
+flowMC @ git+https://github.com/alicjapolanska/flowMC.git
