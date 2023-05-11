@@ -161,50 +161,6 @@ class NormalizingFlow(md.Model):
 
         return logprob
 
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
-
-    def serialize(self, filename):
-        """Serialize Model object.
-
-        Args:
-
-            filename (string): Name of file to save model object.
-
-        """
-
-        file = open(filename, "wb")
-        pickle.dump(self, file)
-        file.close()
-
-        return
-
-    def deserialize(self, filename):
-        """Deserialize Model object from file.
-
-        Args:
-
-            filename (string): Name of file from which to read model object.
-
-        Returns:
-
-            (Model): Model object deserialized from file.
-
-        """
-        file = open(filename, "rb")
-        model = pickle.load(file)
-        file.close()
-
-        return model
-
 
 class RQSplineFlow(md.Model):
     """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
@@ -378,50 +334,6 @@ class RQSplineFlow(md.Model):
 
         return samples
 
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
-
-    def serialize(self, filename):
-        """Serialize Model object.
-
-        Args:
-
-            filename (string): Name of file to save model object.
-
-        """
-
-        file = open(filename, "wb")
-        pickle.dump(self, file)
-        file.close()
-
-        return
-
-    def deserialize(self, filename):
-        """Deserialize Model object from file.
-
-        Args:
-
-            filename (string): Name of file from which to read model object.
-
-        Returns:
-
-            (Model): Model object deserialized from file.
-
-        """
-        file = open(filename, "rb")
-        model = pickle.load(file)
-        file.close()
-
-        return model
-
 
 class RealNVP(md.Model):
     """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
@@ -587,47 +499,3 @@ class RealNVP(md.Model):
         )
 
         return samples
-
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
-
-    def serialize(self, filename):
-        """Serialize Model object.
-
-        Args:
-
-            filename (string): Name of file to save model object.
-
-        """
-
-        file = open(filename, "wb")
-        pickle.dump(self, file)
-        file.close()
-
-        return
-
-    def deserialize(self, filename):
-        """Deserialize Model object from file.
-
-        Args:
-
-            filename (string): Name of file from which to read model object.
-
-        Returns:
-
-            (Model): Model object deserialized from file.
-
-        """
-        file = open(filename, "rb")
-        model = pickle.load(file)
-        file.close()
-
-        return model
