@@ -1686,7 +1686,7 @@ class ModifiedGaussianMixtureModel(Model):
             X_scaled = scaler.transform(X)
 
             # set up with k-means clustering
-            kmeans = KMeans(n_clusters=ngaussians, random_state=0).fit(X_scaled)
+            kmeans = KMeans(n_clusters=ngaussians, random_state=0, n_init=10).fit(X_scaled)
 
             cluster_count = np.zeros(ngaussians)
 
