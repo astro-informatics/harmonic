@@ -101,31 +101,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="learning-a-suitable-target-distribution">
+  <div class="section" id="learning-a-suitable-target-distribution">
 <h1>Learning a suitable target distribution<a class="headerlink" href="#learning-a-suitable-target-distribution" title="Permalink to this headline"></a></h1>
 <p>While we have described estimators to compute the marginal likelihood and Bayes factors based on a learnt target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>, we have yet to consider the critical task of learning the target distribution.  As discussed, the ideal target distribution is the posterior itself.  However, since the target must be normalised, use of the posterior would require knowledge of the marginal likelihood – precisely the quantity that we attempting to estimate.  Instead,
 one can learn an approximation of the posterior that is normalised.  The approximation itself does not need to be highly accurate.  More critically, the learned target approximating the posterior must exhibit narrower tails than the posterior to avoid the problematic scenario of the original harmonic mean that can result in very large variance.</p>

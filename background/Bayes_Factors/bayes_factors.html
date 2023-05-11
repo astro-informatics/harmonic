@@ -97,31 +97,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="bayes-factors">
+  <div class="section" id="bayes-factors">
 <h1>Bayes factors<a class="headerlink" href="#bayes-factors" title="Permalink to this headline"></a></h1>
 <p>We have so far considered the estimation of the reciprocal marginal likelihood and related variances only.  However it is the marginal likelihood itself (not its reciprocal), or the Bayes factors computed to compare two models, that is typically of direct interest.  We therefore consider how to compute these quantities of interest and a measure of their variance.</p>
 <p>First, consider the mean and variance of the function <span class="math notranslate nohighlight">\(f(X,Y) = X/Y\)</span> of two uncorrelated random variables <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(Y\)</span>, which by Taylor expansion to second order are given by</p>

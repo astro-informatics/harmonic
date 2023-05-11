@@ -94,31 +94,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<p><a class="reference external" href="https://github.com/astro-informatics/harmonic"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat" /></a> <a class="reference external" href="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml"><img alt="Build Status" src="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg" /></a> <a class="reference external" href="https://astro-informatics.github.io/harmonic/"><img alt="Docs" src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" /></a> <a class="reference external" href="https://codecov.io/gh/astro-informatics/harmonic"><img alt="CodeCov" src="https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV" /></a> <a class="reference external" href="https://badge.fury.io/py/harmonic"><img alt="PyPI" src="https://badge.fury.io/py/harmonic.svg" /></a> <a class="reference external" href="http://perso.crans.org/besson/LICENSE.html"><img alt="GPL license" src="https://img.shields.io/badge/License-GPL-blue.svg" /></a> <a class="reference external" href="https://arxiv.org/abs/2111.12720"><img alt="ArXiv" src="http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat" /></a></p>
+  <p><a class="reference external" href="https://github.com/astro-informatics/harmonic"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat" /></a> <a class="reference external" href="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml"><img alt="Build Status" src="https://github.com/astro-informatics/harmonic/actions/workflows/python.yml/badge.svg" /></a> <a class="reference external" href="https://astro-informatics.github.io/harmonic/"><img alt="Docs" src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" /></a> <a class="reference external" href="https://codecov.io/gh/astro-informatics/harmonic"><img alt="CodeCov" src="https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV" /></a> <a class="reference external" href="https://badge.fury.io/py/harmonic"><img alt="PyPI" src="https://badge.fury.io/py/harmonic.svg" /></a> <a class="reference external" href="http://perso.crans.org/besson/LICENSE.html"><img alt="GPL license" src="https://img.shields.io/badge/License-GPL-blue.svg" /></a> <a class="reference external" href="https://arxiv.org/abs/2111.12720"><img alt="ArXiv" src="http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat" /></a></p>
 <div class="section" id="harmonic">
 <h1>Harmonic<a class="headerlink" href="#harmonic" title="Permalink to this headline"></a></h1>
 <p>We resurrect the infamous harmonic mean estimator for computing the marginal likelihood (Bayesian evidence) and solve its problematic large variance.  The marginal likelihood is a key component of Bayesian model selection since it is required to evaluate model posterior probabilities;  however, its computation is challenging.  The original harmonic mean estimator, first proposed in 1994 by Newton and Raftery, involves computing the harmonic mean of the likelihood given samples from the posterior.  It was immediately realised that the original estimator can fail catastrophically since its variance can become very large and may not be finite.  A number of variants of the harmonic mean estimator have been proposed to address this issue although none have proven fully satisfactory.</p>
@@ -134,7 +110,7 @@
 <div class="section" id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline"></a></h2>
 <p>First you will want to install <strong>harmonic</strong>, which is as simple as running:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install harmonic
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>harmonic
 </pre></div>
 </div>
 <p>Now, suppose you have collected many posterior samples, perhaps drawn using <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> or another sampler, and <em>a posteriori</em> wish to compute the evidence, you would do something like:</p>

@@ -93,31 +93,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<span class="target" id="module-harmonic.utils"></span><dl class="py function">
+  <span class="target" id="module-harmonic.utils"></span><dl class="py function">
 <dt class="sig sig-object py" id="harmonic.utils.cross_validation">
 <span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">cross_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">chains</span></em>, <em class="sig-param"><span class="pre">domains</span></em>, <em class="sig-param"><span class="pre">hyper_parameters</span></em>, <em class="sig-param"><span class="pre">nfold=2</span></em>, <em class="sig-param"><span class="pre">modelClass=&lt;class</span> <span class="pre">'harmonic.model.KernelDensityEstimate'&gt;</span></em>, <em class="sig-param"><span class="pre">seed=-1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.cross_validation" title="Permalink to this definition"></a></dt>
 <dd><p>Perform n-fold validation for given model using chains to be split into

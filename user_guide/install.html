@@ -99,41 +99,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="installation">
+  <div class="section" id="installation">
 <span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
 <p>We recommend installing <strong>harmonic</strong> through <a class="reference external" href="https://pypi.org">PyPi</a>, however in some cases one may wish to install <strong>harmonic</strong> directly from source, which is also relatively straightforward.</p>
 <div class="section" id="quick-install-pypi">
 <h2>Quick install (PyPi)<a class="headerlink" href="#quick-install-pypi" title="Permalink to this headline"></a></h2>
 <p>Install <strong>harmonic</strong> from PyPi with a single command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install harmonic
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>harmonic
 </pre></div>
 </div>
 <p>Check that the package has installed by running</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip list
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>list
 </pre></div>
 </div>
 <p>and locate harmonic.</p>
@@ -141,17 +117,17 @@
 <div class="section" id="install-from-source-github">
 <h2>Install from source (GitHub)<a class="headerlink" href="#install-from-source-github" title="Permalink to this headline"></a></h2>
 <p>When installing from source we recommend working within an existing conda environment, or creating a fresh conda environment to avoid any dependency conflicts,</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n harmonic_env <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8.0
-conda activate harmonic_env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>harmonic_env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8.0
+conda<span class="w"> </span>activate<span class="w"> </span>harmonic_env
 </pre></div>
 </div>
 <p>Once within a fresh environment <strong>harmonic</strong> may be installed by cloning the GitHub repository</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/astro-informatics/harmonic
-<span class="nb">cd</span> harmonic
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/astro-informatics/harmonic
+<span class="nb">cd</span><span class="w"> </span>harmonic
 </pre></div>
 </div>
 <p>and running the install script, within the root directory, with one command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash build_harmonic.sh
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>build_harmonic.sh
 </pre></div>
 </div>
 <p>To check the install has worked correctly run the unit tests with</p>

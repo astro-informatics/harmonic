@@ -95,31 +95,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<p>A modified Gaussian mixture model provides greater flexibility than the simple hyper-sphere model. In particular, it is much more effective for multimodal posterior distributions.</p>
+  <p>A modified Gaussian mixture model provides greater flexibility than the simple hyper-sphere model. In particular, it is much more effective for multimodal posterior distributions.</p>
 <p>Consider the target distribution defined by the modified Gaussian mixture model</p>
 <div class="math notranslate nohighlight">
 \[\varphi(\theta) = \sum_{k=1}^K \frac{w_k}{(2\pi)^{d/2} \vert \Sigma_k \vert^{1/2} s_k^d} \exp \biggl( \frac{- \bigl(\theta - \bar{\theta}_k\bigr)^\text{T} \Sigma_k^{-1} \bigl(\theta - \bar{\theta}_k\bigr)}{2 s_k^2}\biggr),\]</div>

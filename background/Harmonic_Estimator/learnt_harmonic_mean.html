@@ -101,31 +101,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="learnt-harmonic-mean-estimator">
+  <div class="section" id="learnt-harmonic-mean-estimator">
 <h1>Learnt harmonic mean estimator<a class="headerlink" href="#learnt-harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
 <p>It is well-known that the original harmonic mean estimator can fail catastrophically since the variance of the estimator may be become very large. However, this issue can be resolved by introducing an alternative (normalised) target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> (<a class="reference external" href="https://www.jstor.org/stable/pdf/2346123.pdf?casa_token=vIU0gg6sEy4AAAAA:21VkKf6fPFzhg2KlajF0DsILPRn4_muIES1RyGW0xaUGaPijW-YPOl5gxZIFPbadT0PeYbgcLAnuqlqSJCalFgu8W-wyrglxZCMMqzptM2sGkcG0hloG">Gelfand and Dey, 1994</a>), yielding what we term here the <em>re-targeted harmonic mean estimator</em>. From the importance sampling interpretation of the harmonic mean estimator, the re-targeted estimator follows by replacing the importance sampling target of the prior <span class="math notranslate nohighlight">\(\pi(\theta)\)</span> with the target <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>, where the posterior <span class="math notranslate nohighlight">\(P(\theta | y)\)</span> plays the role of the importance sampling density.</p>
 <p>It remains to select a suitable target distribution <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span>. On one hand, to ensure the variance of the resulting estimator is well-behaved, the target distribution should have narrower tails that the importance sampling density, <em>i.e.</em> the target <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> should have narrower tails than the posterior <span class="math notranslate nohighlight">\(P(\theta | y)\)</span>. On the other hand, to ensure the resulting estimator is efficient and makes use of as many samples from the posterior as possible, the target distribution should not be too narrow.</p>

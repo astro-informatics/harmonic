@@ -93,31 +93,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="jupyter-notebooks">
+  <div class="section" id="jupyter-notebooks">
 <h1>Jupyter notebooks<a class="headerlink" href="#jupyter-notebooks" title="Permalink to this headline"></a></h1>
 <p>These python notebooks can be found in the main code repository, under <em>notebooks</em>, and are fully interactable. We also provide Google collab extensions, which can be found in the introduction to each tutorial. They provide a high-level introduction to interfacing with <strong>harmonic</strong>, ranging from how to easily pick up <strong>harmonic</strong> and apply it to a project to more involved checkpointing and cross-validation for large scale, complex inferences.</p>
 <p>One should note that <strong>harmonic</strong> acts on chains of posterior samples to infer the evidence, and is thus agnostic to the select sampler. In these notebooks we adopt the popular and highly accessible <a class="reference external" href="http://dfm.io/emcee/current/">emcee</a> package for sampling, though alternate (perhaps custom) samplers are equally applicable.</p>
