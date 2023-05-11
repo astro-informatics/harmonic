@@ -17,7 +17,7 @@ tfb = tfp.bijectors
 
 
 # ===============================================================================
-# NVP Flow
+# NVP Flow - to be deleted
 # ===============================================================================
 
 
@@ -84,13 +84,18 @@ class NVPFlowSampler(nn.Module):
         return nvp.sample(n_samples, seed=key)
 
 
+# ===============================================================================
+# NVP Flow
+# ===============================================================================
+
+
 class RealNVP(nn.Module):
     """
     Real NVP flow using flax and tfp-jax.
     """
 
     n_features: int
-    hidden_layers: Sequence[int]
+    # hidden_layers: Sequence[int]
     frac_masked: float = 0.5
 
     def setup(self):
@@ -102,7 +107,6 @@ class RealNVP(nn.Module):
         self.affine6 = AffineCoupling(name="affine6", apply_scaling=False)
 
     def make_flow(self, var_scale=1.0):
-
         """affine_coupling = tfb.real_nvp_default_template(
             hidden_layers=self.hidden_layers, activation=nn.leaky_relu
         )
@@ -165,7 +169,6 @@ class RealNVP(nn.Module):
         return samples
 
     def log_prob(self, x: jnp.array, var_scale: float = 1.0) -> jnp.array:
-
         get_logprob = jax.jit(jax.vmap(self.__call__, in_axes=[0, None]))
         logprob = get_logprob(x, var_scale)
 

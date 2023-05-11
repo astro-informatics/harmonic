@@ -1,4 +1,4 @@
-from typing import Sequence, Callable
+from typing import Sequence, Callable, List
 import model as md
 import pickle
 import numpy as np
@@ -18,7 +18,12 @@ import distrax
 import flax.linen as nn
 
 
-class NormalizingFlow(md.Model):
+# ===============================================================================
+# NVP Flow - to be deleted, slow and hacky
+# ===============================================================================
+
+
+class NormalizingFlow:
     """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
@@ -72,6 +77,17 @@ class NormalizingFlow(md.Model):
         self.optimizer = opt
         self.params = None
 
+    def is_fitted(self):
+        """Specify whether model has been fitted.
+
+        Returns:
+
+            (bool): Whether the model has been fitted.
+
+        """
+
+        return self.fitted
+
     def loss_fn(self, params, x):
         return -jnp.mean(self.flow.apply(params, x))
 
@@ -95,10 +111,6 @@ class NormalizingFlow(md.Model):
 
             Y (double ndarray[nsamples]): Target log_e posterior values for each
                 sample in X.
-
-        Returns:
-
-            (bool): Whether fit successful.
 
 
         Raises:
@@ -141,7 +153,7 @@ class NormalizingFlow(md.Model):
 
         return
 
-    def predict(self, x):
+    def predict(self, x, var_scale=1.0):
         """Predict the value of the posterior at point x.
 
         Must be implemented by derived class (since abstract).
@@ -162,19 +174,22 @@ class NormalizingFlow(md.Model):
         return logprob
 
 
-class RQSplineFlow(md.Model):
-    """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
+# ===============================================================================
+# Rational Quadratic Spline Flow - to be refactored (cf RealNVP)
+# ===============================================================================
+
+
+class RQSplineFlow:
+    """Rational quadratic spline flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
         self,
         ndim_in,
-        scaling=0.8,
         n_layers=8,
         n_hiddens=[64, 64],
         n_bins=8,
         learning_rate=0.001,
         momentum=0.9,
-        hyper_parameters=None,
     ):
         """Constructor setting the hyper-parameters and domains of the model.
 
@@ -194,7 +209,9 @@ class RQSplineFlow(md.Model):
             scaling (float): Scale factor by which the base distribution Gaussian
                 is compressed in the prediction step. Should be positive and <=1.
 
-            hyper_parameters (list): Hyper-parameters for model.
+            learning_rate (float): Learning rate for adam optimizer used in the fit method.
+
+            momentum (float): Learning rate for Adam optimizer used in the fit method.
 
         Raises:
 
@@ -206,15 +223,8 @@ class RQSplineFlow(md.Model):
         if ndim_in < 1:
             raise ValueError("Dimension must be greater than 0.")
 
-        if scaling > 1:
-            raise ValueError("Scaling must not be greater than 1.")
-
-        if scaling <= 0:
-            raise ValueError("Scaling must be positive.")
-
         self.ndim = ndim_in
         self.fitted = False
-        self.scaling = scaling
         self.state = None
 
         # Model parameters
@@ -224,6 +234,17 @@ class RQSplineFlow(md.Model):
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.flow = RQSpline(ndim_in, n_layers, n_hiddens, n_bins)
+
+    def is_fitted(self):
+        """Specify whether model has been fitted.
+
+        Returns:
+
+            (bool): Whether the model has been fitted.
+
+        """
+
+        return self.fitted
 
     def create_train_state(self, rng):
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
@@ -263,7 +284,7 @@ class RQSplineFlow(md.Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim.")
 
-        key, rng_model, rng_init, rng_train, rng_nf_sample = jax.random.split(key, 5)
+        key, rng_model, rng_init, rng_train = jax.random.split(key, 4)
 
         variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)))["variables"]
         variables = variables.unfreeze()
@@ -284,88 +305,93 @@ class RQSplineFlow(md.Model):
 
         return
 
-    def predict(self, x, compressed=True):
-        """Predict the value of the posterior at point x.
-
-        Must be implemented by derived class (since abstract).
+    def predict(self, x, var_scale: float = 1.0):
+        """Predict the value of log_e posterior at x.
 
         Args:
 
-            x (double ndarray[ndim]): Sample of shape (ndim) at which to
+            x (jnp.ndarray): Sample of shape at which to
                 predict posterior value.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
 
         Returns:
 
-            (double): Predicted log_e posterior value.
+            jnp.ndarray: Predicted log_e posterior value.
 
         """
 
-        if compressed:
-            scaling = self.scaling
-        if not compressed:
-            scaling = 1.0
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
 
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
             x,
-            scaling,
+            var_scale,
             method=self.flow.log_prob_scaled,
         )
 
         return logprob
 
-    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), compressed=True):
-        """Sample n_sample samples from trained flow."""
+    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), var_scale: float = 1.0):
+        """Sample from trained flow.
 
-        rng_key, subkey = jax.random.split(rng_key)
+        Args:
+            nsample (int): Number of samples generated.
 
-        if compressed:
-            scaling = self.scaling
-        if not compressed:
-            scaling = 1.0
+            rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
+
+        Returns:
+
+            jnp.array (n_sample, ndim): Samples from fitted distribution."""
+
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
 
         samples = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
-            subkey,
+            rng_key,
             n_sample,
-            scaling,
+            var_scale,
             method=self.flow.sample,
         )
 
         return samples
 
 
-class RealNVP(md.Model):
-    """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
+# ===============================================================================
+# NVP Flow - will generalise this to take a custom flow
+# ===============================================================================
+
+
+class RealNVP:
+    """Normalizing flow model to approximate the log_e posterior by a NVP normalizing flow."""
 
     def __init__(
         self,
         ndim_in,
-        hidden_layers=[128, 128],
-        scaling=0.8,
-        learning_rate=0.001,
-        momentum=0.9,
-        hyper_parameters=None,
+        learning_rate: float = 0.001,
+        momentum: float = 0.9,
     ):
-        """Constructor setting the hyper-parameters and domains of the model.
-
-        Must be implemented by derived class (currently abstract).
+        """Constructor setting the hyper-parameters of the model.
 
         Args:
 
-            ndim (int): Dimension of the problem to solve.
+            ndim_in (int): Dimension of the problem to solve.
 
-            domains (list): List of 1D numpy ndarrays containing the domains
-                for each parameter of model. Each domain is of length two,
-                specifying a lower and upper bound for real hyper-parameters
-                but can be different in other cases if required.
+            learning_rate (float): Learning rate for adam optimizer used in the fit method.
 
-            flow (Flow): Normalizing flow used to approximate the posterior.
-
-            scaling (float): Scale factor by which the base distribution Gaussian
-                is compressed in the prediction step. Should be positive and <=1.
-
-            hyper_parameters (list): Hyper-parameters for model.
+            momentum (float): Learning rate for Adam optimizer used in the fit method.
 
         Raises:
 
@@ -377,21 +403,25 @@ class RealNVP(md.Model):
         if ndim_in < 1:
             raise ValueError("Dimension must be greater than 0.")
 
-        if scaling > 1:
-            raise ValueError("Scaling must not be greater than 1.")
-
-        if scaling <= 0:
-            raise ValueError("Scaling must be positive.")
-
         self.ndim = ndim_in
         self.fitted = False
-        self.scaling = scaling
         self.state = None
 
         # Model parameters
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.flow = flows.RealNVP(ndim_in, hidden_layers)
+        self.flow = flows.RealNVP(ndim_in)
+
+    def is_fitted(self):
+        """Specify whether model has been fitted.
+
+        Returns:
+
+            (bool): Whether the model has been fitted.
+
+        """
+
+        return self.fitted
 
     def create_train_state(self, rng):
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
@@ -410,10 +440,6 @@ class RealNVP(md.Model):
             Y (double ndarray[nsamples]): Target log_e posterior values for each
                 sample in X.
 
-        Returns:
-
-            (bool): Whether fit successful.
-
 
         Raises:
 
@@ -431,11 +457,9 @@ class RealNVP(md.Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim.")
 
-        key, rng_model, rng_init, rng_train, rng_nf_sample = jax.random.split(key, 5)
+        key, rng_model, rng_init, rng_train = jax.random.split(key, 4)
 
-        init = self.flow.init(rng_model, jnp.ones((1, self.ndim)))
-        print(init.keys())
-        variables = init
+        variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)))
 
         state = self.create_train_state(rng_init)
 
@@ -450,51 +474,65 @@ class RealNVP(md.Model):
 
         return
 
-    def predict(self, x, compressed=True):
-        """Predict the value of the posterior at point x.
-
-        Must be implemented by derived class (since abstract).
+    def predict(self, x, var_scale: float = 1.0):
+        """Predict the value of log_e posterior at x.
 
         Args:
 
-            x (double ndarray[ndim]): Sample of shape (ndim) at which to
+            x (jnp.ndarray): Sample of shape at which to
                 predict posterior value.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
 
         Returns:
 
-            (double): Predicted log_e posterior value.
+            jnp.ndarray: Predicted log_e posterior value.
 
         """
 
-        if compressed:
-            scaling = self.scaling
-        if not compressed:
-            scaling = 1.0
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
 
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
             x,
-            scaling,
+            var_scale,
             method=self.flow.log_prob,
         )
 
         return logprob
 
-    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), compressed=True):
-        """Sample n_sample samples from trained flow."""
+    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), var_scale: float = 1.0):
+        """Sample from trained flow.
 
-        rng_key, subkey = jax.random.split(rng_key)
+        Args:
+            nsample (int): Number of samples generated.
 
-        if compressed:
-            scaling = self.scaling
-        if not compressed:
-            scaling = 1.0
+            rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
+
+        Returns:
+
+            jnp.array (n_sample, ndim): Samples from fitted distribution.
+        """
+
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
 
         samples = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
-            subkey,
+            rng_key,
             n_sample,
-            scaling,
+            var_scale,
             method=self.flow.sample,
         )
 

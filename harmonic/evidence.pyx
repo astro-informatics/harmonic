@@ -204,7 +204,7 @@ class Evidence:
         return
 
 
-    def add_chains(self, chains not None, bulk_calc=False):
+    def add_chains(self, chains not None, bulk_calc: bool =False, var_scale: float = 0.8):
         """Add new chains and calculate an estimate of the inverse evidence, its
         variance, and the variance of the variance.
 
@@ -219,6 +219,11 @@ class Evidence:
 
             chains: An instance of the chains class containing the chains to
                 be used in the calculation.
+
+            bulk_calc (bool): Set to True to predict posterior for the whole batch at the same time when using normalizing flows. Defaults to False.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
 
         Raises:
 
@@ -248,7 +253,7 @@ class Evidence:
 
         lnargs = np.zeros_like(Y)
         if bulk_calc:
-            lnpred = self.model.predict(X)
+            lnpred = self.model.predict(x=X, var_scale=var_scale)
             
         for i_chains in range(nchains):
             i_samples_start = chains.start_indices[i_chains]
