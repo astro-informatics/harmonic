@@ -23,7 +23,7 @@ import flax.linen as nn
 # ===============================================================================
 
 
-class NormalizingFlow:
+class NormalizingFlow(md.Model):
     """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
@@ -179,7 +179,7 @@ class NormalizingFlow:
 # ===============================================================================
 
 
-class RQSplineFlow:
+class RQSplineFlow(md.Model):
     """Rational quadratic spline flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
@@ -374,7 +374,7 @@ class RQSplineFlow:
 # ===============================================================================
 
 
-class RealNVP:
+class RealNVP(md.Model):
     """Normalizing flow model to approximate the log_e posterior by a NVP normalizing flow."""
 
     def __init__(
