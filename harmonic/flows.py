@@ -97,51 +97,44 @@ class RealNVP(nn.Module):
     n_features: int
     # hidden_layers: Sequence[int]
     frac_masked: float = 0.5
+    n_scaled_layers: int = 2
+    n_unscaled_layers: int = 4
 
     def setup(self):
-        self.affine1 = AffineCoupling(name="affine1")
-        self.affine2 = AffineCoupling(name="affine2")
-        self.affine3 = AffineCoupling(name="affine3", apply_scaling=False)
-        self.affine4 = AffineCoupling(name="affine4", apply_scaling=False)
-        self.affine5 = AffineCoupling(name="affine5", apply_scaling=False)
-        self.affine6 = AffineCoupling(name="affine6", apply_scaling=False)
+        self.scaled_layers = [AffineCoupling() for i in range(self.n_scaled_layers)]
+        self.unscaled_layers = [
+            AffineCoupling(apply_scaling=False) for i in range(self.n_unscaled_layers)
+        ]
 
     def make_flow(self, var_scale=1.0):
-        """affine_coupling = tfb.real_nvp_default_template(
-            hidden_layers=self.hidden_layers, activation=nn.leaky_relu
+        chain = []
+
+        # assume n_scaled_layers is not 0
+        for i in range(self.n_scaled_layers - 1):
+            chain.append(
+                tfb.RealNVP(
+                    fraction_masked=self.frac_masked, bijector_fn=self.scaled_layers[i]
+                )
+            )
+            chain.append(tfb.Permute([1, 0]))
+
+        chain.append(
+            tfb.RealNVP(
+                fraction_masked=self.frac_masked, bijector_fn=self.scaled_layers[-1]
+            )
         )
-        affine_coupling_unscaled = tfb.real_nvp_default_template(
-            hidden_layers=self.hidden_layers, activation=nn.leaky_relu, shift_only=True
-        )"""
+
+        for i in range(self.n_unscaled_layers):
+            chain.append(tfb.Permute([1, 0]))
+            chain.append(
+                tfb.RealNVP(
+                    fraction_masked=self.frac_masked,
+                    bijector_fn=self.unscaled_layers[i],
+                )
+            )
 
         # Computes the likelihood of these x
-        chain = tfb.Chain(
-            [
-                tfb.RealNVP(fraction_masked=self.frac_masked, bijector_fn=self.affine1),
-                tfb.Permute([1, 0]),
-                tfb.RealNVP(fraction_masked=self.frac_masked, bijector_fn=self.affine2),
-                tfb.Permute([1, 0]),
-                tfb.RealNVP(
-                    fraction_masked=self.frac_masked,
-                    bijector_fn=self.affine3,
-                ),
-                tfb.Permute([1, 0]),
-                tfb.RealNVP(
-                    fraction_masked=self.frac_masked,
-                    bijector_fn=self.affine4,
-                ),
-                tfb.Permute([1, 0]),
-                tfb.RealNVP(
-                    fraction_masked=self.frac_masked,
-                    bijector_fn=self.affine5,
-                ),
-                tfb.Permute([1, 0]),
-                tfb.RealNVP(
-                    fraction_masked=self.frac_masked,
-                    bijector_fn=self.affine6,
-                ),
-            ]
-        )
+        chain = tfb.Chain(chain)
 
         nvp = tfd.TransformedDistribution(
             distribution=tfd.MultivariateNormalDiag(
