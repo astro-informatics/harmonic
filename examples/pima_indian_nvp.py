@@ -183,7 +183,7 @@ def run_example(model_1=True, tau=1.0,
 
     training_proportion = 0.5
     var_scale = 0.8
-    epochs_num = 30
+    epochs_num = 10
 
 
     #===========================================================================
@@ -247,11 +247,7 @@ def run_example(model_1=True, tau=1.0,
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RealNVP(ndim)
-    print("nfeatures", model.flow.n_features)
-    print("ndim", model.ndim)
-    print("Shape ", chains_train.samples.shape)
-    print("Shape ", chains_train.ln_posterior.shape)
+    model = model_nf.RealNVPModel(ndim)
     model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
 
 

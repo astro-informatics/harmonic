@@ -192,7 +192,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         """
         Fit model.
         """
-        model = model_nf.RealNVP(ndim)
+        model = model_nf.RealNVPModel(ndim)
         model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
 
         #=======================================================================
