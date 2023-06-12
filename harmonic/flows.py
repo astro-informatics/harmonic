@@ -27,7 +27,6 @@ class AffineCoupling(nn.Module):
     @nn.compact
     def __call__(self, x, nunits):
         
-        print("nunits is ", nunits)
         net = nn.leaky_relu(nn.Dense(128)(x))
 
         # Shift parameter:
@@ -130,6 +129,8 @@ class RealNVP(nn.Module):
 
     def make_flow(self, var_scale=1.0):
         chain = []
+        ix = jnp.arange(self.n_features)
+        permutation = [ix[-1], *ix[:-1]]
 
         # assume n_scaled_layers is not 0
         for i in range(self.n_scaled_layers - 1):
@@ -138,7 +139,7 @@ class RealNVP(nn.Module):
                     fraction_masked=self.frac_masked, bijector_fn=self.scaled_layers[i]
                 )
             )
-            chain.append(tfb.Permute([1, 0]))
+            chain.append(tfb.Permute(permutation))
 
         chain.append(
             tfb.RealNVP(
@@ -147,7 +148,7 @@ class RealNVP(nn.Module):
         )
 
         for i in range(self.n_unscaled_layers):
-            chain.append(tfb.Permute([1, 0]))
+            chain.append(tfb.Permute(permutation))
             chain.append(
                 tfb.RealNVP(
                     fraction_masked=self.frac_masked,
