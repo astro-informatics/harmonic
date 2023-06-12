@@ -374,7 +374,7 @@ class RQSplineFlow(md.Model):
 # ===============================================================================
 
 
-class RealNVP(md.Model):
+class RealNVPModel(md.Model):
     """Normalizing flow model to approximate the log_e posterior by a NVP normalizing flow."""
 
     def __init__(
@@ -501,7 +501,7 @@ class RealNVP(md.Model):
             {"params": self.state.params, "variables": self.variables},
             x,
             var_scale,
-            #method=self.flow.log_prob,
+            method=self.flow.log_prob,
         )
 
         return logprob
