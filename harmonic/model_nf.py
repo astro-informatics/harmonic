@@ -424,6 +424,7 @@ class RealNVP(md.Model):
         return self.fitted
 
     def create_train_state(self, rng):
+        print("ndim is ", self.ndim)
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
         tx = optax.adam(self.learning_rate, self.momentum)
         return train_state.TrainState.create(
@@ -460,7 +461,6 @@ class RealNVP(md.Model):
         key, rng_model, rng_init, rng_train = jax.random.split(key, 4)
 
         variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)))
-
         state = self.create_train_state(rng_init)
 
         train_flow, train_epoch, train_step = make_training_loop(self.flow)
@@ -501,7 +501,7 @@ class RealNVP(md.Model):
             {"params": self.state.params, "variables": self.variables},
             x,
             var_scale,
-            method=self.flow.log_prob,
+            #method=self.flow.log_prob,
         )
 
         return logprob

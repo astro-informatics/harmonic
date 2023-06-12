@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Callable, List, Any
 import numpy as np
 import flax.linen as nn
 import optax
@@ -26,6 +26,8 @@ class AffineCoupling(nn.Module):
 
     @nn.compact
     def __call__(self, x, nunits):
+        
+        print("nunits is ", nunits)
         net = nn.leaky_relu(nn.Dense(128)(x))
 
         # Shift parameter:
@@ -36,6 +38,26 @@ class AffineCoupling(nn.Module):
         else:
             scaler = tfb.Identity()
         return tfb.Chain([tfb.Shift(shift), scaler])
+    
+class ShiftLogScale(nn.Module):
+  hidden_layers: List[int]
+  shift_only: bool = False
+  activation: Callable[..., Any] = jax.nn.relu
+
+  @nn.compact
+  def __call__(self, x, output_units):
+    if x.ndim == 1:
+      x = x[jnp.newaxis, ...]
+      reshape_output = lambda x: x[0]
+    else:
+      reshape_output = lambda x: x
+    for units in self.hidden_layers:
+      x = self.activation(nn.Dense(units)(x))
+    x = nn.Dense((1 if self.shift_only else 2) * output_units)(x)
+    if self.shift_only:
+      return reshape_output(x), None
+    shift, log_scale = jnp.split(x, 2, axis=-1)
+    return reshape_output(shift), reshape_output(log_scale)
 
 
 def make_nvp_fn(d=2, scale=1.0):
@@ -64,7 +86,7 @@ def make_nvp_fn(d=2, scale=1.0):
     )
 
     nvp = tfd.TransformedDistribution(
-        tfd.MultivariateNormalDiag(loc=jnp.zeros(2), scale_identity_multiplier=scale),
+        tfd.MultivariateNormalDiag(loc=jnp.zeros(d), scale_diag=jnp.full(d, scale)),
         bijector=chain,
     )
     return nvp
@@ -137,9 +159,7 @@ class RealNVP(nn.Module):
         chain = tfb.Chain(chain)
 
         nvp = tfd.TransformedDistribution(
-            distribution=tfd.MultivariateNormalDiag(
-                loc=jnp.zeros(self.n_features), scale_identity_multiplier=var_scale
-            ),
+            distribution=tfd.MultivariateNormalDiag(loc=jnp.zeros(self.n_features), scale_diag=jnp.full(self.n_features, var_scale)),
             bijector=chain,
         )
 
@@ -148,6 +168,8 @@ class RealNVP(nn.Module):
     def __call__(self, x, var_scale=1.0) -> jnp.array:
         # x = (x - self.base_mean.value) / jnp.sqrt(jnp.diag(self.base_cov.value))
         flow = self.make_flow(var_scale=var_scale)
+        y = x.shape
+        print(y)
         return flow.log_prob(x)
 
     def sample(
