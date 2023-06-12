@@ -424,7 +424,6 @@ class RealNVPModel(md.Model):
         return self.fitted
 
     def create_train_state(self, rng):
-        print("ndim is ", self.ndim)
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
         tx = optax.adam(self.learning_rate, self.momentum)
         return train_state.TrainState.create(

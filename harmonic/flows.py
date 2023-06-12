@@ -169,8 +169,6 @@ class RealNVP(nn.Module):
     def __call__(self, x, var_scale=1.0) -> jnp.array:
         # x = (x - self.base_mean.value) / jnp.sqrt(jnp.diag(self.base_cov.value))
         flow = self.make_flow(var_scale=var_scale)
-        y = x.shape
-        print(y)
         return flow.log_prob(x)
 
     def sample(
