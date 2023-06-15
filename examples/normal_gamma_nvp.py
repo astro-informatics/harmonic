@@ -341,6 +341,20 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 							bbox_inches='tight')
 
 			plt.show(block=False)
+
+			#=======================================================================
+            # Visualise distributions
+            #=======================================================================
+
+			num_samp = chains_train.samples.shape[0]
+			samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+
+			utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels)
+	
+			if savefigs:
+				plt.savefig('examples/plots/nvp_normalgamma_corner_all.png',
+                                bbox_inches='tight')
+		
 			created_plots = True
 
 		if plot_surface:

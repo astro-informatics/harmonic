@@ -10,6 +10,7 @@ sys.path.append("examples")
 import utils
 sys.path.append("harmonic")
 import model_nf
+import flows
 
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
@@ -117,12 +118,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Configure machine learning parameters
     """
     savefigs = True
-    nfold = 2
     nhyper = 2
     step = -2
-    domain = []
     hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
     hm.logs.debug_log('Hyper-parameters = {}'.format(hyper_parameters))
+
+    var_scale = 0.8
+    epochs_num = 30
+    n_scaled = 5
+    n_unscaled = 2
+    
     """
     Set prior parameters.
     """
@@ -146,7 +151,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -187,12 +192,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
         # Fit optimal model
         #=======================================================================
-        epochs_num = 30
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
         """
         Fit model.
         """
-        model = model_nf.RealNVPModel(ndim)
+        model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
         model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
 
         #=======================================================================
@@ -281,15 +285,28 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/rastrigin_corner.png',
+                plt.savefig('examples/plots/nvp_rastrigin_corner.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/rastrigin_getdist.png',
-                            bbox_inches='tight')
-            
-            plt.show(block=False)  
+                plt.savefig('examples/plots/nvp_rastrigin_getdist.png',
+                            bbox_inches='tight')  
+
+            #=======================================================================
+            # Visualise distributions
+            #=======================================================================
+
+            num_samp = chains_train.samples.shape[0]
+            samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+
+            utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+            if savefigs:
+                plt.savefig('examples/plots/nvp_rastrigin_corner_all.png',
+                                bbox_inches='tight')
+                
+            plt.show(block=False)
+                
             created_plots = True
                 
         # In 2D case, plot surface/image and samples.    
@@ -304,7 +321,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # ax.set_zlim(-100.0, 0.0)                
             ax.set_zlabel(r'$\log \mathcal{L}$')        
             if savefigs:
-                plt.savefig('examples/plots/rastrigin_lnposterior_surface.png',
+                plt.savefig('examples/plots/nvp_rastrigin_lnposterior_surface.png',
                             bbox_inches='tight')
             
             # Plot posterior image.
@@ -313,7 +330,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\mathcal{L}$')
             # ax.set_clim(vmin=0.0, vmax=0.003)
             if savefigs:
-                plt.savefig('examples/plots/rastrigin_posterior_image.png',
+                plt.savefig('examples/plots/nvp_rastrigin_posterior_image.png',
                             bbox_inches='tight')
 
             # Evaluate model on grid.
@@ -329,7 +346,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\log \varphi$') 
             # ax.set_clim(vmin=-2.0, vmax=2.0)
             if savefigs:
-                plt.savefig('examples/plots/rastrigin_model_image.png',
+                plt.savefig('examples/plots/nvp_rastrigin_model_image.png',
                             bbox_inches='tight')
             
             # Plot exponential of model.
@@ -337,7 +354,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\varphi$')
             # ax.set_clim(vmin=0.0, vmax=6.0)        
             if savefigs:
-                plt.savefig('examples/plots/rastrigin_modelexp_image.png',
+                plt.savefig('examples/plots/nvp_rastrigin_modelexp_image.png',
                             bbox_inches='tight')
 
                 plt.show(block=False)  
@@ -397,7 +414,7 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False)
+                          plot_corner=True, plot_surface=False)
     
 
 

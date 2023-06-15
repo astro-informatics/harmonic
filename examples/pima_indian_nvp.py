@@ -11,6 +11,7 @@ sys.path.append("examples")
 import utils
 sys.path.append("harmonic")
 import model_nf
+import flows
 
 
 def ln_likelihood(y, theta, x):
@@ -181,9 +182,11 @@ def run_example(model_1=True, tau=1.0,
     Configure machine learning parameters.
     """
 
-    training_proportion = 0.5
-    var_scale = 0.8
-    epochs_num = 10
+    training_proportion = 0.7
+    var_scale = 0.7
+    epochs_num = 30
+    n_scaled = 6
+    n_unscaled = 2
 
 
     #===========================================================================
@@ -247,8 +250,21 @@ def run_example(model_1=True, tau=1.0,
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RealNVPModel(ndim)
+    model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
     model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+
+    #=======================================================================
+    # Visualise distributions
+    #=======================================================================
+
+    num_samp = chains_train.samples.shape[0]
+    #samps = np.array(model.sample(num_samp, var_scale=1.))
+    samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+
+    utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+    if savefigs:
+        plt.savefig('examples/plots/nvp_pima_indian_corner_all_{}.png'.format(n_scaled+n_unscaled),
+                        bbox_inches='tight')
 
 
     #===========================================================================
@@ -339,4 +355,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(model_1, tau, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False)
+                          plot_corner=True, plot_surface=False)

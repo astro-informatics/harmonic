@@ -145,14 +145,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     Configure machine learning parameters
     """
     savefigs = True
-    nfold = 2
-    nhyper = 2
-    step = -2
-    domain = []
-    hyper_parameters = [[10**(R)] for R in range(-nhyper+step,step)]
-    hm.logs.debug_log('Hyper-parameters = {}'.format(hyper_parameters))
     a = 1.0
     b = 100.0
+    epochs_num = 30
+    var_scale = 0.8
     """
     Set prior parameters.
     """
@@ -182,7 +178,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -223,14 +219,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
         # Fit model
         #=======================================================================
-        epochs_num = 30
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
-        """
-        Fit model by selecing the configuration of hyper-parameters which 
-        minimises the validation variances.
-        """
         model = model_nf.RealNVPModel(ndim)
-        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num)
+        
 
         #=======================================================================
         # Computing evidence using learnt model and emcee chains
@@ -241,7 +233,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         computes the log-space evidence (marginal likelihood).
         """
         ev = hm.Evidence(chains_test.nchains, model)    
-        ev.add_chains(chains_test, bulk_calc=True)
+        ev.add_chains(chains_test, bulk_calc=True, var_scale=var_scale)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
         
         # Compute analytic evidence.
@@ -319,15 +311,27 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/rosenbrock_corner.png',
+                plt.savefig('examples/plots/nvp_rosenbrock_corner.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/rosenbrock_getdist.png',
+                plt.savefig('examples/plots/nvp_rosenbrock_getdist.png',
                             bbox_inches='tight')
             
             plt.show(block=False)  
+
+            #=======================================================================
+            # Visualise distributions
+            #=======================================================================
+
+            num_samp = chains_train.samples.shape[0]
+            samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+
+            utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+            if savefigs:
+                plt.savefig('examples/plots/nvp_rosenbrock_corner_all.png',
+                                bbox_inches='tight')
             created_plots = True
                 
         # In 2D case, plot surface/image and samples.    
@@ -342,7 +346,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # ax.set_zlim(-100.0, 0.0)                
             ax.set_zlabel(r'$\log \mathcal{L}$')        
             if savefigs:
-                plt.savefig('examples/plots/rosenbrock_lnposterior_surface.png',
+                plt.savefig('examples/plots/nvp_rosenbrock_lnposterior_surface.png',
                             bbox_inches='tight')
             
             # Plot posterior image.
@@ -351,7 +355,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\mathcal{L}$')
             # ax.set_clim(vmin=0.0, vmax=0.003)
             if savefigs:
-                plt.savefig('examples/plots/rosenbrock_posterior_image.png',
+                plt.savefig('examples/plots/nvp_rosenbrock_posterior_image.png',
                             bbox_inches='tight')
 
             # Evaluate model on grid.
@@ -367,7 +371,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\log \varphi$') 
             # ax.set_clim(vmin=-2.0, vmax=2.0)
             if savefigs:
-                plt.savefig('examples/plots/rosenbrock_model_image.png',
+                plt.savefig('examples/plots/nvp_rosenbrock_model_image.png',
                             bbox_inches='tight')
             
             # Plot exponential of model.
@@ -375,7 +379,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   colorbar_label=r'$\varphi$')
             # ax.set_clim(vmin=0.0, vmax=10.0)        
             if savefigs:
-                plt.savefig('examples/plots/rosenbrock_modelexp_image.png',
+                plt.savefig('examples/plots/nvp_rosenbrock_modelexp_image.png',
                             bbox_inches='tight')
 
             plt.show(block=False)  
@@ -394,12 +398,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Save out realisations of statistics for analysis.
     if n_realisations > 1:
-        np.savetxt("examples/data/rosenbrock_evidence_inv" +
+        np.savetxt("examples/data/nvp_rosenbrock_evidence_inv" +
                    "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-        np.savetxt("examples/data/rosenbrock_evidence_inv" +
+        np.savetxt("examples/data/nvp_rosenbrock_evidence_inv" +
                    "_analytic.dat",
                    evidence_inv_analytic_summary)
 
@@ -434,4 +438,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False)
+                          plot_corner=True, plot_surface=False)

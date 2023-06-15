@@ -54,6 +54,36 @@ def plot_getdist(samples, labels=None):
     g = plots.getSubplotPlotter()
     g.triangle_plot([mcsamples], filled=True)
 
+def plot_getdist_compare(samples1, samples2, labels=None):
+    """
+    Plot triangle plot of marginalised distributions using getdist package.
+
+    Args:
+        - samples: 
+            2D array of shape (ndim, nsamples) containing samples.
+        - labels: 
+            Array of strings containing axis labels.
+
+    Returns:
+        - None
+    """
+
+    getdist.chains.print_load_details = False
+
+    ndim = samples1.shape[1]
+    names = ["x%s"%i for i in range(ndim)]
+    if labels is None:
+        labels =  ["x_%s"%i for i in range(ndim)]
+
+    mcsamples1 = MCSamples(samples=samples1,
+                          names=names, labels=labels, label='Posterior samples')
+    
+    mcsamples2 = MCSamples(samples=samples2,
+                          names=names, labels=labels, label='Compressed NVP samples')
+    
+    g = plots.getSubplotPlotter()
+    g.triangle_plot([mcsamples1, mcsamples2], filled=True)
+
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
     """
