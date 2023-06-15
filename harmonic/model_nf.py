@@ -382,6 +382,7 @@ class RealNVPModel(md.Model):
         ndim_in,
         learning_rate: float = 0.001,
         momentum: float = 0.9,
+        flow = None
     ):
         """Constructor setting the hyper-parameters of the model.
 
@@ -410,7 +411,10 @@ class RealNVPModel(md.Model):
         # Model parameters
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.flow = flows.RealNVP(ndim_in)
+        if flow is None:
+            self.flow = flows.RealNVP(ndim_in)
+        else:
+            self.flow = flow
 
     def is_fitted(self):
         """Specify whether model has been fitted.
