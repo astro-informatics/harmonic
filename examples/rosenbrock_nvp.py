@@ -178,7 +178,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 1
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -330,7 +330,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             utils.plot_getdist_compare(chains_train.samples, samps_compressed)
             if savefigs:
-                plt.savefig('examples/plots/nvp_rosenbrock_corner_all.png',
+                plt.savefig('examples/plots/nvp_rosenbrock_corner_all_T' +str(var_scale) + '.png',
                                 bbox_inches='tight')
             created_plots = True
                 
@@ -398,7 +398,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Save out realisations of statistics for analysis.
     if n_realisations > 1:
-        np.savetxt("examples/data/nvp_rosenbrock_evidence_inv" +
+        np.savetxt("examples/data/nvp_rosenbrock_evidence_inv_T" + str(var_scale) +
                    "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)

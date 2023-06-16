@@ -180,9 +180,9 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 	created_plots = False
 
 
-	training_proportion = 0.5
-	var_scale = 0.8
-	epochs_num = 30
+	training_proportion = 0.8
+	var_scale = 0.99
+	epochs_num = 70
 
 	#===========================================================================
 	# Simulate data 
@@ -340,7 +340,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 							'.pdf',
 							bbox_inches='tight')
 
-			plt.show(block=False)
+			#plt.show(block=False)
 
 			#=======================================================================
             # Visualise distributions
@@ -352,7 +352,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 			utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels)
 	
 			if savefigs:
-				plt.savefig('examples/plots/nvp_normalgamma_corner_all.png',
+				plt.savefig('examples/plots/nvp_normalgamma_corner_all_'+ str(var_scale)+'tau'+
+							str(tau_prior) +'.png',
                                 bbox_inches='tight')
 		
 			created_plots = True
@@ -432,7 +433,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 			yerr=np.exp(summary[:,3])/np.exp(summary[:,1]),
 			fmt='b.', capsize=4, capthick=2, elinewidth=2)
 		if savefigs:
-			plt.savefig('examples/plots/nvp_normalgamma_comparison.pdf',
+			plt.savefig('examples/plots/nvp_normalgamma_comparison'+ str(var_scale)+'.pdf',
 						bbox_inches='tight')
 		plt.show(block=False)
 

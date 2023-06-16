@@ -326,9 +326,9 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     
     training_proportion = 0.8
     var_scale = 0.8
-    epochs_num = 30
-    n_scaled = 6
-    n_unscaled = 1
+    epochs_num = 70
+    n_scaled = 5
+    n_unscaled = 2
 
     #===========================================================================
     # Set-up Priors
@@ -431,7 +431,8 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
+    #model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
+    model = model_nf.RQSplineFlow(ndim)
     model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
 
         
@@ -531,43 +532,45 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         
           
         created_plots = True
-
-    # Plot model over first two parameters.
-
-    def model_predict_x0x1(x_2d):         
-        x2 = 1.4E-5
-        x = np.append(x_2d, [x2])
-        # print("x01x1: x = {}".format(x))
-        return model.predict(x)
-        
-    model_grid, x_grid, y_grid = \
-        utils.eval_func_on_grid(model_predict_x0x1, 
-                                xmin=2900.0, xmax=3100.0, 
-                                ymin=185.0-30.0, ymax=185.0+30.0,
-                                nx=1000, ny=1000)
-
-    # Plot model.
-    ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                          colorbar_label=r'$\log \varphi$')   
-    plt.xlabel('$x_0$')
-    plt.ylabel('$x_1$')   
-    #plt.axis('equal')    
-    if savefigs:
-        plt.savefig('examples/plots/nvp_radiatapine_model_x0x1_image.png',
-                    bbox_inches='tight')
-
-    # Plot exponential of model.
-    ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                          colorbar_label=r'$\varphi$')    
-    plt.xlabel('$x_0$')
-    plt.ylabel('$x_1$')   
-    #plt.axis('equal')    
-    if savefigs:
-        plt.savefig('examples/plots/nvp_radiatapine_modelexp_x0x1_image.png',
-                    bbox_inches='tight')
-
+    
     plot_on_grid = False
     if plot_on_grid:
+
+        # Plot model over first two parameters.
+
+        def model_predict_x0x1(x_2d):         
+            x2 = 1.4E-5
+            x = np.append(x_2d, [x2])
+            # print("x01x1: x = {}".format(x))
+            return model.predict(x)
+            
+        model_grid, x_grid, y_grid = \
+            utils.eval_func_on_grid(model_predict_x0x1, 
+                                    xmin=2900.0, xmax=3100.0, 
+                                    ymin=185.0-30.0, ymax=185.0+30.0,
+                                    nx=1000, ny=1000)
+
+        # Plot model.
+        ax = utils.plot_image(model_grid, x_grid, y_grid, 
+                            colorbar_label=r'$\log \varphi$')   
+        plt.xlabel('$x_0$')
+        plt.ylabel('$x_1$')   
+        #plt.axis('equal')    
+        if savefigs:
+            plt.savefig('examples/plots/nvp_radiatapine_model_x0x1_image.png',
+                        bbox_inches='tight')
+
+        # Plot exponential of model.
+        ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
+                            colorbar_label=r'$\varphi$')    
+        plt.xlabel('$x_0$')
+        plt.ylabel('$x_1$')   
+        #plt.axis('equal')    
+        if savefigs:
+            plt.savefig('examples/plots/nvp_radiatapine_modelexp_x0x1_image.png',
+                        bbox_inches='tight')
+
+
         # Plot model over second and third parameters.
 
         def model_predict_x1x2(x_2d): 

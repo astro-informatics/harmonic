@@ -183,7 +183,7 @@ def run_example(model_1=True, tau=1.0,
     """
 
     training_proportion = 0.7
-    var_scale = 0.7
+    var_scale = 0.9
     epochs_num = 30
     n_scaled = 6
     n_unscaled = 2
@@ -263,7 +263,7 @@ def run_example(model_1=True, tau=1.0,
 
     utils.plot_getdist_compare(chains_train.samples, samps_compressed)
     if savefigs:
-        plt.savefig('examples/plots/nvp_pima_indian_corner_all_{}.png'.format(n_scaled+n_unscaled),
+        plt.savefig('examples/plots/nvp_pima_indian_corner_all_{}_T{}.png'.format(n_scaled+n_unscaled, var_scale),
                         bbox_inches='tight')
 
 

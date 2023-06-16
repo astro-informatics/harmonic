@@ -100,8 +100,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)   
     training_proportion = 0.7 
-    epochs_num = 20
-    var_scale = 0.8
+    epochs_num = 50
+    var_scale = 0.9
 
     # Start timer.
     clock = time.process_time()
@@ -354,7 +354,7 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define parameters.
-    ndim = 3
+    ndim = 6
     nchains = 100
     samples_per_chain = 5000
     nburn = 500     
