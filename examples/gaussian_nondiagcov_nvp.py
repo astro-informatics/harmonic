@@ -99,7 +99,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     # Initialise covariance matrix.
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)   
-    training_proportion = 0.7 
+    training_proportion = 0.5
     epochs_num = 50
     var_scale = 0.9
 

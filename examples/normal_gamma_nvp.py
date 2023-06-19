@@ -180,7 +180,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 	created_plots = False
 
 
-	training_proportion = 0.8
+	training_proportion = 0.5
 	var_scale = 0.99
 	epochs_num = 70
 
