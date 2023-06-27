@@ -107,7 +107,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.process_time()
     
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
         
@@ -229,10 +229,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
 
             utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+            plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 	
             if savefigs:
                 plt.savefig('examples/plots/nvp_gaussian_nondiagcov_corner_all_{}D.png'.format(ndim),
-                                bbox_inches='tight')
+                                bbox_inches='tight', dpi=300)
                     
             plt.show()        
             

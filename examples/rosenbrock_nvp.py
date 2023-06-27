@@ -8,8 +8,7 @@ sys.path.append(".")
 import harmonic as hm
 sys.path.append("examples")
 import utils
-sys.path.append("harmonic")
-import model_nf
+from harmonic import model_nf
 
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
@@ -144,11 +143,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Configure machine learning parameters
     """
-    savefigs = True
+    savefigs = False
     a = 1.0
     b = 100.0
-    epochs_num = 30
-    var_scale = 0.8
+    epochs_num = 80
+    var_scale = 0.9
     training_proportion = 0.5
     """
     Set prior parameters.
@@ -179,7 +178,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -332,7 +331,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             utils.plot_getdist_compare(chains_train.samples, samps_compressed)
             if savefigs:
                 plt.savefig('examples/plots/nvp_rosenbrock_corner_all_T' +str(var_scale) + '.png',
-                                bbox_inches='tight')
+                                bbox_inches='tight', dpi=300)
             created_plots = True
                 
         # In 2D case, plot surface/image and samples.    

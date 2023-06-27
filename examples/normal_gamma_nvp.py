@@ -181,7 +181,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 	training_proportion = 0.5
-	var_scale = 0.9
+	var_scale = 0.95
 	epochs_num = 100
 
 	#===========================================================================
@@ -354,7 +354,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 			if savefigs:
 				plt.savefig('examples/plots/nvp_normalgamma_corner_all_'+ str(var_scale)+'tau'+
 							str(tau_prior) +'.png',
-                                bbox_inches='tight')
+                                bbox_inches='tight', dpi=300)
 		
 			created_plots = True
 

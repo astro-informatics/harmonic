@@ -1,8 +1,8 @@
 from typing import Sequence, Callable, List
-import model as md
+from harmonic import model as md
 import pickle
 import numpy as np
-import flows
+from harmonic import flows
 import jax
 import jax.numpy as jnp
 import optax

@@ -184,7 +184,7 @@ def run_example(model_1=True, tau=1.0,
 
     training_proportion = 0.5
     var_scale = 0.9
-    epochs_num = 30
+    epochs_num = 50
     n_scaled = 6
     n_unscaled = 2
 
@@ -261,10 +261,19 @@ def run_example(model_1=True, tau=1.0,
     #samps = np.array(model.sample(num_samp, var_scale=1.))
     samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
 
-    utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+    labels = ["Bias", "NP", "PGC", "BMI", "DP", "AGE"]
+
+    if model_1:
+        model_lab = 'model1'
+        labels = labels[:-1]
+    else:
+        model_lab= 'model2'
+    
+    utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels=labels)
+    
     if savefigs:
-        plt.savefig('examples/plots/nvp_pima_indian_corner_all_{}_T{}.png'.format(n_scaled+n_unscaled, var_scale),
-                        bbox_inches='tight')
+        plt.savefig('examples/plots/nvp_pima_indian_corner_all_{}_T{}_tau{}_'.format(n_scaled+n_unscaled, var_scale, tau)+ model_lab+ '.png',
+                        bbox_inches='tight', dpi=300)
 
 
     #===========================================================================
