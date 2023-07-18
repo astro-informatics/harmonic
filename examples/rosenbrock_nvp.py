@@ -149,7 +149,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     b = 100.0
     epochs_num = 30
     var_scale = 0.8
-    training_proportion = 0.5
     """
     Set prior parameters.
     """
@@ -213,7 +212,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)
         chains_train, chains_test = hm.utils.split_data(chains, 
-                                                        training_proportion=training_proportion)
+                                                        training_proportion=0.5)
         
        
         
