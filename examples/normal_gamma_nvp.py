@@ -181,8 +181,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
 	training_proportion = 0.5
-	var_scale = 0.99
-	epochs_num = 70
+	var_scale = 0.9
+	epochs_num = 100
 
 	#===========================================================================
 	# Simulate data 
