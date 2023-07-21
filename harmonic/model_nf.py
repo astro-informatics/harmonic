@@ -1,24 +1,41 @@
-import model as md
+from typing import Sequence, Callable, List
+from harmonic import model as md
 import pickle
 import numpy as np
-import flows
+from harmonic import flows
 import jax
 import jax.numpy as jnp
 import optax
 from functools import partial
 import tqdm
+import flowMC
+from examples.utils import plot_getdist_compare
+import matplotlib.pyplot as plt
+
+from flowMC.nfmodel.utils import make_training_loop
+from flowMC.nfmodel.rqSpline import RQSpline
+import flax
+from flax.training import train_state  # Useful dataclass to keep train state
+import distrax
+import flax.linen as nn
 
 
-class NormalizingFlow(md.Model):
-    """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
+# ===============================================================================
+# Rational Quadratic Spline Flow - to be refactored (cf RealNVP)
+# ===============================================================================
+
+
+class RQSplineFlow(md.Model):
+    """Rational quadratic spline flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
         self,
         ndim_in,
-        flow=flows.NVPFlowLogProb(),
-        scaling=0.8,
-        opt=optax.adam(learning_rate=0.001),
-        hyper_parameters=None,
+        n_layers=8,
+        n_hiddens=[64, 64],
+        n_bins=8,
+        learning_rate=0.001,
+        momentum=0.9,
     ):
         """Constructor setting the hyper-parameters and domains of the model.
 
@@ -38,7 +55,9 @@ class NormalizingFlow(md.Model):
             scaling (float): Scale factor by which the base distribution Gaussian
                 is compressed in the prediction step. Should be positive and <=1.
 
-            hyper_parameters (list): Hyper-parameters for model.
+            learning_rate (float): Learning rate for adam optimizer used in the fit method.
+
+            momentum (float): Learning rate for Adam optimizer used in the fit method.
 
         Raises:
 
@@ -50,34 +69,37 @@ class NormalizingFlow(md.Model):
         if ndim_in < 1:
             raise ValueError("Dimension must be greater than 0.")
 
-        if scaling > 1:
-            raise ValueError("Scaling must not be greater than 1.")
-
-        if scaling <= 0:
-            raise ValueError("Scaling must be positive.")
-
         self.ndim = ndim_in
-        self.flow = flow
         self.fitted = False
-        self.scaling = scaling
-        self.optimizer = opt
-        self.params = None
+        self.state = None
 
-    def loss_fn(self, params, x):
-        return -jnp.mean(self.flow.apply(params, x))
+        # Model parameters
+        self.n_layers = n_layers
+        self.n_hiddens = n_hiddens
+        self.n_bins = n_bins
+        self.learning_rate = learning_rate
+        self.momentum = momentum
+        self.flow = RQSpline(ndim_in, n_layers, n_hiddens, n_bins)
 
-    @partial(jax.jit, static_argnums=(0,))
-    def update_flow(self, params, opt_state, x):
-        # Computes the gradients of the flow
-        loss, grads = jax.value_and_grad(self.loss_fn)(params, x)
+    def is_fitted(self):
+        """Specify whether model has been fitted.
 
-        # Computes the weights updates and apply them
-        updates, opt_state = self.optimizer.update(grads, opt_state)
-        params = optax.apply_updates(params, updates)
+        Returns:
 
-        return params, opt_state, loss
+            (bool): Whether the model has been fitted.
 
-    def fit(self, X, Y, batch_size=5000, epochs=500, key=jax.random.PRNGKey(1000)):
+        """
+
+        return self.fitted
+
+    def create_train_state(self, rng):
+        params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
+        tx = optax.adam(self.learning_rate, self.momentum)
+        return train_state.TrainState.create(
+            apply_fn=self.flow.apply, params=params, tx=tx
+        )
+
+    def fit(self, X, Y, batch_size=10000, epochs=3, key=jax.random.PRNGKey(1000)):
         """Fit the parameters of the model.
 
         Args:
@@ -108,49 +130,139 @@ class NormalizingFlow(md.Model):
         if X.shape[1] != self.ndim:
             raise ValueError("X second dimension not the same as ndim.")
 
-        # Initializes the weights of the model
-        params = self.flow.init(jax.random.PRNGKey(0), jnp.zeros((1, 2)))
-        opt_state = self.optimizer.init(params)
+        key, rng_model, rng_init, rng_train = jax.random.split(key, 4)
 
-        np.random.shuffle(X)  # randomise samples order in chains
-        batches_num = X.shape[0] / batch_size
-        steps = int(epochs * batches_num)
-        print("Running for ", steps, " steps.")
-        batches = jnp.split(X, batches_num)
+        variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)))["variables"]
+        variables = variables.unfreeze()
+        variables["base_mean"] = jnp.mean(X, axis=0)
+        variables["base_cov"] = jnp.cov(X.T)
+        variables = flax.core.freeze(variables)
 
-        for i in tqdm.tqdm(range(steps)):
-            key, subkey = jax.random.split(key)
+        state = self.create_train_state(rng_init)
 
-            # Get a batch of data
-            x = batches[i % len(batches)]
+        train_flow, train_epoch, train_step = make_training_loop(self.flow)
+        rng, state, loss_values = train_flow(
+            rng_train, state, variables, X, epochs, batch_size
+        )
 
-            # Apply the update function
-            params, opt_state, loss = self.update_flow(params, opt_state, x)
-
-        self.params = params
+        self.state = state
+        self.variables = variables
         self.fitted = True
 
         return
 
-    def predict(self, x):
-        """Predict the value of the posterior at point x.
-
-        Must be implemented by derived class (since abstract).
+    def predict(self, x, var_scale: float = 1.0):
+        """Predict the value of log_e posterior at x.
 
         Args:
 
-            x (double ndarray[ndim]): Sample of shape (ndim) at which to
+            x (jnp.ndarray): Sample of shape at which to
                 predict posterior value.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
 
         Returns:
 
-            (double): Predicted log_e posterior value.
+            jnp.ndarray: Predicted log_e posterior value.
 
         """
 
-        logprob = self.flow.apply(self.params, x, scale=self.scaling)
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
+
+        logprob = self.flow.apply(
+            {"params": self.state.params, "variables": self.variables},
+            x,
+            var_scale,
+            method=self.flow.log_prob_scaled,
+        )
 
         return logprob
+
+    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), var_scale: float = 1.0):
+        """Sample from trained flow.
+
+        Args:
+            nsample (int): Number of samples generated.
+
+            rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
+
+        Returns:
+
+            jnp.array (n_sample, ndim): Samples from fitted distribution."""
+
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
+
+        samples = self.flow.apply(
+            {"params": self.state.params, "variables": self.variables},
+            rng_key,
+            n_sample,
+            var_scale,
+            method=self.flow.sample,
+        )
+
+        return samples
+
+
+# ===============================================================================
+# NVP Flow - will generalise this to take a custom flow
+# ===============================================================================
+
+
+class RealNVPModel(md.Model):
+    """Normalizing flow model to approximate the log_e posterior by a NVP normalizing flow."""
+
+    def __init__(
+        self,
+        ndim_in,
+        learning_rate: float = 0.001,
+        momentum: float = 0.9,
+        flow = None
+    ):
+        """Constructor setting the hyper-parameters of the model.
+
+        Args:
+
+            ndim_in (int): Dimension of the problem to solve.
+
+            learning_rate (float): Learning rate for adam optimizer used in the fit method.
+
+            momentum (float): Learning rate for Adam optimizer used in the fit method.
+
+        Raises:
+
+            ValueError: If the ndim_in is not positive.
+            ValueError: If scaling is negative or greater than 1.
+
+        """
+
+        if ndim_in < 1:
+            raise ValueError("Dimension must be greater than 0.")
+
+        self.ndim = ndim_in
+        self.fitted = False
+        self.state = None
+
+        # Model parameters
+        self.learning_rate = learning_rate
+        self.momentum = momentum
+        if flow is None:
+            self.flow = flows.RealNVP(ndim_in)
+        else:
+            self.flow = flow
+        self.pre_offset = jnp.zeros(ndim_in)
+        self.pre_amp = jnp.ones(ndim_in)
 
     def is_fitted(self):
         """Specify whether model has been fitted.
@@ -163,35 +275,136 @@ class NormalizingFlow(md.Model):
 
         return self.fitted
 
-    def serialize(self, filename):
-        """Serialize Model object.
+    def create_train_state(self, rng):
+        params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
+        tx = optax.adam(self.learning_rate, self.momentum)
+        return train_state.TrainState.create(
+            apply_fn=self.flow.apply, params=params, tx=tx
+        )
+
+
+    def fit(self, X, Y, batch_size=10000, epochs=3, key=jax.random.PRNGKey(1000), standardize = False):
+        """Fit the parameters of the model.
 
         Args:
 
-            filename (string): Name of file to save model object.
+            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+
+            Y (double ndarray[nsamples]): Target log_e posterior values for each
+                sample in X.
+
+
+        Raises:
+
+            ValueError: Raised if the first dimension of X is not the same as
+                Y.
+
+            ValueError: Raised if the second dimension of X is not the same as
+                ndim.
 
         """
 
-        file = open(filename, "wb")
-        pickle.dump(self, file)
-        file.close()
+        if X.shape[0] != Y.shape[0]:
+            raise ValueError("X and Y sizes are not the same.")
+
+        if X.shape[1] != self.ndim:
+            raise ValueError("X second dimension not the same as ndim.")
+
+        key, rng_model, rng_init, rng_train = jax.random.split(key, 4)
+
+        variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)))
+        state = self.create_train_state(rng_init)
+
+        #set up standardisation
+        if standardize:
+            self.pre_offset = jnp.min(X, axis = 0)
+            self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
+
+        X_old = X
+        X = (X - self.pre_offset) / self.pre_amp
+        print("max", jnp.max(X, axis=0), "min", jnp.min(X, axis = 0), "amp", self.pre_amp)
+              
+        plot_getdist_compare(X_old, X)
+        plt.show()
+
+        train_flow, train_epoch, train_step = make_training_loop(self.flow)
+        rng, state, loss_values = train_flow(
+            rng_train, state, variables, X, epochs, batch_size
+        )
+
+        self.state = state
+        self.variables = variables
+        self.fitted = True
 
         return
 
-    def deserialize(self, filename):
-        """Deserialize Model object from file.
+    def predict(self, x, var_scale: float = 1.0):
+        """Predict the value of log_e posterior at x.
 
         Args:
 
-            filename (string): Name of file from which to read model object.
+            x (jnp.ndarray): Sample of shape at which to
+                predict posterior value.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
 
         Returns:
 
-            (Model): Model object deserialized from file.
+            jnp.ndarray: Predicted log_e posterior value.
 
         """
-        file = open(filename, "rb")
-        model = pickle.load(file)
-        file.close()
 
-        return model
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
+        
+        x = (x-self.pre_offset)/self.pre_amp
+        print("predict max", jnp.max(x, axis=0), "min", jnp.min(x, axis = 0))
+
+        logprob = self.flow.apply(
+            {"params": self.state.params, "variables": self.variables},
+            x,
+            var_scale,
+            method=self.flow.log_prob,
+        )
+
+        logprob -= sum(jnp.log(self.pre_amp))
+
+        return logprob
+
+    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), var_scale: float = 1.0):
+        """Sample from trained flow.
+
+        Args:
+            nsample (int): Number of samples generated.
+
+            rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+
+            var_scale (float): Scale factor by which the base distribution Gaussian
+                is compressed in the prediction step. Should be positive and <=1.
+
+        Returns:
+
+            jnp.array (n_sample, ndim): Samples from fitted distribution.
+        """
+
+        if var_scale > 1:
+            raise ValueError("Scaling must not be greater than 1.")
+
+        if var_scale <= 0:
+            raise ValueError("Scaling must be positive.")
+
+        samples = self.flow.apply(
+            {"params": self.state.params, "variables": self.variables},
+            rng_key,
+            n_sample,
+            var_scale,
+            method=self.flow.sample,
+        )
+
+        #samples = (samples * jnp.sqrt(jnp.diag(self.base_cov))) + self.base_mean
+        samples = (samples * self.pre_amp) + self.pre_offset
+        return samples
