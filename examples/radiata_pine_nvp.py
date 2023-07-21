@@ -324,11 +324,13 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     # Set general parameters.    
     savefigs = True
     
-    training_proportion = 0.8
+    training_proportion = 0.5
     var_scale = 0.8
-    epochs_num = 70
-    n_scaled = 5
-    n_unscaled = 2
+    epochs_num = 50
+    n_scaled = 3
+    n_unscaled = 3
+    learning_rate = 0.001
+    standardize = True
 
     #===========================================================================
     # Set-up Priors
@@ -420,8 +422,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     """
     chains = hm.Chains(ndim)
     chains.add_chains_3d(samples, lnprob)
-    chains_train, chains_test = hm.utils.split_data(chains, \
-        training_proportion=training_proportion)
+    chains_train, chains_test = hm.utils.split_data(chains, training_proportion=training_proportion)
     
     #=======================================================================
     # Fit model
@@ -431,9 +432,9 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    #model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
-    model = model_nf.RQSplineFlow(ndim)
-    model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+    model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled), learning_rate = learning_rate)
+    #model = model_nf.RQSplineFlow(ndim)
+    model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num, standardize=standardize) 
 
         
     
@@ -529,6 +530,11 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         if savefigs:
             plt.savefig('examples/plots/nvp_radiatapine_corner_all.png',
                             bbox_inches='tight')
+            
+        utils.plot_getdist(samps_compressed)
+        if savefigs:
+            plt.savefig('examples/plots/nvp_radiatapine_flow_getdist.png',
+                        bbox_inches='tight')
         
           
         created_plots = True
@@ -654,8 +660,11 @@ if __name__ == '__main__':
     # Define parameters.
     model_1 = True
     nchains = 400
+    #nchains = 10
     samples_per_chain = 20000
+    #samples_per_chain = 2000
     nburn = 2000
+    #nburn = 100
     np.random.seed(2)
 
     hm.logs.info_log('Radiata Pine example')

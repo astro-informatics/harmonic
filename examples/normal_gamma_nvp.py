@@ -180,9 +180,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 	created_plots = False
 
 
-	training_proportion = 0.8
-	var_scale = 0.99
+	training_proportion = 0.5
+	var_scale = 0.9
 	epochs_num = 70
+	standardize = True
 
 	#===========================================================================
 	# Simulate data 
@@ -250,7 +251,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
 		hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
 		model = model_nf.RealNVPModel(ndim)
-		model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+		model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num, standardize=standardize) 
 
 		#===================================================================
 		# Computing evidence using learnt model and emcee chains
@@ -354,7 +355,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 			if savefigs:
 				plt.savefig('examples/plots/nvp_normalgamma_corner_all_'+ str(var_scale)+'tau'+
 							str(tau_prior) +'.png',
-                                bbox_inches='tight')
+                                bbox_inches='tight', dpi=300)
 		
 			created_plots = True
 
