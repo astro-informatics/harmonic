@@ -182,7 +182,7 @@ def run_example(model_1=True, tau=1.0,
     Configure machine learning parameters.
     """
 
-    training_proportion = 0.5
+    training_proportion = 0.7
     var_scale = 0.9
     epochs_num = 50
     n_scaled = 6
