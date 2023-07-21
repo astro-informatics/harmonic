@@ -102,6 +102,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     training_proportion = 0.5
     epochs_num = 50
     var_scale = 0.9
+    standardize = False
 
     # Start timer.
     clock = time.process_time()
@@ -142,7 +143,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
         model = model_nf.RealNVPModel(ndim)
-        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num, standardize=standardize) 
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log('Compute evidence...')
@@ -234,6 +235,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             if savefigs:
                 plt.savefig('examples/plots/nvp_gaussian_nondiagcov_corner_all_{}D.png'.format(ndim),
                                 bbox_inches='tight', dpi=300)
+                
+            utils.plot_getdist(samps_compressed)
+            if savefigs:
+                plt.savefig('examples/plots/gaussian_nondiagcov_flow_getdist_{}D.png'.format(ndim),
+                            bbox_inches='tight', dpi=300)
                     
             plt.show()        
             
@@ -355,7 +361,7 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define parameters.
-    ndim = 6
+    ndim = 2
     nchains = 100
     samples_per_chain = 5000
     nburn = 500     

@@ -324,12 +324,13 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     # Set general parameters.    
     savefigs = True
     
-    training_proportion = 0.8
+    training_proportion = 0.5
     var_scale = 0.8
-    epochs_num = 200
-    n_scaled = 7
-    n_unscaled = 5
-    learning_rate = 0.8
+    epochs_num = 50
+    n_scaled = 3
+    n_unscaled = 3
+    learning_rate = 0.001
+    standardize = True
 
     #===========================================================================
     # Set-up Priors
@@ -433,7 +434,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     """
     model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled), learning_rate = learning_rate)
     #model = model_nf.RQSplineFlow(ndim)
-    model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+    model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num, standardize=standardize) 
 
         
     
@@ -659,8 +660,11 @@ if __name__ == '__main__':
     # Define parameters.
     model_1 = True
     nchains = 400
+    #nchains = 10
     samples_per_chain = 20000
+    #samples_per_chain = 2000
     nburn = 2000
+    #nburn = 100
     np.random.seed(2)
 
     hm.logs.info_log('Radiata Pine example')
