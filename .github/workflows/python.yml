@@ -27,7 +27,8 @@ jobs:
     
     - name: Install harmonic
       run: |
-        python setup.py build_ext --inplace --define CYTHON_TRACE
+        # python setup.py build_ext --inplace --define CYTHON_TRACE
+        pip install .
     
     - name: Run tests
       run: |
