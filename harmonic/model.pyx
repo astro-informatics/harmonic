@@ -835,7 +835,7 @@ class KernelDensityEstimate(Model):
         cdef long count = 0
         
         # Find the pixel that the sample is in
-        index = 0
+        cdef long index = 0
         for i_dim in range(ndim):
             sub_index = <long>((x[i_dim]-start_end[i_dim,0]) * \
                 inv_scales[i_dim]*inv_diam) + 1
