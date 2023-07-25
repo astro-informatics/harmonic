@@ -23,13 +23,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements/requirements-core.txt
         pip install -r requirements/requirements-test.txt
-        pip install -r requirements/requirements-docs.txt 
-        pip list    
+        pip install -r requirements/requirements-docs.txt     
     
     - name: Install harmonic
       run: |
-        # python setup.py build_ext --inplace --define CYTHON_TRACE
-        pip install .
+        python setup.py build_ext --inplace --define CYTHON_TRACE
     
     - name: Run tests
       run: |
