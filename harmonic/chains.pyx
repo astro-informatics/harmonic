@@ -117,7 +117,7 @@ class Chains:
             raise ValueError("Length of sample and ln_posterior arrays do not "
                 + "match")
 
-        cdef long i_chain, samples_per_chain = samples.shape[0] // nchains_in
+        cdef long i_chain, samples_per_chain = samples.shape[0] / nchains_in
         for i_chain in range(nchains_in):
             self.add_chain(
                 samples[i_chain*samples_per_chain:
