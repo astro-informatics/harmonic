@@ -317,8 +317,10 @@ class RealNVPModel(md.Model):
 
         #set up standardisation
         if standardize:
-            self.pre_offset = jnp.min(X, axis = 0)
-            self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
+            #self.pre_offset = jnp.min(X, axis = 0)
+            self.pre_offset = jnp.mean(X, axis=0)
+            #self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
+            self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
 
         X_old = X
         X = (X - self.pre_offset) / self.pre_amp
