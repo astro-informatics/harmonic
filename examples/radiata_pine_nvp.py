@@ -325,7 +325,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     savefigs = True
     
     training_proportion = 0.5
-    var_scale = 0.8
+    var_scale = 0.9
     epochs_num = 50
     n_scaled = 3
     n_unscaled = 3
