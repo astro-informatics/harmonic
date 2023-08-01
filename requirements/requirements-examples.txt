@@ -1,4 +1,4 @@
 emcee==3.1.4
-matplotlib==3.2.1
+matplotlib
 corner==2.0.1
 getdist==1.4.3

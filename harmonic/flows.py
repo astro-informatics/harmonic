@@ -3,13 +3,10 @@ import numpy as np
 import flax.linen as nn
 import optax
 import pickle
-import tqdm
 import jax
 import jax.numpy as jnp
 import tensorflow_probability as tfp
-import flowMC
 from flax.training import train_state
-from tqdm import trange
 
 tfp = tfp.substrates.jax
 tfd = tfp.distributions

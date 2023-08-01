@@ -3,6 +3,12 @@
 # Install core and extra requirements
 
 echo -ne 'Building Dependencies... \r'
+
+# Install jax and TFP on jax substrates (on M1 mac)
+conda install -q -c conda-forge jax==0.4.1 -y
+conda install -q -c conda-forge flax==0.6.1 -y
+pip install -Uq tfp-nightly[jax]==0.20.0.dev20230801 > /dev/null
+
 pip install -q -r requirements/requirements-core.txt
 echo -ne 'Building Dependencies... #####               (25%)\r'
 pip install -q -r requirements/requirements-examples.txt
@@ -12,6 +18,8 @@ echo -ne 'Building Dependencies... ###############     (75%)\r'
 pip install -q -r requirements/requirements-docs.txt
 echo -ne 'Building Dependencies... ####################(100%)\r'
 echo -ne '\n'
+
+
 
 # Install specific converter for building tutorial documentation
 
