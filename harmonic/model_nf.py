@@ -297,7 +297,8 @@ class RealNVPModel(md.Model):
         ndim_in,
         learning_rate: float = 0.001,
         momentum: float = 0.9,
-        flow = None
+        flow = None,
+        standardize = False
     ):
         """Constructor setting the hyper-parameters of the model.
 
@@ -330,8 +331,7 @@ class RealNVPModel(md.Model):
             self.flow = flows.RealNVP(ndim_in)
         else:
             self.flow = flow
-        self.pre_offset = jnp.zeros(ndim_in)
-        self.pre_amp = jnp.ones(ndim_in)
+        self.standardize = standardize
 
     def is_fitted(self):
         """Specify whether model has been fitted.
@@ -352,7 +352,7 @@ class RealNVPModel(md.Model):
         )
 
 
-    def fit(self, X, Y, batch_size=10000, epochs=3, key=jax.random.PRNGKey(1000), standardize = False):
+    def fit(self, X, Y, batch_size=10000, epochs=3, key=jax.random.PRNGKey(1000)):
         """Fit the parameters of the model.
 
         Args:
@@ -385,18 +385,18 @@ class RealNVPModel(md.Model):
         state = self.create_train_state(rng_init)
 
         #set up standardisation
-        #if standardize:
-            #self.pre_offset = jnp.min(X, axis = 0)
-            #self.pre_offset = jnp.mean(X, axis=0)
+        if self.standardize:
+            #self.pre_offset = jnp.min(X, axis = 0) #maxmin
+            self.pre_offset = jnp.mean(X, axis=0)
             #self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
-            #self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
+            self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
 
-        #X_old = X
-        #X = (X - self.pre_offset) / self.pre_amp
-        #print("max", jnp.max(X, axis=0), "min", jnp.min(X, axis = 0), "amp", self.pre_amp)
+            X_old = X
+            X = (X - self.pre_offset) / self.pre_amp
+            print("max", jnp.max(X, axis=0), "min", jnp.min(X, axis = 0), "amp", self.pre_amp)
               
-        #plot_getdist_compare(X_old, X)
-        #plt.show()
+            plot_getdist_compare(X_old, X)
+            plt.show()
 
         train_flow, train_epoch, train_step = make_training_loop(self.flow)
         rng, state, loss_values = train_flow(
@@ -432,8 +432,9 @@ class RealNVPModel(md.Model):
         if var_scale <= 0:
             raise ValueError("Scaling must be positive.")
         
-        #x = (x-self.pre_offset)/self.pre_amp
-        #print("predict max", jnp.max(x, axis=0), "min", jnp.min(x, axis = 0))
+        if self.standardize:
+            x = (x-self.pre_offset)/self.pre_amp
+            print("predict max", jnp.max(x, axis=0), "min", jnp.min(x, axis = 0))
 
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
@@ -442,7 +443,8 @@ class RealNVPModel(md.Model):
             method=self.flow.log_prob,
         )
 
-        #logprob -= sum(jnp.log(self.pre_amp))
+        if self.standardize:
+            logprob -= sum(jnp.log(self.pre_amp))
 
         return logprob
 
@@ -477,5 +479,8 @@ class RealNVPModel(md.Model):
         )
 
         #samples = (samples * jnp.sqrt(jnp.diag(self.base_cov))) + self.base_mean
-        #samples = (samples * self.pre_amp) + self.pre_offset
+        
+        if self.standardize:
+            samples = (samples * self.pre_amp) + self.pre_offset
+        
         return samples

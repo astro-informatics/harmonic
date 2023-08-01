@@ -142,8 +142,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Fit model
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
-        model = model_nf.RealNVPModel(ndim)
-        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num, standardize=standardize) 
+        model = model_nf.RealNVPModel(ndim, standardize=standardize)
+        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log('Compute evidence...')

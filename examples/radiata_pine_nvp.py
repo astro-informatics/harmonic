@@ -432,9 +432,9 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled), learning_rate = learning_rate)
+    model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled), learning_rate = learning_rate, standardize=standardize)
     #model = model_nf.RQSplineFlow(ndim)
-    model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num, standardize=standardize) 
+    model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
 
         
     
