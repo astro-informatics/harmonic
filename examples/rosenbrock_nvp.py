@@ -329,7 +329,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             num_samp = chains_train.samples.shape[0]
             samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
 
-            utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+            utils.plot_getdist_compare(chains_train.samples, samps_compressed, legend_fontsize=13)
             if savefigs:
                 plt.savefig('examples/plots/nvp_rosenbrock_corner_all_T' +str(var_scale) + '.png',
                                 bbox_inches='tight', dpi=300)

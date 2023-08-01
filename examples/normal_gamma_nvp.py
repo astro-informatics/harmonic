@@ -182,8 +182,11 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 	training_proportion = 0.5
 	var_scale = 0.9
-	epochs_num = 70
-	standardize = True
+	epochs_num = 100
+	standardize = False
+
+	plot_comparison_2var = True
+	var_scale_2 = 0.95
 
 	#===========================================================================
 	# Simulate data 
@@ -200,6 +203,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 	hm.logs.debug_log('x: mean = {}, std = {}, n = {}'.format(x_mean, x_std, x_n))
 
 	summary = np.empty((len(tau_array), 4), dtype=float)
+	summary_2 = np.empty((len(tau_array), 4), dtype=float)
 
 	# Start timer.
 	clock = time.process_time()
@@ -276,6 +280,18 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 		summary[i_tau, 2] = ln_evidence
 		summary[i_tau, 3] = ln_evidence_std
 
+		#compare two temperature parameters
+
+		if plot_comparison_2var:
+			ev_2 = hm.Evidence(chains_test.nchains, model)
+			ev_2.add_chains(chains_test, bulk_calc=True, var_scale=var_scale_2)
+			ln_evidence_2, ln_evidence_std_2 = ev_2.compute_ln_evidence()
+
+			summary_2[i_tau, 0] = tau_prior
+			summary_2[i_tau, 1] = ln_evidence_analytic
+			summary_2[i_tau, 2] = ln_evidence_2
+			summary_2[i_tau, 3] = ln_evidence_std_2
+
 		# ==================================================================
 		# Display evidence computation results.
 		# ==================================================================
@@ -350,7 +366,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 			num_samp = chains_train.samples.shape[0]
 			samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
 
-			utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels)
+			utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels, legend_fontsize=13)
 	
 			if savefigs:
 				plt.savefig('examples/plots/nvp_normalgamma_corner_all_'+ str(var_scale)+'tau'+
@@ -436,6 +452,29 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 		if savefigs:
 			plt.savefig('examples/plots/nvp_normalgamma_comparison'+ str(var_scale)+'.pdf',
 						bbox_inches='tight')
+		plt.show(block=False)
+
+	if plot_comparison_2var:
+		created_plots = True
+
+		plt.rcParams.update({'font.size': 15})
+		fig, ax = plt.subplots()
+		ax.plot(np.array([1E-5, 1E1]), np.ones(2), 'r', linewidth=2)
+		ax.set_xlim([1E-5, 1E1])
+		ax.set_ylim([0.990, 1.010])
+		ax.set_xscale("log")
+		ax.set_xlabel(r"Prior size ($\tau_0$)")
+		ax.set_ylabel(r"Relative accuracy ($z_{\rm estimated}/z_{\rm analytic}$)")
+		ax.errorbar(tau_array, np.exp(summary[:,2])/np.exp(summary[:,1]),
+			yerr=np.exp(summary[:,3])/np.exp(summary[:,1]),
+			fmt='b.', capsize=4, capthick=2, elinewidth=2, label='T='+str(var_scale))
+		ax.errorbar(tau_array, np.exp(summary_2[:,2])/np.exp(summary_2[:,1]),
+			yerr=np.exp(summary_2[:,3])/np.exp(summary_2[:,1]),
+			fmt='g.', capsize=4, capthick=2, elinewidth=2, label='T='+str(var_scale_2))
+		ax.legend(loc='lower right')
+		if savefigs:
+			plt.savefig('examples/plots/nvp_normalgamma_comparison_'+ str(var_scale)+ '_' + str(var_scale_2) + '.pdf',
+						bbox_inches='tight', dpi=3000)
 		plt.show(block=False)
 
 	#===========================================================================

@@ -269,7 +269,7 @@ def run_example(model_1=True, tau=1.0,
     else:
         model_lab= 'model2'
     
-    utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels=labels)
+    utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels=labels, legend_fontsize=17.5)
     
     if savefigs:
         plt.savefig('examples/plots/nvp_pima_indian_corner_all_{}_T{}_tau{}_'.format(n_scaled+n_unscaled, var_scale, tau)+ model_lab+ '.png',
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define problem parameters
-    model_1 = False
+    model_1 = True
     # Tau should be varied in [0.01, 1].
     #tau = 1.0
     tau = 0.01
