@@ -465,10 +465,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 		ax.set_xscale("log")
 		ax.set_xlabel(r"Prior size ($\tau_0$)")
 		ax.set_ylabel(r"Relative accuracy ($z_{\rm estimated}/z_{\rm analytic}$)")
-		ax.errorbar(tau_array, np.exp(summary[:,2])/np.exp(summary[:,1]),
+		ax.errorbar(np.array(tau_array)*0.93, np.exp(summary[:,2])/np.exp(summary[:,1]),
 			yerr=np.exp(summary[:,3])/np.exp(summary[:,1]),
 			fmt='b.', capsize=4, capthick=2, elinewidth=2, label='T='+str(var_scale))
-		ax.errorbar(tau_array, np.exp(summary_2[:,2])/np.exp(summary_2[:,1]),
+		ax.errorbar(np.array(tau_array)*1.07, np.exp(summary_2[:,2])/np.exp(summary_2[:,1]),
 			yerr=np.exp(summary_2[:,3])/np.exp(summary_2[:,1]),
 			fmt='g.', capsize=4, capthick=2, elinewidth=2, label='T='+str(var_scale_2))
 		ax.legend(loc='lower right')
