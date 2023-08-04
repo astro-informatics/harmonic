@@ -1,6 +1,5 @@
 from typing import Sequence, Callable, List
 from harmonic import model as md
-import pickle
 import numpy as np
 from harmonic import flows
 import jax
@@ -11,8 +10,6 @@ from examples.utils import plot_getdist_compare
 import matplotlib.pyplot as plt
 from tqdm import trange
 
-#from flowMC.nfmodel.utils import make_training_loop
-#from flowMC.nfmodel.rqSpline import RQSpline
 import flax
 from flax.training import train_state  # Useful dataclass to keep train state
 import flax.linen as nn
@@ -148,7 +145,7 @@ class RQSplineFlow(md.Model):
         self.n_bins = n_bins
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.flow = RQSpline(ndim_in, n_layers, n_hiddens, n_bins)
+        self.flow = flows.RQSpline(ndim_in, n_layers, n_hiddens, n_bins)
 
     def is_fitted(self):
         """Specify whether model has been fitted.
