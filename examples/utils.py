@@ -80,7 +80,7 @@ def plot_getdist_compare(samples1, samples2, labels=None, legend_fontsize=15):
                           names=names, labels=labels, label='Posterior')
     
     mcsamples2 = MCSamples(samples=samples2,
-                          names=names, labels=labels, label='Compressed flow')
+                          names=names, labels=labels, label='Concentrated flow')
     
     
     g = plots.getSubplotPlotter(width_inch=10.5/2.54)
