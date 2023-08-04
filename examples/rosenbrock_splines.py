@@ -146,7 +146,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     savefigs = True
     a = 1.0
     b = 100.0
-    epochs_num = 5
+    epochs_num = 10
     var_scale = 0.85
     training_proportion = 0.5
     standardize = False
@@ -179,7 +179,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -221,8 +221,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Fit model
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
-        model = model_nf.RQSplineFlow(ndim)
-        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num)
+        model = model_nf.RQSplineFlow(ndim, standardize=standardize)
+        model.fit(chains_train.samples, epochs=epochs_num)
         
 
         #=======================================================================

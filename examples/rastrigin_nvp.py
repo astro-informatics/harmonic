@@ -197,7 +197,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         Fit model.
         """
         model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
-        model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+        model.fit(chains_train.samples, epochs=epochs_num) 
 
         #=======================================================================
         # Computing evidence using learnt model and emcee chains

@@ -24,8 +24,6 @@ class RealNVP(nn.Module):
     """
 
     n_features: int
-    # hidden_layers: Sequence[int]
-    frac_masked: float = 0.5
     n_scaled_layers: int = 2
     n_unscaled_layers: int = 4
 
@@ -34,8 +32,6 @@ class RealNVP(nn.Module):
         self.unscaled_layers = [
             AffineCoupling(apply_scaling=False) for i in range(self.n_unscaled_layers)
         ]
-        self.base_mean = jnp.zeros(self.n_features)
-        self.base_cov = jnp.eye(self.n_features)
 
     def make_flow(self, var_scale=1.0):
         chain = []
@@ -46,14 +42,14 @@ class RealNVP(nn.Module):
         for i in range(self.n_scaled_layers - 1):
             chain.append(
                 tfb.RealNVP(
-                    fraction_masked=self.frac_masked, bijector_fn=self.scaled_layers[i]
+                    fraction_masked=0.5, bijector_fn=self.scaled_layers[i]
                 )
             )
             chain.append(tfb.Permute(permutation))
 
         chain.append(
             tfb.RealNVP(
-                fraction_masked=self.frac_masked, bijector_fn=self.scaled_layers[-1]
+                fraction_masked=0.5, bijector_fn=self.scaled_layers[-1]
             )
         )
 
@@ -61,7 +57,7 @@ class RealNVP(nn.Module):
             chain.append(tfb.Permute(permutation))
             chain.append(
                 tfb.RealNVP(
-                    fraction_masked=self.frac_masked,
+                    fraction_masked=0.5,
                     bijector_fn=self.unscaled_layers[i],
                 )
             )
@@ -77,7 +73,6 @@ class RealNVP(nn.Module):
         return nvp
 
     def __call__(self, x, var_scale=1.0) -> jnp.array:
-        #x = (x - self.base_mean) / jnp.sqrt(jnp.diag(self.base_cov))
         flow = self.make_flow(var_scale=var_scale)
         return flow.log_prob(x)
 
@@ -156,13 +151,6 @@ class RQSpline(nn.Module):
         self.conditioner = conditioner
         self.scalar = scalar
 
-        self.base_mean = self.variable(
-            "variables", "base_mean", jnp.zeros, ((self.n_features))
-        )
-        self.base_cov = self.variable(
-            "variables", "base_cov", jnp.eye, (self.n_features)
-        )
-
         self.vmap_call = jax.jit(jax.vmap(self.__call__))
 
         def bijector_fn(params: jnp.ndarray):
@@ -202,7 +190,6 @@ class RQSpline(nn.Module):
         return base_dist, flow
 
     def __call__(self, x: jnp.array, scale: float =1.) -> jnp.array:
-        x = (x-self.base_mean.value)/jnp.sqrt(jnp.diag(self.base_cov.value))
         base_dist, flow = self.make_flow(scale=scale)
         return distrax.Transformed(base_dist, flow).log_prob(x)
 
@@ -216,10 +203,8 @@ class RQSpline(nn.Module):
         )
         return samples * jnp.sqrt(jnp.diag(self.base_cov.value)) + self.base_mean.value
 
-    def log_prob(self, x: jnp.array) -> jnp.array:
-        return self.vmap_call(x)
     
-    def log_prob_scaled(self, x:jnp.array, scale:float = 1.):
+    def log_prob(self, x:jnp.array, scale:float = 1.) -> jnp.array:
 
         get_logprob = jax.jit(jax.vmap(self.__call__, in_axes=[0, None]))
         logprob = get_logprob(x, scale)

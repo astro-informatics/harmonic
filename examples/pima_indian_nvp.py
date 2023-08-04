@@ -251,7 +251,7 @@ def run_example(model_1=True, tau=1.0,
     minimises the validation variances.
     """
     model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
-    model.fit(chains_train.samples, chains_train.ln_posterior, epochs=epochs_num) 
+    model.fit(chains_train.samples, epochs=epochs_num) 
 
     #=======================================================================
     # Visualise distributions
