@@ -54,7 +54,7 @@ def plot_getdist(samples, labels=None):
     g = plots.getSubplotPlotter()
     g.triangle_plot([mcsamples], filled=True)
 
-def plot_getdist_compare(samples1, samples2, labels=None, legend_fontsize=15):
+def plot_getdist_compare(samples1, samples2, labels=None, fontsize=17, legend_fontsize=15):
     """
     Plot triangle plot of marginalised distributions using getdist package.
 
@@ -85,9 +85,9 @@ def plot_getdist_compare(samples1, samples2, labels=None, legend_fontsize=15):
     
     g = plots.getSubplotPlotter(width_inch=10.5/2.54)
     #g.settings.scaling = False
-    g.settings.axes_fontsize = 17
+    g.settings.axes_fontsize = fontsize
     g.settings.legend_fontsize = legend_fontsize #17.5 
-    g.settings.axes_labelsize = 17
+    g.settings.axes_labelsize = fontsize
     g.settings.linewidth = 2
     g.settings.constrained_layout = True
     g.settings.legend_loc = 'upper right'
