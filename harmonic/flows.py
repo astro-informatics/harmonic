@@ -201,7 +201,7 @@ class RQSpline(nn.Module):
         samples = distrax.Transformed(base_dist, flow).sample(
             seed=rng, sample_shape=(num_samples)
         )
-        return samples * jnp.sqrt(jnp.diag(self.base_cov.value)) + self.base_mean.value
+        return samples
 
     
     def log_prob(self, x:jnp.array, scale:float = 1.) -> jnp.array:
