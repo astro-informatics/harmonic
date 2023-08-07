@@ -99,5 +99,5 @@ setup(
         extra_link_args=extra_link_args,
         extra_compile_args=[]
     )],
-    compiler_directives={'linetrace': True})
+    compiler_directives={'linetrace': True, 'language_level' : "2"})
 )

@@ -501,7 +501,7 @@ cdef KernelDensityEstimate_set_grid(dict grid, \
         for i_dim in range(ndim):
             sub_index = <long>((X[i_sample,i_dim]-start_end[i_dim,0]) * \
                 inv_scales[i_dim]*inv_diam) + 1
-            index += sub_index*ngrid**i_dim
+            index += <long>(sub_index*ngrid**i_dim)
         if index in grid:
             grid[index].append(i_sample)
         else:
@@ -839,7 +839,7 @@ class KernelDensityEstimate(Model):
         for i_dim in range(ndim):
             sub_index = <long>((x[i_dim]-start_end[i_dim,0]) * \
                 inv_scales[i_dim]*inv_diam) + 1
-            index += sub_index*ngrid**i_dim
+            index += <long>(sub_index*ngrid**i_dim)
 
         KernelDensityEstimate_loop_round_and_search(index, i_dim, ngrid, ndim, 
                                                     grid, samples, x, 
