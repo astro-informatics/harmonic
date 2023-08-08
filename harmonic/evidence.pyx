@@ -430,8 +430,14 @@ class Evidence:
         """
 
         ln_ratio = 0.5*self.ln_evidence_inv_var - self.ln_evidence_inv
-        ratio = np.exp(ln_ratio)        
-        zeta_neg = np.log( 1.0 - ratio )
+
+        ratio = np.exp(ln_ratio)
+
+        if np.abs(ratio - 1.0) > 1e-8:
+            zeta_neg = np.log( 1.0 - ratio )
+        else:
+            zeta_neg = np.NINF
+
         zeta_pos = np.log( 1.0 + ratio )
 
         return (zeta_neg, zeta_pos)
