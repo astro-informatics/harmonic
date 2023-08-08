@@ -404,6 +404,27 @@ class Evidence:
         return (ln_evidence, ln_evidence_std)
 
 
+    def compute_ln_inv_evidence_errors(self):
+        """Compute lower and uppper errors on the log_e of the inverse evidence.
+
+        Returns:
+
+            (double, double): Tuple containing the following.
+
+                - zeta_neg (double): Lower error for log_e of inverse evidence.
+
+                - zeta_pos (double): Upper error for log_e of inverse evidence.
+
+        """
+
+        ln_ratio = 0.5*self.ln_evidence_inv_var - self.ln_evidence_inv
+        ratio = np.exp(ln_ratio)        
+        zeta_neg = np.log( 1.0 - ratio )
+        zeta_pos = np.log( 1.0 + ratio )
+
+        return (zeta_neg, zeta_pos)
+
+
     def serialize(self, filename):
         """Serialize evidence object.
 
