@@ -434,4 +434,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=False)
+                          plot_corner=False, plot_surface=False)
