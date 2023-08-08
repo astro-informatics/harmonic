@@ -1,27 +1,37 @@
-*************************
-Outputs from harmonic
-*************************
+.. _logvar:
 
-**harmonic** recovers estimators for :math:`\rho` and :math:`\text{Var}[\rho]`, denoted by :math:`\hat{\rho}` and :math:`\hat{\text{Var}[\rho]}` respectively. In high-dimensional settings these values often are in danger of over- (or under-) flowing, particularly at 32 bit numerical precision. To avoid this practitioners often consider instead estimators for :math:`\log \big ( \rho \big )` upon which they recover estimates of, *e.g.* :math:`\text{Var}[\log \big ( \rho \big )]` *etc.*
+******************
+Log-space variance
+******************
 
-The harmonic mean estimator by construction provides estimators of :math:`\rho` and is thus susceptible to these over- (or under-) flowing concerns. In **harmonic** we leverage numerical tricks, such as the `LogSumExp trick <https://en.wikipedia.org/wiki/LogSumExp>`_, to mitigate this, however this returns estimators for :math:`\log \big ( \rho \big )` and :math:`\log \big ( \text{Var}[\rho] \big )` respectively, which are **not** equivalent to their log-space counterparts. This can be straightforwardly seen by considering :math:`\log \big ( \text{Var}[\rho] \big ) \not \equiv \text{Var}[\log \big (\rho \big )]`, which follows as summation and the natural logarithm do not commute.
+``harmonic`` computes estimators of the reciprocal evidence and its variance, denoted by :math:`\hat{\rho}` and :math:`\hat{\sigma}^2` respectively. 
 
-Given estimates of :math:`\log \big ( rho \big )` and :math:`\text{Var}[\log \big ( [\rho \big )]`, and in the situation wherein computing their exponents will immediately over- (or under-) flow, we can get a notion of how this estimated variance manifests on :math:`\rho` in log-space by considering the limiting terms :math:`x_{\pm} = \log \big (\rho \pm \sigma \big )`. One way to do this is by simply computing
+We compute the natural logarithm of these quantities for numerical stability (using a number of numerical tricks, such as the `LogSumExp trick <https://en.wikipedia.org/wiki/LogSumExp>`_).  We therefore directly compute :math:`\log ( \hat{\rho} )` and :math:`\log ( \hat{\sigma} )`.  
 
-.. math::
+While quantities are computed in log space for numerical stability, the variance that is computed relates to the underlying reciprocal evidence (**not** the log reciprocal evidence), i.e. the terms computed can be considered as the estimate and error :math:`\hat{\rho} \pm \hat{\sigma}`.  This is of course not equivalent to a variance estimate of the log space estimate, which can be seen straightforwardly since :math:`\log ( \text{var}(x) ) \not = \text{var}(\log (x ))` as summation and the natural logarithm do not commute.
 
-   x_{\pm} = \log \big (\rho \pm \sigma \big ) 
-     = \log \Big (\rho \big ( 1 \pm \frac{\sigma}{\rho} \big ) \Big ) 
-     = \log \big (\rho \big ) + \log \big ( 1 \pm \frac{\sigma}{\rho} \big ),
-
-where we now have :math:`\eta = \sigma/\rho` which may, at first, appear to be potentially problematic. However, we can compute this ratio as a distance in log-space, normalising away any intractably large numbers, which is then almost certainly well-behaved,
+In some settings one may be interested in an error estimate defined in log space, i.e. the log-space error :math:`\hat{\zeta}_\pm` defined by
 
 .. math::
 
-  \eta = \frac{\sigma}{\rho} = \exp \bigg ( 
-  \underbrace{ 
-    \log \big ( \sigma \big ) - \log \big ( \rho \big )
-  }_{\text{At most $\sim \mathcal{O}(8)$}} 
-  \bigg ).
+  \log ( \hat{\rho} \pm \hat{\sigma} ) = \log (\hat{\rho}) + \hat{\zeta}_\pm .
 
-Hence, :math:`x_{\pm} = \log \big ( \rho \pm \sigma \big )` is straightforward to calculate, provided the log of the estimated variance isn't further than :math:`\sim 88` from the log of the estimate of the evidence (the over/under-flow limit of the exponential function at 32 bit precision).
+The log-space error estimate can be computed by
+
+.. math::
+
+  \hat{\zeta}_\pm = \log (\hat{\rho} \pm \hat{\sigma} ) - \log (\hat{\rho}) .
+
+This may also be expressed as 
+
+.. math::
+
+  \hat{\zeta}_\pm = \log(1 \pm \hat{\sigma} / \hat{\rho}) ,
+
+where 
+
+.. math::
+
+  \hat{\sigma} / \hat{\rho} =  \exp \bigl( \log(\hat{\sigma}) - \log(\hat{\rho}) \bigr) .
+
+The advantage of this second approach is that it avoids explicitly computing :math:`\exp(\log(\hat{\rho})) \pm \exp(\log(\hat{\sigma}))`, which has the potental to over- or under-flow.  The second, more stable, approach is implemented in :code:`Evidence.compute_ln_inv_evidence_errors`.

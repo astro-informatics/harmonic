@@ -58,6 +58,6 @@ and
   \simeq
   \frac{\mathbb{E}({\rho_1})^2 \sigma_{\rho_2}^2+ \mathbb{E}({\rho_2})^2 \sigma_{\rho_1}^2}{\mathbb{E}({\rho_1})^4},
 
-respectively.  These expressions are computed (in log space) in ``harmonic`` by the :code:`Evidence.compute_ln_bayes_factor` function.
+respectively.  These expressions are computed (in log space) in ``harmonic`` by the :code:`evidence.compute_ln_bayes_factor` function.
 
 While we compute log quantities, as discussed above, the variance computed (i.e. error estimate) is related to the evidence itself (not the log evidence).  We consider how to compute an error estimate for the log evidence in the section :ref:`logvar`.
