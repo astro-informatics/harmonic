@@ -7,12 +7,12 @@ import utils
 import matplotlib.pyplot as plt
 
 savefigs = True
-plot_corner = True
 #flow_name = "nvp" 
 flow_name = 'splines'
 example_name = "NUTS"
 
-samples_train = np.load('examples/data/NUTS/nuts_90ksamples_37params_train.npy')[0]
+samples_train = np.load('examples/data/NUTS/nuts_90ksamples_37params_test.npy')
+samples_train = samples_train.reshape((samples_train.shape[0]*samples_train.shape[1], samples_train.shape[2]))
 
 #Flow and training parameters
 epochs_num = 300
@@ -63,7 +63,7 @@ print('Plotting...')
 plot_training = False 
 plot_flow = False
 
-plot_posterior = True
+plot_posterior = False
 if plot_posterior:
     if plot_training:
         utils.plot_getdist(samples_train.reshape((-1, ndim)))
@@ -80,7 +80,7 @@ if plot_posterior:
             plt.savefig('examples/plots/' + save_lab + '_flow.png', bbox_inches='tight', dpi=300)  
 
 
-plot_cosmo_posterior = True
+plot_cosmo_posterior = False
 plotdim = 7
 
 if plot_cosmo_posterior:
