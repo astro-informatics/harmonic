@@ -17,7 +17,7 @@ samples_train = np.load('examples/data/NUTS/nuts_90ksamples_37params_train.npy')
 #Flow and training parameters
 epochs_num = 300
 var_scale = 0.8
-standardize = False
+standardize = True
 if standardize:
     stand_lab = 's'
 else:
@@ -68,16 +68,16 @@ if plot_posterior:
     if plot_training:
         utils.plot_getdist(samples_train.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('examples/plots/' + flow_name + '_' + example_name + '_getdist.png', bbox_inches='tight', dpi=300)  
+            plt.savefig('examples/plots/' + save_lab + '_getdist.png', bbox_inches='tight', dpi=300)  
 
     utils.plot_getdist_compare(samples_train, samps_compressed[:,:ndim], fontsize= 2, legend_fontsize=12.5)
     if savefigs:
-        plt.savefig('examples/plots/' + flow_name + '_' + example_name + '_corner_all_T' +str(var_scale) + '.png', bbox_inches='tight', dpi=300)
+        plt.savefig('examples/plots/' + save_lab + '_corner_all_T' +str(var_scale) + '.png', bbox_inches='tight', dpi=300)
 
     if plot_flow:
         utils.plot_getdist(samps_compressed.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig('examples/plots/' + flow_name + '_' + example_name + '_flow.png', bbox_inches='tight', dpi=300)  
+            plt.savefig('examples/plots/' + save_lab + '_flow.png', bbox_inches='tight', dpi=300)  
 
 
 plot_cosmo_posterior = True
@@ -87,14 +87,14 @@ if plot_cosmo_posterior:
     if plot_training:
         utils.plot_getdist(samples_train[:,:plotdim].reshape((-1, plotdim)))
         if savefigs:
-            plt.savefig('examples/plots/' + flow_name + '_' + example_name + '_cosmo.png', bbox_inches='tight', dpi=300)  
+            plt.savefig('examples/plots/' + save_lab + '_cosmo.png', bbox_inches='tight', dpi=300)  
 
     utils.plot_getdist_compare(samples_train[:,:plotdim], samps_compressed[:,:plotdim], fontsize= 2, legend_fontsize=12.5)
     if savefigs:
-        plt.savefig('examples/plots/' + flow_name + '_' + example_name + '_corner_all_T' +str(var_scale) + '_cosmo.png', bbox_inches='tight', dpi=300)
+        plt.savefig('examples/plots/' + save_lab + '_corner_all_T' +str(var_scale) + '_cosmo.png', bbox_inches='tight', dpi=300)
 
     utils.plot_getdist(samps_compressed[:,:plotdim].reshape((-1, plotdim)))
     if savefigs:
-        plt.savefig('examples/plots/' + flow_name + '_' + example_name + '_flow_cosmo.png', bbox_inches='tight', dpi=300)  
+        plt.savefig('examples/plots/' + save_lab + '_flow_cosmo.png', bbox_inches='tight', dpi=300)  
 
 plt.show(block=False)
