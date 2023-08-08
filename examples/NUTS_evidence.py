@@ -12,7 +12,7 @@ samples_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test.npy')
 logprob_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test_logprob.npy')
 
 ndim = samples_infer.shape[-1]
-var_scale = 0.8
+var_scale = 0.7
 
 
 flow_name = 'splines'
@@ -65,7 +65,7 @@ evidence_std_log_space = np.log(np.exp(ln_evidence) + np.exp(ln_evidence_std)) -
 #===========================================================================
 # Display evidence results 
 #===========================================================================
-print(ln_evidence_std)
+print('ln_evidence_std = {} '.format(ln_evidence_std))
 print('ln_evidence = {} +/- {}'.format(ln_evidence, evidence_std_log_space))
 print('kurtosis = {}'.format(ev.kurtosis))
 print('sqrt( 2/(n_eff-1) ) = {}'.format(np.sqrt(2.0/(ev.n_eff-1))))
