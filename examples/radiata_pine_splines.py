@@ -326,8 +326,8 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     
     training_proportion = 0.5
     var_scale = 0.8
-    epochs_num = 20
-    standardize = True
+    epochs_num = 10
+    standardize = False
 
     #===========================================================================
     # Set-up Priors
