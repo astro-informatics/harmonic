@@ -11,7 +11,10 @@ import matplotlib.pyplot as plt
 samples_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test.npy')
 logprob_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test_logprob.npy')
 
+nchains = samples_infer.shape[0]
+nsamples = samples_infer.shape[1]
 ndim = samples_infer.shape[-1]
+
 var_scale = 0.7
 
 
@@ -51,6 +54,10 @@ samples_infer_C = samples_infer.astype('double')
 logprob_infer_C = logprob_infer.astype('double')
 chains = hm.Chains(ndim)
 chains.add_chains_3d(samples_infer_C, logprob_infer_C)
+print("nchains ", chains.nchains)
+chains.split_into_blocks(nblocks=nchains*4)
+print("nchains ", chains.nchains)
+
 
 print('Compute evidence...')
 """
