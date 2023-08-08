@@ -24,12 +24,12 @@ copyright = '2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, 
 author = 'Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty'
 
 # The short X.Y version
-version = '1.0.3'
+version = '1.1.1'
 # The full version, including alpha/beta/rc tags
-release = '1.0.3'
+release = '1.1.1'
 
 
-# -- General configuration ---------------------------------------------------
+# -- General configuration  ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #

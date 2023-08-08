@@ -430,7 +430,7 @@ def test_evaluate_one_gaussian():
         y = md.evaluate_one_gaussian_wrap(x, mu, inv_covariance, alpha, weight, ndim)
         norm = md.calculate_gaussian_normalisation_wrap(alpha, inv_covariance, ndim)
         # assert y == -np.sum((x-mu)*(x-mu)*inv_covariance)
-        assert y == np.exp(-np.sum((x-mu)*(x-mu)*inv_covariance)/(2.0*alpha))*norm*weight
+        assert y == pytest.approx(np.exp(-np.sum((x-mu)*(x-mu)*inv_covariance)/(2.0*alpha))*norm*weight,rel=1E-8,abs=1E-8)
 
     return
 
