@@ -101,7 +101,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     inv_cov = np.linalg.inv(cov)   
     training_proportion = 0.5 
     epochs_num = 20
-    var_scale = 0.9
+    var_scale = 0.8
     standardize = True
 
     # Start timer.
@@ -380,4 +380,4 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=True, plot_surface=False)
+                plot_corner=False, plot_surface=False)

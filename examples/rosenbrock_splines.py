@@ -146,10 +146,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     savefigs = True
     a = 1.0
     b = 100.0
-    epochs_num = 10
-    var_scale = 0.85
+    epochs_num = 20
+    var_scale = 0.8
     training_proportion = 0.5
-    standardize = False
+    standardize = True
     """
     Set prior parameters.
     """
@@ -179,7 +179,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 1
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
