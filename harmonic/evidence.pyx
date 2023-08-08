@@ -423,9 +423,9 @@ class Evidence:
 
             (double, double): Tuple containing the following.
 
-                - zeta_neg (double): Lower error for log_e of inverse evidence.
+                - ln_evidence_err_neg (double): Lower error for log_e of inverse evidence.
 
-                - zeta_pos (double): Upper error for log_e of inverse evidence.
+                - ln_evidence_err_pos (double): Upper error for log_e of inverse evidence.
 
         """
 
@@ -434,13 +434,13 @@ class Evidence:
         ratio = np.exp(ln_ratio)
 
         if np.abs(ratio - 1.0) > 1e-8:
-            zeta_neg = np.log( 1.0 - ratio )
+            ln_evidence_err_neg = np.log( 1.0 - ratio )
         else:
-            zeta_neg = np.NINF
+            ln_evidence_err_neg = np.NINF
 
-        zeta_pos = np.log( 1.0 + ratio )
+        ln_evidence_err_pos = np.log( 1.0 + ratio )
 
-        return (zeta_neg, zeta_pos)
+        return (ln_evidence_err_neg, ln_evidence_err_pos)
 
 
     def serialize(self, filename):
