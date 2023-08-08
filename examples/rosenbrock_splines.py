@@ -310,11 +310,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         created_plots = False
         if plot_corner and i_realisation == 0:
             
-            utils.plot_corner(samples.reshape((-1, ndim)))
-            if savefigs:
-                plt.savefig('examples/plots/spline_rosenbrock_corner.png',
-                            bbox_inches='tight')
-            
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
                 plt.savefig('examples/plots/spline_rosenbrock_getdist.png',
