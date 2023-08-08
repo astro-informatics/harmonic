@@ -405,7 +405,19 @@ class Evidence:
 
 
     def compute_ln_inv_evidence_errors(self):
-        """Compute lower and uppper errors on the log_e of the inverse evidence.
+        r"""Compute lower and uppper errors on the log_e of the inverse evidence. 
+
+        Compute the log-space error :math:`\hat{\zeta}_\pm` defined by
+
+        .. math::
+
+            \log ( \hat{\rho} \pm \hat{\sigma} ) = \log (\hat{\rho}) + \hat{\zeta}_\pm .
+
+        Computed in a numerically stable way by
+
+        .. math::
+
+            \hat{\zeta}_\pm = \log(1 \pm \hat{\sigma} / \hat{\rho}) .
 
         Returns:
 
