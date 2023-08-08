@@ -9,6 +9,7 @@ from functools import partial
 from examples.utils import plot_getdist_compare
 import matplotlib.pyplot as plt
 from tqdm import trange
+import cloudpickle
 
 import flax
 from flax.training import train_state  # Useful dataclass to keep train state
@@ -294,7 +295,7 @@ class RealNVPModel(md.Model):
 # ===============================================================================
 
 
-class RQSplineFlow(md.Model):
+class RQSplineFlow():
     """Rational quadratic spline flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
@@ -494,3 +495,19 @@ class RQSplineFlow(md.Model):
             samples = (samples * self.pre_amp) + self.pre_offset
 
         return samples
+    
+    def serialize(self, filename):
+        """Serialize Model object.
+
+        Args:
+
+            filename (string): Name of file to save model object.
+
+        """
+
+        file = open(filename, "wb")
+        cloudpickle.dump(self, file)
+        file.close()
+
+        return
+    
