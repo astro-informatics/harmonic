@@ -72,7 +72,15 @@ To check the install has worked correctly run the unit tests with
 .. code-block:: bash
 
     pytest 
-    
+
+To build the documentation from source run
+
+.. code-block:: bash
+
+    cd docs && make html
+
+Then open ``./docs/_build/html/index.html`` in a browser.
+
 Documentation
 =============
 
