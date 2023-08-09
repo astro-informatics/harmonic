@@ -288,6 +288,21 @@ class RealNVPModel(md.Model):
             samples = (samples * self.pre_amp) + self.pre_offset
         
         return samples
+    
+    def serialize(self, filename):
+        """Serialize Model object.
+
+        Args:
+
+            filename (string): Name of file to save model object.
+
+        """
+
+        file = open(filename, "wb")
+        cloudpickle.dump(self, file)
+        file.close()
+
+        return
 
 
 # ===============================================================================
