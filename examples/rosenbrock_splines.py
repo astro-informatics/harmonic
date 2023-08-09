@@ -146,10 +146,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     savefigs = True
     a = 1.0
     b = 100.0
-    epochs_num = 10
-    var_scale = 0.85
+    epochs_num = 20
+    var_scale = 0.8
     training_proportion = 0.5
-    standardize = False
+    standardize = True
     """
     Set prior parameters.
     """
@@ -179,7 +179,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 1
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -310,17 +310,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         created_plots = False
         if plot_corner and i_realisation == 0:
             
-            utils.plot_corner(samples.reshape((-1, ndim)))
-            if savefigs:
-                plt.savefig('examples/plots/spline_rosenbrock_corner.png',
-                            bbox_inches='tight')
-            
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
                 plt.savefig('examples/plots/spline_rosenbrock_getdist.png',
                             bbox_inches='tight')
             
-            plt.show(block=False)  
+            #plt.show(block=False)  
 
             #=======================================================================
             # Visualise distributions
@@ -383,7 +378,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 plt.savefig('examples/plots/spline_rosenbrock_modelexp_image.png',
                             bbox_inches='tight')
 
-            plt.show(block=False)  
+            #plt.show(block=False)  
             created_plots = True
 
         # Save out realisations for voilin plot.
@@ -439,4 +434,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=False)
+                          plot_corner=False, plot_surface=False)

@@ -250,6 +250,7 @@ def run_example(model_1=True, tau=1.0,
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
+
     model = model_nf.RealNVPModel(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled, temperature = var_scale)
     model.fit(chains_train.samples, epochs=epochs_num) 
 

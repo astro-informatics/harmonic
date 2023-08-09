@@ -100,15 +100,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)   
     training_proportion = 0.5 
-    epochs_num = 50
-    var_scale = 0.9
+    epochs_num = 20
+    var_scale = 0.8
     standardize = True
 
     # Start timer.
     clock = time.process_time()
     
     # Run multiple realisations.
-    n_realisations = 1
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
         
@@ -142,15 +142,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Fit model
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
-        model = model_nf.RealNVPModel(ndim, standardize=standardize, temperature = var_scale)
+        model = model_nf.RQSplineFlow(ndim, standardize=standardize)
         model.fit(chains_train.samples, epochs=epochs_num) 
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log('Compute evidence...')
 
-        ev = hm.Evidence(chains_test.nchains, model, batch_calculation = True)    
+        ev = hm.Evidence(chains_test.nchains, model)    
         # ev.set_mean_shift(0.0)
-        ev.add_chains(chains_test)
+        ev.add_chains(chains_test, bulk_calc=True, var_scale=var_scale)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
         # Compute analytic evidence.
@@ -218,27 +218,27 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_corner.png',
+                plt.savefig('examples/plots/splines_gaussian_nondiagcov_corner.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_getdist.png',
+                plt.savefig('examples/plots/splines_gaussian_nondiagcov_getdist.png',
                             bbox_inches='tight')
             
             num_samp = chains_train.samples.shape[0]
-            samps_compressed = np.array(model.sample(num_samp))
+            samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
 
             utils.plot_getdist_compare(chains_train.samples, samps_compressed)
             plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 	
             if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_corner_all_{}D.png'.format(ndim),
+                plt.savefig('examples/plots/splines_gaussian_nondiagcov_corner_all_{}D.png'.format(ndim),
                                 bbox_inches='tight', dpi=300)
                 
             utils.plot_getdist(samps_compressed)
             if savefigs:
-                plt.savefig('examples/plots/gaussian_nondiagcov_flow_getdist_{}D.png'.format(ndim),
+                plt.savefig('examples/plots/splines_gaussian_nondiagcov_flow_getdist_{}D.png'.format(ndim),
                             bbox_inches='tight', dpi=300)
                     
             plt.show()        
@@ -274,7 +274,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Save.
             if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_posterior_surface.png'\
+                plt.savefig('examples/plots/splines_gaussian_nondiagcov_posterior_surface.png'\
                     , bbox_inches='tight')
 
             plt.show(block=False)
@@ -290,7 +290,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             # Save.
             if savefigs:
                 plt.savefig(
-                    'examples/plots/nvp_gaussian_nondiagcov_posterior_image.png'
+                    'examples/plots/splines_gaussian_nondiagcov_posterior_image.png'
                     , bbox_inches='tight')
 
             plt.show(block=False) 
@@ -313,7 +313,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
             # Save.
             if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_surface.png'
+                plt.savefig('examples/plots/splines_gaussian_nondiagcov_surface.png'
                     , bbox_inches='tight')
 
             plt.show(block=False)
@@ -327,7 +327,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                                   plot_contour=True)
             # Save.
             if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_image.png', 
+                plt.savefig('examples/plots/splines_gaussian_nondiagcov_image.png', 
                             bbox_inches='tight')
 
             plt.show(block=False) 
@@ -341,12 +341,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     hm.logs.info_log('Execution_time = {}s'.format(clock))
 
     if n_realisations > 1:
-        np.savetxt("examples/data/nvp_gaussian_nondiagcov_evidence_inv" +
+        np.savetxt("examples/data/splines_gaussian_nondiagcov_evidence_inv" +
                    "_realisations_{}D.dat".format(ndim),
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = np.exp(-ln_evidence_analytic)
-        np.savetxt("examples/data/nvp_gaussian_nondiagcov_evidence_inv" +
+        np.savetxt("examples/data/splines_gaussian_nondiagcov_evidence_inv" +
                    "_analytic_{}D.dat".format(ndim),
                    evidence_inv_analytic_summary)
     
@@ -361,7 +361,7 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define parameters.
-    ndim = 2
+    ndim = 30
     nchains = 100
     samples_per_chain = 5000
     nburn = 500     
@@ -380,4 +380,4 @@ if __name__ == '__main__':
     
     # Run example.
     run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=True, plot_surface=False)
+                plot_corner=False, plot_surface=False)
