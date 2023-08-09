@@ -142,15 +142,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Fit model
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
-        model = model_nf.RealNVPModel(ndim, standardize=standardize)
+        model = model_nf.RealNVPModel(ndim, standardize=standardize, temperature = var_scale)
         model.fit(chains_train.samples, epochs=epochs_num) 
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log('Compute evidence...')
 
-        ev = hm.Evidence(chains_test.nchains, model)    
+        ev = hm.Evidence(chains_test.nchains, model, batch_calculation = True)    
         # ev.set_mean_shift(0.0)
-        ev.add_chains(chains_test, bulk_calc=True, var_scale=var_scale)
+        ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
         # Compute analytic evidence.
@@ -227,7 +227,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                             bbox_inches='tight')
             
             num_samp = chains_train.samples.shape[0]
-            samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+            samps_compressed = np.array(model.sample(num_samp))
 
             utils.plot_getdist_compare(chains_train.samples, samps_compressed)
             plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))

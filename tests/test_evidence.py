@@ -235,6 +235,63 @@ def test_compute_evidence():
     assert evidence_std == pytest.approx(np.exp(ln_evidence_std))
 
 
+def test_compute_ln_inv_evidence_errors():
+    ndim = 2
+    nchains = 100
+
+    domain = [np.array([1e-1, 1e1])]
+    sphere = md.HyperSphere(ndim, domain)
+    sphere.fitted = True
+
+    # Check boundary case where ratio 1.0
+    # (ln_ev_inv_var = 2 * ln_ev_inv)
+    ln_ev_inv = 10
+    ln_ev_inv_var = 2 * ln_ev_inv
+    ev = cbe.Evidence(nchains, sphere)
+    ev.evidence_inv = np.exp(ln_ev_inv)
+    ev.evidence_inv_var = np.exp(ln_ev_inv_var)
+    ev.ln_evidence_inv = ln_ev_inv
+    ev.ln_evidence_inv_var = ln_ev_inv_var
+
+    zeta_neg, zeta_pos = ev.compute_ln_inv_evidence_errors()
+    assert zeta_neg == np.NINF
+    assert zeta_pos == pytest.approx(np.log(2.0))
+
+    # Check case where ln_ev_inv_var = ln_ev_inv
+    ln_ev_inv = 10
+    ln_ev_inv_var = ln_ev_inv
+    ev = cbe.Evidence(nchains, sphere)
+    ev.evidence_inv = np.exp(ln_ev_inv)
+    ev.evidence_inv_var = np.exp(ln_ev_inv_var)
+    ev.ln_evidence_inv = ln_ev_inv
+    ev.ln_evidence_inv_var = ln_ev_inv_var
+
+    zeta_neg, zeta_pos = ev.compute_ln_inv_evidence_errors()
+    assert zeta_neg == pytest.approx(
+        np.log(1.0 - np.exp(0.5 * ln_ev_inv_var - ln_ev_inv))
+    )
+    assert zeta_pos == pytest.approx(
+        np.log(1.0 + np.exp(0.5 * ln_ev_inv_var - ln_ev_inv))
+    )
+
+    # Check case where ln_ev_inv_var = 0.5 * ln_ev_inv
+    ln_ev_inv = 10
+    ln_ev_inv_var = 0.5 * ln_ev_inv
+    ev = cbe.Evidence(nchains, sphere)
+    ev.evidence_inv = np.exp(ln_ev_inv)
+    ev.evidence_inv_var = np.exp(ln_ev_inv_var)
+    ev.ln_evidence_inv = ln_ev_inv
+    ev.ln_evidence_inv_var = ln_ev_inv_var
+
+    zeta_neg, zeta_pos = ev.compute_ln_inv_evidence_errors()
+    assert zeta_neg == pytest.approx(
+        np.log(1.0 - np.exp(0.5 * ln_ev_inv_var - ln_ev_inv))
+    )
+    assert zeta_pos == pytest.approx(
+        np.log(1.0 + np.exp(0.5 * ln_ev_inv_var - ln_ev_inv))
+    )
+
+
 def test_compute_bayes_factors():
     ndim = 2
     nchains = 100

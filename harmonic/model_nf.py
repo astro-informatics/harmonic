@@ -104,7 +104,8 @@ class RealNVPModel(md.Model):
         n_unscaled_layers: int = 4,
         learning_rate: float = 0.001,
         momentum: float = 0.9,
-        standardize: bool = False
+        standardize: bool = False,
+        temperature: float = 0.8
     ):
         """Constructor setting the hyper-parameters of the model.
 
@@ -121,6 +122,8 @@ class RealNVPModel(md.Model):
             momentum (float): Learning rate for Adam optimizer used in the fit method.
 
             standardize(bool): Indicates if mean and variance should be removed from training data when training the flow.
+
+            temperature (float): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1.
 
         Raises:
 
@@ -142,6 +145,7 @@ class RealNVPModel(md.Model):
         self.n_unscaled_layers = n_unscaled_layers
         self.standardize = standardize
         self.flow = flows.RealNVP(ndim_in, self.n_scaled_layers, self.n_unscaled_layers)
+        self.temperature = temperature
 
     def is_fitted(self):
         """Specify whether model has been fitted.
@@ -211,16 +215,13 @@ class RealNVPModel(md.Model):
 
         return
 
-    def predict(self, x, var_scale: float = 1.0):
+    def predict(self, x):
         """Predict the value of log_e posterior at x.
 
         Args:
 
             x (jnp.ndarray): Sample of shape at which to
                 predict posterior value.
-
-            var_scale (float): Scale factor by which the base distribution Gaussian
-                is compressed in the prediction step. Should be positive and <=1.
 
         Returns:
 
@@ -231,6 +232,8 @@ class RealNVPModel(md.Model):
             ValueError: If var_scale is negative or greater than 1.
 
         """
+
+        var_scale = self.temperature
 
         if var_scale > 1:
             raise ValueError("Scaling must not be greater than 1.")
@@ -254,7 +257,7 @@ class RealNVPModel(md.Model):
 
         return logprob
 
-    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), var_scale: float = 1.0):
+    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0)):
         """Sample from trained flow.
 
         Args:
@@ -262,13 +265,12 @@ class RealNVPModel(md.Model):
 
             rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
 
-            var_scale (float): Scale factor by which the base distribution Gaussian
-                is compressed in the prediction step. Should be positive and <=1.
-
         Returns:
 
             jnp.array (n_sample, ndim): Samples from fitted distribution.
         """
+
+        var_scale = self.temperature
 
         if var_scale > 1:
             raise ValueError("Scaling must not be greater than 1.")
