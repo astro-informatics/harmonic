@@ -432,7 +432,7 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled), learning_rate = learning_rate, standardize=standardize)
+    model = model_nf.RealNVPModel(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled, learning_rate = learning_rate, standardize=standardize, temperature = var_scale)
     #model = model_nf.RQSplineFlow(ndim)
     model.fit(chains_train.samples, epochs=epochs_num) 
 
@@ -446,8 +446,8 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
     Instantiates the evidence class with a given model. Adds some chains and 
     computes the log-space evidence (marginal likelihood).
     """
-    ev = hm.Evidence(chains_test.nchains, model)
-    ev.add_chains(chains_test, bulk_calc=True, var_scale= var_scale)
+    ev = hm.Evidence(chains_test.nchains, model, batch_calculation = True)
+    ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
     evidence_std_log_space = np.log(np.exp(ln_evidence) + np.exp(ln_evidence_std)) - ln_evidence
 

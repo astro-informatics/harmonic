@@ -254,7 +254,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Fit model
         #=======================================================================
 		hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
-		model = model_nf.RealNVPModel(ndim, standardize=standardize)
+		model = model_nf.RealNVPModel(ndim, standardize=standardize, temperature = var_scale)
 		model.fit(chains_train.samples, epochs=epochs_num) 
 
 		#===================================================================
@@ -265,8 +265,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 		Instantiates the evidence class with a given model. Adds some chains 
 		and computes the log-space evidence (marginal likelihood).
 		"""
-		ev = hm.Evidence(chains_test.nchains, model)
-		ev.add_chains(chains_test, bulk_calc=True, var_scale=var_scale)
+		ev = hm.Evidence(chains_test.nchains, model, batch_calculation = True)
+		ev.add_chains(chains_test)
 		ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
 		# Compute analytic evidence.
@@ -283,8 +283,10 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 		#compare two temperature parameters
 
 		if plot_comparison_2var:
-			ev_2 = hm.Evidence(chains_test.nchains, model)
-			ev_2.add_chains(chains_test, bulk_calc=True, var_scale=var_scale_2)
+			model2 = model
+			model2.temperature = var_scale_2
+			ev_2 = hm.Evidence(chains_test.nchains, model, batch_calculation = True)
+			ev_2.add_chains(chains_test)
 			ln_evidence_2, ln_evidence_std_2 = ev_2.compute_ln_evidence()
 
 			summary_2[i_tau, 0] = tau_prior
@@ -364,7 +366,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             #=======================================================================
 
 			num_samp = chains_train.samples.shape[0]
-			samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+			samps_compressed = np.array(model.sample(num_samp))
 
 			utils.plot_getdist_compare(chains_train.samples, samps_compressed, labels, legend_fontsize=12.5)
 	
