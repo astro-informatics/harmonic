@@ -100,7 +100,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)   
     training_proportion = 0.5 
-    epochs_num = 20
+    epochs_num = 5
     var_scale = 0.8
     standardize = True
 
@@ -108,7 +108,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     clock = time.process_time()
     
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
         
@@ -142,15 +142,15 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         # Fit model
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
-        model = model_nf.RQSplineFlow(ndim, standardize=standardize)
+        model = model_nf.RQSplineFlow(ndim, standardize=standardize, temperature = var_scale)
         model.fit(chains_train.samples, epochs=epochs_num) 
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log('Compute evidence...')
 
-        ev = hm.Evidence(chains_test.nchains, model)    
+        ev = hm.Evidence(chains_test.nchains, model, batch_calculation = True)    
         # ev.set_mean_shift(0.0)
-        ev.add_chains(chains_test, bulk_calc=True, var_scale=var_scale)
+        ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
         # Compute analytic evidence.
@@ -227,7 +227,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                             bbox_inches='tight')
             
             num_samp = chains_train.samples.shape[0]
-            samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+            samps_compressed = np.array(model.sample(num_samp))
 
             utils.plot_getdist_compare(chains_train.samples, samps_compressed)
             plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
@@ -361,7 +361,7 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define parameters.
-    ndim = 30
+    ndim = 10
     nchains = 100
     samples_per_chain = 5000
     nburn = 500     

@@ -179,7 +179,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     """
     Set up and run multiple simulations
     """
-    n_realisations = 100
+    n_realisations = 1
     evidence_inv_summary = np.zeros((n_realisations,3))
     for i_realisation in range(n_realisations):
 
@@ -315,7 +315,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 plt.savefig('examples/plots/spline_rosenbrock_getdist.png',
                             bbox_inches='tight')
             
-            #plt.show(block=False)  
+            plt.show(block=False)  
 
             #=======================================================================
             # Visualise distributions
@@ -378,7 +378,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 plt.savefig('examples/plots/spline_rosenbrock_modelexp_image.png',
                             bbox_inches='tight')
 
-            #plt.show(block=False)  
+            plt.show(block=False)  
             created_plots = True
 
         # Save out realisations for voilin plot.
@@ -434,4 +434,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=False, plot_surface=False)
+                          plot_corner=True, plot_surface=False)

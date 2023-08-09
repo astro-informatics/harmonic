@@ -325,6 +325,7 @@ class RQSplineFlow():
         standardize: bool = False,
         learning_rate: float = 0.001,
         momentum: float = 0.9,
+        temperature: float = 0.8
     ):
         """Constructor setting the hyper-parameters and domains of the model.
 
@@ -348,6 +349,8 @@ class RQSplineFlow():
 
             momentum (float): Learning rate for Adam optimizer used in the fit method.
 
+            temperature (float): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1.
+
         Raises:
 
             ValueError: If the ndim_in is not positive.
@@ -368,6 +371,7 @@ class RQSplineFlow():
         self.n_bins = n_bins
         self.spline_range = spline_range
         self.flow = flows.RQSpline(ndim_in, n_layers, hidden_size, n_bins, spline_range)
+        self.temperature = temperature
 
         # Optimizer parameters
         self.learning_rate = learning_rate
@@ -440,16 +444,13 @@ class RQSplineFlow():
 
         return
 
-    def predict(self, x, var_scale: float = 1.0):
+    def predict(self, x):
         """Predict the value of log_e posterior at x.
 
         Args:
 
             x (jnp.ndarray): Sample of shape at which to
                 predict posterior value.
-
-            var_scale (float): Scale factor by which the base distribution Gaussian
-                is compressed in the prediction step. Should be positive and <=1.
 
         Returns:
 
@@ -460,6 +461,8 @@ class RQSplineFlow():
             ValueError: If var_scale is negative or greater than 1.
 
         """
+
+        var_scale = self.temperature
 
         if var_scale > 1:
             raise ValueError("Scaling must not be greater than 1.")
@@ -484,7 +487,7 @@ class RQSplineFlow():
 
         return logprob
 
-    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0), var_scale: float = 1.0):
+    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0)):
         """Sample from trained flow.
 
         Args:
@@ -492,13 +495,12 @@ class RQSplineFlow():
 
             rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
 
-            var_scale (float): Scale factor by which the base distribution Gaussian
-                is compressed in the prediction step. Should be positive and <=1.
-
         Returns:
 
             jnp.array (n_sample, ndim): Samples from fitted distribution."""
 
+        var_scale = self.temperature
+        
         if var_scale > 1:
             raise ValueError("Scaling must not be greater than 1.")
 
