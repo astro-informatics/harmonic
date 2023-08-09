@@ -15,11 +15,11 @@ nchains = samples_infer.shape[0]
 nsamples = samples_infer.shape[1]
 ndim = samples_infer.shape[-1]
 
-var_scale = 0.7
+var_scale = 0.8
 
 
 flow_name = 'splines'
-load_lab = 'splines_13l_3e_s'
+load_lab = 'splines_13l_300e_s'
 model_file = 'examples/data/NUTS/model_' + load_lab
 save_lab = load_lab + '_' + str(var_scale)
 
