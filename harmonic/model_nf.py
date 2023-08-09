@@ -464,6 +464,11 @@ class RQSplineFlow():
 
         if var_scale <= 0:
             raise ValueError("Scaling must be positive.")
+        
+        if self.standardize:
+            x = (x-self.pre_offset)/self.pre_amp
+            print("predict max", jnp.max(x, axis=0), "min", jnp.min(x, axis = 0))
+
 
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
