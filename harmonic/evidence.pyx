@@ -30,7 +30,7 @@ class Evidence:
     """
 
     def __init__(self, long nchains, model not None, \
-                 shift=Shifting.MEAN_SHIFT):
+                 shift=Shifting.MEAN_SHIFT, batch_calculation=False):
         """Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
 
@@ -44,6 +44,9 @@ class Evidence:
 
             shift (Shifting): What shifting method to use to avoid over/underflow during
                 computation. Selected from enumerate class.
+
+            batch_calculation (bool): Set to True to predict posterior for the whole batch 
+                at the same time when using normalizing flows. Defaults to False.
 
         Raises:
 
@@ -91,6 +94,7 @@ class Evidence:
         self.chains_added = False
 
         self.model = model
+        self.batch_calculation = batch_calculation
 
         # Technical details
         self.lnargmax = -np.inf
@@ -247,14 +251,19 @@ class Evidence:
         cdef double mean_shift, max_shift, max_i
 
         lnargs = np.zeros_like(Y)
-
+        if self.batch_calculation:
+            lnpred = self.model.predict(x=X)
+            
         for i_chains in range(nchains):
             i_samples_start = chains.start_indices[i_chains]
             i_samples_end = chains.start_indices[i_chains+1]
-
+            
             for i,i_samples in enumerate(range(i_samples_start, i_samples_end)):
+                if self.batch_calculation:
+                    lnpredict = lnpred[i_samples]
+                else:
+                    lnpredict = self.model.predict(X[i_samples,:])
 
-                lnpredict = self.model.predict(X[i_samples,:])
                 lnprob = Y[i_samples]
                 lnargs[i_samples] = lnpredict - lnprob
 
