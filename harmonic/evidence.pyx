@@ -414,6 +414,45 @@ class Evidence:
         return (ln_evidence, ln_evidence_std)
 
 
+    def compute_ln_inv_evidence_errors(self):
+        r"""Compute lower and uppper errors on the log_e of the inverse evidence. 
+
+        Compute the log-space error :math:`\hat{\zeta}_\pm` defined by
+
+        .. math::
+
+            \log ( \hat{\rho} \pm \hat{\sigma} ) = \log (\hat{\rho}) + \hat{\zeta}_\pm .
+
+        Computed in a numerically stable way by
+
+        .. math::
+
+            \hat{\zeta}_\pm = \log(1 \pm \hat{\sigma} / \hat{\rho}) .
+
+        Returns:
+
+            (double, double): Tuple containing the following.
+
+                - ln_evidence_err_neg (double): Lower error for log_e of inverse evidence.
+
+                - ln_evidence_err_pos (double): Upper error for log_e of inverse evidence.
+
+        """
+
+        ln_ratio = 0.5*self.ln_evidence_inv_var - self.ln_evidence_inv
+
+        ratio = np.exp(ln_ratio)
+
+        if np.abs(ratio - 1.0) > 1e-8:
+            ln_evidence_err_neg = np.log( 1.0 - ratio )
+        else:
+            ln_evidence_err_neg = np.NINF
+
+        ln_evidence_err_pos = np.log( 1.0 + ratio )
+
+        return (ln_evidence_err_neg, ln_evidence_err_pos)
+
+
     def serialize(self, filename):
         """Serialize evidence object.
 
