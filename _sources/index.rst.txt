@@ -102,6 +102,7 @@ Referencing
    background/Harmonic_Estimator/learnt_harmonic_mean
    background/Machine_Learning/index
    background/Bayes_Factors/bayes_factors
+   background/Log_space_statistics/log_variance
 
 
 .. toctree::

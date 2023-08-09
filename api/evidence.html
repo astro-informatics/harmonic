@@ -19,6 +19,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script src="../_static/dark_mode_js/default_light.js"></script>
         <script src="../_static/dark_mode_js/theme_switcher.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -56,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt harmonic mean estimator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learning a suitable target distribution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../background/Bayes_Factors/bayes_factors.html">Bayes factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Log_space_statistics/log_variance.html">Log-space variance</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -207,6 +210,33 @@ evidence.</p></li>
 </dd>
 </dl>
 </li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(double, double)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.Evidence.compute_ln_inv_evidence_errors">
+<span class="sig-name descname"><span class="pre">compute_ln_inv_evidence_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.compute_ln_inv_evidence_errors" title="Permalink to this definition"></a></dt>
+<dd><p>Compute lower and uppper errors on the log_e of the inverse evidence.</p>
+<p>Compute the log-space error <span class="math notranslate nohighlight">\(\hat{\zeta}_\pm\)</span> defined by</p>
+<div class="math notranslate nohighlight">
+\[\log ( \hat{\rho} \pm \hat{\sigma} ) = \log (\hat{\rho}) + \hat{\zeta}_\pm .\]</div>
+<p>Computed in a numerically stable way by</p>
+<div class="math notranslate nohighlight">
+\[\hat{\zeta}_\pm = \log(1 \pm \hat{\sigma} / \hat{\rho}) .\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>Tuple containing the following.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>ln_evidence_err_neg (double): Lower error for log_e of inverse evidence.</p></li>
+<li><p>ln_evidence_err_pos (double): Upper error for log_e of inverse evidence.</p></li>
 </ul>
 </div></blockquote>
 </p>
