@@ -125,8 +125,17 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
     var_scale = 0.8
     epochs_num = 30
-    n_scaled = 5
-    n_unscaled = 2
+
+    #Spline params
+    n_layers = 13
+    n_bins = 8
+    hidden_size = [64, 64]
+    spline_range = (-10.0, 10.0)
+    standardize = True
+
+    # Optimizer params
+    learning_rate = 0.001
+    momentum = 0.9
     
     """
     Set prior parameters.
@@ -196,7 +205,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         """
         Fit model.
         """
-        model = model_nf.RealNVPModel(ndim, flow = flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled))
+        model = model_nf.RQSplineFlow(ndim, n_layers = n_layers, n_bins = n_bins, hidden_size = hidden_size, spline_range = spline_range, standardize = standardize, learning_rate = learning_rate, momentum = momentum, temperature=var_scale)
         model.fit(chains_train.samples, epochs=epochs_num) 
 
         #=======================================================================
@@ -207,8 +216,8 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         Instantiates the evidence class with a given model. Adds some chains and 
         computes the log-space evidence (marginal likelihood).
         """
-        ev = hm.Evidence(chains_test.nchains, model)    
-        ev.add_chains(chains_test, bulk_calc=True)
+        ev = hm.Evidence(chains_test.nchains, model, batch_calculation = True)    
+        ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
         # Compute analytic evidence.
@@ -285,12 +294,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             
             utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/nvp_rastrigin_corner.png',
+                plt.savefig('examples/plots/spline_rastrigin_corner.png',
                             bbox_inches='tight')
             
             utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig('examples/plots/nvp_rastrigin_getdist.png',
+                plt.savefig('examples/plots/spline_rastrigin_getdist.png',
                             bbox_inches='tight')  
 
             #=======================================================================
@@ -298,67 +307,16 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
             #=======================================================================
 
             num_samp = chains_train.samples.shape[0]
-            samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+            samps_compressed = np.array(model.sample(num_samp))
 
             utils.plot_getdist_compare(chains_train.samples, samps_compressed)
             if savefigs:
-                plt.savefig('examples/plots/nvp_rastrigin_corner_all.png',
+                plt.savefig('examples/plots/spline_rastrigin_corner_all.png',
                                 bbox_inches='tight')
                 
             plt.show(block=False)
                 
             created_plots = True
-                
-        # In 2D case, plot surface/image and samples.    
-        if plot_surface and ndim == 2 and i_realisation == 0:
-            
-            # Plot ln_posterior surface.
-            # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0 
-            i_chain = 0
-            ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid, 
-                                    samples[i_chain,:,:].reshape((-1, ndim)), 
-                                    lnprob[i_chain,:].reshape((-1, 1)))
-            # ax.set_zlim(-100.0, 0.0)                
-            ax.set_zlabel(r'$\log \mathcal{L}$')        
-            if savefigs:
-                plt.savefig('examples/plots/nvp_rastrigin_lnposterior_surface.png',
-                            bbox_inches='tight')
-            
-            # Plot posterior image.
-            ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, 
-                                  samples.reshape((-1,ndim)),
-                                  colorbar_label=r'$\mathcal{L}$')
-            # ax.set_clim(vmin=0.0, vmax=0.003)
-            if savefigs:
-                plt.savefig('examples/plots/nvp_rastrigin_posterior_image.png',
-                            bbox_inches='tight')
-
-            # Evaluate model on grid.
-            model_grid, x_grid, y_grid = \
-                utils.eval_func_on_grid(model.predict, 
-                                        xmin=-6.0, xmax=6.0, 
-                                        ymin=-6.0, ymax=6.0, 
-                                        nx=1000, ny=1000)
-            # model_grid[model_grid<-100.0] = -100.0 
-            
-            # Plot model.
-            ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                                  colorbar_label=r'$\log \varphi$') 
-            # ax.set_clim(vmin=-2.0, vmax=2.0)
-            if savefigs:
-                plt.savefig('examples/plots/nvp_rastrigin_model_image.png',
-                            bbox_inches='tight')
-            
-            # Plot exponential of model.
-            ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                                  colorbar_label=r'$\varphi$')
-            # ax.set_clim(vmin=0.0, vmax=6.0)        
-            if savefigs:
-                plt.savefig('examples/plots/nvp_rastrigin_modelexp_image.png',
-                            bbox_inches='tight')
-
-                plt.show(block=False)  
-                created_plots = True
 
         # Save out realisations for voilin plot.
         evidence_inv_summary[i_realisation,0] = ev.evidence_inv
@@ -373,12 +331,12 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     #===========================================================================
     # Save out realisations of statistics for analysis.
     if n_realisations > 1:
-        np.savetxt("examples/data/nvp_rastrigin_evidence_inv" +
+        np.savetxt("examples/data/spline_rastrigin_evidence_inv" +
                    "_realisations.dat",
                    evidence_inv_summary)
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-        np.savetxt("examples/data/nvp_rastrigin_evidence_inv" +
+        np.savetxt("examples/data/spline_rastrigin_evidence_inv" +
                    "_analytic.dat",
                    evidence_inv_analytic_summary)
 
