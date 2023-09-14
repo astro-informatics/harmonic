@@ -5,13 +5,20 @@ from harmonic import model_nf, flows
 sys.path.append("examples")
 import utils
 import matplotlib.pyplot as plt
+import cloudpickle
 
-savefigs = False
+savefigs = True
 #flow_name = "nvp" 
 flow_name = 'splines'
-example_name = "NUTS"
+example_name = "NUTS_highprec"
 
-samples_train = np.load('examples/data/NUTS/nuts_90ksamples_37params_train.npy')[0]
+train_chains = 7
+samples_train = np.load('examples/data/NUTS/nuts_samples_highprec_lcdm_15_2k.npy')[:train_chains,:,:]
+n_samples = samples_train.shape[1]
+ndim = samples_train.shape[-1]
+samples_train = samples_train.reshape(train_chains*n_samples, ndim)
+print(samples_train.shape)
+
 
 #Flow and training parameters
 epochs_num = 300
@@ -25,14 +32,12 @@ if standardize:
 else:
     stand_lab = 'ns'
 
-ndim = samples_train.shape[1]
-
 # NVP params
 n_scaled = 13
 n_unscaled = 6
 
 #Spline params
-n_layers = 8
+n_layers = 13
 n_bins = 8
 hidden_size = [64, 64]
 spline_range = (-10.0, 10.0)
@@ -47,14 +52,13 @@ if flow_name == 'nvp':
     save_lab = flow_name + '_' + example_name + '_' + str(n_scaled) + '_' + str(n_unscaled)  + 'l_' + str(epochs_num) + 'e_' + stand_lab
 if flow_name == 'splines':    
     model = model_nf.RQSplineFlow(ndim, n_layers = n_layers, n_bins = n_bins, hidden_size = hidden_size, spline_range = spline_range, standardize = standardize, learning_rate = learning_rate, momentum = momentum, temperature=var_scale)
-    save_lab = flow_name + '_' + str(n_layers) + 'l_' + str(epochs_num) + 'e_' + stand_lab
+    save_lab = flow_name + '_' + example_name + '_' + str(n_layers) + 'l_' + str(epochs_num) + 'e_' + stand_lab
 
 
 print('Fit model for {} epochs...'.format(epochs_num))
 model.fit(samples_train, epochs=epochs_num) 
 
 model.serialize("examples/data/NUTS/model_"+save_lab)
-
 
 
 print("Sampling from flow...")
@@ -65,14 +69,14 @@ print('Plotting...')
 plot_training = False 
 plot_flow = False
 
-plot_posterior = False
+plot_posterior = True
 if plot_posterior:
     if plot_training:
         utils.plot_getdist(samples_train.reshape((-1, ndim)))
         if savefigs:
             plt.savefig('examples/plots/' + save_lab + '_getdist.png', bbox_inches='tight', dpi=300)  
 
-    utils.plot_getdist_compare(samples_train, samps_compressed[:,:ndim], fontsize= 2, legend_fontsize=12.5)
+    utils.plot_getdist_compare(samples_train, samps_compressed, fontsize= 2, legend_fontsize=12.5)
     if savefigs:
         plt.savefig('examples/plots/' + save_lab + '_corner_all_T' +str(var_scale) + '.png', bbox_inches='tight', dpi=300)
 

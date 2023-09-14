@@ -8,8 +8,13 @@ import utils
 import cloudpickle
 import matplotlib.pyplot as plt
 
-samples_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test.npy')
-logprob_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test_logprob.npy')
+#samples_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test.npy')
+#logprob_infer = np.load('examples/data/NUTS/nuts_90ksamples_37params_test_logprob.npy')
+
+train_chains = 7
+samples_infer = np.load('examples/data/NUTS/nuts_samples_highprec_lcdm_15_2k.npy')[train_chains:,:,:]
+logprob_infer = np.load('examples/data/NUTS/nuts_samples_highprec_lcdm_15_2k_pe.npy')[train_chains:,:]
+print(samples_infer.shape, logprob_infer.shape)
 
 nchains = samples_infer.shape[0]
 nsamples = samples_infer.shape[1]
@@ -17,7 +22,8 @@ ndim = samples_infer.shape[-1]
 
 
 flow_name = 'splines'
-load_lab = 'splines_8l_300e_s'
+#load_lab = 'splines_8l_300e_s'
+load_lab = 'splines_NUTS_highprec_13l_300e_s'
 model_file = 'examples/data/NUTS/model_' + load_lab
 
 file = open(model_file,"rb")
@@ -25,37 +31,33 @@ model = cloudpickle.load(file)
 file.close()
 
 var_scale = model.temperature
-save_lab = load_lab + '_' + str(var_scale)
+save_lab = load_lab + '_' + str(var_scale) + '_highprec'
 
 
 # Check model loaded in correctly
-plot = False
+plot = True
 if plot:
     print("Sampling from flow...")
-    num_samp = samples_infer.shape[1]
+    #num_samp = samples_infer.shape[1]
+    num_samp = nchains*nsamples
     samps_compressed = np.array(model.sample(num_samp))
 
     print('Plotting...')
     plotdim = 7
-    utils.plot_getdist_compare(samples_infer[0][:,:plotdim], samps_compressed[:,:plotdim], fontsize= 2, legend_fontsize=12.5)
+    utils.plot_getdist_compare(samples_infer.reshape((-1,ndim))[:,:plotdim], samps_compressed[:,:plotdim], fontsize= 2, legend_fontsize=12.5)
     plt.savefig('examples/plots/' + save_lab + '_corner_all_T' +str(var_scale) + '_cosmo_test.png', bbox_inches='tight', dpi=300)
 
     plotdim = ndim
-    utils.plot_getdist_compare(samples_infer[0][:,:plotdim], samps_compressed[:,:plotdim], fontsize= 2, legend_fontsize=12.5)
+    utils.plot_getdist_compare(samples_infer.reshape((-1,ndim))[:,:plotdim], samps_compressed[:,:plotdim], fontsize= 2, legend_fontsize=12.5)
     plt.savefig('examples/plots/' + save_lab + '_corner_all_T' +str(var_scale) + '_test.png', bbox_inches='tight', dpi=300)
 
 
 print('Configure chains...')
-"""
-Configure chains for the cross-validation stage.
-"""
 samples_infer_C = samples_infer.astype('double')
 logprob_infer_C = logprob_infer.astype('double')
 chains = hm.Chains(ndim)
 chains.add_chains_3d(samples_infer_C, logprob_infer_C)
-#print("nchains ", chains.nchains)
-#chains.split_into_blocks(nblocks=nchains*4)
-#print("nchains ", chains.nchains)
+print("nchains", chains.nchains)
 
 
 print('Compute evidence...')
