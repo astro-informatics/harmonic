@@ -9,4 +9,6 @@ scipy>=1.8.1
 colorlog>=6.6.0
 pyyaml>=6.0
 tqdm
+flax==0.6.1
 distrax==0.1.3
+
