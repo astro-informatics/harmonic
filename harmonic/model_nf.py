@@ -6,8 +6,6 @@ import jax
 import jax.numpy as jnp
 import optax
 from functools import partial
-from examples.utils import plot_getdist_compare
-import matplotlib.pyplot as plt
 from tqdm import trange
 import cloudpickle
 
