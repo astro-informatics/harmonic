@@ -164,7 +164,7 @@ class RealNVPModel(md.Model):
         )
 
 
-    def fit(self, X, batch_size=64, epochs=3, key=jax.random.PRNGKey(1000)):
+    def fit(self, X, batch_size=64, epochs=3, key=jax.random.PRNGKey(1000), verbose = False):
         """Fit the parameters of the model.
 
         Args:
@@ -176,6 +176,8 @@ class RealNVPModel(md.Model):
             epochs (int): Number of epochs flow is trained for.
 
             key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+
+            verbose (bool): Controls if progress bar and current loss are displayed when training.
 
 
         Raises:
@@ -204,7 +206,7 @@ class RealNVPModel(md.Model):
 
         train_flow, train_epoch, train_step = make_training_loop(self.flow)
         rng, state, loss_values = train_flow(
-            rng_train, state, variables, X, epochs, batch_size
+            rng_train, state, variables, X, epochs, batch_size, verbose=verbose
         )
 
         self.state = state
@@ -241,7 +243,6 @@ class RealNVPModel(md.Model):
         
         if self.standardize:
             x = (x-self.pre_offset)/self.pre_amp
-            print("predict max", jnp.max(x, axis=0), "min", jnp.min(x, axis = 0))
 
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
@@ -393,7 +394,7 @@ class RQSplineFlow(md.Model):
             apply_fn=self.flow.apply, params=params, tx=tx
         )
 
-    def fit(self, X, batch_size=64, epochs=3, key=jax.random.PRNGKey(1000)):
+    def fit(self, X, batch_size=64, epochs=3, key=jax.random.PRNGKey(1000), verbose= False):
         """Fit the parameters of the model.
 
         Args:
@@ -405,6 +406,8 @@ class RQSplineFlow(md.Model):
             epochs (int): Number of epochs flow is trained for.
 
             key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+
+            verbose (bool): Controls if progress bar and current loss are displayed when training.
 
 
         Raises:
@@ -433,7 +436,7 @@ class RQSplineFlow(md.Model):
 
         train_flow, train_epoch, train_step = make_training_loop(self.flow)
         rng, state, loss_values = train_flow(
-            rng_train, state, variables, X, epochs, batch_size
+            rng_train, state, variables, X, epochs, batch_size, verbose=verbose
         )
 
         self.state = state
@@ -470,7 +473,6 @@ class RQSplineFlow(md.Model):
         
         if self.standardize:
             x = (x-self.pre_offset)/self.pre_amp
-            print("predict max", jnp.max(x, axis=0), "min", jnp.min(x, axis = 0))
 
 
         logprob = self.flow.apply(
