@@ -1,8 +1,7 @@
 import pytest
 import harmonic.model_nf as model_nf
 import jax.numpy as jnp
-import emcee
-import numpy as np
+import jax
 
 
 def test_RealNVP_constructor():
@@ -32,10 +31,10 @@ def test_RealNVP_constructor():
         RealNVP.temperature = 0
         RealNVP.predict(jnp.zeros(ndim))
 
-    assert RealNVP.fitted == False
+    assert RealNVP.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
     RealNVP.fit(training_samples)
-    assert RealNVP.fitted == True
+    assert RealNVP.is_fitted() == True
 
 
 def test_RQSpline_constructor():
@@ -65,10 +64,10 @@ def test_RQSpline_constructor():
         spline.temperature = 0
         spline.predict(jnp.zeros(ndim))
 
-    assert spline.fitted == False
+    assert spline.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
     spline.fit(training_samples)
-    assert spline.fitted == True
+    assert spline.is_fitted() == True
 
 
 
@@ -77,26 +76,12 @@ def test_RealNVP_temperature():
 
     # Define the number of dimensions and the mean of the Gaussian
     ndim = 2
+    num_samples = 100
+    # Initialize a PRNG key (you can use any valid key)
+    key = jax.random.PRNGKey(0)
 
-    def log_prob(x):
-        "Gaussian in ndim dimensions with zero mean and unit variance."
-        mu = jnp.zeros(ndim)
-        cov = jnp.eye(ndim)
-        diff = x - mu
-        return -0.5 * jnp.dot(diff, jnp.linalg.solve(cov, diff))
-
-    # Initialize the sampler with the number of walkers and the number of dimensions
-    nwalkers = 10
-    burnin = 100
-    nsteps = 500
-
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
-    initial_positions = np.random.randn(nwalkers, ndim)
-
-    state = sampler.run_mcmc(initial_positions, burnin)
-    sampler.reset()
-    sampler.run_mcmc(state, nsteps)
-    samples = sampler.get_chain().reshape((-1,ndim))
+    # Generate random samples from the 2D Gaussian distribution
+    samples = jax.random.normal(key, shape=(num_samples, ndim))
 
     RealNVP = model_nf.RealNVPModel(ndim)
     RealNVP.fit(samples)
@@ -118,26 +103,12 @@ def test_RQSpline_temperature():
 
     # Define the number of dimensions and the mean of the Gaussian
     ndim = 2
+    num_samples = 100
+    # Initialize a PRNG key (you can use any valid key)
+    key = jax.random.PRNGKey(0)
 
-    def log_prob(x):
-        "Gaussian in ndim dimensions with zero mean and unit variance."
-        mu = jnp.zeros(ndim)
-        cov = jnp.eye(ndim)
-        diff = x - mu
-        return -0.5 * jnp.dot(diff, jnp.linalg.solve(cov, diff))
-
-    # Initialize the sampler with the number of walkers and the number of dimensions
-    nwalkers = 10
-    burnin = 100
-    nsteps = 500
-
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
-    initial_positions = np.random.randn(nwalkers, ndim)
-
-    state = sampler.run_mcmc(initial_positions, burnin)
-    sampler.reset()
-    sampler.run_mcmc(state, nsteps)
-    samples = sampler.get_chain().reshape((-1,ndim))
+    # Generate random samples from the 2D Gaussian distribution
+    samples = jax.random.normal(key, shape=(num_samples, ndim))
 
     spline = model_nf.RQSplineFlow(ndim)
     spline.fit(samples)
