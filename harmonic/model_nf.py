@@ -310,7 +310,7 @@ class RealNVPModel(md.Model):
 # ===============================================================================
 
 
-class RQSplineFlow():
+class RQSplineFlow(md.Model):
     """Rational quadratic spline flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
