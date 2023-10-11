@@ -31,6 +31,18 @@ def test_RealNVP_constructor():
         RealNVP.temperature = 0
         RealNVP.predict(jnp.zeros(ndim))
 
+    with pytest.raises(ValueError):
+        RealNVP.temperature = 1.2
+        RealNVP.sample(jnp.zeros(ndim))
+
+    with pytest.raises(ValueError):
+        RealNVP.temperature = -0.5
+        RealNVP.sample(jnp.zeros(ndim))
+
+    with pytest.raises(ValueError):
+        RealNVP.temperature = 0
+        RealNVP.sample(jnp.zeros(ndim))
+
     assert RealNVP.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
     RealNVP.fit(training_samples)
@@ -63,6 +75,18 @@ def test_RQSpline_constructor():
     with pytest.raises(ValueError):
         spline.temperature = 0
         spline.predict(jnp.zeros(ndim))
+
+    with pytest.raises(ValueError):
+        spline.temperature = 1.2
+        spline.sample(jnp.zeros(ndim))
+
+    with pytest.raises(ValueError):
+        spline.temperature = -0.5
+        spline.sample(jnp.zeros(ndim))
+
+    with pytest.raises(ValueError):
+        spline.temperature = 0
+        spline.sample(jnp.zeros(ndim))
 
     assert spline.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
