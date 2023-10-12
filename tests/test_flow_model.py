@@ -44,7 +44,7 @@ def test_RealNVP_constructor():
 
     assert RealNVP.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
-    RealNVP.fit(training_samples)
+    RealNVP.fit(training_samples, standardize=True)
     assert RealNVP.is_fitted() == True
 
 
@@ -89,7 +89,7 @@ def test_RQSpline_constructor():
 
     assert spline.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
-    spline.fit(training_samples)
+    spline.fit(training_samples, standardize=True)
     assert spline.is_fitted() == True
 
 
