@@ -2,6 +2,7 @@ import pytest
 import harmonic.model_nf as model_nf
 import jax.numpy as jnp
 import jax
+import harmonic as hm
 
 def test_RealNVP_constructor():
 
@@ -103,31 +104,34 @@ def test_RealNVP_gaussian():
     epochs = 50
     # Initialize a PRNG key (you can use any valid key)
     key = jax.random.PRNGKey(0)
+    mean = jnp.zeros(ndim)
+    cov = jnp.eye(ndim)
 
     # Generate random samples from the 2D Gaussian distribution
-    samples = jax.random.normal(key, shape=(num_samples, ndim))
+    samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
 
     RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
-    RealNVP.fit(samples, epochs=epochs)
+    RealNVP.fit(samples, epochs=epochs, verbose=True)
 
     nsamples = 10000
     RealNVP.temperature = 1.
     flow_samples = RealNVP.sample(nsamples)
-    sample_var = jnp.var(flow_samples, axis = 0)
+    sample_var = jnp.var(flow_samples, axis = 0)    
+    sample_mean = jnp.mean(flow_samples, axis=0)
+
+    test = jnp.ones(ndim)*0.2
+    assert jnp.exp(RealNVP.predict(jnp.array([test])))[0] == pytest.approx(jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1), "Real NVP probability density not in agreement with analytical value"
+
+    for i in range(ndim):
+        assert sample_mean[i] == pytest.approx(0.0, abs = 0.1), "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
+        assert sample_var[i] == pytest.approx(1.0, abs = 0.1), "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
+
     RealNVP.temperature = 0.8
     flow_samples_concentrated = RealNVP.sample(nsamples)
     sample_var_concentrated = jnp.var(flow_samples_concentrated, axis = 0)
 
     for i in range(ndim):
         assert sample_var[i] > sample_var_concentrated[i], "Reducing temperature increases variance in dimension " + str(i)
-    
-    sample_mean = jnp.mean(flow_samples, axis=0)
-
-    for i in range(ndim):
-        assert sample_mean[i] == pytest.approx(0.0, abs = 0.1), "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
-        assert sample_var[i] == pytest.approx(1.0, abs = 0.1), "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
-
-
 
 def test_RQSpline_gaussian():
 
@@ -137,26 +141,56 @@ def test_RQSpline_gaussian():
     epochs = 20
     # Initialize a PRNG key (you can use any valid key)
     key = jax.random.PRNGKey(0)
+    mean = jnp.zeros(ndim)
+    cov = jnp.eye(ndim)
 
     # Generate random samples from the 2D Gaussian distribution
-    samples = jax.random.normal(key, shape=(num_samples, ndim))
+    samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
 
     spline = model_nf.RQSplineFlow(ndim, standardize=True)
-    spline.fit(samples, epochs=epochs)
+    spline.fit(samples, epochs=epochs, verbose=True)
 
     nsamples = 10000
     spline.temperature = 1.
     flow_samples = spline.sample(nsamples)
-    sample_var = jnp.var(flow_samples, axis = 0)
+    sample_var = jnp.var(flow_samples, axis = 0)   
+    sample_mean = jnp.mean(flow_samples, axis=0)
+
+    for i in range(ndim):
+        assert sample_mean[i] == pytest.approx(0.0, abs = 0.1), "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
+        assert sample_var[i] == pytest.approx(1.0, abs = 0.1), "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
+
+    test = jnp.ones(ndim)*0.2
+    assert jnp.exp(spline.predict(jnp.array([test])))[0] == pytest.approx(jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1), "Spline probability density not in agreement with analytical value"
+
     spline.temperature = 0.8
     flow_samples_concentrated = spline.sample(nsamples)
     sample_var_concentrated = jnp.var(flow_samples_concentrated, axis = 0)
 
     for i in range(ndim):
         assert sample_var[i] > sample_var_concentrated[i], "Reducing temperature increases variance in dimension " + str(i)
-    
-    sample_mean = jnp.mean(flow_samples, axis=0)
 
-    for i in range(ndim):
-        assert sample_mean[i] == pytest.approx(0.0, abs = 0.1), "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
-        assert sample_var[i] == pytest.approx(1.0, abs = 0.1), "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
+
+def standard_nd_gaussian_pdf(x):
+    """
+    Calculate the probability density function (PDF) of an n-dimensional Gaussian
+    distribution with zero mean and unit covariance.
+
+    Parameters:
+    - x: Input vector of length n.
+
+    Returns:
+    - pdf: log PDF value at input vector x.
+    """
+    n = len(x)
+
+    # The normalizing constant (coefficient)
+    C = -jnp.log(2 * jnp.pi)*n/2
+
+    # Calculate the Mahalanobis distance
+    mahalanobis_dist = jnp.dot(x, x)
+
+    # Calculate the PDF value
+    pdf = C - 0.5 * mahalanobis_dist
+
+    return pdf
