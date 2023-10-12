@@ -12,7 +12,7 @@ def test_RealNVP_constructor():
         RealNVP = model_nf.RealNVPModel(-1)
 
     ndim = 3
-    RealNVP = model_nf.RealNVPModel(ndim) 
+    RealNVP = model_nf.RealNVPModel(ndim, standardize=True) 
 
     with pytest.raises(ValueError):
         training_samples = jnp.zeros((12,ndim+1))
@@ -44,7 +44,7 @@ def test_RealNVP_constructor():
 
     assert RealNVP.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
-    RealNVP.fit(training_samples, standardize=True)
+    RealNVP.fit(training_samples
     assert RealNVP.is_fitted() == True
 
 
@@ -57,7 +57,7 @@ def test_RQSpline_constructor():
         spline = model_nf.RQSplineFlow(-1)
 
     ndim = 3
-    spline = model_nf.RQSplineFlow(ndim) 
+    spline = model_nf.RQSplineFlow(ndim, standardize=True) 
 
     with pytest.raises(ValueError):
         training_samples = jnp.zeros((12,ndim+1))
@@ -89,7 +89,7 @@ def test_RQSpline_constructor():
 
     assert spline.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
-    spline.fit(training_samples, standardize=True)
+    spline.fit(training_samples)
     assert spline.is_fitted() == True
 
 
