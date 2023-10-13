@@ -306,6 +306,25 @@ class RealNVPModel(md.Model):
         return
 
 
+    @classmethod
+    def deserialize(self, filename):
+        """Deserialize Model object from file.
+
+        Args:
+
+            filename (string): Name of file from which to read model object.
+
+        Returns:
+
+            (Model): Model object deserialized from file.
+
+        """
+        file = open(filename,"rb")
+        model = cloudpickle.load(file)
+        file.close()
+
+        return model
+
 # ===============================================================================
 # Rational Quadratic Spline Flow - to be refactored (cf RealNVP)
 # ===============================================================================
@@ -534,4 +553,23 @@ class RQSplineFlow(md.Model):
         file.close()
 
         return
+    
+    @classmethod
+    def deserialize(self, filename):
+        """Deserialize Model object from file.
+
+        Args:
+
+            filename (string): Name of file from which to read model object.
+
+        Returns:
+
+            (Model): Model object deserialized from file.
+
+        """
+        file = open(filename,"rb")
+        model = cloudpickle.load(file)
+        file.close()
+
+        return model
     
