@@ -6,7 +6,7 @@ from math import fsum
 import warnings
 from enum import Enum
 import scipy.special as sp
-import pickle
+import cloudpickle
 import logs as lg 
 
 class Shifting(Enum):
@@ -462,7 +462,7 @@ class Evidence:
         """
 
         file = open(filename, "wb")
-        pickle.dump(self, file)
+        cloudpickle.dump(self, file)
         file.close()
 
         return
@@ -482,7 +482,7 @@ class Evidence:
 
         """
         file = open(filename,"rb")
-        ev = pickle.load(file)
+        ev = cloudpickle.load(file)
         file.close()
 
         return ev

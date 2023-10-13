@@ -289,41 +289,7 @@ class RealNVPModel(md.Model):
             samples = (samples * self.pre_amp) + self.pre_offset
         
         return samples
-    
-    def serialize(self, filename):
-        """Serialize Model object.
 
-        Args:
-
-            filename (string): Name of file to save model object.
-
-        """
-
-        file = open(filename, "wb")
-        cloudpickle.dump(self, file)
-        file.close()
-
-        return
-
-
-    @classmethod
-    def deserialize(self, filename):
-        """Deserialize Model object from file.
-
-        Args:
-
-            filename (string): Name of file from which to read model object.
-
-        Returns:
-
-            (Model): Model object deserialized from file.
-
-        """
-        file = open(filename,"rb")
-        model = cloudpickle.load(file)
-        file.close()
-
-        return model
 
 # ===============================================================================
 # Rational Quadratic Spline Flow - to be refactored (cf RealNVP)
@@ -538,38 +504,3 @@ class RQSplineFlow(md.Model):
             samples = (samples * self.pre_amp) + self.pre_offset
 
         return samples
-    
-    def serialize(self, filename):
-        """Serialize Model object.
-
-        Args:
-
-            filename (string): Name of file to save model object.
-
-        """
-
-        file = open(filename, "wb")
-        cloudpickle.dump(self, file)
-        file.close()
-
-        return
-    
-    @classmethod
-    def deserialize(self, filename):
-        """Deserialize Model object from file.
-
-        Args:
-
-            filename (string): Name of file from which to read model object.
-
-        Returns:
-
-            (Model): Model object deserialized from file.
-
-        """
-        file = open(filename,"rb")
-        model = cloudpickle.load(file)
-        file.close()
-
-        return model
-    
