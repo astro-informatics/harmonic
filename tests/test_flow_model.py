@@ -101,7 +101,7 @@ def test_RealNVP_gaussian():
     # Define the number of dimensions and the mean of the Gaussian
     ndim = 2
     num_samples = 10000
-    epochs = 50
+    epochs = 80
     # Initialize a PRNG key (you can use any valid key)
     key = jax.random.PRNGKey(0)
     mean = jnp.zeros(ndim)
