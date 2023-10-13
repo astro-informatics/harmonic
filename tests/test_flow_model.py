@@ -69,7 +69,7 @@ def test_RealNVP_constructor():
 
     assert RealNVP.is_fitted() == False
     training_samples = jnp.zeros((12,ndim))
-    RealNVP.fit(training_samples, verbose=True)
+    RealNVP.fit(training_samples, verbose=True, epochs=5)
     assert RealNVP.is_fitted() == True
 
 
