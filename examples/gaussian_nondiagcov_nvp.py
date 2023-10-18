@@ -75,7 +75,7 @@ def init_cov(ndim):
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False):
     """Run Gaussian example with non-diagonal covariance matrix.
 
     Args:
@@ -90,8 +90,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
         plot_corner: Plot marginalised distributions if true.
 
-        plot_surface: Plot surface and samples if true.
-
     """
 
     savefigs = True
@@ -103,6 +101,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
     epochs_num = 50
     var_scale = 0.9
     standardize = True
+    verbose = True
 
     # Start timer.
     clock = time.process_time()
@@ -143,7 +142,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
         model = model_nf.RealNVPModel(ndim, standardize=standardize, temperature = var_scale)
-        model.fit(chains_train.samples, epochs=epochs_num) 
+        model.fit(chains_train.samples, epochs=epochs_num, verbose = verbose) 
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log('Compute evidence...')
@@ -243,96 +242,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                     
             plt.show()        
             
-        # ======================================================================
-        # In 2D case, plot surface/image and samples.  
-        # ======================================================================
-        if plot_surface and ndim == 2 and i_realisation == 0:
-                    
-            # ==================================================================
-            # Define plot parameters.  
-            # ==================================================================
-            nx = 50
-            xmin = -3.0
-            xmax = 3.0
-
-            # ==================================================================
-            # 2D surface plot of posterior. 
-            # ==================================================================
-            ln_posterior_func = partial(ln_posterior, inv_cov=inv_cov)
-            ln_posterior_grid, x_grid, y_grid = \
-                utils.eval_func_on_grid(ln_posterior_func, 
-                                        xmin=xmin, xmax=xmax, 
-                                        ymin=xmin, ymax=xmax, 
-                                        nx=nx, ny=nx)
-            i_chain = 0
-            ax = utils.plot_surface(np.exp(ln_posterior_grid), x_grid, y_grid, 
-                                    samples[i_chain,:,:].reshape((-1, ndim)), 
-                                    np.exp(lnprob[i_chain,:].reshape((-1, 1))),
-                                    contour_z_offset=-0.5, alpha=0.3)
-               
-            ax.set_zlabel(r'$\mathcal{L}$') 
-
-            # Save.
-            if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_posterior_surface.png'\
-                    , bbox_inches='tight')
-
-            plt.show(block=False)
-
-            # ==================================================================
-            # Image of posterior samples overlayed with contour plot.
-            # ================================================================== 
-            # Plot posterior image.
-            ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, 
-                                  samples[i_chain].reshape((-1, ndim)),
-                                  colorbar_label='$\mathcal{L}$',
-                                  plot_contour=True, markersize=1.0)
-            # Save.
-            if savefigs:
-                plt.savefig(
-                    'examples/plots/nvp_gaussian_nondiagcov_posterior_image.png'
-                    , bbox_inches='tight')
-
-            plt.show(block=False) 
-        
-            # ==================================================================
-            # Learnt model of the posterior 
-            # ================================================================== 
-            # Evaluate ln_posterior and model over grid.
-            x = np.linspace(xmin, xmax, nx); y = np.linspace(xmin, xmax, nx)
-            x, y = np.meshgrid(x, y)     
-            ln_model_grid = np.zeros((nx,nx))      
-            for i in range(nx):
-                for j in range(nx):
-                    ln_model_grid[i,j] =model.predict(np.array([x[i,j],y[i,j]]))
-
-            i_chain = 0
-            ax = utils.plot_surface(np.exp(ln_model_grid), x_grid, y_grid, 
-                                    contour_z_offset=-0.075)              
-            ax.set_zlabel(r'$\mathcal{L}$') 
-
-            # Save.
-            if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_surface.png'
-                    , bbox_inches='tight')
-
-            plt.show(block=False)
-
-            # ==================================================================
-            # Projection of posteior onto x1,x2 plane with contours.
-            # ================================================================== 
-            # Plot posterior image.
-            ax = utils.plot_image(np.exp(ln_model_grid), x_grid, y_grid, 
-                                  colorbar_label='$\mathcal{L}$',
-                                  plot_contour=True)
-            # Save.
-            if savefigs:
-                plt.savefig('examples/plots/nvp_gaussian_nondiagcov_image.png', 
-                            bbox_inches='tight')
-
-            plt.show(block=False) 
-            # ================================================================== 
-        
         evidence_inv_summary[i_realisation,0] = ev.evidence_inv
         evidence_inv_summary[i_realisation,1] = ev.evidence_inv_var
         evidence_inv_summary[i_realisation,2] = ev.evidence_inv_var_var
@@ -361,7 +270,7 @@ if __name__ == '__main__':
     hm.logs.setup_logging()
 
     # Define parameters.
-    ndim = 2
+    ndim = 5
     nchains = 100
     samples_per_chain = 5000
     nburn = 500     
@@ -379,5 +288,4 @@ if __name__ == '__main__':
     hm.logs.debug_log('-------------------------')
     
     # Run example.
-    run_example(ndim, nchains, samples_per_chain, nburn, 
-                plot_corner=True, plot_surface=False)
+    run_example(ndim, nchains, samples_per_chain, nburn, plot_corner=True)

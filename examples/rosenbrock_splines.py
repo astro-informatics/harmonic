@@ -114,7 +114,7 @@ def ln_posterior(x, ln_prior, a=1.0, b=100.0):
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False):
     """Run Rosenbrock example.
 
     Args:
@@ -128,9 +128,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
-
-        plot_surface: Plot surface and samples if true.
-
     """
 
     if ndim != 2:
@@ -329,57 +326,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
                 plt.savefig('examples/plots/spline_rosenbrock_corner_all_T' +str(var_scale) + '.png',
                                 bbox_inches='tight', dpi=300)
             created_plots = True
-                
-        # In 2D case, plot surface/image and samples.    
-        if plot_surface and ndim == 2 and i_realisation == 0:
-            
-            # Plot ln_posterior surface.
-            # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0 
-            i_chain = 0
-            ax = utils.plot_surface(ln_posterior_grid, x_grid, y_grid, 
-                                    samples[i_chain,:,:].reshape((-1, ndim)), 
-                                    lnprob[i_chain,:].reshape((-1, 1)))
-            # ax.set_zlim(-100.0, 0.0)                
-            ax.set_zlabel(r'$\log \mathcal{L}$')        
-            if savefigs:
-                plt.savefig('examples/plots/spline_rosenbrock_lnposterior_surface.png',
-                            bbox_inches='tight')
-            
-            # Plot posterior image.
-            ax = utils.plot_image(np.exp(ln_posterior_grid), x_grid, y_grid, 
-                                  samples.reshape((-1,ndim)),
-                                  colorbar_label=r'$\mathcal{L}$')
-            # ax.set_clim(vmin=0.0, vmax=0.003)
-            if savefigs:
-                plt.savefig('examples/plots/spline_rosenbrock_posterior_image.png',
-                            bbox_inches='tight')
-
-            # Evaluate model on grid.
-            model_grid, x_grid, y_grid = \
-                utils.eval_func_on_grid(model.predict, 
-                                        xmin=-10.0, xmax=10.0, 
-                                        ymin=-5.0, ymax=15.0, 
-                                        nx=1000, ny=1000)
-            # model_grid[model_grid<-100.0] = -100.0 
-            
-            # Plot model.
-            ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                                  colorbar_label=r'$\log \varphi$') 
-            # ax.set_clim(vmin=-2.0, vmax=2.0)
-            if savefigs:
-                plt.savefig('examples/plots/spline_rosenbrock_model_image.png',
-                            bbox_inches='tight')
-            
-            # Plot exponential of model.
-            ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                                  colorbar_label=r'$\varphi$')
-            # ax.set_clim(vmin=0.0, vmax=10.0)        
-            if savefigs:
-                plt.savefig('examples/plots/spline_rosenbrock_modelexp_image.png',
-                            bbox_inches='tight')
-
-            plt.show(block=False)  
-            created_plots = True
 
         # Save out realisations for voilin plot.
         evidence_inv_summary[i_realisation,0] = ev.evidence_inv
@@ -433,5 +379,4 @@ if __name__ == '__main__':
     hm.logs.debug_log('-------------------------')
     
     # Run example.
-    samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=False)
+    samples = run_example(ndim, nchains, samples_per_chain, nburn, plot_corner=True)

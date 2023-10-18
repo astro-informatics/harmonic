@@ -299,7 +299,7 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
 
     
 def run_example(model_1=True, nchains=100, samples_per_chain=1000, 
-                nburn=500, plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False):
     """Run Radiata Pine example.
 
     Args:
@@ -313,9 +313,6 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
-
-        plot_surface: Plot surface and samples if true.
-
     """
        
     ndim=3
@@ -538,115 +535,6 @@ def run_example(model_1=True, nchains=100, samples_per_chain=1000,
         
           
         created_plots = True
-    
-    plot_on_grid = False
-    if plot_on_grid:
-
-        # Plot model over first two parameters.
-
-        def model_predict_x0x1(x_2d):         
-            x2 = 1.4E-5
-            x = np.append(x_2d, [x2])
-            # print("x01x1: x = {}".format(x))
-            return model.predict(x)
-            
-        model_grid, x_grid, y_grid = \
-            utils.eval_func_on_grid(model_predict_x0x1, 
-                                    xmin=2900.0, xmax=3100.0, 
-                                    ymin=185.0-30.0, ymax=185.0+30.0,
-                                    nx=1000, ny=1000)
-
-        # Plot model.
-        ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                            colorbar_label=r'$\log \varphi$')   
-        plt.xlabel('$x_0$')
-        plt.ylabel('$x_1$')   
-        #plt.axis('equal')    
-        if savefigs:
-            plt.savefig('examples/plots/nvp_radiatapine_model_x0x1_image.png',
-                        bbox_inches='tight')
-
-        # Plot exponential of model.
-        ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                            colorbar_label=r'$\varphi$')    
-        plt.xlabel('$x_0$')
-        plt.ylabel('$x_1$')   
-        #plt.axis('equal')    
-        if savefigs:
-            plt.savefig('examples/plots/nvp_radiatapine_modelexp_x0x1_image.png',
-                        bbox_inches='tight')
-
-
-        # Plot model over second and third parameters.
-
-        def model_predict_x1x2(x_2d): 
-            x0 = 3000.0
-            x = np.append([x0], x_2d)
-            # print("x1x2: x = {}".format(x))
-            return model.predict(x)
-            
-        model_grid, x_grid, y_grid = \
-            utils.eval_func_on_grid(model_predict_x1x2, 
-                                xmin=185.0-30.0, xmax=185.0+30.0, 
-                                ymin=a_0 / b_0 - 0.5E-5, ymax=a_0 / b_0 + 0.5E-5, 
-                                nx=1000, ny=1000)
-
-        # Plot model.
-        ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                            colorbar_label=r'$\log \varphi$')   
-        plt.xlabel('$x_1$')
-        plt.ylabel('$x_2$')   
-        #plt.axis('equal')    
-        if savefigs:
-            plt.savefig('examples/plots/nvp_radiatapine_model_x1x2_image.png',
-                        bbox_inches='tight')
-
-        # Plot exponential of model.
-        ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                            colorbar_label=r'$\varphi$')    
-        plt.xlabel('$x_1$')
-        plt.ylabel('$x_2$')   
-        #plt.axis('equal')    
-        if savefigs:
-            plt.savefig('examples/plots/nvp_radiatapine_modelexp_x1x2_image.png',
-                        bbox_inches='tight')
-
-        # Plot model over first and third parameters.
-
-        def model_predict_x0x2(x_2d): 
-            x1 = 185.0
-            x = np.append(x_2d[0], [x1])
-            x = np.append(x, x_2d[1])
-            return model.predict(x)
-            
-        model_grid, x_grid, y_grid = \
-            utils.eval_func_on_grid(model_predict_x0x2, 
-                                xmin=2900.0, xmax=3100.0, 
-                                ymin=a_0 / b_0 - 0.5E-5, ymax=a_0 / b_0 + 0.5E-5, 
-                                nx=1000, ny=1000)
-                                                                    
-        # Plot model.
-        ax = utils.plot_image(model_grid, x_grid, y_grid, 
-                            colorbar_label=r'$\log \varphi$')   
-        plt.xlabel('$x_0$')
-        plt.ylabel('$x_1$')   
-        #plt.axis('equal')
-        
-        if savefigs:
-            plt.savefig('examples/plots/nvp_radiatapine_model_x0x2_image.png',
-                        bbox_inches='tight')
-
-        # Plot exponential of model.
-        ax = utils.plot_image(np.exp(model_grid), x_grid, y_grid,
-                            colorbar_label=r'$\varphi$')    
-        plt.xlabel('$x_0$')
-        plt.ylabel('$x_2$')   
-        #plt.axis('equal')    
-        if savefigs:
-            plt.savefig('examples/plots/nvp_radiatapine_modelexp_x0x2_image.png',
-                        bbox_inches='tight')
-
-        plt.show(block=False)  
 
     if created_plots:
         input("\nPress Enter to continue...")
@@ -684,5 +572,5 @@ if __name__ == '__main__':
 
     # Run example.
     samples = run_example(model_1, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=False)
+                          plot_corner=True)
 

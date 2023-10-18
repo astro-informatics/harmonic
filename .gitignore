@@ -16,3 +16,4 @@ docs/assets/static_notebooks/.ipynb_checkpoints/
 docs/assets/static_notebooks/.temp.*
 dist/
 harmonic.egg-info/
+harmonic/examples/data/NUTS

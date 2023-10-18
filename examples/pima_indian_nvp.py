@@ -102,7 +102,7 @@ def compute_ln_p(theta, x):
 
 def run_example(model_1=True, tau=1.0,
                 nchains=100, samples_per_chain=1000,
-                nburn=500, plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False):
     """Run Pima Indians example.
 
     Args:
@@ -118,9 +118,6 @@ def run_example(model_1=True, tau=1.0,
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
-
-        plot_surface: Plot surface and samples if true.
-
     """
 
     # Set_dimension
@@ -182,7 +179,7 @@ def run_example(model_1=True, tau=1.0,
     Configure machine learning parameters.
     """
 
-    training_proportion = 0.7
+    training_proportion = 0.5
     var_scale = 0.9
     epochs_num = 50
     n_scaled = 6
@@ -365,4 +362,4 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(model_1, tau, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=False)
+                          plot_corner=True)

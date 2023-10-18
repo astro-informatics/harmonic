@@ -88,7 +88,7 @@ def ln_posterior(x, ln_prior):
 
 
 def run_example(ndim=2, nchains=100, samples_per_chain=1000, 
-                nburn=500, plot_corner=False, plot_surface=False):
+                nburn=500, plot_corner=False):
     """Run Rastrigin example.
 
     Args:
@@ -102,9 +102,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
-
-        plot_surface: Plot surface and samples if true.
-
     """
 
     if ndim != 2:
@@ -199,7 +196,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 
         #=======================================================================
-        # Fit optimal model
+        # Fit model
         #=======================================================================
         hm.logs.info_log('Fit model for {} epochs...'.format(epochs_num))
         """
@@ -372,7 +369,7 @@ if __name__ == '__main__':
     
     # Run example.
     samples = run_example(ndim, nchains, samples_per_chain, nburn, 
-                          plot_corner=True, plot_surface=False)
+                          plot_corner=True)
     
 
 
