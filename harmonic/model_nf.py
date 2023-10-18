@@ -431,16 +431,16 @@ class RQSplineFlow(md.Model):
         return
 
     def predict(self, x):
-        """Predict the value of log_e posterior at x.
+        """Predict the value of log_e posterior at batched input x.
 
         Args:
 
-            x (jnp.ndarray): Sample of shape at which to
-                predict posterior value.
+            x (jnp.ndarray (batch_size, ndim)): Batched sample for which to
+                predict posterior values.
 
         Returns:
 
-            jnp.ndarray: Predicted log_e posterior value.
+            jnp.ndarray (batch_size,): Predicted log_e posterior value.
         
         Raises:
 
