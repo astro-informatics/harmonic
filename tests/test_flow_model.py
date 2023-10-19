@@ -37,7 +37,11 @@ def test_RealNVP_constructor():
         RealNVP = model_nf.RealNVPModel(-1)
 
     ndim = 3
-    RealNVP = model_nf.RealNVPModel(ndim, standardize=True) 
+
+    with pytest.raises(ValueError):
+        RealNVP = model_nf.RealNVPModel(ndim, n_scaled_layers=0)
+    
+    RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
 
     with pytest.raises(ValueError):
         training_samples = jnp.zeros((12,ndim+1))
@@ -71,6 +75,12 @@ def test_RealNVP_constructor():
     training_samples = jnp.zeros((12,ndim))
     RealNVP.fit(training_samples, verbose=True, epochs=5)
     assert RealNVP.is_fitted() == True
+
+def test_RealNVP_flow():
+
+    with pytest.raises(ValueError):
+        flow = hm.flows.RealNVP(3, n_scaled_layers=0)
+        flow.make_flow()
 
 
 def test_RQSpline_constructor():

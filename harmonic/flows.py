@@ -17,7 +17,6 @@ tfb = tfp.bijectors
 # NVP Flow
 # ===============================================================================
 
-
 class RealNVP(nn.Module):
     """
     Real-valued non-volume preserving flow using flax and tfp-jax.
@@ -34,8 +33,9 @@ class RealNVP(nn.Module):
     n_features: int
     n_scaled_layers: int = 2
     n_unscaled_layers: int = 4
-
+    
     def setup(self):
+
         self.scaled_layers = [AffineCoupling() for i in range(self.n_scaled_layers)]
         self.unscaled_layers = [
             AffineCoupling(apply_scaling=False) for i in range(self.n_unscaled_layers)
@@ -54,8 +54,16 @@ class RealNVP(nn.Module):
             tfb.Distribution: Base Gaussian transformed by scaled contained in the scaled_layers 
                 attribute, followed by unscaled affine coupling layers contained in the 
                 unscaled_layers attribute. 
+
+        Raises:
+
+            ValueError: If n_scaled_layers is not positive.
         
         """
+
+        if self.n_scaled_layers <= 0:
+            raise ValueError("Number of scaled layers must be greater than zero.")
+    
         chain = []
         ix = jnp.arange(self.n_features)
         permutation = [ix[-1], *ix[:-1]]

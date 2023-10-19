@@ -127,10 +127,15 @@ class RealNVPModel(md.Model):
 
             ValueError: If the ndim_in is not positive.
 
+            ValueError: If n_scaled_layers is not positive.
+
         """
 
         if ndim_in < 1:
             raise ValueError("Dimension must be greater than 0.")
+        
+        if n_scaled_layers <= 0:
+            raise ValueError("Number of scaled layers must be greater than 0.")
 
         self.ndim = ndim_in
         self.fitted = False
