@@ -154,8 +154,6 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000,
 
 		plot_corner: Plot marginalised distributions if true.
 
-		plot_surface: Plot surface and samples if true.
-
 		plot_comparison: Plot accuracy for various tau priors if true.
 
 	"""
