@@ -1,10 +1,8 @@
-from typing import Sequence, Callable, List, Any
-import numpy as np
+from typing import Sequence, Callable
 import flax.linen as nn
 import jax
 import jax.numpy as jnp
 import tensorflow_probability as tfp
-from flax.training import train_state
 import distrax
 
 tfp = tfp.substrates.jax
@@ -154,7 +152,6 @@ class RealNVP(nn.Module):
         Returns:
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
-
         get_logprob = jax.jit(jax.vmap(self.__call__, in_axes=[0, None]))
         logprob = get_logprob(x, var_scale)
 
@@ -206,7 +203,8 @@ class RQSpline(nn.Module):
 
         spline_range (Sequence[float]): Range of the spline.
 
-    Adapted from github.com/kazewong/flowMC
+    Note:
+        Adapted from github.com/kazewong/flowMC
     """
 
     n_features: int
@@ -235,7 +233,7 @@ class RQSpline(nn.Module):
             )
 
         self.bijector_fn = bijector_fn
-
+    # TODO: change scale to varscale in all functions below.
     def make_flow(self, scale: float =1.):
         """
         Make distrax distribution containing the rational quadratic spline flow.

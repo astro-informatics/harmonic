@@ -4,7 +4,6 @@ from scipy.stats import kurtosis
 import harmonic.chains as ch
 import harmonic.model as md
 import harmonic.evidence as cbe
-import harmonic.utils as utils
 import harmonic.model_nf as model_nf
 
 
@@ -401,7 +400,7 @@ def test_serialization():
 
     # Deserialize evidence
     ev4 = cbe.Evidence.deserialize(".test.dat")
-
+    # TODO: make sure model works correctly after deserializing.
     # Test evidence objects the same
     assert ev3.batch_calculation == ev4.batch_calculation
     assert ev3.nchains == ev4.nchains
