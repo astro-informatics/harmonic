@@ -10,10 +10,10 @@ tfd = tfp.distributions
 tfb = tfp.bijectors
 
 
-
 # ===============================================================================
 # NVP Flow
 # ===============================================================================
+
 
 class RealNVP(nn.Module):
     """
@@ -21,47 +21,46 @@ class RealNVP(nn.Module):
 
     Args:
         n_features (int): Number of features in the data.
-        
-        n_scaled_layers (int): Non-zero number of layers in the flow.
-        
-        n_unscaled_layers (int): Number of unscaled layers in the flow.
-    
+
+        n_scaled_layers (int, optional): Non-zero number of layers in the flow. Defaults to 2.
+
+        n_unscaled_layers (int, optional): Number of unscaled layers in the flow. Defaults to 4.
+
     """
 
     n_features: int
     n_scaled_layers: int = 2
     n_unscaled_layers: int = 4
-    
-    def setup(self):
 
+    def setup(self):
         self.scaled_layers = [AffineCoupling() for i in range(self.n_scaled_layers)]
         self.unscaled_layers = [
             AffineCoupling(apply_scaling=False) for i in range(self.n_unscaled_layers)
         ]
 
-    def make_flow(self, var_scale=1.0):
+    def make_flow(self, var_scale: float = 1.0):
         """
         Make tfp-jax distribution object containing the RealNVP flow.
 
         Args:
-            var_scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
 
         Returns:
-            tfb.Distribution: Base Gaussian transformed by scaled contained in the scaled_layers 
-                attribute, followed by unscaled affine coupling layers contained in the 
-                unscaled_layers attribute. 
+            tfb.Distribution: Base Gaussian transformed by scaled contained in the scaled_layers
+                attribute, followed by unscaled affine coupling layers contained in the
+                unscaled_layers attribute.
 
         Raises:
 
             ValueError: If n_scaled_layers is not positive.
-        
+
         """
 
         if self.n_scaled_layers <= 0:
             raise ValueError("Number of scaled layers must be greater than zero.")
-    
+
         chain = []
         ix = jnp.arange(self.n_features)
         permutation = [ix[-1], *ix[:-1]]
@@ -69,16 +68,12 @@ class RealNVP(nn.Module):
         # assume n_scaled_layers is not 0
         for i in range(self.n_scaled_layers - 1):
             chain.append(
-                tfb.RealNVP(
-                    fraction_masked=0.5, bijector_fn=self.scaled_layers[i]
-                )
+                tfb.RealNVP(fraction_masked=0.5, bijector_fn=self.scaled_layers[i])
             )
             chain.append(tfb.Permute(permutation))
 
         chain.append(
-            tfb.RealNVP(
-                fraction_masked=0.5, bijector_fn=self.scaled_layers[-1]
-            )
+            tfb.RealNVP(fraction_masked=0.5, bijector_fn=self.scaled_layers[-1])
         )
 
         for i in range(self.n_unscaled_layers):
@@ -94,21 +89,24 @@ class RealNVP(nn.Module):
         chain = tfb.Chain(chain)
 
         nvp = tfd.TransformedDistribution(
-            distribution=tfd.MultivariateNormalDiag(loc=jnp.zeros(self.n_features), scale_diag=jnp.full(self.n_features, var_scale)),
+            distribution=tfd.MultivariateNormalDiag(
+                loc=jnp.zeros(self.n_features),
+                scale_diag=jnp.full(self.n_features, var_scale),
+            ),
             bijector=chain,
         )
 
         return nvp
 
-    def __call__(self, x, var_scale=1.0) -> jnp.array:
+    def __call__(self, x: jnp.ndarray, var_scale: int = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for non-batched input x.
 
         Args:
             x (jnp.ndarray (ndim)): Sample at which to predict posterior value.
 
-            var_scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             float: Predicted log_e posterior value.
@@ -120,16 +118,16 @@ class RealNVP(nn.Module):
     def sample(
         self, rng: jax.random.PRNGKey, num_samples: int, var_scale: float = 1.0
     ) -> jnp.array:
-        """"
+        """ "
         Sample from the flow.
 
         Args:
-            rng (Union[Array, PRNGKeyArray])): Key used in random number generation process. 
+            rng (Union[Array, PRNGKeyArray])): Key used in random number generation process.
 
-            num_samples (int): Number of samples generated.   
-        
-            scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            num_samples (int): Number of samples generated.
+
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.array (num_samples, ndim): Samples from fitted distribution.
@@ -142,12 +140,12 @@ class RealNVP(nn.Module):
     def log_prob(self, x: jnp.array, var_scale: float = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for a batched input.
-        
+
         Args:
             x (jnp.ndarray (batch_size, ndim)): Sample for which to predict posterior values.
 
-            var_scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
@@ -156,20 +154,20 @@ class RealNVP(nn.Module):
         logprob = get_logprob(x, var_scale)
 
         return logprob
-    
+
 
 class AffineCoupling(nn.Module):
     """
     Affine coupling layer used in RealNVP flow class.
 
     Args:
-        apply_scaling (bool): If true shift is followed by a scaling
+        apply_scaling (bool, optional): If true shift is followed by a scaling. Defaults to True.
     """
+
     apply_scaling: bool = True
 
     @nn.compact
     def __call__(self, x, nunits):
-        
         net = nn.leaky_relu(nn.Dense(128)(x))
 
         # Shift parameter:
@@ -180,7 +178,6 @@ class AffineCoupling(nn.Module):
         else:
             scaler = tfb.Identity()
         return tfb.Chain([tfb.Shift(shift), scaler])
-
 
 
 # ===============================================================================
@@ -201,7 +198,7 @@ class RQSpline(nn.Module):
 
         hidden_size (Sequence[int]): Size of the hidden layers in the conditioner.
 
-        spline_range (Sequence[float]): Range of the spline.
+        spline_range (Sequence[float], optional): Range of the spline. Defaults to (-10, 10)
 
     Note:
         Adapted from github.com/kazewong/flowMC
@@ -233,14 +230,14 @@ class RQSpline(nn.Module):
             )
 
         self.bijector_fn = bijector_fn
-    # TODO: change scale to varscale in all functions below.
-    def make_flow(self, scale: float =1.):
+
+    def make_flow(self, var_scale: float = 1.0):
         """
         Make distrax distribution containing the rational quadratic spline flow.
 
         Args:
-            var_scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             Base Gaussian transformed by rational quadratic spline flow.
@@ -267,85 +264,88 @@ class RQSpline(nn.Module):
         base_dist = distrax.Independent(
             distrax.MultivariateNormalFullCovariance(
                 loc=jnp.zeros(self.n_features),
-                covariance_matrix=jnp.eye(self.n_features)*scale,
+                covariance_matrix=jnp.eye(self.n_features) * var_scale,
             )
         )
 
         return base_dist, flow
 
-    def __call__(self, x: jnp.array, scale: float =1.) -> jnp.array:
+    def __call__(self, x: jnp.array, var_scale: float = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for non-batched input x.
 
         Args:
             x (jnp.ndarray (ndim)): Sample at which to predict posterior value.
 
-            var_scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.ndarray (float): Predicted log_e posterior value.
         """
-        base_dist, flow = self.make_flow(scale=scale)
+        base_dist, flow = self.make_flow(var_scale=var_scale)
 
         return distrax.Transformed(base_dist, flow).log_prob(x)
 
-    def sample(self, rng: jax.random.PRNGKey, num_samples: int, scale: float = 1.) -> jnp.array:
-        """"
+    def sample(
+        self, rng: jax.random.PRNGKey, num_samples: int, var_scale: float = 1.0
+    ) -> jnp.array:
+        """ "
         Sample from the flow.
 
         Args:
-            rng (Union[Array, PRNGKeyArray])): Key used in random number generation process. 
+            rng (Union[Array, PRNGKeyArray])): Key used in random number generation process.
 
-            num_samples (int): Number of samples generated.   
-        
-            scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            num_samples (int): Number of samples generated.
+
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.array (num_samples, ndim): Samples from fitted distribution.
         """
 
-        base_dist, flow = self.make_flow(scale=scale)
+        base_dist, flow = self.make_flow(var_scale=var_scale)
         samples = distrax.Transformed(base_dist, flow).sample(
             seed=rng, sample_shape=(num_samples)
         )
 
         return samples
 
-    
-    def log_prob(self, x:jnp.array, scale:float = 1.) -> jnp.array:
+    def log_prob(self, x: jnp.array, var_scale: float = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for a batched input.
-        
+
         Args:
             x (jnp.ndarray (batch_size, ndim)): Sample for which to predict posterior values.
 
-            scale (float): Factor by which base Gaussian unit covariance matrix is scaled. 
-                Should be between 0 and 1 for use in evidence estimation.
+            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+                Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
 
         get_logprob = jax.jit(jax.vmap(self.__call__, in_axes=[0, None]))
-        logprob = get_logprob(x, scale)
-        
+        logprob = get_logprob(x, var_scale)
+
         return logprob
+
 
 class Reshape(nn.Module):
     shape: Sequence[int]
 
-    def __call__(self, x):
+    def __call__(self, x: jnp.ndarray):
         return jnp.reshape(x.T, self.shape)
 
 
 class Conditioner(nn.Module):
     """
-    Conditioner used to construct the bijector function in RQSpline class. 
+    Conditioner used to construct the bijector function in RQSpline class.
 
     Adapted from github.com/kazewong/flowMC
     """
+
     n_features: int
     hidden_size: Sequence[int]
     num_bijector_params: int
@@ -353,9 +353,11 @@ class Conditioner(nn.Module):
     def setup(self):
         self.conditioner = nn.Sequential(
             [
-                MLP([self.n_features] + list(self.hidden_size),
-                nn.tanh,
-                init_weight_scale=1e-2),
+                MLP(
+                    [self.n_features] + list(self.hidden_size),
+                    nn.tanh,
+                    init_weight_scale=1e-2,
+                ),
                 nn.Dense(
                     self.n_features * self.num_bijector_params,
                     kernel_init=jax.nn.initializers.zeros,
@@ -371,11 +373,11 @@ class Conditioner(nn.Module):
 
 class Scalar(nn.Module):
     """
-    Scalar used to construct the spline flow in RQSpline class. 
+    Scalar used to construct the spline flow in RQSpline class.
 
     Adapted from github.com/kazewong/flowMC
     """
-    
+
     n_features: int
 
     def setup(self):
@@ -402,13 +404,13 @@ class MLP(nn.Module):
     Args:
         features (list of int): The number of features in each layer.
 
-        activation (callable): The activation function at each level
+        activation (callable, optional): The activation function at each level Defaults to nn.relu.
 
-        use_bias (bool): Whether to use bias in the layers.
+        use_bias (bool, optional): Whether to use bias in the layers. Defaults to True.
 
-        init_weight_scale (float): The initial weight scale for the layers.
+        init_weight_scale (float, optional): The initial weight scale for the layers. Defaults to 1e-4.
 
-        kernel_init (callable): The kernel initializer for the layers.
+        kernel_init (callable, optional): The kernel initializer for the layers. Defaults to jax.nn.initializers.variance_scaling.
 
     Adapted from github.com/kazewong/flowMC
     """

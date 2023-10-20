@@ -1,13 +1,12 @@
-from typing import Sequence
+from typing import Sequence, Union
 from harmonic import model as md
 from harmonic import flows
 import jax
 import jax.numpy as jnp
 import optax
-
 from tqdm import trange
-
 from flax.training import train_state  # Useful dataclass to keep train state
+
 
 def make_training_loop(model):
     """
@@ -18,7 +17,7 @@ def make_training_loop(model):
 
     Returns:
         train_flow (Callable): wrapper function that trains the model.
-    
+
     Note:
         Adapted from github.com/kazewong/flowMC
     """
@@ -54,7 +53,15 @@ def make_training_loop(model):
 
         return value, state
 
-    def train_flow(rng, state, variables, data, num_epochs, batch_size, verbose: bool = False):
+    def train_flow(
+        rng,
+        state,
+        variables,
+        data: jnp.ndarray,
+        num_epochs: int,
+        batch_size: int,
+        verbose: bool = False,
+    ):
         loss_values = jnp.zeros(num_epochs)
         if verbose:
             pbar = trange(num_epochs, desc="Training NF", miniters=int(num_epochs / 10))
@@ -84,7 +91,6 @@ def make_training_loop(model):
     return train_flow, train_epoch, train_step
 
 
-
 # ===============================================================================
 # NVP Flow - will generalise this to take a custom flow
 # ===============================================================================
@@ -101,7 +107,7 @@ class RealNVPModel(md.Model):
         learning_rate: float = 0.001,
         momentum: float = 0.9,
         standardize: bool = False,
-        temperature: float = 0.8
+        temperature: float = 0.8,
     ):
         """Constructor setting the hyper-parameters of the model.
 
@@ -131,7 +137,7 @@ class RealNVPModel(md.Model):
 
         if ndim_in < 1:
             raise ValueError("Dimension must be greater than 0.")
-        
+
         if n_scaled_layers <= 0:
             raise ValueError("Number of scaled layers must be greater than 0.")
 
@@ -148,7 +154,7 @@ class RealNVPModel(md.Model):
         self.flow = flows.RealNVP(ndim_in, self.n_scaled_layers, self.n_unscaled_layers)
         self.temperature = temperature
 
-    def is_fitted(self):
+    def is_fitted(self) -> bool:
         """Specify whether model has been fitted.
 
         Returns:
@@ -166,19 +172,25 @@ class RealNVPModel(md.Model):
             apply_fn=self.flow.apply, params=params, tx=tx
         )
 
-
-    def fit(self, X, batch_size = 64, epochs = 3, key = jax.random.PRNGKey(1000), verbose = False):
+    def fit(
+        self,
+        X: jnp.ndarray,
+        batch_size: int = 64,
+        epochs: int = 3,
+        key=jax.random.PRNGKey(1000),
+        verbose: bool = False,
+    ):
         """Fit the parameters of the model.
 
         Args:
 
-            X (ndarray[nsamples, ndim]): Training samples.
+            X (jnp.ndarray (nsamples, ndim)): Training samples.
 
             batch_size (int, optional): Batch size used when training flow. Default = 64.
 
             epochs (int, optional): Number of epochs flow is trained for. Default = 3.
 
-            key (Union[Array, PRNGKeyArray], optional): Key used in random number generation process.
+            key (Union[jax.Array, jax.random.PRNGKeyArray], optional): Key used in random number generation process.
 
             verbose (bool, optional): Controls if progress bar and current loss are displayed when training. Default = False.
 
@@ -197,11 +209,11 @@ class RealNVPModel(md.Model):
         variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)))
         state = self.create_train_state(rng_init)
 
-        #set up standardisation
+        # set up standardisation
         if self.standardize:
-            #self.pre_offset = jnp.min(X, axis = 0) #maxmin
+            # self.pre_offset = jnp.min(X, axis = 0) #maxmin
             self.pre_offset = jnp.mean(X, axis=0)
-            #self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
+            # self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
             self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
 
             X = (X - self.pre_offset) / self.pre_amp
@@ -217,19 +229,20 @@ class RealNVPModel(md.Model):
 
         return
 
-    def predict(self, x):
-        """Predict the value of log_e posterior at x.
+    def predict(self, x: jnp.ndarray) -> jnp.ndarray:
+        """Predict the value of log_e posterior at batched input x.
 
         Args:
 
-            x (jnp.ndarray): Sample of shape at which to predict posterior value.
+            x (jnp.ndarray (batch_size, ndim)): Batched sample for which to
+                predict posterior values.
 
         Returns:
 
-            jnp.ndarray: Predicted log_e posterior value.
+            jnp.ndarray (batch_size,): Predicted log_e posterior value.
 
         Raises:
-        
+
             ValueError: If var_scale is negative or greater than 1.
 
         """
@@ -241,9 +254,9 @@ class RealNVPModel(md.Model):
 
         if var_scale <= 0:
             raise ValueError("Scaling must be positive.")
-        
+
         if self.standardize:
-            x = (x-self.pre_offset)/self.pre_amp
+            x = (x - self.pre_offset) / self.pre_amp
 
         # TODO: support 1D arrays here, not at the user level.
         logprob = self.flow.apply(
@@ -258,16 +271,16 @@ class RealNVPModel(md.Model):
 
         return logprob
 
-    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0)):
+    def sample(self, n_sample: int, rng_key=jax.random.PRNGKey(0)) -> jnp.ndarray:
         """Sample from trained flow.
 
         Args:
             nsample (int): Number of samples generated.
 
-            rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+            rng_key (Union[jax.Array, jax.random.PRNGKeyArray]), optional): Key used in random number generation process.
 
         Raises:
-        
+
             ValueError: If var_scale is negative or greater than 1.
 
         Returns:
@@ -290,15 +303,15 @@ class RealNVPModel(md.Model):
             var_scale,
             method=self.flow.sample,
         )
-        
+
         if self.standardize:
             samples = (samples * self.pre_amp) + self.pre_offset
-        
+
         return samples
 
 
 # ===============================================================================
-# Rational Quadratic Spline Flow - to be refactored (cf RealNVP)
+# Rational Quadratic Spline Flow
 # ===============================================================================
 
 
@@ -315,7 +328,7 @@ class RQSplineFlow(md.Model):
         standardize: bool = False,
         learning_rate: float = 0.001,
         momentum: float = 0.9,
-        temperature: float = 0.8
+        temperature: float = 0.8,
     ):
         """Constructor setting the hyper-parameters and domains of the model.
 
@@ -325,21 +338,21 @@ class RQSplineFlow(md.Model):
 
             ndim_in (int): Dimension of the problem to solve.
 
-            num_layers : (int) Number of layers in the flow.
+            n_layers (int, optional): Number of layers in the flow. Defaults to 8.
 
-            n_bins : (int) Number of bins in the spline.
+            n_bins (int, optional): Number of bins in the spline. Defaults to 8.
 
-            hidden_size : (Sequence[int]) Size of the hidden layers in the conditioner.
+            hidden_size (Sequence[int], optional): Size of the hidden layers in the conditioner. Defaults to [64, 64].
 
-            spline_range : (Sequence[float]) Range of the spline.
+            spline_range (Sequence[float], optional): Range of the spline. Defaults to (-10.0, 10.0).
 
-            standardize(bool): Indicates if mean and variance should be removed from training data when training the flow.
+            standardize (bool, optional): Indicates if mean and variance should be removed from training data when training the flow. Defaults to False.
 
-            learning_rate (float): Learning rate for adam optimizer used in the fit method.
+            learning_rate (float, optional): Learning rate for adam optimizer used in the fit method. Defaults to 0.001.
 
-            momentum (float): Learning rate for Adam optimizer used in the fit method.
+            momentum (float, optional): Learning rate for Adam optimizer used in the fit method. Defaults to 0.9.
 
-            temperature (float): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1.
+            temperature (float, optional): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1. Defaults to 0.8.
 
         Raises:
 
@@ -385,26 +398,32 @@ class RQSplineFlow(md.Model):
             apply_fn=self.flow.apply, params=params, tx=tx
         )
 
-    def fit(self, X, batch_size=64, epochs=3, key=jax.random.PRNGKey(1000), verbose= False):
+    def fit(
+        self,
+        X: jnp.ndarray,
+        batch_size: int = 64,
+        epochs: int = 3,
+        key=jax.random.PRNGKey(1000),
+        verbose: bool = False,
+    ):
         """Fit the parameters of the model.
 
         Args:
 
-            X (double ndarray[nsamples, ndim]): Sample x coordinates.
+            X (jnp.ndarray (nsamples, ndim)): Sample x coordinates.
 
-            batch_size (int): Batch size used when training flow.
+            batch_size (int, optional): Batch size used when training flow. Defaults to 64.
 
-            epochs (int): Number of epochs flow is trained for.
+            epochs (int, optional): Number of epochs flow is trained for. Defaults to 3.
 
-            key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+            key (Union[jax.Array, jax.random.PRNGKeyArray], optional): Key used in random number generation process.
 
-            verbose (bool): Controls if progress bar and current loss are displayed when training.
+            verbose (bool, optional): Controls if progress bar and current loss are displayed when training. Defaults to False.
 
 
         Raises:
 
-            ValueError: Raised if the second dimension of X is not the same as
-                ndim.
+            ValueError: Raised if the second dimension of X is not the same as ndim.
 
         """
 
@@ -416,11 +435,11 @@ class RQSplineFlow(md.Model):
         variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)))
         state = self.create_train_state(rng_init)
 
-        #set up standardisation
+        # set up standardisation
         if self.standardize:
-            #self.pre_offset = jnp.min(X, axis = 0) #maxmin
+            # self.pre_offset = jnp.min(X, axis = 0) #maxmin
             self.pre_offset = jnp.mean(X, axis=0)
-            #self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
+            # self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
             self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
 
             X = (X - self.pre_offset) / self.pre_amp
@@ -436,7 +455,7 @@ class RQSplineFlow(md.Model):
 
         return
 
-    def predict(self, x):
+    def predict(self, x) -> jnp.ndarray:
         """Predict the value of log_e posterior at batched input x.
 
         Args:
@@ -447,7 +466,7 @@ class RQSplineFlow(md.Model):
         Returns:
 
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
-        
+
         Raises:
 
             ValueError: If var_scale is negative or greater than 1.
@@ -461,10 +480,9 @@ class RQSplineFlow(md.Model):
 
         if var_scale <= 0:
             raise ValueError("Scaling must be positive.")
-        
-        if self.standardize:
-            x = (x-self.pre_offset)/self.pre_amp
 
+        if self.standardize:
+            x = (x - self.pre_offset) / self.pre_amp
 
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
@@ -478,20 +496,20 @@ class RQSplineFlow(md.Model):
 
         return logprob
 
-    def sample(self, n_sample, rng_key=jax.random.PRNGKey(0)):
+    def sample(self, n_sample: int, rng_key=jax.random.PRNGKey(0)) -> jnp.ndarray:
         """Sample from trained flow.
 
         Args:
             nsample (int): Number of samples generated.
 
-            rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+            rng_key (Union[jax.Array, jax.random.PRNGKeyArray], optional): Key used in random number generation process.
 
         Returns:
 
             jnp.array (n_sample, ndim): Samples from fitted distribution."""
 
         var_scale = self.temperature
-        
+
         if var_scale > 1:
             raise ValueError("Scaling must not be greater than 1.")
 
