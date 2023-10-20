@@ -1,17 +1,13 @@
-from typing import Sequence, Callable, List
+from typing import Sequence
 from harmonic import model as md
-import numpy as np
 from harmonic import flows
 import jax
 import jax.numpy as jnp
 import optax
-from functools import partial
-from tqdm import trange
-import cloudpickle
 
-import flax
+from tqdm import trange
+
 from flax.training import train_state  # Useful dataclass to keep train state
-import flax.linen as nn
 
 def make_training_loop(model):
     """
@@ -22,6 +18,9 @@ def make_training_loop(model):
 
     Returns:
         train_flow (Callable): wrapper function that trains the model.
+    
+    Note:
+        Adapted from github.com/kazewong/flowMC
     """
 
     def train_step(batch, state, variables):
@@ -68,7 +67,6 @@ def make_training_loop(model):
             rng, input_rng = jax.random.split(rng)
             # Run an optimization step over a training batch
             value, state = train_epoch(input_rng, state, variables, data, batch_size)
-            # print('Train loss: %.3f' % value)
             loss_values = loss_values.at[epoch].set(value)
             if loss_values[epoch] < best_loss:
                 best_state = state
@@ -111,17 +109,17 @@ class RealNVPModel(md.Model):
 
             ndim_in (int): Dimension of the problem to solve.
 
-            n_scaled_layers (int): Number of layers with scaler in RealNVP flow.
+            n_scaled_layers (int, optional): Number of layers with scaler in RealNVP flow. Default = 2.
 
-            n_unscaled_layers (int): Number of layers without scaler in RealNVP flow.
+            n_unscaled_layers (int, optional): Number of layers without scaler in RealNVP flow. Default = 4.
 
-            learning_rate (float): Learning rate for adam optimizer used in the fit method.
+            learning_rate (float, optional): Learning rate for adam optimizer used in the fit method. Default = 0.001.
 
-            momentum (float): Learning rate for Adam optimizer used in the fit method.
+            momentum (float, optional): Learning rate for Adam optimizer used in the fit method. Default = 0.9
 
-            standardize(bool): Indicates if mean and variance should be removed from training data when training the flow.
+            standardize(bool, optional): Indicates if mean and variance should be removed from training data when training the flow. Default = False
 
-            temperature (float): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1.
+            temperature (float, optional): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1. Default = 0.8.
 
         Raises:
 
@@ -169,26 +167,25 @@ class RealNVPModel(md.Model):
         )
 
 
-    def fit(self, X, batch_size=64, epochs=3, key=jax.random.PRNGKey(1000), verbose = False):
+    def fit(self, X, batch_size = 64, epochs = 3, key = jax.random.PRNGKey(1000), verbose = False):
         """Fit the parameters of the model.
 
         Args:
 
-            X (double ndarray[nsamples, ndim]): Training samples.
+            X (ndarray[nsamples, ndim]): Training samples.
 
-            batch_size (int): Batch size used when training flow.
+            batch_size (int, optional): Batch size used when training flow. Default = 64.
 
-            epochs (int): Number of epochs flow is trained for.
+            epochs (int, optional): Number of epochs flow is trained for. Default = 3.
 
-            key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+            key (Union[Array, PRNGKeyArray], optional): Key used in random number generation process.
 
-            verbose (bool): Controls if progress bar and current loss are displayed when training.
+            verbose (bool, optional): Controls if progress bar and current loss are displayed when training. Default = False.
 
 
         Raises:
 
-            ValueError: Raised if the second dimension of X is not the same as
-                ndim.
+            ValueError: Raised if the second dimension of X is not the same as ndim.
 
         """
 
@@ -225,8 +222,7 @@ class RealNVPModel(md.Model):
 
         Args:
 
-            x (jnp.ndarray): Sample of shape at which to
-                predict posterior value.
+            x (jnp.ndarray): Sample of shape at which to predict posterior value.
 
         Returns:
 
@@ -249,6 +245,7 @@ class RealNVPModel(md.Model):
         if self.standardize:
             x = (x-self.pre_offset)/self.pre_amp
 
+        # TODO: support 1D arrays here, not at the user level.
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
             x,
@@ -268,6 +265,10 @@ class RealNVPModel(md.Model):
             nsample (int): Number of samples generated.
 
             rng_key (Union[Array, PRNGKeyArray])): Key used in random number generation process.
+
+        Raises:
+        
+            ValueError: If var_scale is negative or greater than 1.
 
         Returns:
 

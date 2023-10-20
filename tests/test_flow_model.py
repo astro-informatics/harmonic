@@ -4,6 +4,7 @@ import jax.numpy as jnp
 import jax
 import harmonic as hm
 
+# TODO: move this to conftest.py to follow best practices.
 def standard_nd_gaussian_pdf(x):
     """
     Calculate the probability density function (PDF) of an n-dimensional Gaussian
@@ -129,7 +130,7 @@ def test_RQSpline_constructor():
 
 
 
-
+# TODO: combine tests into one test with a model variable.
 def test_RealNVP_gaussian():
 
     # Define the number of dimensions and the mean of the Gaussian
