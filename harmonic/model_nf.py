@@ -27,7 +27,7 @@ def make_training_loop(model):
             log_det = model.apply(
                 {"params": params, "variables": variables},
                 batch,
-                var_scale=1.0,
+                # var_scale=1.0,
                 method=model.log_prob,
             )
             return -jnp.mean(log_det)
