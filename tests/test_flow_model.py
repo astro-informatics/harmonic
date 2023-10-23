@@ -31,6 +31,14 @@ def standard_nd_gaussian_pdf(x):
     return pdf
 
 
+def test_FlowModel_constructor():
+    with pytest.raises(NotImplementedError):
+        ndim = 3
+        model = model_nf.FlowModel(ndim)
+        training_samples = jnp.zeros((12, ndim))
+        model.fit(training_samples)
+
+
 def test_RealNVP_constructor():
     with pytest.raises(ValueError):
         RealNVP = model_nf.RealNVPModel(0)
