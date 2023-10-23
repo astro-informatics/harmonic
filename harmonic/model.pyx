@@ -20,7 +20,7 @@ class Model(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def __init__(self, long ndim, list domains not None, hyper_parameters=None):
+    def __init__(self, long ndim):
         """Constructor setting the hyper-parameters and domains of the model.
         
         Must be implemented by derived class (currently abstract).
@@ -28,14 +28,6 @@ class Model(metaclass=abc.ABCMeta):
         Args: 
 
             ndim (long): Dimension of the problem to solve.
-
-            domains (list): List of 1D numpy ndarrays containing the domains
-                for each parameter of model. Each domain is of length two,
-                specifying a lower and upper bound for real hyper-parameters
-                but can be different in other cases if required.
-
-            hyper_parameters (list): Hyper-parameters for model.
-
         """
 
 
