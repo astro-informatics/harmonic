@@ -433,7 +433,7 @@ def run_example(
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RQSplineFlow(ndim, standardize=standardize, temperature=var_scale)
+    model = model_nf.RQSplineModel(ndim, standardize=standardize, temperature=var_scale)
     model.fit(chains_train.samples, epochs=epochs_num)
 
     # ===========================================================================

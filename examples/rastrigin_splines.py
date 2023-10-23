@@ -200,7 +200,7 @@ def run_example(
         """
         Fit model.
         """
-        model = model_nf.RQSplineFlow(
+        model = model_nf.RQSplineModel(
             ndim,
             n_layers=n_layers,
             n_bins=n_bins,
