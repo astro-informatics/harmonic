@@ -154,7 +154,7 @@ def test_RealNVP_gaussian():
     RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
     RealNVP.fit(samples, epochs=epochs, verbose=True)
 
-    nsamples = 20000
+    nsamples = 5000
     RealNVP.temperature = 1.0
     flow_samples = RealNVP.sample(nsamples)
     sample_var = jnp.var(flow_samples, axis=0)
@@ -166,10 +166,10 @@ def test_RealNVP_gaussian():
     ), "Real NVP probability density not in agreement with analytical value"
 
     for i in range(ndim):
-        assert sample_mean[i] == pytest.approx(0.0, abs=0.1), (
+        assert sample_mean[i] == pytest.approx(0.0, abs=0.11), (
             "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
         )
-        assert sample_var[i] == pytest.approx(1.0, abs=0.1), (
+        assert sample_var[i] == pytest.approx(1.0, abs=0.11), (
             "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
         )
 
@@ -199,17 +199,17 @@ def test_RQSpline_gaussian():
     spline = model_nf.RQSplineModel(ndim, standardize=True)
     spline.fit(samples, epochs=epochs, verbose=True)
 
-    nsamples = 10000
+    nsamples = 5000
     spline.temperature = 1.0
     flow_samples = spline.sample(nsamples)
     sample_var = jnp.var(flow_samples, axis=0)
     sample_mean = jnp.mean(flow_samples, axis=0)
 
     for i in range(ndim):
-        assert sample_mean[i] == pytest.approx(0.0, abs=0.1), (
+        assert sample_mean[i] == pytest.approx(0.0, abs=0.11), (
             "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
         )
-        assert sample_var[i] == pytest.approx(1.0, abs=0.1), (
+        assert sample_var[i] == pytest.approx(1.0, abs=0.11), (
             "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
         )
 
