@@ -119,17 +119,6 @@ class FlowModel(md.Model):
         self.temperature = temperature
         self.flow = None
 
-    def is_fitted(self) -> bool:
-        """Specify whether model has been fitted.
-
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
-
     def create_train_state(self, rng):
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
         tx = optax.adam(self.learning_rate, self.momentum)

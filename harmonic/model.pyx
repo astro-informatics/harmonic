@@ -68,16 +68,19 @@ class Model(metaclass=abc.ABCMeta):
             (double): Predicted log_e posterior value.
 
         """
-
-    @abc.abstractmethod
+        
     def is_fitted(self):
         """Specify whether model has been fitted.
-        
+            
         Returns:
 
             (bool): Whether the model has been fitted.
 
         """
+
+        return self.fitted
+
+
 
     def serialize(self, filename):
         """Serialize Model object.
@@ -225,18 +228,6 @@ class HyperSphere(Model):
         self.R_domain           = domains[0]
         self.set_R(np.mean(self.R_domain))
         self.fitted             = False
-
-
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-            
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
 
 
     def set_R(self, double R):
@@ -663,17 +654,6 @@ class KernelDensityEstimate(Model):
 
         return
 
-
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-            
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
         
 
     def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
@@ -1407,18 +1387,6 @@ class ModifiedGaussianMixtureModel(Model):
         else:
             self.nbatch          = hyper_parameters[4]
         self.fitted              = False
-
-
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
 
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):
