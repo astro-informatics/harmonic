@@ -152,7 +152,7 @@ def run_example(
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log("Compute evidence...")
 
-        ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+        ev = hm.Evidence(chains_test.nchains, model)
         # ev.set_mean_shift(0.0)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()

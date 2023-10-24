@@ -392,7 +392,7 @@ def test_serialization():
     flow.fit(chain.samples, epochs=20)
 
     # Set up the evidence object
-    ev3 = cbe.Evidence(nchains, flow, batch_calculation = True)
+    ev3 = cbe.Evidence(nchains, flow)
     ev3.add_chains(chain)
 
     # Serialize evidence

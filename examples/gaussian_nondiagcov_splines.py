@@ -150,7 +150,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000, plot_corner=False):
         # Fit model
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        model = model_nf.RQSplineFlow(
+        model = model_nf.RQSplineModel(
             ndim,
             n_layers=n_layers,
             n_bins=n_bins,
@@ -164,7 +164,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000, plot_corner=False):
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log("Compute evidence...")
 
-        ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+        ev = hm.Evidence(chains_test.nchains, model)
         # ev.set_mean_shift(0.0)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()

@@ -281,7 +281,7 @@ def run_example(
 		Instantiates the evidence class with a given model. Adds some chains 
 		and computes the log-space evidence (marginal likelihood).
 		"""
-        ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+        ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
@@ -300,7 +300,7 @@ def run_example(
         if plot_comparison_2var:
             model2 = model
             model2.temperature = var_scale_2  # double check this doesn't modify model
-            ev_2 = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+            ev_2 = hm.Evidence(chains_test.nchains, model)
             ev_2.add_chains(chains_test)
             ln_evidence_2, ln_evidence_std_2 = ev_2.compute_ln_evidence()
 
