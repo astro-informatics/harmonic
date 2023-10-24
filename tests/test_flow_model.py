@@ -154,7 +154,7 @@ def test_RealNVP_gaussian():
     RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
     RealNVP.fit(samples, epochs=epochs, verbose=True)
 
-    nsamples = 10000
+    nsamples = 20000
     RealNVP.temperature = 1.0
     flow_samples = RealNVP.sample(nsamples)
     sample_var = jnp.var(flow_samples, axis=0)
