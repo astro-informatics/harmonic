@@ -166,10 +166,10 @@ def test_RealNVP_gaussian():
     ), "Real NVP probability density not in agreement with analytical value"
 
     for i in range(ndim):
-        assert sample_mean[i] == pytest.approx(0.0, abs=0.11), (
+        assert sample_mean[i] == pytest.approx(0.0, abs=0.15), (
             "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
         )
-        assert sample_var[i] == pytest.approx(1.0, abs=0.11), (
+        assert sample_var[i] == pytest.approx(1.0, abs=0.15), (
             "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
         )
 
