@@ -8,7 +8,6 @@ from enum import Enum
 import scipy.special as sp
 import cloudpickle
 import logs as lg 
-from harmonic import model_nf
 
 class Shifting(Enum):
     """
@@ -95,7 +94,7 @@ class Evidence:
         self.chains_added = False
 
         self.model = model 
-        self.batch_calculation = isinstance(self.model, model_nf.FlowModel)
+        self.batch_calculation = hasattr(self.model, "flow")
 
         # Technical details
         self.lnargmax = -np.inf
