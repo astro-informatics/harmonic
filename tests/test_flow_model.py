@@ -256,7 +256,7 @@ def test_model_serialization():
     learning_rate = 0.01
     momentum = 0.8
     standardize = True
-    var_scale = 0.6
+    temperature = 0.6
 
     model_NVP = model_nf.RealNVPModel(
         ndim,
@@ -265,7 +265,7 @@ def test_model_serialization():
         learning_rate=learning_rate,
         momentum=momentum,
         standardize=standardize,
-        temperature=var_scale,
+        temperature=temperature,
     )
 
     model_NVP.fit(samples, epochs=epochs_NVP)
@@ -302,7 +302,7 @@ def test_model_serialization():
         standardize=standardize,
         learning_rate=learning_rate,
         momentum=momentum,
-        temperature=var_scale,
+        temperature=temperature,
     )
     model_spline.fit(samples, epochs=epochs_spline)
     # Serialize model

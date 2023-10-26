@@ -109,9 +109,9 @@ model.fit(posterior_samples, jnp.zeros(batch_size), epochs=epochs_num)
 
 num_samp = batch_size * 5
 
-# samps = np.array(model.sample(num_samp, var_scale=1.))
-samps2 = np.array(model.sample(num_samp, var_scale=0.7))
-samps3 = np.array(model.sample(num_samp, var_scale=0.4))
+# samps = np.array(model.sample(num_samp, temperature=1.))
+samps2 = np.array(model.sample(num_samp, temperature=0.7))
+samps3 = np.array(model.sample(num_samp, temperature=0.4))
 
 # Get the getdist MCSamples objects for the samples, specifying same parameter
 # names and labels; if not specified weights are assumed to all be unity

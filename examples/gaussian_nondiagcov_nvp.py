@@ -102,8 +102,8 @@ def run_example(
     cov = init_cov(ndim)
     inv_cov = np.linalg.inv(cov)
     training_proportion = 0.5
-    epochs_num = 50
-    var_scale = 0.9
+    epochs_num = 5
+    temperature = 0.9
     standardize = True
     verbose = True
 
@@ -145,7 +145,7 @@ def run_example(
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
         model = model_nf.RealNVPModel(
-            ndim, standardize=standardize, temperature=var_scale
+            ndim, standardize=standardize, temperature=temperature
         )
         model.fit(chains_train.samples, epochs=epochs_num, verbose=verbose)
 

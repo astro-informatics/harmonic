@@ -325,7 +325,7 @@ def run_example(
     savefigs = True
 
     training_proportion = 0.5
-    var_scale = 0.8
+    temperature = 0.8
     epochs_num = 30
     standardize = True
 
@@ -433,7 +433,9 @@ def run_example(
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RQSplineModel(ndim, standardize=standardize, temperature=var_scale)
+    model = model_nf.RQSplineModel(
+        ndim, standardize=standardize, temperature=temperature
+    )
     model.fit(chains_train.samples, epochs=epochs_num)
 
     # ===========================================================================
@@ -526,7 +528,7 @@ def run_example(
         # =======================================================================
 
         num_samp = chains_train.samples.shape[0]
-        # samps = np.array(model.sample(num_samp, var_scale=1.))
+        # samps = np.array(model.sample(num_samp, temperature=1.))
         samps_compressed = np.array(model.sample(num_samp))
 
         utils.plot_getdist_compare(chains_train.samples, samps_compressed)

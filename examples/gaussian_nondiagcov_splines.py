@@ -102,7 +102,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000, plot_corner=False):
     inv_cov = jnp.linalg.inv(cov)
     training_proportion = 0.5
     epochs_num = 80
-    var_scale = 0.8
+    temperature = 0.8
     standardize = True
     verbose = True
 
@@ -157,7 +157,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000, plot_corner=False):
             hidden_size=hidden_size,
             spline_range=spline_range,
             standardize=standardize,
-            temperature=var_scale,
+            temperature=temperature,
         )
         model.fit(jnp.array(chains_train.samples), epochs=epochs_num, verbose=verbose)
 

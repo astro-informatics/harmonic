@@ -325,7 +325,7 @@ def run_example(
     savefigs = True
 
     training_proportion = 0.5
-    var_scale = 0.9
+    temperature = 0.9
     epochs_num = 50
     n_scaled = 3
     n_unscaled = 3
@@ -442,7 +442,7 @@ def run_example(
         n_unscaled_layers=n_unscaled,
         learning_rate=learning_rate,
         standardize=standardize,
-        temperature=var_scale,
+        temperature=temperature,
     )
     # model = model_nf.RQSplineFlow(ndim)
     model.fit(chains_train.samples, epochs=epochs_num)
@@ -537,8 +537,8 @@ def run_example(
         # =======================================================================
 
         num_samp = chains_train.samples.shape[0]
-        # samps = np.array(model.sample(num_samp, var_scale=1.))
-        samps_compressed = np.array(model.sample(num_samp, var_scale=var_scale))
+        # samps = np.array(model.sample(num_samp, temperature=1.))
+        samps_compressed = np.array(model.sample(num_samp, temperature=temperature))
 
         utils.plot_getdist_compare(chains_train.samples, samps_compressed)
         if savefigs:

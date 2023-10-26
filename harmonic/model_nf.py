@@ -27,7 +27,7 @@ def make_training_loop(model):
             log_det = model.apply(
                 {"params": params, "variables": variables},
                 batch,
-                var_scale=1.0,
+                temperature=1.0,
                 method=model.log_prob,
             )
             return -jnp.mean(log_det)
@@ -204,16 +204,16 @@ class FlowModel(md.Model):
 
         Raises:
 
-            ValueError: If var_scale is negative or greater than 1.
+            ValueError: If temperature is negative or greater than 1.
 
         """
 
-        var_scale = self.temperature
+        temperature = self.temperature
 
-        if var_scale > 1:
+        if temperature > 1:
             raise ValueError("Scaling must not be greater than 1.")
 
-        if var_scale <= 0:
+        if temperature <= 0:
             raise ValueError("Scaling must be positive.")
 
         if self.standardize:
@@ -223,7 +223,7 @@ class FlowModel(md.Model):
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
             x,
-            var_scale,
+            temperature,
             method=self.flow.log_prob,
         )
 
@@ -242,26 +242,26 @@ class FlowModel(md.Model):
 
         Raises:
 
-            ValueError: If var_scale is negative or greater than 1.
+            ValueError: If temperature is negative or greater than 1.
 
         Returns:
 
             jnp.array (n_sample, ndim): Samples from fitted distribution.
         """
 
-        var_scale = self.temperature
+        temperature = self.temperature
 
-        if var_scale > 1:
+        if temperature > 1:
             raise ValueError("Scaling must not be greater than 1.")
 
-        if var_scale <= 0:
+        if temperature <= 0:
             raise ValueError("Scaling must be positive.")
 
         samples = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
             rng_key,
             n_sample,
-            var_scale,
+            temperature,
             method=self.flow.sample,
         )
 
