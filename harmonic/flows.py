@@ -150,7 +150,7 @@ class RealNVP(nn.Module):
         Returns:
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
-        get_logprob = jax.jit(nn.vmap(self.__call__, in_axes=[0, None]))
+        get_logprob = nn.vmap(self.__call__, in_axes=[0, None])
         logprob = get_logprob(x, temperature)
 
         return logprob
@@ -222,7 +222,7 @@ class RQSpline(nn.Module):
         self.conditioner = conditioner
         self.scalar = scalar
 
-        self.vmap_call = jax.jit(nn.vmap(self.__call__))
+        self.vmap_call = nn.vmap(self.__call__)
 
         def bijector_fn(params: jnp.ndarray):
             return distrax.RationalQuadraticSpline(
@@ -326,7 +326,7 @@ class RQSpline(nn.Module):
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
 
-        get_logprob = jax.jit(nn.vmap(self.__call__, in_axes=[0, None]))
+        get_logprob = nn.vmap(self.__call__, in_axes=[0, None])
         logprob = get_logprob(x, temperature)
 
         return logprob
