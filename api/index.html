@@ -357,13 +357,13 @@ into.</p>
 
 </div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><dl class="py class">
 <dt class="sig sig-object py" id="harmonic.Evidence">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Evidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_calculation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Evidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence" title="Permalink to this definition"></a></dt>
 <dd><p>Compute inverse evidence values from chains, using posterior model.</p>
 <p>Multiple chains can be added in sequence (to avoid having to store very
 long chains).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_calculation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Construct evidence class for computing inverse evidence values from
 set number of chains and initialised posterior model.</p>
 <dl class="field-list simple">
@@ -734,20 +734,6 @@ sample in X.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="harmonic.model.HyperSphere.is_fitted">
-<span class="sig-name descname"><span class="pre">is_fitted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.HyperSphere.is_fitted" title="Permalink to this definition"></a></dt>
-<dd><p>Specify whether model has been fitted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Whether the model has been fitted.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(bool)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="harmonic.model.HyperSphere.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.HyperSphere.predict" title="Permalink to this definition"></a></dt>
 <dd><p>Use model to predict the value of log_e posterior at point x.</p>
@@ -897,20 +883,6 @@ sample in X.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="harmonic.model.KernelDensityEstimate.is_fitted">
-<span class="sig-name descname"><span class="pre">is_fitted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.is_fitted" title="Permalink to this definition"></a></dt>
-<dd><p>Specify whether model has been fitted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Whether the model has been fitted.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(bool)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="harmonic.model.KernelDensityEstimate.precompute_normalising_factor">
 <span class="sig-name descname"><span class="pre">precompute_normalising_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.KernelDensityEstimate.precompute_normalising_factor" title="Permalink to this definition"></a></dt>
 <dd><p>Precompute the log_e normalisation factor of the density estimation.</p>
@@ -1029,20 +1001,6 @@ sample in X.</p></li>
 <li><p><strong>ValueError</strong> – Raised if the second dimension of X is not the same
     as ndim.</p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="harmonic.model.ModifiedGaussianMixtureModel.is_fitted">
-<span class="sig-name descname"><span class="pre">is_fitted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.ModifiedGaussianMixtureModel.is_fitted" title="Permalink to this definition"></a></dt>
-<dd><p>Specify whether model has been fitted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Whether the model has been fitted.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(bool)</p>
 </dd>
 </dl>
 </dd></dl>
