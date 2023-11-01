@@ -38,12 +38,12 @@ class RealNVP(nn.Module):
             AffineCoupling(apply_scaling=False) for i in range(self.n_unscaled_layers)
         ]
 
-    def make_flow(self, var_scale: float = 1.0):
+    def make_flow(self, temperature: float = 1.0):
         """
         Make tfp-jax distribution object containing the RealNVP flow.
 
         Args:
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
 
@@ -91,32 +91,32 @@ class RealNVP(nn.Module):
         nvp = tfd.TransformedDistribution(
             distribution=tfd.MultivariateNormalDiag(
                 loc=jnp.zeros(self.n_features),
-                scale_diag=jnp.full(self.n_features, var_scale),
+                scale_diag=jnp.full(self.n_features, temperature),
             ),
             bijector=chain,
         )
 
         return nvp
 
-    def __call__(self, x: jnp.ndarray, var_scale: int = 1.0) -> jnp.array:
+    def __call__(self, x: jnp.ndarray, temperature: int = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for non-batched input x.
 
         Args:
             x (jnp.ndarray (ndim)): Sample at which to predict posterior value.
 
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             float: Predicted log_e posterior value.
         """
 
-        flow = self.make_flow(var_scale=var_scale)
+        flow = self.make_flow(temperature=temperature)
         return flow.log_prob(x)
 
     def sample(
-        self, rng: jax.random.PRNGKey, num_samples: int, var_scale: float = 1.0
+        self, rng: jax.random.PRNGKey, num_samples: int, temperature: float = 1.0
     ) -> jnp.array:
         """ "
         Sample from the flow.
@@ -126,32 +126,32 @@ class RealNVP(nn.Module):
 
             num_samples (int): Number of samples generated.
 
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.array (num_samples, ndim): Samples from fitted distribution.
         """
-        nvp = self.make_flow(var_scale=var_scale)
+        nvp = self.make_flow(temperature=temperature)
         samples = nvp.sample(num_samples, seed=rng)
 
         return samples
 
-    def log_prob(self, x: jnp.array, var_scale: float = 1.0) -> jnp.array:
+    def log_prob(self, x: jnp.array, temperature: float = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for a batched input.
 
         Args:
             x (jnp.ndarray (batch_size, ndim)): Sample for which to predict posterior values.
 
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
-        get_logprob = jax.jit(jax.vmap(self.__call__, in_axes=[0, None]))
-        logprob = get_logprob(x, var_scale)
+        get_logprob = jax.vmap(self.__call__, in_axes=[0, None])
+        logprob = get_logprob(x, temperature)
 
         return logprob
 
@@ -222,7 +222,7 @@ class RQSpline(nn.Module):
         self.conditioner = conditioner
         self.scalar = scalar
 
-        self.vmap_call = jax.jit(jax.vmap(self.__call__))
+        self.vmap_call = jax.vmap(self.__call__)
 
         def bijector_fn(params: jnp.ndarray):
             return distrax.RationalQuadraticSpline(
@@ -231,12 +231,12 @@ class RQSpline(nn.Module):
 
         self.bijector_fn = bijector_fn
 
-    def make_flow(self, var_scale: float = 1.0):
+    def make_flow(self, temperature: float = 1.0):
         """
         Make distrax distribution containing the rational quadratic spline flow.
 
         Args:
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
@@ -264,31 +264,31 @@ class RQSpline(nn.Module):
         base_dist = distrax.Independent(
             distrax.MultivariateNormalFullCovariance(
                 loc=jnp.zeros(self.n_features),
-                covariance_matrix=jnp.eye(self.n_features) * var_scale,
+                covariance_matrix=jnp.eye(self.n_features) * temperature,
             )
         )
 
         return base_dist, flow
 
-    def __call__(self, x: jnp.array, var_scale: float = 1.0) -> jnp.array:
+    def __call__(self, x: jnp.array, temperature: float = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for non-batched input x.
 
         Args:
             x (jnp.ndarray (ndim)): Sample at which to predict posterior value.
 
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.ndarray (float): Predicted log_e posterior value.
         """
-        base_dist, flow = self.make_flow(var_scale=var_scale)
+        base_dist, flow = self.make_flow(temperature=temperature)
 
         return distrax.Transformed(base_dist, flow).log_prob(x)
 
     def sample(
-        self, rng: jax.random.PRNGKey, num_samples: int, var_scale: float = 1.0
+        self, rng: jax.random.PRNGKey, num_samples: int, temperature: float = 1.0
     ) -> jnp.array:
         """ "
         Sample from the flow.
@@ -298,36 +298,36 @@ class RQSpline(nn.Module):
 
             num_samples (int): Number of samples generated.
 
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.array (num_samples, ndim): Samples from fitted distribution.
         """
 
-        base_dist, flow = self.make_flow(var_scale=var_scale)
+        base_dist, flow = self.make_flow(temperature=temperature)
         samples = distrax.Transformed(base_dist, flow).sample(
             seed=rng, sample_shape=(num_samples)
         )
 
         return samples
 
-    def log_prob(self, x: jnp.array, var_scale: float = 1.0) -> jnp.array:
+    def log_prob(self, x: jnp.array, temperature: float = 1.0) -> jnp.array:
         """
         Evaluate the log probability of the flow for a batched input.
 
         Args:
             x (jnp.ndarray (batch_size, ndim)): Sample for which to predict posterior values.
 
-            var_scale (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
+            temperature (float, optional): Factor by which base Gaussian unit covariance matrix is scaled.
                 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.
 
         Returns:
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
 
-        get_logprob = jax.jit(jax.vmap(self.__call__, in_axes=[0, None]))
-        logprob = get_logprob(x, var_scale)
+        get_logprob = jax.vmap(self.__call__, in_axes=[0, None])
+        logprob = get_logprob(x, temperature)
 
         return logprob
 

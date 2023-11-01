@@ -188,7 +188,7 @@ def run_example(
     """
 
     training_proportion = 0.5
-    var_scale = 0.9
+    temperature = 0.9
     epochs_num = 50
     n_scaled = 6
     n_unscaled = 2
@@ -259,7 +259,7 @@ def run_example(
         ndim,
         n_scaled_layers=n_scaled,
         n_unscaled_layers=n_unscaled,
-        temperature=var_scale,
+        temperature=temperature,
     )
     model.fit(chains_train.samples, epochs=epochs_num)
 
@@ -268,7 +268,7 @@ def run_example(
     # =======================================================================
 
     num_samp = chains_train.samples.shape[0]
-    # samps = np.array(model.sample(num_samp, var_scale=1.))
+    # samps = np.array(model.sample(num_samp, temperature=1.))
     samps_compressed = np.array(model.sample(num_samp))
 
     labels = ["Bias", "NP", "PGC", "BMI", "DP", "AGE"]
@@ -286,7 +286,7 @@ def run_example(
     if savefigs:
         plt.savefig(
             "examples/plots/nvp_pima_indian_corner_all_{}_T{}_tau{}_".format(
-                n_scaled + n_unscaled, var_scale, tau
+                n_scaled + n_unscaled, temperature, tau
             )
             + model_lab
             + ".png",
@@ -302,7 +302,7 @@ def run_example(
     Instantiates the evidence class with a given model. Adds some chains and 
     computes the log-space evidence (marginal likelihood).
     """
-    ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+    ev = hm.Evidence(chains_test.nchains, model)
     ev.add_chains(chains_test)
     ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
     evidence_std_log_space = (

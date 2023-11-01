@@ -122,7 +122,7 @@ def run_example(
     hyper_parameters = [[10 ** (R)] for R in range(-nhyper + step, step)]
     hm.logs.debug_log("Hyper-parameters = {}".format(hyper_parameters))
 
-    var_scale = 0.8
+    temperature = 0.8
     epochs_num = 30
 
     # Spline params
@@ -200,7 +200,7 @@ def run_example(
         """
         Fit model.
         """
-        model = model_nf.RQSplineFlow(
+        model = model_nf.RQSplineModel(
             ndim,
             n_layers=n_layers,
             n_bins=n_bins,
@@ -209,7 +209,7 @@ def run_example(
             standardize=standardize,
             learning_rate=learning_rate,
             momentum=momentum,
-            temperature=var_scale,
+            temperature=temperature,
         )
         model.fit(chains_train.samples, epochs=epochs_num)
 
@@ -221,7 +221,7 @@ def run_example(
         Instantiates the evidence class with a given model. Adds some chains and 
         computes the log-space evidence (marginal likelihood).
         """
-        ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+        ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 

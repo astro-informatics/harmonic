@@ -30,7 +30,7 @@ class Evidence:
     """
 
     def __init__(self, long nchains, model not None, \
-                 shift=Shifting.MEAN_SHIFT, batch_calculation=False):
+                 shift=Shifting.MEAN_SHIFT):
         """Construct evidence class for computing inverse evidence values from
         set number of chains and initialised posterior model.
 
@@ -93,8 +93,8 @@ class Evidence:
 
         self.chains_added = False
 
-        self.model = model
-        self.batch_calculation = batch_calculation
+        self.model = model 
+        self.batch_calculation = hasattr(self.model, "flow")
 
         # Technical details
         self.lnargmax = -np.inf

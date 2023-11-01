@@ -147,7 +147,7 @@ def run_example(
     a = 1.0
     b = 100.0
     epochs_num = 8
-    var_scale = 0.9
+    temperature = 0.9
     training_proportion = 0.5
     standardize = False
     """
@@ -221,7 +221,7 @@ def run_example(
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
         model = model_nf.RealNVPModel(
-            ndim, standardize=standardize, temperature=var_scale
+            ndim, standardize=standardize, temperature=temperature
         )
         model.fit(chains_train.samples, epochs=epochs_num)
 
@@ -233,7 +233,7 @@ def run_example(
         Instantiates the evidence class with a given model. Adds some chains and 
         computes the log-space evidence (marginal likelihood).
         """
-        ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+        ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
@@ -364,7 +364,7 @@ def run_example(
             if savefigs:
                 plt.savefig(
                     "examples/plots/nvp_rosenbrock_corner_all_T"
-                    + str(var_scale)
+                    + str(temperature)
                     + ".png",
                     bbox_inches="tight",
                     dpi=300,
@@ -388,7 +388,7 @@ def run_example(
     if n_realisations > 1:
         np.savetxt(
             "examples/data/nvp_rosenbrock_evidence_inv_T"
-            + str(var_scale)
+            + str(temperature)
             + "_realisations.dat",
             evidence_inv_summary,
         )

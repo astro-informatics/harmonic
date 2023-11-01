@@ -192,12 +192,12 @@ def run_example(
     created_plots = False
 
     training_proportion = 0.5
-    var_scale = 0.9
+    temperature = 0.9
     epochs_num = 100
     standardize = False
 
     plot_comparison_2var = True
-    var_scale_2 = 0.95
+    temperature_2 = 0.95
 
     # ===========================================================================
     # Simulate data
@@ -269,7 +269,7 @@ def run_example(
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
         model = model_nf.RealNVPModel(
-            ndim, standardize=standardize, temperature=var_scale
+            ndim, standardize=standardize, temperature=temperature
         )
         model.fit(chains_train.samples, epochs=epochs_num)
 
@@ -281,7 +281,7 @@ def run_example(
 		Instantiates the evidence class with a given model. Adds some chains 
 		and computes the log-space evidence (marginal likelihood).
 		"""
-        ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+        ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
@@ -299,8 +299,8 @@ def run_example(
 
         if plot_comparison_2var:
             model2 = model
-            model2.temperature = var_scale_2
-            ev_2 = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+            model2.temperature = temperature_2
+            ev_2 = hm.Evidence(chains_test.nchains, model)
             ev_2.add_chains(chains_test)
             ln_evidence_2, ln_evidence_std_2 = ev_2.compute_ln_evidence()
 
@@ -411,7 +411,7 @@ def run_example(
             if savefigs:
                 plt.savefig(
                     "examples/plots/nvp_normalgamma_corner_all_"
-                    + str(var_scale)
+                    + str(temperature)
                     + "tau"
                     + str(tau_prior)
                     + ".png",
@@ -448,7 +448,7 @@ def run_example(
         )
         if savefigs:
             plt.savefig(
-                "examples/plots/nvp_normalgamma_comparison" + str(var_scale) + ".pdf",
+                "examples/plots/nvp_normalgamma_comparison" + str(temperature) + ".pdf",
                 bbox_inches="tight",
             )
         plt.show(block=False)
@@ -472,7 +472,7 @@ def run_example(
             capsize=4,
             capthick=2,
             elinewidth=2,
-            label="T=" + str(var_scale),
+            label="T=" + str(temperature),
         )
         ax.errorbar(
             np.array(tau_array) * 1.13,
@@ -482,15 +482,15 @@ def run_example(
             capsize=4,
             capthick=2,
             elinewidth=2,
-            label="T=" + str(var_scale_2),
+            label="T=" + str(temperature_2),
         )
         ax.legend(loc="lower right")
         if savefigs:
             plt.savefig(
                 "examples/plots/nvp_normalgamma_comparison_"
-                + str(var_scale)
+                + str(temperature)
                 + "_"
-                + str(var_scale_2)
+                + str(temperature_2)
                 + ".pdf",
                 bbox_inches="tight",
                 dpi=3000,

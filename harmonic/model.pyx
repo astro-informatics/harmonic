@@ -20,7 +20,7 @@ class Model(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def __init__(self, long ndim, list domains not None, hyper_parameters=None):
+    def __init__(self, long ndim):
         """Constructor setting the hyper-parameters and domains of the model.
         
         Must be implemented by derived class (currently abstract).
@@ -28,14 +28,6 @@ class Model(metaclass=abc.ABCMeta):
         Args: 
 
             ndim (long): Dimension of the problem to solve.
-
-            domains (list): List of 1D numpy ndarrays containing the domains
-                for each parameter of model. Each domain is of length two,
-                specifying a lower and upper bound for real hyper-parameters
-                but can be different in other cases if required.
-
-            hyper_parameters (list): Hyper-parameters for model.
-
         """
 
 
@@ -76,16 +68,19 @@ class Model(metaclass=abc.ABCMeta):
             (double): Predicted log_e posterior value.
 
         """
-
-    @abc.abstractmethod
+        
     def is_fitted(self):
         """Specify whether model has been fitted.
-        
+            
         Returns:
 
             (bool): Whether the model has been fitted.
 
         """
+
+        return self.fitted
+
+
 
     def serialize(self, filename):
         """Serialize Model object.
@@ -233,18 +228,6 @@ class HyperSphere(Model):
         self.R_domain           = domains[0]
         self.set_R(np.mean(self.R_domain))
         self.fitted             = False
-
-
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-            
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
 
 
     def set_R(self, double R):
@@ -671,17 +654,6 @@ class KernelDensityEstimate(Model):
 
         return
 
-
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-            
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
         
 
     def set_scales(self, np.ndarray[double, ndim=2, mode="c"] X):
@@ -1415,18 +1387,6 @@ class ModifiedGaussianMixtureModel(Model):
         else:
             self.nbatch          = hyper_parameters[4]
         self.fitted              = False
-
-
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
 
 
     def set_weights(self, np.ndarray[double, ndim=1, mode="c"] weights_in):

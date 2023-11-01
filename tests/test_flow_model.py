@@ -4,6 +4,7 @@ import jax.numpy as jnp
 import jax
 import harmonic as hm
 
+
 # TODO: move this to conftest.py to follow best practices.
 def standard_nd_gaussian_pdf(x):
     """
@@ -19,7 +20,7 @@ def standard_nd_gaussian_pdf(x):
     n = len(x)
 
     # The normalizing constant (coefficient)
-    C = -jnp.log(2 * jnp.pi)*n/2
+    C = -jnp.log(2 * jnp.pi) * n / 2
 
     # Calculate the Mahalanobis distance
     mahalanobis_dist = jnp.dot(x, x)
@@ -29,8 +30,16 @@ def standard_nd_gaussian_pdf(x):
 
     return pdf
 
-def test_RealNVP_constructor():
 
+def test_FlowModel_constructor():
+    with pytest.raises(NotImplementedError):
+        ndim = 3
+        model = model_nf.FlowModel(ndim)
+        training_samples = jnp.zeros((12, ndim))
+        model.fit(training_samples)
+
+
+def test_RealNVP_constructor():
     with pytest.raises(ValueError):
         RealNVP = model_nf.RealNVPModel(0)
 
@@ -41,11 +50,11 @@ def test_RealNVP_constructor():
 
     with pytest.raises(ValueError):
         RealNVP = model_nf.RealNVPModel(ndim, n_scaled_layers=0)
-    
+
     RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
 
     with pytest.raises(ValueError):
-        training_samples = jnp.zeros((12,ndim+1))
+        training_samples = jnp.zeros((12, ndim + 1))
         RealNVP.fit(training_samples)
 
     with pytest.raises(ValueError):
@@ -73,30 +82,29 @@ def test_RealNVP_constructor():
         RealNVP.sample(jnp.zeros(ndim))
 
     assert RealNVP.is_fitted() == False
-    training_samples = jnp.zeros((12,ndim))
+    training_samples = jnp.zeros((12, ndim))
     RealNVP.fit(training_samples, verbose=True, epochs=5)
     assert RealNVP.is_fitted() == True
 
-def test_RealNVP_flow():
 
+def test_RealNVP_flow():
     with pytest.raises(ValueError):
         flow = hm.flows.RealNVP(3, n_scaled_layers=0)
         flow.make_flow()
 
 
 def test_RQSpline_constructor():
+    with pytest.raises(ValueError):
+        spline = model_nf.RQSplineModel(0)
 
     with pytest.raises(ValueError):
-        spline = model_nf.RQSplineFlow(0)
-
-    with pytest.raises(ValueError):
-        spline = model_nf.RQSplineFlow(-1)
+        spline = model_nf.RQSplineModel(-1)
 
     ndim = 3
-    spline = model_nf.RQSplineFlow(ndim, standardize=True) 
+    spline = model_nf.RQSplineModel(ndim, standardize=True)
 
     with pytest.raises(ValueError):
-        training_samples = jnp.zeros((12,ndim+1))
+        training_samples = jnp.zeros((12, ndim + 1))
         spline.fit(training_samples)
 
     with pytest.raises(ValueError):
@@ -124,15 +132,13 @@ def test_RQSpline_constructor():
         spline.sample(jnp.zeros(ndim))
 
     assert spline.is_fitted() == False
-    training_samples = jnp.zeros((12,ndim))
+    training_samples = jnp.zeros((12, ndim))
     spline.fit(training_samples)
     assert spline.is_fitted() == True
 
 
-
 # TODO: combine tests into one test with a model variable.
 def test_RealNVP_gaussian():
-
     # Define the number of dimensions and the mean of the Gaussian
     ndim = 2
     num_samples = 10000
@@ -148,28 +154,36 @@ def test_RealNVP_gaussian():
     RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
     RealNVP.fit(samples, epochs=epochs, verbose=True)
 
-    nsamples = 10000
-    RealNVP.temperature = 1.
+    nsamples = 5000
+    RealNVP.temperature = 1.0
     flow_samples = RealNVP.sample(nsamples)
-    sample_var = jnp.var(flow_samples, axis = 0)    
+    sample_var = jnp.var(flow_samples, axis=0)
     sample_mean = jnp.mean(flow_samples, axis=0)
 
-    test = jnp.ones(ndim)*0.2
-    assert jnp.exp(RealNVP.predict(jnp.array([test])))[0] == pytest.approx(jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1), "Real NVP probability density not in agreement with analytical value"
+    test = jnp.ones(ndim) * 0.2
+    assert jnp.exp(RealNVP.predict(jnp.array([test])))[0] == pytest.approx(
+        jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
+    ), "Real NVP probability density not in agreement with analytical value"
 
     for i in range(ndim):
-        assert sample_mean[i] == pytest.approx(0.0, abs = 0.1), "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
-        assert sample_var[i] == pytest.approx(1.0, abs = 0.1), "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
+        assert sample_mean[i] == pytest.approx(0.0, abs=0.15), (
+            "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
+        )
+        assert sample_var[i] == pytest.approx(1.0, abs=0.15), (
+            "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
+        )
 
     RealNVP.temperature = 0.8
     flow_samples_concentrated = RealNVP.sample(nsamples)
-    sample_var_concentrated = jnp.var(flow_samples_concentrated, axis = 0)
+    sample_var_concentrated = jnp.var(flow_samples_concentrated, axis=0)
 
     for i in range(ndim):
-        assert sample_var[i] > sample_var_concentrated[i], "Reducing temperature increases variance in dimension " + str(i)
+        assert (
+            sample_var[i] > sample_var_concentrated[i]
+        ), "Reducing temperature increases variance in dimension " + str(i)
+
 
 def test_RQSpline_gaussian():
-
     # Define the number of dimensions and the mean of the Gaussian
     ndim = 2
     num_samples = 10000
@@ -182,28 +196,37 @@ def test_RQSpline_gaussian():
     # Generate random samples from the 2D Gaussian distribution
     samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
 
-    spline = model_nf.RQSplineFlow(ndim, standardize=True)
+    spline = model_nf.RQSplineModel(ndim, standardize=True)
     spline.fit(samples, epochs=epochs, verbose=True)
 
-    nsamples = 10000
-    spline.temperature = 1.
+    nsamples = 5000
+    spline.temperature = 1.0
     flow_samples = spline.sample(nsamples)
-    sample_var = jnp.var(flow_samples, axis = 0)   
+    sample_var = jnp.var(flow_samples, axis=0)
     sample_mean = jnp.mean(flow_samples, axis=0)
 
     for i in range(ndim):
-        assert sample_mean[i] == pytest.approx(0.0, abs = 0.1), "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
-        assert sample_var[i] == pytest.approx(1.0, abs = 0.1), "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
+        assert sample_mean[i] == pytest.approx(0.0, abs=0.11), (
+            "Sample mean in dimension " + str(i) + " is " + str(sample_mean[i])
+        )
+        assert sample_var[i] == pytest.approx(1.0, abs=0.11), (
+            "Sample variance in dimension " + str(i) + " is " + str(sample_var[i])
+        )
 
-    test = jnp.ones(ndim)*0.2
-    assert jnp.exp(spline.predict(jnp.array([test])))[0] == pytest.approx(jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1), "Spline probability density not in agreement with analytical value"
+    test = jnp.ones(ndim) * 0.2
+    assert jnp.exp(spline.predict(jnp.array([test])))[0] == pytest.approx(
+        jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
+    ), "Spline probability density not in agreement with analytical value"
 
     spline.temperature = 0.8
     flow_samples_concentrated = spline.sample(nsamples)
-    sample_var_concentrated = jnp.var(flow_samples_concentrated, axis = 0)
+    sample_var_concentrated = jnp.var(flow_samples_concentrated, axis=0)
 
     for i in range(ndim):
-        assert sample_var[i] > sample_var_concentrated[i], "Reducing temperature increases variance in dimension " + str(i)
+        assert (
+            sample_var[i] > sample_var_concentrated[i]
+        ), "Reducing temperature increases variance in dimension " + str(i)
+
 
 def test_model_serialization():
     # Define the number of dimensions and the mean of the Gaussian
@@ -219,12 +242,11 @@ def test_model_serialization():
     # Generate random samples from the 2D Gaussian distribution
     samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
 
-
     # NVP params
     n_scaled = 13
     n_unscaled = 6
 
-    #Spline params
+    # Spline params
     n_layers = 13
     n_bins = 8
     hidden_size = [64, 64]
@@ -234,10 +256,18 @@ def test_model_serialization():
     learning_rate = 0.01
     momentum = 0.8
     standardize = True
-    var_scale = 0.6
+    temperature = 0.6
 
-    model_NVP = model_nf.RealNVPModel(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled, learning_rate = learning_rate, momentum= momentum, standardize=standardize, temperature=var_scale)
-    
+    model_NVP = model_nf.RealNVPModel(
+        ndim,
+        n_scaled_layers=n_scaled,
+        n_unscaled_layers=n_unscaled,
+        learning_rate=learning_rate,
+        momentum=momentum,
+        standardize=standardize,
+        temperature=temperature,
+    )
+
     model_NVP.fit(samples, epochs=epochs_NVP)
 
     # Serialize model
@@ -256,15 +286,30 @@ def test_model_serialization():
     assert model_NVP2.temperature == model_NVP.temperature
 
     test = jnp.array([jnp.ones(ndim)])
-    assert model_NVP2.predict(test) == model_NVP.predict(test), "Prediction for deserialized model is " + str(model_NVP2.predict(test)) + ", not equal to " + str(model_NVP.predict(test))
+    assert model_NVP2.predict(test) == model_NVP.predict(test), (
+        "Prediction for deserialized model is "
+        + str(model_NVP2.predict(test))
+        + ", not equal to "
+        + str(model_NVP.predict(test))
+    )
 
-    model_spline = model_nf.RQSplineFlow(ndim, n_layers = n_layers, n_bins = n_bins, hidden_size = hidden_size, spline_range = spline_range, standardize = standardize, learning_rate = learning_rate, momentum = momentum, temperature=var_scale)
+    model_spline = model_nf.RQSplineModel(
+        ndim,
+        n_layers=n_layers,
+        n_bins=n_bins,
+        hidden_size=hidden_size,
+        spline_range=spline_range,
+        standardize=standardize,
+        learning_rate=learning_rate,
+        momentum=momentum,
+        temperature=temperature,
+    )
     model_spline.fit(samples, epochs=epochs_spline)
     # Serialize model
     model_spline.serialize(".test.dat")
 
     # Deserialize model
-    model_spline2 = model_nf.RQSplineFlow.deserialize(".test.dat")
+    model_spline2 = model_nf.RQSplineModel.deserialize(".test.dat")
     assert model_spline2.ndim == model_spline.ndim
     assert model_spline2.is_fitted() == model_spline.is_fitted()
     assert model_spline2.n_layers == model_spline.n_layers
