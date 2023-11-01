@@ -1,11 +1,9 @@
 import numpy as np
-import chains as ch
 from math import fsum
-import warnings
 from enum import Enum
 import scipy.special as sp
 import cloudpickle
-import logs as lg
+from harmonic import logs as lg
 
 
 class Shifting(Enum):
@@ -63,8 +61,8 @@ class Evidence:
             raise ValueError("Model not fitted.")
 
         self.running_sum = np.zeros(nchains)
-        self.nsamples_per_chain = np.zeros((nchains), dtype=long)
-        self.nsamples_eff_per_chain = np.zeros((nchains), dtype=long)
+        self.nsamples_per_chain = np.zeros(nchains)
+        self.nsamples_eff_per_chain = np.zeros(nchains)
 
         # Chain parameters and realspace statistics
         self.nchains = nchains

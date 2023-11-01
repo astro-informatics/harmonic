@@ -1,8 +1,7 @@
 import numpy as np
 import copy
-import logs as lg
 from typing import List
-
+from harmonic import logs as lg
 
 class Chains:
     """
@@ -116,7 +115,7 @@ class Chains:
                 "Length of sample and ln_posterior arrays do not " + "match"
             )
 
-        i_chain, samples_per_chain = samples.shape[0] // nchains_in
+        samples_per_chain = samples.shape[0] // nchains_in
         for i_chain in range(nchains_in):
             self.add_chain(
                 samples[
@@ -388,7 +387,6 @@ class Chains:
         ln_posterior_new = np.empty((0))
 
         i_sample = 0
-        i_chain, nsamples_chain
         for i_chain in range(self.nchains):
             start = self.start_indices[i_chain]
             end = self.start_indices[i_chain + 1]
