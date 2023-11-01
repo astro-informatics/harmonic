@@ -7,7 +7,7 @@ import scipy.optimize as so
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
 import logs as lg 
-import pickle
+import cloudpickle
 
 
 class Model(metaclass=abc.ABCMeta):
@@ -97,7 +97,7 @@ class Model(metaclass=abc.ABCMeta):
         """
 
         file = open(filename, "wb")
-        pickle.dump(self, file)
+        cloudpickle.dump(self, file)
         file.close()
 
         return
@@ -117,7 +117,7 @@ class Model(metaclass=abc.ABCMeta):
 
         """
         file = open(filename,"rb")
-        model = pickle.load(file)
+        model = cloudpickle.load(file)
         file.close()
 
         return model

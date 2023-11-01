@@ -4,7 +4,7 @@ from scipy.stats import kurtosis
 import harmonic.chains as ch
 import harmonic.model as md
 import harmonic.evidence as cbe
-import harmonic.utils as utils
+import harmonic.model_nf as model_nf
 
 
 def test_constructor():
@@ -387,6 +387,33 @@ def test_serialization():
     for i_chain in range(nchains):
         assert ev1.running_sum[i_chain] == ev2.running_sum[i_chain]
         assert ev1.nsamples_per_chain[i_chain] == ev2.nsamples_per_chain[i_chain]
+
+    flow = model_nf.RealNVPModel(ndim)
+    flow.fit(chain.samples, epochs=20)
+
+    # Set up the evidence object
+    ev3 = cbe.Evidence(nchains, flow, batch_calculation = True)
+    ev3.add_chains(chain)
+
+    # Serialize evidence
+    ev3.serialize(".test.dat")
+
+    # Deserialize evidence
+    ev4 = cbe.Evidence.deserialize(".test.dat")
+    # TODO: make sure model works correctly after deserializing.
+    # Test evidence objects the same
+    assert ev3.batch_calculation == ev4.batch_calculation
+    assert ev3.nchains == ev4.nchains
+    assert ev3.evidence_inv == ev4.evidence_inv
+    assert ev3.evidence_inv_var == ev4.evidence_inv_var
+    assert ev3.evidence_inv_var_var == ev4.evidence_inv_var_var
+    assert ev3.running_sum.size == ev2.running_sum.size
+    assert ev3.nsamples_per_chain.size == ev4.nsamples_per_chain.size
+    assert ev3.shift_value == ev4.shift_value
+    assert ev3.shift_set == ev4.shift_set
+    for i_chain in range(nchains):
+        assert ev3.running_sum[i_chain] == ev4.running_sum[i_chain]
+        assert ev3.nsamples_per_chain[i_chain] == ev4.nsamples_per_chain[i_chain]
 
 
 def test_n_eff():

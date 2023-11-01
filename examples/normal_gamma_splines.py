@@ -12,6 +12,9 @@ import harmonic as hm
 sys.path.append("examples")
 import utils
 
+sys.path.append("harmonic")
+import model_nf
+
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
     """Compute log_e of likelihood.
@@ -151,7 +154,6 @@ def run_example(
     samples_per_chain=1000,
     nburn=500,
     plot_corner=False,
-    plot_surface=False,
     plot_comparison=False,
 ):
     """Run Normal-Gamma example.
@@ -167,8 +169,6 @@ def run_example(
             nburn: Number of burn in samples for each chain.
 
             plot_corner: Plot marginalised distributions if true.
-
-            plot_surface: Plot surface and samples if true.
 
             plot_comparison: Plot accuracy for various tau priors if true.
 
@@ -191,15 +191,13 @@ def run_example(
     savefigs = True
     created_plots = False
 
-    nfold = 3
-    training_proportion = 0.25
-    hyper_parameters_MGMM = [
-        [1, 1e-8, 0.1, 6, 10],
-        [2, 1e-8, 0.5, 6, 10],
-    ]  # , [3,1E-8,2.0,10,10]]
-    hyper_parameters_sphere = [None]
-    domains_sphere = [np.array([1e-1, 5e0])]
-    domains_MGMM = [np.array([1e-1, 5e0])]
+    training_proportion = 0.5
+    var_scale = 0.8
+    epochs_num = 10
+    standardize = False
+
+    plot_comparison_2var = False
+    var_scale_2 = 0.95
 
     # ===========================================================================
     # Simulate data
@@ -216,6 +214,7 @@ def run_example(
     hm.logs.debug_log("x: mean = {}, std = {}, n = {}".format(x_mean, x_std, x_n))
 
     summary = np.empty((len(tau_array), 4), dtype=float)
+    summary_2 = np.empty((len(tau_array), 4), dtype=float)
 
     # Start timer.
     clock = time.process_time()
@@ -265,67 +264,14 @@ def run_example(
             chains, training_proportion=training_proportion
         )
 
-        # ===================================================================
-        # Perform cross-validation
-        # ===================================================================
-        hm.logs.info_log("Perform cross-validation...")
-        """
-		There are several different machine learning models. 
-		Cross-validation allows the software to select the optimal model 
-		and the optimal model hyper-parameters for a given situation.
-		"""
-        validation_variances_MGMM = hm.utils.cross_validation(
-            chains_train,
-            domains_MGMM,
-            hyper_parameters_MGMM,
-            nfold=nfold,
-            modelClass=hm.model.ModifiedGaussianMixtureModel,
-            seed=0,
+        # =======================================================================
+        # Fit model
+        # =======================================================================
+        hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
+        model = model_nf.RQSplineFlow(
+            ndim, standardize=standardize, temperature=var_scale
         )
-        hm.logs.debug_log(
-            "validation_variances_MGMM = {}".format(validation_variances_MGMM)
-        )
-        best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
-        best_hyper_param_MGMM = hyper_parameters_MGMM[best_hyper_param_MGMM_ind]
-
-        validation_variances_sphere = hm.utils.cross_validation(
-            chains_train,
-            domains_sphere,
-            hyper_parameters_sphere,
-            nfold=nfold,
-            modelClass=hm.model.HyperSphere,
-            seed=0,
-        )
-        hm.logs.debug_log(
-            "validation_variances_sphere = {}".format(validation_variances_sphere)
-        )
-        best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
-        best_hyper_param_sphere = hyper_parameters_sphere[best_hyper_param_sphere_ind]
-
-        # ===================================================================
-        # Fit optimal model hyper-parameters
-        # ===================================================================
-        hm.logs.info_log("Fit model...")
-        """
-		Fit model by selecing the configuration of hyper-parameters which 
-		minimises the validation variances.
-		"""
-        best_var_MGMM = validation_variances_MGMM[best_hyper_param_MGMM_ind]
-        best_var_sphere = validation_variances_sphere[best_hyper_param_sphere_ind]
-        if best_var_MGMM < best_var_sphere:
-            hm.logs.debug_log(
-                "Using MGMM with hyper_parameters = {}".format(best_hyper_param_MGMM)
-            )
-            model = hm.model.ModifiedGaussianMixtureModel(
-                ndim, domains_MGMM, hyper_parameters=best_hyper_param_MGMM
-            )
-        else:
-            hm.logs.debug_log("Using HyperSphere")
-            model = hm.model.HyperSphere(
-                ndim, domains_sphere, hyper_parameters=best_hyper_param_sphere
-            )
-        fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-        hm.logs.debug_log("Fit success = {}".format(fit_success))
+        model.fit(chains_train.samples, epochs=epochs_num)
 
         # ===================================================================
         # Computing evidence using learnt model and emcee chains
@@ -335,7 +281,7 @@ def run_example(
 		Instantiates the evidence class with a given model. Adds some chains 
 		and computes the log-space evidence (marginal likelihood).
 		"""
-        ev = hm.Evidence(chains_test.nchains, model)
+        ev = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
 
@@ -348,6 +294,20 @@ def run_example(
         summary[i_tau, 1] = ln_evidence_analytic
         summary[i_tau, 2] = ln_evidence
         summary[i_tau, 3] = ln_evidence_std
+
+        # compare two temperature parameters
+
+        if plot_comparison_2var:
+            model2 = model
+            model2.temperature = var_scale_2  # double check this doesn't modify model
+            ev_2 = hm.Evidence(chains_test.nchains, model, batch_calculation=True)
+            ev_2.add_chains(chains_test)
+            ln_evidence_2, ln_evidence_std_2 = ev_2.compute_ln_evidence()
+
+            summary_2[i_tau, 0] = tau_prior
+            summary_2[i_tau, 1] = ln_evidence_analytic
+            summary_2[i_tau, 2] = ln_evidence_2
+            summary_2[i_tau, 3] = ln_evidence_std_2
 
         # ==================================================================
         # Display evidence computation results.
@@ -419,7 +379,9 @@ def run_example(
             utils.plot_corner(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig(
-                    "examples/plots/normalgamma_corner_tau" + str(tau_prior) + ".pdf",
+                    "examples/plots/splines_normalgamma_corner_tau"
+                    + str(tau_prior)
+                    + ".pdf",
                     bbox_inches="tight",
                 )
 
@@ -427,83 +389,37 @@ def run_example(
             utils.plot_getdist(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig(
-                    "examples/plots/normalgamma_getdist_tau" + str(tau_prior) + ".pdf",
+                    "examples/plots/splines_normalgamma_getdist_tau"
+                    + str(tau_prior)
+                    + ".pdf",
                     bbox_inches="tight",
                 )
 
             plt.show(block=False)
+
+            # =======================================================================
+            # Visualise distributions
+            # =======================================================================
+
+            num_samp = chains_train.samples.shape[0]
+            samps_compressed = np.array(model.sample(num_samp))
+
+            utils.plot_getdist_compare(
+                chains_train.samples, samps_compressed, labels, legend_fontsize=12.5
+            )
+
+            if savefigs:
+                plt.savefig(
+                    "examples/plots/splines_normalgamma_corner_all_"
+                    + str(var_scale)
+                    + "tau"
+                    + str(tau_prior)
+                    + ".png",
+                    bbox_inches="tight",
+                    dpi=300,
+                )
+
             created_plots = True
-
-        if plot_surface:
-            # Evaluate posterior on grid.
-            ln_posterior_func = partial(
-                ln_posterior,
-                x_mean=x_mean,
-                x_std=x_std,
-                x_n=x_n,
-                prior_params=prior_params,
-            )
-            ln_posterior_grid, x_grid, y_grid = utils.eval_func_on_grid(
-                ln_posterior_func,
-                xmin=-0.6,
-                xmax=0.6,
-                ymin=0.4,
-                ymax=1.8,
-                nx=500,
-                ny=500,
-            )
-
-            # Plot posterior image.
-            ax = utils.plot_image(
-                np.exp(ln_posterior_grid),
-                x_grid,
-                y_grid,
-                samples=None,
-                # samples.reshape((-1,ndim)),
-                colorbar_label=r"$\mathcal{L}$",
-            )
-            # ax.set_clim(vmin=0.0, vmax=0.003)
-            if savefigs:
-                plt.savefig(
-                    "examples/plots/"
-                    + "normalgamma_posterior_image"
-                    + str(tau_prior)
-                    + ".png",
-                    bbox_inches="tight",
-                )
-
-            # Evaluate model on grid.
-            model_grid, x_grid, y_grid = utils.eval_func_on_grid(
-                model.predict, xmin=-0.6, xmax=0.6, ymin=0.4, ymax=1.8, nx=500, ny=500
-            )
-
-            # Plot model.
-            ax = utils.plot_image(
-                model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
-            )
-            # ax.set_clim(vmin=-2.0, vmax=2.0)
-            if savefigs:
-                plt.savefig(
-                    "examples/plots/"
-                    + "normalgamma_model_image"
-                    + str(tau_prior)
-                    + ".png",
-                    bbox_inches="tight",
-                )
-
-            # Plot exponential of model.
-            ax = utils.plot_image(
-                np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
-            )
-            # ax.set_clim(vmin=0.0, vmax=10.0)
-            if savefigs:
-                plt.savefig(
-                    "examples/plots/"
-                    + "normalgamma_modelexp_image"
-                    + str(tau_prior)
-                    + ".png",
-                    bbox_inches="tight",
-                )
 
     # Display summary results.
     hm.logs.info_log("tau_prior | ln_evidence_analytic | ln_evidence =")
@@ -532,7 +448,54 @@ def run_example(
         )
         if savefigs:
             plt.savefig(
-                "examples/plots/normalgamma_comparison.pdf", bbox_inches="tight"
+                "examples/plots/splines_normalgamma_comparison"
+                + str(var_scale)
+                + ".pdf",
+                bbox_inches="tight",
+            )
+        plt.show(block=False)
+
+    if plot_comparison_2var:
+        created_plots = True
+
+        plt.rcParams.update({"font.size": 15})
+        fig, ax = plt.subplots()
+        ax.plot(np.array([1e-5, 1e1]), np.ones(2), "r", linewidth=2)
+        ax.set_xlim([1e-5, 1e1])
+        ax.set_ylim([0.990, 1.010])
+        ax.set_xscale("log")
+        ax.set_xlabel(r"Prior size ($\tau_0$)")
+        ax.set_ylabel(r"Relative accuracy ($z_{\rm estimated}/z_{\rm analytic}$)")
+        ax.errorbar(
+            np.array(tau_array) * 0.87,
+            np.exp(summary[:, 2]) / np.exp(summary[:, 1]),
+            yerr=np.exp(summary[:, 3]) / np.exp(summary[:, 1]),
+            fmt="b.",
+            capsize=4,
+            capthick=2,
+            elinewidth=2,
+            label="T=" + str(var_scale),
+        )
+        ax.errorbar(
+            np.array(tau_array) * 1.13,
+            np.exp(summary_2[:, 2]) / np.exp(summary_2[:, 1]),
+            yerr=np.exp(summary_2[:, 3]) / np.exp(summary_2[:, 1]),
+            fmt="g.",
+            capsize=4,
+            capthick=2,
+            elinewidth=2,
+            label="T=" + str(var_scale_2),
+        )
+        ax.legend(loc="lower right")
+        if savefigs:
+            plt.savefig(
+                "examples/plots/splines_normalgamma_comparison_"
+                + str(var_scale)
+                + "_"
+                + str(var_scale_2)
+                + ".pdf",
+                bbox_inches="tight",
+                dpi=3000,
             )
         plt.show(block=False)
 
@@ -569,11 +532,5 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(
-        ndim,
-        nchains,
-        samples_per_chain,
-        nburn,
-        plot_corner=True,
-        plot_surface=True,
-        plot_comparison=True,
+        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_comparison=True
     )
