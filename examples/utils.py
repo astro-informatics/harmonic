@@ -62,13 +62,18 @@ def plot_getdist_compare(
     Plot triangle plot of marginalised distributions using getdist package.
 
     Args:
-        - samples:
-            2D array of shape (ndim, nsamples) containing samples.
-        - labels:
-            Array of strings containing axis labels.
+        samples1 : 2D array of shape (ndim, nsamples) containing samples from the posterior.
+
+        samples2 : 2D array of shape (ndim, nsamples) containing samples from the concentrated flow.
+
+        labels: Array of strings containing axis labels for both sets of samples.
+
+        fontsize: Plot fontsize.
+
+        legend_fontsize: Plot legend fontsize.
 
     Returns:
-        - None
+        None
     """
 
     getdist.chains.print_load_details = False
