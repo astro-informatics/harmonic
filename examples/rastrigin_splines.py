@@ -12,7 +12,7 @@ sys.path.append("examples")
 import utils
 
 sys.path.append("harmonic")
-import model_nf
+import model as md
 import flows
 
 
@@ -200,7 +200,7 @@ def run_example(
         """
         Fit model.
         """
-        model = model_nf.RQSplineModel(
+        model = md.RQSplineModel(
             ndim,
             n_layers=n_layers,
             n_bins=n_bins,

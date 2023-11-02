@@ -13,7 +13,7 @@ sys.path.append("examples")
 import utils
 
 sys.path.append("harmonic")
-import model_nf
+import model as md
 
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
@@ -268,9 +268,7 @@ def run_example(
         # Fit model
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        model = model_nf.RQSplineModel(
-            ndim, standardize=standardize, temperature=temperature
-        )
+        model = md.RQSplineModel(ndim, standardize=standardize, temperature=temperature)
         model.fit(chains_train.samples, epochs=epochs_num)
 
         # ===================================================================

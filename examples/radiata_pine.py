@@ -440,7 +440,7 @@ def run_example(
     """
 
     hm.logs.info_log("Using HyperSphere")
-    model = hm.model.HyperSphere(ndim, domains_sphere, hyper_parameters=None)
+    model = hm.model_legacy.HyperSphere(ndim, domains_sphere, hyper_parameters=None)
 
     fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
     hm.logs.debug_log("fit_success = {}".format(fit_success))

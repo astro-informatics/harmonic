@@ -2,9 +2,9 @@ import pytest
 import numpy as np
 from scipy.stats import kurtosis
 import harmonic.chains as ch
-import harmonic.model as md
+import harmonic.model_legacy as mdl
 import harmonic.evidence as cbe
-import harmonic.model_nf as model_nf
+import harmonic.model as md
 
 
 def test_constructor():
@@ -12,7 +12,7 @@ def test_constructor():
     ndim = 1000
     domain = [np.array([1e-1, 1e1])]
 
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
 
     sphere.fitted = False
     with pytest.raises(ValueError):
@@ -41,7 +41,7 @@ def test_set_shift():
     nchains = 100
     ndim = 1000
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fitted = True
     rho = cbe.Evidence(nchains, sphere)
     with pytest.raises(ValueError):
@@ -59,7 +59,7 @@ def test_process_run_with_shift():
     ndim = 1000
 
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fitted = True
     rho = cbe.Evidence(nchains, sphere)
 
@@ -123,7 +123,7 @@ def test_add_chains():
 
     # Fit the Hyper_sphere
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fit(chain.samples, chain.ln_posterior)
 
     # Calculate evidence
@@ -172,7 +172,7 @@ def test_shifting_settings():
 
     # Fit the Hyper_sphere
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fit(chain.samples, chain.ln_posterior)
 
     lnarg = np.zeros_like(chain.ln_posterior)
@@ -215,7 +215,7 @@ def test_compute_evidence():
     nchains = 100
 
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fitted = True
 
     ev_inv = 1e10
@@ -240,7 +240,7 @@ def test_compute_ln_inv_evidence_errors():
     nchains = 100
 
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fitted = True
 
     # Check boundary case where ratio 1.0
@@ -297,7 +297,7 @@ def test_compute_bayes_factors():
     nchains = 100
 
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fitted = True
 
     ev1_inv = 1e10
@@ -362,7 +362,7 @@ def test_serialization():
 
     # Fit the Hyper_sphere
     domain = [np.array([1e-1, 1e1])]
-    sphere = md.HyperSphere(ndim, domain)
+    sphere = mdl.HyperSphere(ndim, domain)
     sphere.fit(chain.samples, chain.ln_posterior)
 
     # Set up the evidence object
@@ -388,7 +388,7 @@ def test_serialization():
         assert ev1.running_sum[i_chain] == ev2.running_sum[i_chain]
         assert ev1.nsamples_per_chain[i_chain] == ev2.nsamples_per_chain[i_chain]
 
-    flow = model_nf.RealNVPModel(ndim)
+    flow = md.RealNVPModel(ndim)
     flow.fit(chain.samples, epochs=20)
 
     # Set up the evidence object
@@ -442,9 +442,9 @@ def test_n_eff():
 
     # Fit the Hyper_sphere
     domain = [np.array([1e-1, 1e1])]
-    sphere_equal = md.HyperSphere(ndim, domain)
+    sphere_equal = mdl.HyperSphere(ndim, domain)
     sphere_equal.fit(chain_equal.samples, chain_equal.ln_posterior)
-    sphere_unequal = md.HyperSphere(ndim, domain)
+    sphere_unequal = mdl.HyperSphere(ndim, domain)
     sphere_unequal.fit(chain_unequal.samples, chain_unequal.ln_posterior)
 
     # Set up the evidence object

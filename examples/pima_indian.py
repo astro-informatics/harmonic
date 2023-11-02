@@ -260,7 +260,7 @@ def run_example(
         domains_MGMM,
         hyper_parameters_MGMM,
         nfold=nfold,
-        modelClass=hm.model.ModifiedGaussianMixtureModel,
+        modelClass=hm.model_legacy.ModifiedGaussianMixtureModel,
         seed=0,
     )
     hm.logs.debug_log(
@@ -275,7 +275,7 @@ def run_example(
         domains_sphere,
         hyper_parameters_sphere,
         nfold=nfold,
-        modelClass=hm.model.HyperSphere,
+        modelClass=hm.model_legacy.HyperSphere,
         seed=0,
     )
     hm.logs.debug_log(
@@ -298,12 +298,12 @@ def run_example(
         hm.logs.info_log(
             "Using MGMM with hyper_parameters = {}".format(best_hyper_param_MGMM)
         )
-        model = hm.model.ModifiedGaussianMixtureModel(
+        model = hm.model_legacy.ModifiedGaussianMixtureModel(
             ndim, domains_MGMM, hyper_parameters=best_hyper_param_MGMM
         )
     else:
         hm.logs.info_log("Using HyperSphere")
-        model = hm.model.HyperSphere(
+        model = hm.model_legacy.HyperSphere(
             ndim, domains_sphere, hyper_parameters=best_hyper_param_sphere
         )
 

@@ -1,5 +1,5 @@
 from typing import Sequence, Union
-from harmonic import model as md
+from harmonic import model_abstract as mda
 from harmonic import flows
 import jax
 import jax.numpy as jnp
@@ -94,7 +94,7 @@ def make_training_loop(model):
     return train_flow, train_epoch, train_step
 
 
-class FlowModel(md.Model):
+class FlowModel(mda.Model):
     """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(

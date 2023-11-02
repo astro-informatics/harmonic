@@ -10,7 +10,7 @@ import tensorflow_probability as tfp
 tfp = tfp.substrates.jax
 tfd = tfp.distributions
 tfb = tfp.bijectors
-from harmonic import model_nf
+from harmonic import model as md
 from harmonic import flows
 
 
@@ -101,7 +101,7 @@ n_unscaled = 2
 epochs_num = 300
 
 posterior_samples = np.array(get_moon(0.05).sample(batch_size, seed=seed))
-model = model_nf.RealNVPModel(
+model = md.RealNVPModel(
     ndim,
     flow=flows.RealNVP(ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled),
 )

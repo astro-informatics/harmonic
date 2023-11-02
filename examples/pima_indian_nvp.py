@@ -13,7 +13,7 @@ sys.path.append("examples")
 import utils
 
 sys.path.append("harmonic")
-import model_nf
+import model as md
 import flows
 
 
@@ -255,7 +255,7 @@ def run_example(
     minimises the validation variances.
     """
 
-    model = model_nf.RealNVPModel(
+    model = md.RealNVPModel(
         ndim,
         n_scaled_layers=n_scaled,
         n_unscaled_layers=n_unscaled,

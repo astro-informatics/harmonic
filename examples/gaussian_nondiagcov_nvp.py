@@ -13,7 +13,7 @@ sys.path.append("examples")
 import utils
 
 sys.path.append("harmonic")
-import model_nf
+import model as md
 
 
 def ln_analytic_evidence(ndim, cov):
@@ -144,9 +144,7 @@ def run_example(
         # Fit model
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        model = model_nf.RealNVPModel(
-            ndim, standardize=standardize, temperature=temperature
-        )
+        model = md.RealNVPModel(ndim, standardize=standardize, temperature=temperature)
         model.fit(chains_train.samples, epochs=epochs_num, verbose=verbose)
 
         # Use chains and model to compute inverse evidence.

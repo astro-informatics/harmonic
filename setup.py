@@ -63,9 +63,9 @@ setup(
     ext_modules=cythonize(
         [
             Extension(
-                "harmonic.model",
+                "harmonic.model_legacy",
                 package_dir=["harmonic"],
-                sources=["harmonic/model.pyx"],
+                sources=["harmonic/model_legacy.pyx"],
                 include_dirs=include_dirs,
                 libraries=[],
                 extra_link_args=extra_link_args,
