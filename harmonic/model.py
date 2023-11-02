@@ -353,9 +353,7 @@ class RQSplineModel(FlowModel):
         momentum: float = 0.9,
         temperature: float = 0.8,
     ):
-        """Constructor setting the hyper-parameters and domains of the model.
-
-        Must be implemented by derived class (currently abstract).
+        """Constructor setting the hyper-parameters of the model.
 
         Args:
 
