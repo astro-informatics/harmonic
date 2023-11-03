@@ -4,6 +4,7 @@ from enum import Enum
 import scipy.special as sp
 import cloudpickle
 from harmonic import logs as lg
+import jax.numpy as jnp
 
 
 class Shifting(Enum):
@@ -131,21 +132,10 @@ class Evidence:
         variance estimates from the running totals.
 
         """
-
-        running_sum = self.running_sum
         nsamples_per_chain = self.nsamples_per_chain
 
-        nsamples = 0
-        nchains = self.nchains
-        evidence_inv = 0.0
-        kur = 0.0
-        n_eff = 0
-        evidence_inv_var_ln_temp = 0.0
-        kur_ln = 0.0
-
-        for i_chains in range(nchains):
-            evidence_inv += running_sum[i_chains]
-            nsamples += nsamples_per_chain[i_chains]
+        evidence_inv = jnp.sum(self.running_sum)
+        nsamples = jnp.sum(self.nsamples_per_chain)
 
         evidence_inv /= nsamples
 
@@ -158,15 +148,11 @@ class Evidence:
         simply taking the exponential of log-space statistics is NOT the same as 
         computing the real-space statistics.
         """
-        y_i = np.zeros(len(running_sum))
-        z_i = np.zeros(len(running_sum))
-        y_mean = 0.0
-        z_mean = 0.0
 
         # Precompute differential vectors.
-        z_i[:] = np.abs((running_sum[:] / nsamples_per_chain[:]) - evidence_inv)
-        y_i[:] = z_i[:] * (nsamples_per_chain[:] ** (0.25))
-        z_i[:] *= nsamples_per_chain[:] ** (0.5)
+        z_i = np.abs((self.running_sum / self.nsamples_per_chain) - evidence_inv)
+        y_i = z_i * (self.nsamples_per_chain ** (0.25))
+        z_i *= self.nsamples_per_chain ** (0.5)
 
         # Compute exponents using logsumexp for numerical stability.
         evidence_inv_var_ln_temp = sp.logsumexp(2.0 * np.log(z_i)) - np.log(nsamples)
@@ -180,8 +166,7 @@ class Evidence:
         self.ln_kurtosis = kur_ln
 
         # Compute effective chain lengths.
-        for i_chains in range(nchains):
-            n_eff += nsamples_per_chain[i_chains] * nsamples_per_chain[i_chains]
+        n_eff = jnp.sum(jnp.square(nsamples_per_chain))
         n_eff = nsamples * nsamples / n_eff
         self.n_eff = n_eff
 
@@ -243,28 +228,27 @@ class Evidence:
         running_sum = self.running_sum
         nsamples_per_chain = self.nsamples_per_chain
         nsamples_eff_per_chain = self.nsamples_eff_per_chain
-
         nchains = self.nchains
 
-        lnargs = np.zeros_like(Y)
         if self.batch_calculation:
             lnpred = self.model.predict(x=X)
+            lnargs = lnpred - Y
+            lnargs.at[jnp.isinf(lnargs)].set(jnp.nan)
 
-        for i_chains in range(nchains):
-            i_samples_start = chains.start_indices[i_chains]
-            i_samples_end = chains.start_indices[i_chains + 1]
+        else:
+            lnargs = np.zeros_like(Y)
+            for i_chains in range(nchains):
+                i_samples_start = chains.start_indices[i_chains]
+                i_samples_end = chains.start_indices[i_chains + 1]
 
-            for i, i_samples in enumerate(range(i_samples_start, i_samples_end)):
-                if self.batch_calculation:
-                    lnpredict = lnpred[i_samples]
-                else:
+                for i, i_samples in enumerate(range(i_samples_start, i_samples_end)):
                     lnpredict = self.model.predict(X[i_samples, :])
 
-                lnprob = Y[i_samples]
-                lnargs[i_samples] = lnpredict - lnprob
+                    lnprob = Y[i_samples]
+                    lnargs[i_samples] = lnpredict - lnprob
 
-                if np.isinf(lnargs[i_samples]):
-                    lnargs[i_samples] = np.nan
+                    if np.isinf(lnargs[i_samples]):
+                        lnargs[i_samples] = np.nan
 
         # The following performs a shift in log-space to avoid overflow or float
         # rounding errors in realspace.
@@ -282,43 +266,66 @@ class Evidence:
                 # Shifts by the absolute maximum of log-posterior
                 self.set_shift(-lnargs[np.nanargmax(np.abs(lnargs))])
 
-        for i_chains in range(nchains):
-            i_samples_start = chains.start_indices[i_chains]
-            i_samples_end = chains.start_indices[i_chains + 1]
-
-            for i, i_samples in enumerate(range(i_samples_start, i_samples_end)):
-                # Apply shifting term to avoid overflow.
-                lnarg = lnargs[i_samples] + self.shift_value
-                # Store realspace or logspace sum depending on choice.
-                term = np.exp(lnarg)
-                nsamples_per_chain[i_chains] += 1
-
-                if not np.isnan(lnargs[i_samples]):
-                    # Count number of samples used.
-                    nsamples_eff_per_chain[i_chains] += 1
-
-                    # Add contribution to running sum.
-                    running_sum[i_chains] += term
-
-                    # Log diagnostic terms.
-                    self.lnargmax = lnarg if lnarg > self.lnargmax else self.lnargmax
-                    self.lnargmin = lnarg if lnarg < self.lnargmin else self.lnargmin
-                    self.lnprobmax = (
-                        lnprob if lnprob > self.lnprobmax else self.lnprobmax
+        if self.batch_calculation:
+            lnargs += self.shift_value
+            self.running_sum += jnp.array(
+                [
+                    jnp.sum(
+                        jnp.exp(
+                            lnargs[
+                                chains.start_indices[i_chains] : chains.start_indices[
+                                    i_chains + 1
+                                ]
+                            ]
+                        )
                     )
-                    self.lnprobmin = (
-                        lnprob if lnprob < self.lnprobmin else self.lnprobmin
-                    )
-                    self.lnpredictmax = (
-                        lnpredict
-                        if lnpredict > self.lnpredictmax
-                        else self.lnpredictmax
-                    )
-                    self.lnpredictmin = (
-                        lnpredict
-                        if lnpredict < self.lnpredictmin
-                        else self.lnpredictmin
-                    )
+                    for i_chains in range(nchains)
+                ]
+            )
+            self.nsamples_per_chain += jnp.diff(jnp.array(chains.start_indices))
+
+        else:
+            for i_chains in range(nchains):
+                i_samples_start = chains.start_indices[i_chains]
+                i_samples_end = chains.start_indices[i_chains + 1]
+
+                for i, i_samples in enumerate(range(i_samples_start, i_samples_end)):
+                    # Apply shifting term to avoid overflow.
+                    lnarg = lnargs[i_samples] + self.shift_value
+                    # Store realspace or logspace sum depending on choice.
+                    term = np.exp(lnarg)
+                    nsamples_per_chain[i_chains] += 1
+
+                    if not np.isnan(lnargs[i_samples]):
+                        # Count number of samples used.
+                        nsamples_eff_per_chain[i_chains] += 1
+
+                        # Add contribution to running sum.
+                        running_sum[i_chains] += term
+
+                        # Log diagnostic terms.
+                        self.lnargmax = (
+                            lnarg if lnarg > self.lnargmax else self.lnargmax
+                        )
+                        self.lnargmin = (
+                            lnarg if lnarg < self.lnargmin else self.lnargmin
+                        )
+                        self.lnprobmax = (
+                            lnprob if lnprob > self.lnprobmax else self.lnprobmax
+                        )
+                        self.lnprobmin = (
+                            lnprob if lnprob < self.lnprobmin else self.lnprobmin
+                        )
+                        self.lnpredictmax = (
+                            lnpredict
+                            if lnpredict > self.lnpredictmax
+                            else self.lnpredictmax
+                        )
+                        self.lnpredictmin = (
+                            lnpredict
+                            if lnpredict < self.lnpredictmin
+                            else self.lnpredictmin
+                        )
 
         self.process_run()
         self.chains_added = True
