@@ -233,7 +233,7 @@ class Evidence:
         if self.batch_calculation:
             lnpred = self.model.predict(x=X)
             lnargs = lnpred - Y
-            lnargs.at[jnp.isinf(lnargs)].set(jnp.nan)
+            lnargs = lnargs.at[jnp.isinf(lnargs)].set(jnp.nan)
 
         else:
             lnargs = np.zeros_like(Y)
@@ -282,7 +282,20 @@ class Evidence:
                     for i_chains in range(nchains)
                 ]
             )
-            self.nsamples_per_chain += jnp.diff(jnp.array(chains.start_indices))
+
+            # Count added number of samples per chain
+            added_nsamples_per_chain = np.diff(jnp.array(chains.start_indices))
+            self.nsamples_per_chain += added_nsamples_per_chain
+
+            # Count number of NaN values per chain and subtract to get effective
+            # number of added samples per chain
+            isnan_per_chain = np.split(np.isnan(lnargs), chains.start_indices[1:-1])
+            nan_count_per_chain = np.array(
+                [np.sum(nan_count) for nan_count in isnan_per_chain]
+            )
+            self.nsamples_eff_per_chain += (
+                added_nsamples_per_chain - nan_count_per_chain
+            )
 
         else:
             for i_chains in range(nchains):

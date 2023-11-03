@@ -440,3 +440,45 @@ def test_n_eff():
     assert ev_unequal.n_eff == sum(ev_unequal.nsamples_per_chain) ** 2 / sum(
         ev_unequal.nsamples_per_chain**2
     ), "Effective sample size calculation is incorrect for unequal number of samples in the chains."
+
+
+@pytest.mark.parametrize("model", models_to_test_2)
+def test_nsamples_per_chain(model):
+    nchains = 3
+    nsamples = 5
+    ndim = model.ndim
+
+    # Create mock samples
+    np.random.seed(30)
+    X = np.zeros((nchains, nsamples, ndim))
+    # Introduce NaN in first chain
+    X[0, 0, 0] = np.nan
+    Y = np.ones((nchains, nsamples))
+
+    # Add samples to chains
+    chain = ch.Chains(ndim)
+    chain.add_chains_3d(X, Y)
+
+    model.fitted = True
+    ev = cbe.Evidence(nchains, model)
+    ev.add_chains(chain)
+
+    nsamples_per_chain_ref = np.full((nchains), nsamples)
+    nsamples_eff_per_chain_ref = np.full((nchains), nsamples)
+    nsamples_eff_per_chain_ref[0] -= 1
+
+    for i_chain in range(nchains):
+        assert ev.nsamples_per_chain[i_chain] == nsamples_per_chain_ref[i_chain], (
+            "Number of samples per chain is "
+            + str(ev.nsamples_per_chain[i_chain])
+            + " instead of "
+            + str(nsamples_per_chain_ref[i_chain])
+        )
+        assert (
+            ev.nsamples_eff_per_chain[i_chain] == nsamples_eff_per_chain_ref[i_chain]
+        ), (
+            "Effective number of samples per chain is "
+            + str(ev.nsamples_eff_per_chain[i_chain])
+            + " instead of "
+            + str(nsamples_eff_per_chain_ref[i_chain])
+        )
