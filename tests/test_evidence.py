@@ -5,24 +5,31 @@ import harmonic.chains as ch
 import harmonic.model_legacy as mdl
 import harmonic.evidence as cbe
 import harmonic.model as md
+import jax.numpy as jnp
+
+domain = [np.array([1e-1, 1e1])]
+sphere_1000D = mdl.HyperSphere(1000, domain)
+sphere_2D = mdl.HyperSphere(2, domain)
+real_nvp_2D = md.RealNVPModel(2)
+spline_4D = md.RQSplineModel(4)
+
+models_to_test_1 = [sphere_1000D, real_nvp_2D, spline_4D]
+models_to_test_2 = [sphere_2D, real_nvp_2D, spline_4D]
 
 
-def test_constructor():
+@pytest.mark.parametrize("model", models_to_test_1)
+def test_constructor(model):
     nchains = 100
-    ndim = 1000
-    domain = [np.array([1e-1, 1e1])]
 
-    sphere = mdl.HyperSphere(ndim, domain)
-
-    sphere.fitted = False
+    model.fitted = False
     with pytest.raises(ValueError):
-        rho = cbe.Evidence(nchains=100, model=sphere)
+        rho = cbe.Evidence(nchains=100, model=model)
 
-    sphere.fitted = True
+    model.fitted = True
     with pytest.raises(ValueError):
-        rho = cbe.Evidence(nchains=0, model=sphere)
+        rho = cbe.Evidence(nchains=0, model=model)
 
-    rho = cbe.Evidence(nchains, sphere)
+    rho = cbe.Evidence(nchains, model)
 
     assert rho.nchains == nchains
     assert rho.evidence_inv == pytest.approx(0.0)
@@ -37,13 +44,12 @@ def test_constructor():
         assert rho.nsamples_per_chain[i_chain] == 0
 
 
-def test_set_shift():
+@pytest.mark.parametrize("model", models_to_test_1)
+def test_set_shift(model):
     nchains = 100
-    ndim = 1000
-    domain = [np.array([1e-1, 1e1])]
-    sphere = mdl.HyperSphere(ndim, domain)
-    sphere.fitted = True
-    rho = cbe.Evidence(nchains, sphere)
+
+    model.fitted = True
+    rho = cbe.Evidence(nchains, model)
     with pytest.raises(ValueError):
         rho.set_shift(np.nan)
     rho.set_shift(2.0)
@@ -53,15 +59,13 @@ def test_set_shift():
     assert rho.shift_set == True
 
 
-def test_process_run_with_shift():
+@pytest.mark.parametrize("model", models_to_test_1)
+def test_process_run_with_shift(model):
     nchains = 10
     n_samples = 20
-    ndim = 1000
 
-    domain = [np.array([1e-1, 1e1])]
-    sphere = mdl.HyperSphere(ndim, domain)
-    sphere.fitted = True
-    rho = cbe.Evidence(nchains, sphere)
+    model.fitted = True
+    rho = cbe.Evidence(nchains, model)
 
     np.random.seed(1)
     samples = np.random.randn(nchains, n_samples)
@@ -82,7 +86,7 @@ def test_process_run_with_shift():
     assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
     assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
 
-    rho = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
+    rho = cbe.Evidence(nchains, model, cbe.Shifting.MEAN_SHIFT)
     np.random.seed(1)
     post = np.random.uniform(high=1e3, size=(nchains, n_samples))
     samples = 1.0 / post
@@ -210,17 +214,15 @@ def test_shifting_settings():
     assert cal_ev.shift_value == pytest.approx(-lnarg[np.nanargmax(np.abs(lnarg))])
 
 
-def test_compute_evidence():
-    ndim = 2
+@pytest.mark.parametrize("model", models_to_test_2)
+def test_compute_evidence(model):
     nchains = 100
 
-    domain = [np.array([1e-1, 1e1])]
-    sphere = mdl.HyperSphere(ndim, domain)
-    sphere.fitted = True
+    model.fitted = True
 
     ev_inv = 1e10
     ev_inv_var = 2e10
-    ev = cbe.Evidence(nchains, sphere)
+    ev = cbe.Evidence(nchains, model)
     ev.evidence_inv = ev_inv
     ev.evidence_inv_var = ev_inv_var
     ev.ln_evidence_inv = np.log(ev_inv)
@@ -235,19 +237,17 @@ def test_compute_evidence():
     assert evidence_std == pytest.approx(np.exp(ln_evidence_std))
 
 
-def test_compute_ln_inv_evidence_errors():
-    ndim = 2
+@pytest.mark.parametrize("model", models_to_test_2)
+def test_compute_ln_inv_evidence_errors(model):
     nchains = 100
 
-    domain = [np.array([1e-1, 1e1])]
-    sphere = mdl.HyperSphere(ndim, domain)
-    sphere.fitted = True
+    model.fitted = True
 
     # Check boundary case where ratio 1.0
     # (ln_ev_inv_var = 2 * ln_ev_inv)
     ln_ev_inv = 10
     ln_ev_inv_var = 2 * ln_ev_inv
-    ev = cbe.Evidence(nchains, sphere)
+    ev = cbe.Evidence(nchains, model)
     ev.evidence_inv = np.exp(ln_ev_inv)
     ev.evidence_inv_var = np.exp(ln_ev_inv_var)
     ev.ln_evidence_inv = ln_ev_inv
@@ -260,7 +260,7 @@ def test_compute_ln_inv_evidence_errors():
     # Check case where ln_ev_inv_var = ln_ev_inv
     ln_ev_inv = 10
     ln_ev_inv_var = ln_ev_inv
-    ev = cbe.Evidence(nchains, sphere)
+    ev = cbe.Evidence(nchains, model)
     ev.evidence_inv = np.exp(ln_ev_inv)
     ev.evidence_inv_var = np.exp(ln_ev_inv_var)
     ev.ln_evidence_inv = ln_ev_inv
@@ -277,7 +277,7 @@ def test_compute_ln_inv_evidence_errors():
     # Check case where ln_ev_inv_var = 0.5 * ln_ev_inv
     ln_ev_inv = 10
     ln_ev_inv_var = 0.5 * ln_ev_inv
-    ev = cbe.Evidence(nchains, sphere)
+    ev = cbe.Evidence(nchains, model)
     ev.evidence_inv = np.exp(ln_ev_inv)
     ev.evidence_inv_var = np.exp(ln_ev_inv_var)
     ev.ln_evidence_inv = ln_ev_inv
@@ -346,10 +346,11 @@ def test_compute_bayes_factors():
     assert bf12_std == pytest.approx(evidence_std)
 
 
-def test_serialization():
+@pytest.mark.parametrize("model", models_to_test_2)
+def test_serialization(model):
     nchains = 200
     nsamples = 500
-    ndim = 2
+    ndim = model.ndim
 
     # Create samples of unnormalised Gaussian
     np.random.seed(30)
@@ -360,13 +361,14 @@ def test_serialization():
     chain = ch.Chains(ndim)
     chain.add_chains_3d(X, Y)
 
-    # Fit the Hyper_sphere
-    domain = [np.array([1e-1, 1e1])]
-    sphere = mdl.HyperSphere(ndim, domain)
-    sphere.fit(chain.samples, chain.ln_posterior)
+    # Fit the model
+    if not hasattr(model, "flow"):
+        model.fit(chain.samples, chain.ln_posterior)
+    else:
+        model.fit(chain.samples, epochs=5)
 
     # Set up the evidence object
-    ev1 = cbe.Evidence(nchains, sphere)
+    ev1 = cbe.Evidence(nchains, model)
     ev1.add_chains(chain)
 
     # Serialize evidence
@@ -387,33 +389,11 @@ def test_serialization():
     for i_chain in range(nchains):
         assert ev1.running_sum[i_chain] == ev2.running_sum[i_chain]
         assert ev1.nsamples_per_chain[i_chain] == ev2.nsamples_per_chain[i_chain]
-
-    flow = md.RealNVPModel(ndim)
-    flow.fit(chain.samples, epochs=20)
-
-    # Set up the evidence object
-    ev3 = cbe.Evidence(nchains, flow)
-    ev3.add_chains(chain)
-
-    # Serialize evidence
-    ev3.serialize(".test.dat")
-
-    # Deserialize evidence
-    ev4 = cbe.Evidence.deserialize(".test.dat")
-    # TODO: make sure model works correctly after deserializing.
-    # Test evidence objects the same
-    assert ev3.batch_calculation == ev4.batch_calculation
-    assert ev3.nchains == ev4.nchains
-    assert ev3.evidence_inv == ev4.evidence_inv
-    assert ev3.evidence_inv_var == ev4.evidence_inv_var
-    assert ev3.evidence_inv_var_var == ev4.evidence_inv_var_var
-    assert ev3.running_sum.size == ev2.running_sum.size
-    assert ev3.nsamples_per_chain.size == ev4.nsamples_per_chain.size
-    assert ev3.shift_value == ev4.shift_value
-    assert ev3.shift_set == ev4.shift_set
-    for i_chain in range(nchains):
-        assert ev3.running_sum[i_chain] == ev4.running_sum[i_chain]
-        assert ev3.nsamples_per_chain[i_chain] == ev4.nsamples_per_chain[i_chain]
+    if not hasattr(model, "flow"):
+        test = np.ones(ndim)
+    else:
+        test = np.array([np.ones(ndim)])
+    assert ev1.model.predict(test) == ev2.model.predict(test)
 
 
 def test_n_eff():
