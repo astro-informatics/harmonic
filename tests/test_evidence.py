@@ -449,7 +449,6 @@ def test_nsamples_per_chain(model):
     ndim = model.ndim
 
     # Create mock samples
-    np.random.seed(30)
     X = np.zeros((nchains, nsamples, ndim))
     # Introduce NaN in first chain
     X[0, 0, 0] = np.nan
