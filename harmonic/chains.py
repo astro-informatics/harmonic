@@ -3,6 +3,7 @@ import copy
 from typing import List
 from harmonic import logs as lg
 
+
 class Chains:
     """
     Class to store samples from multiple MCMC chains.
@@ -197,7 +198,7 @@ class Chains:
 
         Args:
 
-            samples(np.ndarray[(nchains_in, nsamples_in, ndim]): Samples
+            samples(np.ndarray[nchains_in, nsamples_in, ndim]): Samples
                 from multiple chains.
 
             ln_posterior(np.ndarray[nchains_in, nsamples_in]): log_e
