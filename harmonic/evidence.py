@@ -5,6 +5,7 @@ import scipy.special as sp
 import cloudpickle
 from harmonic import logs as lg
 import jax.numpy as jnp
+import jax
 
 
 class Shifting(Enum):
@@ -192,6 +193,30 @@ class Evidence:
 
         return
 
+    def get_masks(self, chain_start_ixs: jnp.ndarray) -> jnp.ndarray:
+        """Create mask array for a 2D array of concatenated chains of different lengths.
+        Args:
+
+            chain_start_ixs (jnp.ndarray[nchains+1]): Start indices of chains
+                in Chain object.
+
+        Returns:
+
+            jnp.ndarray[nchains,nsamples]: Mask array with each row corresponding to a chain
+                and entries with boolean values depending on if given sample at that
+                position is in that chain.
+        """
+
+        nsamples = chain_start_ixs[-1]
+        range_vector = jnp.arange(nsamples)
+
+        # Create a mask array by broadcasting the range vector
+        masks_arr = (range_vector >= chain_start_ixs[:-1][:, None]) & (
+            range_vector < chain_start_ixs[1:][:, None]
+        )
+
+        return masks_arr
+
     def add_chains(self, chains):
         """Add new chains and calculate an estimate of the inverse evidence, its
         variance, and the variance of the variance.
@@ -266,22 +291,23 @@ class Evidence:
                 # Shifts by the absolute maximum of log-posterior
                 self.set_shift(-lnargs[np.nanargmax(np.abs(lnargs))])
 
+        def get_running_sum(lnargs, mask):
+            running_sum = jnp.nansum(jnp.where(mask, jnp.exp(lnargs), 0.0))
+            return running_sum
+
+        def get_nans_per_chain(lnargs, mask):
+            nans_num = jnp.sum(jnp.where(mask, jnp.isnan(lnargs), 0.0))
+            return nans_num
+
         if self.batch_calculation:
             lnargs += self.shift_value
-            self.running_sum += jnp.array(
-                [
-                    jnp.sum(
-                        jnp.exp(
-                            lnargs[
-                                chains.start_indices[i_chains] : chains.start_indices[
-                                    i_chains + 1
-                                ]
-                            ]
-                        )
-                    )
-                    for i_chains in range(nchains)
-                ]
+
+            masks = self.get_masks(jnp.array(chains.start_indices))
+
+            running_sum_val = jax.vmap(get_running_sum, in_axes=(None, 0))(
+                lnargs, masks
             )
+            self.running_sum += running_sum_val
 
             # Count added number of samples per chain
             added_nsamples_per_chain = np.diff(jnp.array(chains.start_indices))
@@ -289,9 +315,8 @@ class Evidence:
 
             # Count number of NaN values per chain and subtract to get effective
             # number of added samples per chain
-            isnan_per_chain = np.split(np.isnan(lnargs), chains.start_indices[1:-1])
-            nan_count_per_chain = np.array(
-                [np.sum(nan_count) for nan_count in isnan_per_chain]
+            nan_count_per_chain = jax.vmap(get_nans_per_chain, in_axes=(None, 0))(
+                lnargs, masks
             )
             self.nsamples_eff_per_chain += (
                 added_nsamples_per_chain - nan_count_per_chain
