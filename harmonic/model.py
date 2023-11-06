@@ -1,4 +1,4 @@
-from typing import Sequence, Union
+from typing import Sequence
 from harmonic import model_abstract as mda
 from harmonic import flows
 import jax
