@@ -98,26 +98,24 @@
              
   <dl class="py class">
 <dt class="sig sig-object py" id="harmonic.Evidence">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Evidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Evidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence" title="Permalink to this definition"></a></dt>
 <dd><p>Compute inverse evidence values from chains, using posterior model.</p>
 <p>Multiple chains can be added in sequence (to avoid having to store very
 long chains).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Construct evidence class for computing inverse evidence values from
 set number of chains and initialised posterior model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nchains</strong> (<em>long</em>) – Number of chains that will be used in the
+<li><p><strong>nchains</strong> (<em>int</em>) – Number of chains that will be used in the
 computation.</p></li>
 <li><p><strong>model</strong> (<em>Model</em>) – An instance of a posterior model class that has
 been fitted.</p></li>
 <li><p><strong>shift</strong> (<a class="reference internal" href="index.html#harmonic.Shifting" title="harmonic.Shifting"><em>Shifting</em></a>) – What shifting method to use to avoid over/underflow during
 computation. Selected from enumerate class.</p></li>
-<li><p><strong>batch_calculation</strong> (<em>bool</em>) – Set to True to predict posterior for the whole batch
-at the same time when using normalizing flows. Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -143,7 +141,7 @@ high-dimensional problems.  Note that the same number of chains needs to
 be considered for each call.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>chains</strong> – An instance of the chains class containing the chains to
+<dd class="field-odd"><p><strong>chains</strong> (<a class="reference internal" href="index.html#harmonic.Chains" title="harmonic.Chains"><em>Chains</em></a>) – An instance of the chains class containing the chains to
 be used in the calculation.</p>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -267,6 +265,29 @@ evidence.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="harmonic.Evidence.get_masks">
+<span class="sig-name descname"><span class="pre">get_masks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_start_ixs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax.Array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax.Array</span></span></span><a class="headerlink" href="#harmonic.Evidence.get_masks" title="Permalink to this definition"></a></dt>
+<dd><p>Create mask array for a 2D array of concatenated chains of different lengths.
+:param chain_start_ixs: Start indices of chains</p>
+<blockquote>
+<div><p>in Chain object.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Mask array with each row corresponding to a chain</dt><dd><p>and entries with boolean values depending on if given sample at that
+position is in that chain.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>jnp.ndarray[nchains,nsamples]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.process_run">
 <span class="sig-name descname"><span class="pre">process_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.process_run" title="Permalink to this definition"></a></dt>
 <dd><p>Use the running totals of realspace running_sum and nsamples_per_chain to
@@ -289,11 +310,11 @@ variance estimates from the running totals.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.set_shift">
-<span class="sig-name descname"><span class="pre">set_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shift_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.set_shift" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shift_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.set_shift" title="Permalink to this definition"></a></dt>
 <dd><p>Set the shift value of log_e posterior values to aid numerical stability.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>shift_value</strong> (<em>double</em>) – Shift value.</p>
+<dd class="field-odd"><p><strong>shift_value</strong> (<em>float</em>) – Shift value.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -341,8 +362,8 @@ may prove optimal for certain settings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ev1</strong> (<em>double</em>) – Evidence object of model 1 with chains added.</p></li>
-<li><p><strong>ev2</strong> (<em>double</em>) – Evidence object of model 2 with chains added.</p></li>
+<li><p><strong>ev1</strong> (<em>float</em>) – Evidence value of model 1 with chains added.</p></li>
+<li><p><strong>ev2</strong> (<em>float</em>) – Evidence value of model 2 with chains added.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -360,7 +381,7 @@ may prove optimal for certain settings.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(double, double)</p>
+<dd class="field-odd"><p>(float, float)</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -378,8 +399,8 @@ may prove optimal for certain settings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ev1</strong> (<em>double</em>) – Evidence object of model 1 with chains added.</p></li>
-<li><p><strong>ev2</strong> (<em>double</em>) – Evidence object of model 2 with chains added.</p></li>
+<li><p><strong>ev1</strong> (<em>float</em>) – Evidence object of model 1 with chains added.</p></li>
+<li><p><strong>ev2</strong> (<em>float</em>) – Evidence object of model 2 with chains added.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -397,7 +418,7 @@ may prove optimal for certain settings.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(double, double)</p>
+<dd class="field-odd"><p>(float, float)</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
