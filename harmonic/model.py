@@ -219,21 +219,14 @@ class FlowModel(mda.Model):
         if self.standardize:
             x = (x - self.pre_offset) / self.pre_amp
 
-        # 1D input must be handled by directly calling the flow
-        if len(x.shape) == 1:
-            logprob = self.flow.apply(
-                {"params": self.state.params, "variables": self.variables},
-                x,
-                temperature,
-            )
-
-        else:
-            logprob = self.flow.apply(
-                {"params": self.state.params, "variables": self.variables},
-                x,
-                temperature,
-                method=self.flow.log_prob,
-            )
+        logprob = self.flow.apply(
+            {"params": self.state.params, "variables": self.variables},
+            x,
+            temperature,
+            method=None
+            if len(x.shape) == 1
+            else self.flow.log_prob,  # 1D input must be handled by directly calling the flow
+        )
 
         if self.standardize:
             logprob -= sum(jnp.log(self.pre_amp))
