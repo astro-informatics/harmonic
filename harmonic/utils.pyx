@@ -1,7 +1,7 @@
 import numpy as np
 cimport numpy as np
 import chains as ch
-import model as md
+import model_legacy as mdl
 import evidence as cbe
 import logs as lg 
 
@@ -136,7 +136,7 @@ def cross_validation(chains,
                      list domains, 
                      list hyper_parameters, 
                      long nfold=2, 
-                     modelClass = md.KernelDensityEstimate, 
+                     modelClass = mdl.KernelDensityEstimate, 
                      long seed=-1):    
     """Perform n-fold validation for given model using chains to be split into
     validation and training data.

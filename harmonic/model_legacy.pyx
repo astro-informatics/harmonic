@@ -1,4 +1,3 @@
-import abc
 import numpy as np
 cimport numpy as np
 from libc.math cimport log, exp, sqrt, M_PI
@@ -8,114 +7,7 @@ from sklearn import preprocessing
 from sklearn.cluster import KMeans
 import logs as lg 
 import cloudpickle
-
-
-class Model(metaclass=abc.ABCMeta):
-    """Base abstract class for posterior model.
-    
-    All inherited models must implement the abstract constructor, fit and 
-    predict methods.
-
-    """
-
-
-    @abc.abstractmethod
-    def __init__(self, long ndim):
-        """Constructor setting the hyper-parameters and domains of the model.
-        
-        Must be implemented by derived class (currently abstract).
-        
-        Args: 
-
-            ndim (long): Dimension of the problem to solve.
-        """
-
-
-    @abc.abstractmethod
-    def fit(self, np.ndarray[double, ndim=2, mode="c"] X, 
-            np.ndarray[double, ndim=1, mode="c"] Y):
-        """Fit the parameters of the model.
-        
-        Must be implemented by derived class (currently abstract).
-        
-        Args:
-
-            X (double ndarray[nsamples, ndim]): Sample x coordinates.
-
-            Y (double ndarray[nsamples]): Target log_e posterior values for each
-                sample in X.
-        
-        Returns:
-
-            (bool): Whether fit successful. 
-
-        """
-
-
-    @abc.abstractmethod
-    def predict(self, np.ndarray[double, ndim=1, mode="c"] x):
-        """Predict the value of the posterior at point x.
-        
-        Must be implemented by derived class (since abstract).
-        
-        Args: 
-
-            x (double ndarray[ndim]): Sample of shape (ndim) at which to
-                predict posterior value.
-        
-        Returns:
-
-            (double): Predicted log_e posterior value.
-
-        """
-        
-    def is_fitted(self):
-        """Specify whether model has been fitted.
-            
-        Returns:
-
-            (bool): Whether the model has been fitted.
-
-        """
-
-        return self.fitted
-
-
-
-    def serialize(self, filename):
-        """Serialize Model object.
-
-        Args:
-
-            filename (string): Name of file to save model object.
-
-        """
-
-        file = open(filename, "wb")
-        cloudpickle.dump(self, file)
-        file.close()
-
-        return
-
-
-    @classmethod
-    def deserialize(self, filename):
-        """Deserialize Model object from file.
-
-        Args:
-
-            filename (string): Name of file from which to read model object.
-
-        Returns:
-
-            (Model): Model object deserialized from file.
-
-        """
-        file = open(filename,"rb")
-        model = cloudpickle.load(file)
-        file.close()
-
-        return model
+from harmonic import model_abstract as mda
 
 
 
@@ -180,7 +72,7 @@ cdef double HyperSphereObjectiveFunction(double R_squared, X, Y, \
     return objective
 
 
-class HyperSphere(Model):
+class HyperSphere(mda.Model):
     """HyperSphere Model to approximate the log_e posterior by a hyper-ellipsoid.
 
     """
@@ -595,7 +487,7 @@ cdef KernelDensityEstimate_search_in_pixel(long index, dict grid, \
     return
 
 
-class KernelDensityEstimate(Model):
+class KernelDensityEstimate(mda.Model):
     """KernelDensityEstimate model to approximate the log_e posterior using kernel
     density estimation.
 
@@ -1315,7 +1207,7 @@ cdef double objective_function(np.ndarray[double, ndim=2, mode="c"] X, \
     return I_i/nsamples + 0.5*gamma*reg
 
 
-class ModifiedGaussianMixtureModel(Model):    
+class ModifiedGaussianMixtureModel(mda.Model):    
     """ModifiedGaussianMixtureModel (MGMM) to approximate the log_e posterior by a
     modified Gaussian mixture model.
 

@@ -13,7 +13,7 @@ sys.path.append("examples")
 import utils
 
 sys.path.append("harmonic")
-import model_nf
+import model as md
 import flows
 
 
@@ -436,7 +436,7 @@ def run_example(
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = model_nf.RealNVPModel(
+    model = md.RealNVPModel(
         ndim,
         n_scaled_layers=n_scaled,
         n_unscaled_layers=n_unscaled,
@@ -444,7 +444,7 @@ def run_example(
         standardize=standardize,
         temperature=temperature,
     )
-    # model = model_nf.RQSplineFlow(ndim)
+    # model = md.RQSplineFlow(ndim)
     model.fit(chains_train.samples, epochs=epochs_num)
 
     # ===========================================================================

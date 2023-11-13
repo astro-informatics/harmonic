@@ -146,7 +146,7 @@ def run_example(
         hm.logs.debug_log("r scale = {}".format(r_scale))
         domains = [r_scale * np.array([1e-1, 1e0])]
         hm.logs.debug_log("Domain = {}".format(domains))
-        model = hm.model.HyperSphere(ndim, domains)
+        model = hm.model_legacy.HyperSphere(ndim, domains)
         fit_success, objective = model.fit(
             chains_train.samples, chains_train.ln_posterior
         )

@@ -164,7 +164,7 @@ def run_example(
     # ======================================================================
     # Train hyper-spherical model
     # ======================================================================
-    model = hm.model.HyperSphere(ndim, domains_sphere)
+    model = hm.model_legacy.HyperSphere(ndim, domains_sphere)
     model.set_R(max_r_prob)
     model.fitted = True
 

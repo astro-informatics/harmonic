@@ -10,7 +10,7 @@ import harmonic as hm
 
 sys.path.append("examples")
 import utils
-from harmonic import model_nf
+from harmonic import model as md
 
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
@@ -220,9 +220,7 @@ def run_example(
         # Fit model
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        model = model_nf.RQSplineModel(
-            ndim, standardize=standardize, temperature=temperature
-        )
+        model = md.RQSplineModel(ndim, standardize=standardize, temperature=temperature)
         model.fit(chains_train.samples, epochs=epochs_num)
 
         # =======================================================================

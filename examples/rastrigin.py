@@ -198,7 +198,7 @@ def run_example(
             domain,
             hyper_parameters,
             nfold=nfold,
-            modelClass=hm.model.KernelDensityEstimate,
+            modelClass=hm.model_legacy.KernelDensityEstimate,
             seed=0,
         )
 
@@ -215,7 +215,7 @@ def run_example(
         Fit model by selecing the configuration of hyper-parameters which 
         minimises the validation variances.
         """
-        model = hm.model.KernelDensityEstimate(
+        model = hm.model_legacy.KernelDensityEstimate(
             ndim, domain, hyper_parameters=best_hyper_param
         )
         fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)

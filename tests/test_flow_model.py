@@ -1,5 +1,5 @@
 import pytest
-import harmonic.model_nf as model_nf
+import harmonic.model as md
 import jax.numpy as jnp
 import jax
 import harmonic as hm
@@ -34,24 +34,24 @@ def standard_nd_gaussian_pdf(x):
 def test_FlowModel_constructor():
     with pytest.raises(NotImplementedError):
         ndim = 3
-        model = model_nf.FlowModel(ndim)
+        model = md.FlowModel(ndim)
         training_samples = jnp.zeros((12, ndim))
         model.fit(training_samples)
 
 
 def test_RealNVP_constructor():
     with pytest.raises(ValueError):
-        RealNVP = model_nf.RealNVPModel(0)
+        RealNVP = md.RealNVPModel(0)
 
     with pytest.raises(ValueError):
-        RealNVP = model_nf.RealNVPModel(-1)
+        RealNVP = md.RealNVPModel(-1)
 
     ndim = 3
 
     with pytest.raises(ValueError):
-        RealNVP = model_nf.RealNVPModel(ndim, n_scaled_layers=0)
+        RealNVP = md.RealNVPModel(ndim, n_scaled_layers=0)
 
-    RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
+    RealNVP = md.RealNVPModel(ndim, standardize=True)
 
     with pytest.raises(ValueError):
         training_samples = jnp.zeros((12, ndim + 1))
@@ -95,13 +95,13 @@ def test_RealNVP_flow():
 
 def test_RQSpline_constructor():
     with pytest.raises(ValueError):
-        spline = model_nf.RQSplineModel(0)
+        spline = md.RQSplineModel(0)
 
     with pytest.raises(ValueError):
-        spline = model_nf.RQSplineModel(-1)
+        spline = md.RQSplineModel(-1)
 
     ndim = 3
-    spline = model_nf.RQSplineModel(ndim, standardize=True)
+    spline = md.RQSplineModel(ndim, standardize=True)
 
     with pytest.raises(ValueError):
         training_samples = jnp.zeros((12, ndim + 1))
@@ -151,7 +151,7 @@ def test_RealNVP_gaussian():
     # Generate random samples from the 2D Gaussian distribution
     samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
 
-    RealNVP = model_nf.RealNVPModel(ndim, standardize=True)
+    RealNVP = md.RealNVPModel(ndim, standardize=True)
     RealNVP.fit(samples, epochs=epochs, verbose=True)
 
     nsamples = 5000
@@ -161,7 +161,7 @@ def test_RealNVP_gaussian():
     sample_mean = jnp.mean(flow_samples, axis=0)
 
     test = jnp.ones(ndim) * 0.2
-    assert jnp.exp(RealNVP.predict(jnp.array([test])))[0] == pytest.approx(
+    assert jnp.exp(RealNVP.predict(test)) == pytest.approx(
         jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
     ), "Real NVP probability density not in agreement with analytical value"
 
@@ -196,7 +196,7 @@ def test_RQSpline_gaussian():
     # Generate random samples from the 2D Gaussian distribution
     samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
 
-    spline = model_nf.RQSplineModel(ndim, standardize=True)
+    spline = md.RQSplineModel(ndim, standardize=True)
     spline.fit(samples, epochs=epochs, verbose=True)
 
     nsamples = 5000
@@ -214,7 +214,7 @@ def test_RQSpline_gaussian():
         )
 
     test = jnp.ones(ndim) * 0.2
-    assert jnp.exp(spline.predict(jnp.array([test])))[0] == pytest.approx(
+    assert jnp.exp(spline.predict(test)) == pytest.approx(
         jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
     ), "Spline probability density not in agreement with analytical value"
 
@@ -258,7 +258,7 @@ def test_model_serialization():
     standardize = True
     temperature = 0.6
 
-    model_NVP = model_nf.RealNVPModel(
+    model_NVP = md.RealNVPModel(
         ndim,
         n_scaled_layers=n_scaled,
         n_unscaled_layers=n_unscaled,
@@ -274,7 +274,7 @@ def test_model_serialization():
     model_NVP.serialize(".test.dat")
 
     # Deserialize model
-    model_NVP2 = model_nf.RealNVPModel.deserialize(".test.dat")
+    model_NVP2 = md.RealNVPModel.deserialize(".test.dat")
 
     assert model_NVP2.ndim == model_NVP.ndim
     assert model_NVP2.is_fitted() == model_NVP.is_fitted()
@@ -285,7 +285,7 @@ def test_model_serialization():
     assert model_NVP2.standardize == model_NVP.standardize
     assert model_NVP2.temperature == model_NVP.temperature
 
-    test = jnp.array([jnp.ones(ndim)])
+    test = jnp.ones(ndim)
     assert model_NVP2.predict(test) == model_NVP.predict(test), (
         "Prediction for deserialized model is "
         + str(model_NVP2.predict(test))
@@ -293,7 +293,7 @@ def test_model_serialization():
         + str(model_NVP.predict(test))
     )
 
-    model_spline = model_nf.RQSplineModel(
+    model_spline = md.RQSplineModel(
         ndim,
         n_layers=n_layers,
         n_bins=n_bins,
@@ -309,7 +309,7 @@ def test_model_serialization():
     model_spline.serialize(".test.dat")
 
     # Deserialize model
-    model_spline2 = model_nf.RQSplineModel.deserialize(".test.dat")
+    model_spline2 = md.RQSplineModel.deserialize(".test.dat")
     assert model_spline2.ndim == model_spline.ndim
     assert model_spline2.is_fitted() == model_spline.is_fitted()
     assert model_spline2.n_layers == model_spline.n_layers

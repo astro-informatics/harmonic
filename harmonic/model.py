@@ -1,5 +1,5 @@
-from typing import Sequence, Union
-from harmonic import model as md
+from typing import Sequence
+from harmonic import model_abstract as mda
 from harmonic import flows
 import jax
 import jax.numpy as jnp
@@ -94,9 +94,8 @@ def make_training_loop(model):
     return train_flow, train_epoch, train_step
 
 
-class FlowModel(md.Model):
-    """Normalizing flow model to approximate the log_e posterior by a normalizing
-    flow."""
+class FlowModel(mda.Model):
+    """Normalizing flow model to approximate the log_e posterior by a normalizing flow."""
 
     def __init__(
         self,
@@ -141,16 +140,13 @@ class FlowModel(md.Model):
 
             X (jnp.ndarray (nsamples, ndim)): Training samples.
 
-            batch_size (int, optional): Batch size used when training flow. Default =
-            64.
+            batch_size (int, optional): Batch size used when training flow. Default = 64.
 
             epochs (int, optional): Number of epochs flow is trained for. Default = 3.
 
-            key (Union[jax.Array, jax.random.PRNGKeyArray], optional): Key used in
-            random number generation process.
+            key (Union[jax.Array, jax.random.PRNGKeyArray], optional): Key used in random number generation process.
 
-            verbose (bool, optional): Controls if progress bar and current loss are
-            displayed when training. Default = False.
+            verbose (bool, optional): Controls if progress bar and current loss are displayed when training. Default = False.
 
 
         Raises:
@@ -199,7 +195,7 @@ class FlowModel(md.Model):
 
         Args:
 
-            x (jnp.ndarray (batch_size, ndim)): Batched sample for which to
+            x (jnp.ndarray (batch_size, ndim)): Sample for which to
                 predict posterior values.
 
         Returns:
@@ -223,12 +219,13 @@ class FlowModel(md.Model):
         if self.standardize:
             x = (x - self.pre_offset) / self.pre_amp
 
-        # TODO: support 1D arrays here, not at the user level.
         logprob = self.flow.apply(
             {"params": self.state.params, "variables": self.variables},
             x,
             temperature,
-            method=self.flow.log_prob,
+            method=None
+            if len(x.shape) == 1
+            else self.flow.log_prob,  # 1D input must be handled by directly calling the flow
         )
 
         if self.standardize:
@@ -299,24 +296,17 @@ class RealNVPModel(FlowModel):
 
             ndim_in (int): Dimension of the problem to solve.
 
-            n_scaled_layers (int, optional): Number of layers with scaler in RealNVP
-            flow. Default = 2.
+            n_scaled_layers (int, optional): Number of layers with scaler in RealNVP flow. Default = 2.
 
-            n_unscaled_layers (int, optional): Number of layers without scaler in
-            RealNVP flow. Default = 4.
+            n_unscaled_layers (int, optional): Number of layers without scaler in RealNVP flow. Default = 4.
 
-            learning_rate (float, optional): Learning rate for adam optimizer used in
-            the fit method. Default = 0.001.
+            learning_rate (float, optional): Learning rate for adam optimizer used in the fit method. Default = 0.001.
 
-            momentum (float, optional): Learning rate for Adam optimizer used in the fit
-            method. Default = 0.9
+            momentum (float, optional): Learning rate for Adam optimizer used in the fit method. Default = 0.9
 
-            standardize(bool, optional): Indicates if mean and variance should be
-            removed from training data when training the flow. Default = False
+            standardize(bool, optional): Indicates if mean and variance should be removed from training data when training the flow. Default = False
 
-            temperature (float, optional): Scale factor by which the base distribution
-            Gaussian is compressed in the prediction step. Should be positive and <=1.
-            Default = 0.8.
+            temperature (float, optional): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1. Default = 0.8.
 
         Raises:
 
@@ -376,24 +366,17 @@ class RQSplineModel(FlowModel):
 
             n_bins (int, optional): Number of bins in the spline. Defaults to 8.
 
-            hidden_size (Sequence[int], optional): Size of the hidden layers in the
-            conditioner. Defaults to [64, 64].
+            hidden_size (Sequence[int], optional): Size of the hidden layers in the conditioner. Defaults to [64, 64].
 
-            spline_range (Sequence[float], optional): Range of the spline. Defaults to
-            (-10.0, 10.0).
+            spline_range (Sequence[float], optional): Range of the spline. Defaults to (-10.0, 10.0).
 
-            standardize (bool, optional): Indicates if mean and variance should be
-            removed from training data when training the flow. Defaults to False.
+            standardize (bool, optional): Indicates if mean and variance should be removed from training data when training the flow. Defaults to False.
 
-            learning_rate (float, optional): Learning rate for adam optimizer used in
-            the fit method. Defaults to 0.001.
+            learning_rate (float, optional): Learning rate for adam optimizer used in the fit method. Defaults to 0.001.
 
-            momentum (float, optional): Learning rate for Adam optimizer used in the fit
-            method. Defaults to 0.9.
+            momentum (float, optional): Learning rate for Adam optimizer used in the fit method. Defaults to 0.9.
 
-            temperature (float, optional): Scale factor by which the base distribution
-            Gaussian is compressed in the prediction step. Should be positive and <=1.
-            Defaults to 0.8.
+            temperature (float, optional): Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and <=1. Defaults to 0.8.
 
         Raises:
 

@@ -13,7 +13,7 @@ sys.path.append("examples")
 import utils
 
 sys.path.append("harmonic")
-from harmonic import model_nf
+from harmonic import model as md
 import jax
 import jax.numpy as jnp
 
@@ -150,7 +150,7 @@ def run_example(ndim=2, nchains=100, samples_per_chain=1000, plot_corner=False):
         # Fit model
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        model = model_nf.RQSplineModel(
+        model = md.RQSplineModel(
             ndim,
             n_layers=n_layers,
             n_bins=n_bins,
