@@ -195,7 +195,7 @@ class FlowModel(mda.Model):
 
         Args:
 
-            x (jnp.ndarray (batch_size, ndim)): Batched sample for which to
+            x (jnp.ndarray (batch_size, ndim)): Sample for which to
                 predict posterior values.
 
         Returns:
@@ -219,13 +219,22 @@ class FlowModel(mda.Model):
         if self.standardize:
             x = (x - self.pre_offset) / self.pre_amp
 
-        # TODO: support 1D arrays here, not at the user level.
-        logprob = self.flow.apply(
-            {"params": self.state.params, "variables": self.variables},
-            x,
-            temperature,
-            method=self.flow.log_prob,
-        )
+        # 1D input must be handled by directly calling the flow
+        if len(x.shape) == 1:
+            print("Input is 1D")
+            logprob = self.flow.apply(
+                {"params": self.state.params, "variables": self.variables},
+                x,
+                temperature,
+            )
+
+        else:
+            logprob = self.flow.apply(
+                {"params": self.state.params, "variables": self.variables},
+                x,
+                temperature,
+                method=self.flow.log_prob,
+            )
 
         if self.standardize:
             logprob -= sum(jnp.log(self.pre_amp))

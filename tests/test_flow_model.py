@@ -161,7 +161,7 @@ def test_RealNVP_gaussian():
     sample_mean = jnp.mean(flow_samples, axis=0)
 
     test = jnp.ones(ndim) * 0.2
-    assert jnp.exp(RealNVP.predict(jnp.array([test])))[0] == pytest.approx(
+    assert jnp.exp(RealNVP.predict(test)) == pytest.approx(
         jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
     ), "Real NVP probability density not in agreement with analytical value"
 
@@ -214,7 +214,7 @@ def test_RQSpline_gaussian():
         )
 
     test = jnp.ones(ndim) * 0.2
-    assert jnp.exp(spline.predict(jnp.array([test])))[0] == pytest.approx(
+    assert jnp.exp(spline.predict(test)) == pytest.approx(
         jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
     ), "Spline probability density not in agreement with analytical value"
 
@@ -285,7 +285,7 @@ def test_model_serialization():
     assert model_NVP2.standardize == model_NVP.standardize
     assert model_NVP2.temperature == model_NVP.temperature
 
-    test = jnp.array([jnp.ones(ndim)])
+    test = jnp.ones(ndim)
     assert model_NVP2.predict(test) == model_NVP.predict(test), (
         "Prediction for deserialized model is "
         + str(model_NVP2.predict(test))
