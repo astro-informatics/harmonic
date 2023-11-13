@@ -1,7 +1,6 @@
-ignore:
-  - "*test_*"      # wildcards accepted
-
 coverage:
+  ignore:
+    - "*test_*"      # wildcards accepted
   status:
     project:
       default:
