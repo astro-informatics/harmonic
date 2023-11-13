@@ -1,9 +1,8 @@
 coverage:
-  ignore:
-    - "*test_*"      # wildcards accepted
+  # ignore:
+  #   - "*test_*" 
   status:
     project:
       default:
-        # basic
         target: auto
         threshold: 5%
