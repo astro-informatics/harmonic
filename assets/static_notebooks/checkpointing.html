@@ -60,9 +60,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cross-validation_learnt_model.html">Model cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/basic_usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -98,10 +96,14 @@
 <dt>{</dt><dd><dl>
 <dt>“cells”: [</dt><dd><dl>
 <dt>{</dt><dd><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “jPCvO91ZUA7o”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
-<div><p>“[![Open In Colab](<a class="reference external" href="https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/checkpointing.ipynb">https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/checkpointing.ipynb</a>)”</p>
+<div><p>“# Checkpointing”</p>
 </div></blockquote>
 <p>]</p>
 </dd>
@@ -110,27 +112,60 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
-“source”: [</p>
+“metadata”: {</p>
 <blockquote>
-<div><p>“# Checkpointing”</p>
-</div></blockquote>
-<p>]</p>
+<div><p>“id”: “X4Dj59rmumE-“</p>
 </div></blockquote>
 <p>},
-{</p>
-<blockquote>
-<div><p>“cell_type”: “markdown”,
-“metadata”: {},
 “source”: [</p>
 <blockquote>
 <div><p>“During high-dimensional Bayesian analysis, which is typically computationally heavy, one must frequently run sampling and/or evidence estimation for long periods of time. n”,
 “n”,
 “One issue often encountered is that the computing facilities may go offline or timeout during this period, thus discarding any values computed already. n”,
 “n”,
-“To avoid this issue harmonic supports <em>checkpointing</em>, which allows the user to periodically <em>save</em> the progress of the computation, and then resume from the saved point (the <em>checkpoint</em>). n”,
+“To avoid this issue <cite>harmonic</cite> supports <em>checkpointing</em>, which allows the user to periodically <em>save</em> the progress of the computation, and then resume from the saved point (the <em>checkpoint</em>). n”,
 “n”,
-“This example illustrates how one may use harmonic with checkpointing.n”</p>
+“This interactive tutorial illustrates how one may use <cite>harmonic</cite> with checkpointing.”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “XSCBJ_S4XvDe”</p>
+</div></blockquote>
+<p>},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“%%capturen”,
+“# Install packagesn”,
+“%pip install harmonic emcee corner getdist”</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “code”,
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “1OtVkBf7OAIF”</p>
+</div></blockquote>
+<p>},
+“outputs”: [],
+“source”: [</p>
+<blockquote>
+<div><p>“%%capturen”,
+“# Import modulesn”,
+“import numpy as npn”,
+“import harmonic as hmn”,
+“import emcee”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -138,12 +173,16 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “3bTCRZLeXULH”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
 <div><p>“## Basic problem setupn”,
 “n”,
-“As always, import the relevant python modules.”</p>
+“Define a Bayesian posterior function (here we’ll use a simple Gaussian example).”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -151,36 +190,12 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 11,
-“metadata”: {},
-“outputs”: [],
-“source”: [</p>
+“execution_count”: null,
+“metadata”: {</p>
 <blockquote>
-<div><p>“import numpy as npn”,
-“import emceen”,
-“import sysn”,
-“sys.path.insert(0, ‘../../..’)n”,
-“import harmonic as hm”</p>
-</div></blockquote>
-<p>]</p>
+<div><p>“id”: “8PgO6f4VQSpD”</p>
 </div></blockquote>
 <p>},
-{</p>
-<blockquote>
-<div><p>“cell_type”: “markdown”,
-“metadata”: {},
-“source”: [</p>
-<blockquote>
-<div><p>“Define a Bayesian posterior function (here we’ll use a simple Gaussian example).”</p>
-</div></blockquote>
-<p>]</p>
-</div></blockquote>
-<p>},
-{</p>
-<blockquote>
-<div><p>“cell_type”: “code”,
-“execution_count”: 12,
-“metadata”: {},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
@@ -221,21 +236,16 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
-“source”: [</p>
+“metadata”: {</p>
 <blockquote>
-<div><p>“Note that the final function init_cov is used to randomly assign a diagonal covariance proportional to the identiy matrix.”</p>
-</div></blockquote>
-<p>]</p>
+<div><p>“id”: “58Nqkza_YoLu”</p>
 </div></blockquote>
 <p>},
-{</p>
-<blockquote>
-<div><p>“cell_type”: “markdown”,
-“metadata”: {},
 “source”: [</p>
 <blockquote>
-<div><p>“Then define parameters for [emcee](<a class="reference external" href="https://emcee.readthedocs.io/en/stable/">https://emcee.readthedocs.io/en/stable/</a>) and the covariance of our Gaussian example.”</p>
+<div><p>“Note that the final function <cite>init_cov</cite> is used to randomly assign a diagonal covariance proportional to the identiy matrix.n”,
+“n”,
+“Then define parameters for [<cite>emcee</cite>](<a class="reference external" href="https://emcee.readthedocs.io/en/stable/">https://emcee.readthedocs.io/en/stable/</a>) and the covariance of our Gaussian example.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -243,8 +253,12 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 13,
-“metadata”: {},
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “xjsxOkX0QSzL”</p>
+</div></blockquote>
+<p>},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
@@ -267,10 +281,14 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “yj3-pW0UYrDf”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
-<div><p>“For absolute simplicity let’s use the harmonic HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.”</p>
+<div><p>“For absolute simplicity let’s use the <cite>harmonic</cite> HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -278,8 +296,12 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 14,
-“metadata”: {},
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “Ju_YJlk2QS7x”</p>
+</div></blockquote>
+<p>},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
@@ -297,7 +319,11 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “VAvoFPV8ZJ0Q”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
 <div><p>“## Checkpointingn”,
@@ -310,8 +336,12 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 15,
-“metadata”: {},
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “us1kBuWlQZTy”</p>
+</div></blockquote>
+<p>},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
@@ -328,7 +358,7 @@
 “for chain_i in range(chain_iterations):n”,
 ”    # Run the emcee sampler from previous endpointn”,
 ”    sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[inv_cov])n”,
-”    (pos, prob, rstate) = sampler.run_mcmc(pos, samples_per_chain/chain_iterations, rstate0=rstate)n”,
+”    (pos, prob, rstate) = sampler.run_mcmc(pos, int(samples_per_chain/chain_iterations), rstate0=rstate)n”,
 ”    n”,
 ”    # Collect and format samplesn”,
 ”    samples = np.ascontiguousarray(sampler.chain[:,:,:])n”,
@@ -355,10 +385,14 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “_HBc2vhRZh8o”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
-<div><p>“Of course, it is not typically necessary to deserialize the Evidence class following each checkpoint but only if execution halts.”</p>
+<div><p>“Of course, it is not typically necessary to deserialize the <cite>Evidence</cite> class following each checkpoint but only if execution halts.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -366,7 +400,11 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “fuYYqUYoy5bc”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
 <div><p>“## Compute the Bayesian evidencen”,
@@ -379,8 +417,12 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 16,
-“metadata”: {},
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “Eel3bSORQZW0”</p>
+</div></blockquote>
+<p>},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
@@ -392,21 +434,16 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
-“source”: [</p>
+“metadata”: {</p>
 <blockquote>
-<div><p>“## Results”</p>
-</div></blockquote>
-<p>]</p>
+<div><p>“id”: “hP6v_b7YZnEo”</p>
 </div></blockquote>
 <p>},
-{</p>
-<blockquote>
-<div><p>“cell_type”: “markdown”,
-“metadata”: {},
 “source”: [</p>
 <blockquote>
-<div><p>“For the simple Gaussian example considered, it’s also straightforward to compute the evidence analytically.”</p>
+<div><p>“## Resultsn”,
+“n”,
+“For the simple Gaussian example considered, it’s also straightforward to compute the evidence analytically.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -414,8 +451,12 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 17,
-“metadata”: {},
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “eSxxNW1KQZZc”</p>
+</div></blockquote>
+<p>},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
@@ -442,10 +483,14 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “UsD1ymV2aK3u”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
-<div><p>“Let’s also compute the evidence analytically so that we can compare it to the value computed by harmonic.”</p>
+<div><p>“Let’s also compute the evidence analytically so that we can compare it to the value computed by <cite>harmonic</cite>.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -453,8 +498,12 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 18,
-“metadata”: {},
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “efPNgW8qQZcW”</p>
+</div></blockquote>
+<p>},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
@@ -466,10 +515,14 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “Z0UhPgtWaUpb”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
-<div><p>“Let’s compare the value computed by harmonic and analytically.”</p>
+<div><p>“Let’s compare the value computed by <cite>harmonic</cite> and analytically.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -477,12 +530,20 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 19,
-“metadata”: {},
+“execution_count”: null,
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “WrB47hA3QZfM”</p>
+</div></blockquote>
+<p>},
 “outputs”: [],
 “source”: [</p>
 <blockquote>
-<div><p>“ln_evidence_err = np.log(np.exp(ln_evidence) + np.exp(ln_evidence_std)) - ln_evidence”</p>
+<div><p>“ln_evidence_err_neg, ln_evidence_err_pos = cal_ev.compute_ln_inv_evidence_errors()n”,
+“ln_evidence_err_avg = (ln_evidence_err_pos - ln_evidence_err_neg) / 2.0n”,
+“print(f&quot;ln_evidence_err_neg = {ln_evidence_err_neg}&quot;)n”,
+“print(f&quot;ln_evidence_err_pos = {ln_evidence_err_pos}&quot;)n”,
+“print(f&quot;ln_evidence_err_avg = {ln_evidence_err_avg}&quot;)”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -490,30 +551,24 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: 20,
-“metadata”: {},
-“outputs”: [</p>
+“execution_count”: null,
+“metadata”: {</p>
 <blockquote>
-<div><dl>
-<dt>{</dt><dd><p>“name”: “stdout”,
-“output_type”: “stream”,
-“text”: [</p>
-<blockquote>
-<div><p>“ln_evidence (harmonic) = 9.191328725973255 +/- 0.0032251202241564414n”,
-“ln_evidence (analytic) = 9.189385332046726n”,
-“nsigma = 0.6025803044405069n”</p>
-</div></blockquote>
-<p>]</p>
+<div><dl class="simple">
+<dt>“colab”: {</dt><dd><p>“base_uri”: “<a class="reference external" href="https://localhost:8080/">https://localhost:8080/</a>”</p>
 </dd>
 </dl>
-<p>}</p>
+<p>},
+“id”: “yP3AjUrCQZhh”,
+“outputId”: “cc01f114-07e0-4abe-ea2f-72fede5943f8”</p>
 </div></blockquote>
-<p>],
+<p>},
+“outputs”: [],
 “source”: [</p>
 <blockquote>
-<div><p>“print(‘ln_evidence (harmonic) = {} +/- {}’.format(ln_evidence, ln_evidence_err))n”,
+<div><p>“print(‘ln_evidence (harmonic) = {} (+ {} / {})’.format(ln_evidence, ln_evidence_err_pos, ln_evidence_err_neg))n”,
 “print(‘ln_evidence (analytic) = {}’.format(ln_evidence_analytic))n”,
-“print(‘nsigma = {}’.format(np.abs(ln_evidence - ln_evidence_analytic) / ln_evidence_err))”</p>
+“print(‘nsigma = {}’.format(np.abs(ln_evidence - ln_evidence_analytic) / ln_evidence_err_avg))”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -521,10 +576,14 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “markdown”,
-“metadata”: {},
+“metadata”: {</p>
+<blockquote>
+<div><p>“id”: “_37pQ-HWa1Cf”</p>
+</div></blockquote>
+<p>},
 “source”: [</p>
 <blockquote>
-<div><p>“As expected, the evidence computed by harmonic is close to that computed analytically.”</p>
+<div><p>“As expected, the evidence computed by <cite>harmonic</cite> is close to that computed analytically.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -535,11 +594,21 @@
 “metadata”: {</p>
 <blockquote>
 <div><dl class="simple">
-<dt>“kernelspec”: {</dt><dd><p>“display_name”: “Python 3”,
-“language”: “python”,
-“name”: “python3”</p>
+<dt>“colab”: {</dt><dd><p>“authorship_tag”: “ABX9TyPeQz+AuMy/ROmUgYTB/C7J”,
+“collapsed_sections”: [],
+“include_colab_link”: true,
+“name”: “checkpointing.ipynb”,
+“provenance”: [],
+“toc_visible”: true</p>
 </dd>
 </dl>
+<p>},
+“kernelspec”: {</p>
+<blockquote>
+<div><p>“display_name”: “Python 3.9.0 (‘s2fft’)”,
+“language”: “python”,
+“name”: “python3”</p>
+</div></blockquote>
 <p>},
 “language_info”: {</p>
 <blockquote>
@@ -554,13 +623,22 @@
 “name”: “python”,
 “nbconvert_exporter”: “python”,
 “pygments_lexer”: “ipython3”,
-“version”: “3.7.11”</p>
+“version”: “3.9.0”</p>
+</div></blockquote>
+<p>},
+“vscode”: {</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“interpreter”: {</dt><dd><p>“hash”: “3425e24474cbe920550266ea26b478634978cc419579f9dbcf479231067df6a3”</p>
+</dd>
+</dl>
+<p>}</p>
 </div></blockquote>
 <p>}</p>
 </div></blockquote>
 <p>},
 “nbformat”: 4,
-“nbformat_minor”: 4</p>
+“nbformat_minor”: 0</p>
 </dd>
 </dl>
 <p>}</p>

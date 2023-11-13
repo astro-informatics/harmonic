@@ -1,8 +1,3 @@
-.. autoclass:: harmonic.model.HyperSphere
+.. automodule:: harmonic.model
    :members:
 
-.. autoclass:: harmonic.model.KernelDensityEstimate
-   :members:
-
-.. autoclass:: harmonic.model.ModifiedGaussianMixtureModel
-   :members:

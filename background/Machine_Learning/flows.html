@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Log-space variance &mdash; Harmonic 1.1.1 documentation</title>
+  <title>&lt;no title&gt; &mdash; Harmonic 1.1.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -19,15 +19,11 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script src="../../_static/dark_mode_js/default_light.js"></script>
         <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Basic Usage" href="../../tutorials/basic_usage.html" />
-    <link rel="prev" title="Bayes factors" href="../Bayes_Factors/bayes_factors.html" /> 
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,13 +50,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide/install.html">Installation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/original_harmonic_mean.html">Harmonic mean estimator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted harmonic mean estimator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Harmonic_Estimator/learnt_harmonic_mean.html">Learnt harmonic mean estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Machine_Learning/index.html">Learning a suitable target distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Learning a suitable target distribution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Bayes_Factors/bayes_factors.html">Bayes factors</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Log-space variance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Log_space_statistics/log_variance.html">Log-space variance</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
@@ -86,9 +82,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Log-space variance</li>
+      <li>&lt;no title&gt;</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/background/Log_space_statistics/log_variance.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/background/Machine_Learning/flows.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -96,33 +92,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="log-space-variance">
-<span id="logvar"></span><h1>Log-space variance<a class="headerlink" href="#log-space-variance" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">harmonic</span></code> computes estimators of the reciprocal evidence and its variance, denoted by <span class="math notranslate nohighlight">\(\hat{\rho}\)</span> and <span class="math notranslate nohighlight">\(\hat{\sigma}^2\)</span> respectively.</p>
-<p>We compute the natural logarithm of these quantities for numerical stability (using a number of numerical tricks, such as the <a class="reference external" href="https://en.wikipedia.org/wiki/LogSumExp">LogSumExp trick</a>).  We therefore directly compute <span class="math notranslate nohighlight">\(\log ( \hat{\rho} )\)</span> and <span class="math notranslate nohighlight">\(\log ( \hat{\sigma} )\)</span>.</p>
-<p>While quantities are computed in log space for numerical stability, the variance that is computed relates to the underlying reciprocal evidence (<strong>not</strong> the log reciprocal evidence), i.e. the terms computed can be considered as the estimate and error <span class="math notranslate nohighlight">\(\hat{\rho} \pm \hat{\sigma}\)</span>.  This is of course not equivalent to a variance estimate of the log space estimate, which can be seen straightforwardly since <span class="math notranslate nohighlight">\(\log ( \text{var}(x) ) \not = \text{var}(\log (x ))\)</span> as summation and the natural logarithm do not commute.</p>
-<p>In some settings one may be interested in an error estimate defined in log space, i.e. the log-space error <span class="math notranslate nohighlight">\(\hat{\zeta}_\pm\)</span> defined by</p>
-<div class="math notranslate nohighlight">
-\[\log ( \hat{\rho} \pm \hat{\sigma} ) = \log (\hat{\rho}) + \hat{\zeta}_\pm .\]</div>
-<p>The log-space error estimate can be computed by</p>
-<div class="math notranslate nohighlight">
-\[\hat{\zeta}_\pm = \log (\hat{\rho} \pm \hat{\sigma} ) - \log (\hat{\rho}) .\]</div>
-<p>This may also be expressed as</p>
-<div class="math notranslate nohighlight">
-\[\hat{\zeta}_\pm = \log(1 \pm \hat{\sigma} / \hat{\rho}) ,\]</div>
-<p>where</p>
-<div class="math notranslate nohighlight">
-\[\hat{\sigma} / \hat{\rho} =  \exp \bigl( \log(\hat{\sigma}) - \log(\hat{\rho}) \bigr) .\]</div>
-<p>The advantage of this second approach is that it avoids explicitly computing <span class="math notranslate nohighlight">\(\exp(\log(\hat{\rho})) \pm \exp(\log(\hat{\sigma}))\)</span>, which has the potental to over- or under-flow.  The second, more stable, approach is implemented in <code class="code docutils literal notranslate"><span class="pre">Evidence.compute_ln_inv_evidence_errors</span></code>.</p>
-</div>
+  <p>Details to follow.</p>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../Bayes_Factors/bayes_factors.html" class="btn btn-neutral float-left" title="Bayes factors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../tutorials/basic_usage.html" class="btn btn-neutral float-right" title="Basic Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

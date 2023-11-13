@@ -61,9 +61,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/cross-validation_learnt_model.html">Model cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/basic_usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -100,12 +98,16 @@
 <div class="genindex-jumpbox">
  <a href="#_"><strong>_</strong></a>
  | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
@@ -122,6 +124,16 @@
 
       <ul>
         <li><a href="api/evidence.html#harmonic.Evidence.__init__">(harmonic.Evidence method)</a>, <a href="api/index.html#harmonic.Evidence.__init__">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model.RealNVPModel.__init__">(harmonic.model.RealNVPModel method)</a>, <a href="api/model.html#harmonic.model.RealNVPModel.__init__">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model.RQSplineModel.__init__">(harmonic.model.RQSplineModel method)</a>, <a href="api/model.html#harmonic.model.RQSplineModel.__init__">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model_legacy.HyperSphere.__init__">(harmonic.model_legacy.HyperSphere method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere.__init__">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model_legacy.KernelDensityEstimate.__init__">(harmonic.model_legacy.KernelDensityEstimate method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.KernelDensityEstimate.__init__">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.__init__">(harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.__init__">[1]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -149,9 +161,19 @@
   </ul></td>
 </tr></table>
 
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model_legacy.beta_to_weights_wrap">beta_to_weights_wrap() (in module harmonic.model_legacy)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.beta_to_weights_wrap">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model_legacy.calculate_gaussian_normalisation_wrap">calculate_gaussian_normalisation_wrap() (in module harmonic.model_legacy)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.calculate_gaussian_normalisation_wrap">[1]</a>
+</li>
       <li><a href="api/chains.html#harmonic.Chains">Chains (class in harmonic)</a>, <a href="api/index.html#harmonic.Chains">[1]</a>
 </li>
       <li><a href="api/evidence.html#harmonic.Evidence.check_basic_diagnostic">check_basic_diagnostic() (harmonic.Evidence method)</a>, <a href="api/index.html#harmonic.Evidence.check_basic_diagnostic">[1]</a>
@@ -180,9 +202,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/index.html#harmonic.logs.debug_log">debug_log() (in module harmonic.logs)</a>, <a href="api/logs.html#harmonic.logs.debug_log">[1]</a>
 </li>
+      <li><a href="api/chains.html#harmonic.Chains.deepcopy">deepcopy() (harmonic.Chains method)</a>, <a href="api/index.html#harmonic.Chains.deepcopy">[1]</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/chains.html#harmonic.Chains.deepcopy">deepcopy() (harmonic.Chains method)</a>, <a href="api/index.html#harmonic.Chains.deepcopy">[1]</a>
+      <li><a href="api/index.html#harmonic.model_legacy.delta_theta_ij_wrap">delta_theta_ij_wrap() (in module harmonic.model_legacy)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.delta_theta_ij_wrap">[1]</a>
 </li>
       <li><a href="api/evidence.html#harmonic.Evidence.deserialize">deserialize() (harmonic.Evidence class method)</a>, <a href="api/index.html#harmonic.Evidence.deserialize">[1]</a>
 </li>
@@ -192,7 +216,31 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model_legacy.evaluate_one_gaussian_wrap">evaluate_one_gaussian_wrap() (in module harmonic.model_legacy)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.evaluate_one_gaussian_wrap">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evidence.html#harmonic.Evidence">Evidence (class in harmonic)</a>, <a href="api/index.html#harmonic.Evidence">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model.FlowModel.fit">fit() (harmonic.model.FlowModel method)</a>, <a href="api/model.html#harmonic.model.FlowModel.fit">[1]</a>
+
+      <ul>
+        <li><a href="api/index.html#harmonic.model_legacy.HyperSphere.fit">(harmonic.model_legacy.HyperSphere method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere.fit">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model_legacy.KernelDensityEstimate.fit">(harmonic.model_legacy.KernelDensityEstimate method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.KernelDensityEstimate.fit">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.fit">(harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.fit">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model.FlowModel">FlowModel (class in harmonic.model)</a>, <a href="api/model.html#harmonic.model.FlowModel">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -228,8 +276,22 @@
         <li><a href="api/index.html#module-harmonic.logs">module</a>, <a href="api/logs.html#module-harmonic.logs">[1]</a>
 </li>
       </ul></li>
+      <li>
+    harmonic.model
+
+      <ul>
+        <li><a href="api/index.html#module-harmonic.model">module</a>, <a href="api/model.html#module-harmonic.model">[1]</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    harmonic.model_legacy
+
+      <ul>
+        <li><a href="api/index.html#module-harmonic.model_legacy">module</a>, <a href="api/model_legacy.html#module-harmonic.model_legacy">[1]</a>
+</li>
+      </ul></li>
       <li>
     harmonic.utils
 
@@ -237,6 +299,8 @@
         <li><a href="api/index.html#module-harmonic.utils">module</a>, <a href="api/utils.html#module-harmonic.utils">[1]</a>
 </li>
       </ul></li>
+      <li><a href="api/index.html#harmonic.model_legacy.HyperSphere">HyperSphere (class in harmonic.model_legacy)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere">[1]</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -248,9 +312,37 @@
   </ul></td>
 </tr></table>
 
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model_legacy.KernelDensityEstimate">KernelDensityEstimate (class in harmonic.model_legacy)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.KernelDensityEstimate">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/flows.html#harmonic.flows.RealNVP.log_prob">log_prob() (harmonic.flows.RealNVP method)</a>, <a href="api/index.html#harmonic.flows.RealNVP.log_prob">[1]</a>
+
+      <ul>
+        <li><a href="api/flows.html#harmonic.flows.RQSpline.log_prob">(harmonic.flows.RQSpline method)</a>, <a href="api/index.html#harmonic.flows.RQSpline.log_prob">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/flows.html#harmonic.flows.RealNVP.make_flow">make_flow() (harmonic.flows.RealNVP method)</a>, <a href="api/index.html#harmonic.flows.RealNVP.make_flow">[1]</a>
+
+      <ul>
+        <li><a href="api/flows.html#harmonic.flows.RQSpline.make_flow">(harmonic.flows.RQSpline method)</a>, <a href="api/index.html#harmonic.flows.RQSpline.make_flow">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="api/index.html#harmonic.model.make_training_loop">make_training_loop() (in module harmonic.model)</a>, <a href="api/model.html#harmonic.model.make_training_loop">[1]</a>
+</li>
       <li><a href="api/evidence.html#harmonic.Shifting.MAX_SHIFT">MAX_SHIFT (harmonic.Shifting attribute)</a>, <a href="api/index.html#harmonic.Shifting.MAX_SHIFT">[1]</a>
 </li>
       <li><a href="api/evidence.html#harmonic.Shifting.MEAN_SHIFT">MEAN_SHIFT (harmonic.Shifting attribute)</a>, <a href="api/index.html#harmonic.Shifting.MEAN_SHIFT">[1]</a>
@@ -259,6 +351,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel">ModifiedGaussianMixtureModel (class in harmonic.model_legacy)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel">[1]</a>
+</li>
       <li>
     module
 
@@ -266,6 +360,10 @@
         <li><a href="api/evidence.html#module-harmonic.evidence">harmonic.evidence</a>, <a href="api/index.html#module-harmonic.evidence">[1]</a>
 </li>
         <li><a href="api/index.html#module-harmonic.logs">harmonic.logs</a>, <a href="api/logs.html#module-harmonic.logs">[1]</a>
+</li>
+        <li><a href="api/index.html#module-harmonic.model">harmonic.model</a>, <a href="api/model.html#module-harmonic.model">[1]</a>
+</li>
+        <li><a href="api/index.html#module-harmonic.model_legacy">harmonic.model_legacy</a>, <a href="api/model_legacy.html#module-harmonic.model_legacy">[1]</a>
 </li>
         <li><a href="api/index.html#module-harmonic.utils">harmonic.utils</a>, <a href="api/utils.html#module-harmonic.utils">[1]</a>
 </li>
@@ -284,6 +382,20 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model_legacy.KernelDensityEstimate.precompute_normalising_factor">precompute_normalising_factor() (harmonic.model_legacy.KernelDensityEstimate method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.KernelDensityEstimate.precompute_normalising_factor">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model.FlowModel.predict">predict() (harmonic.model.FlowModel method)</a>, <a href="api/model.html#harmonic.model.FlowModel.predict">[1]</a>
+
+      <ul>
+        <li><a href="api/index.html#harmonic.model_legacy.HyperSphere.predict">(harmonic.model_legacy.HyperSphere method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere.predict">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model_legacy.KernelDensityEstimate.predict">(harmonic.model_legacy.KernelDensityEstimate method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.KernelDensityEstimate.predict">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.predict">(harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.predict">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evidence.html#harmonic.Evidence.process_run">process_run() (harmonic.Evidence method)</a>, <a href="api/index.html#harmonic.Evidence.process_run">[1]</a>
 </li>
   </ul></td>
@@ -292,7 +404,17 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/flows.html#harmonic.flows.RealNVP">RealNVP (class in harmonic.flows)</a>, <a href="api/index.html#harmonic.flows.RealNVP">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model.RealNVPModel">RealNVPModel (class in harmonic.model)</a>, <a href="api/model.html#harmonic.model.RealNVPModel">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/chains.html#harmonic.Chains.remove_burnin">remove_burnin() (harmonic.Chains method)</a>, <a href="api/index.html#harmonic.Chains.remove_burnin">[1]</a>
+</li>
+      <li><a href="api/flows.html#harmonic.flows.RQSpline">RQSpline (class in harmonic.flows)</a>, <a href="api/index.html#harmonic.flows.RQSpline">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model.RQSplineModel">RQSplineModel (class in harmonic.model)</a>, <a href="api/model.html#harmonic.model.RQSplineModel">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -300,14 +422,50 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/flows.html#harmonic.flows.RealNVP.sample">sample() (harmonic.flows.RealNVP method)</a>, <a href="api/index.html#harmonic.flows.RealNVP.sample">[1]</a>
+
+      <ul>
+        <li><a href="api/flows.html#harmonic.flows.RQSpline.sample">(harmonic.flows.RQSpline method)</a>, <a href="api/index.html#harmonic.flows.RQSpline.sample">[1]</a>
+</li>
+        <li><a href="api/index.html#harmonic.model.FlowModel.sample">(harmonic.model.FlowModel method)</a>, <a href="api/model.html#harmonic.model.FlowModel.sample">[1]</a>
+</li>
+      </ul></li>
       <li><a href="api/evidence.html#harmonic.Evidence.serialize">serialize() (harmonic.Evidence method)</a>, <a href="api/index.html#harmonic.Evidence.serialize">[1]</a>
 </li>
-      <li><a href="api/evidence.html#harmonic.Evidence.set_shift">set_shift() (harmonic.Evidence method)</a>, <a href="api/index.html#harmonic.Evidence.set_shift">[1]</a>
+      <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_alphas">set_alphas() (harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_alphas">[1]</a>
 </li>
-      <li><a href="api/index.html#harmonic.logs.setup_logging">setup_logging() (in module harmonic.logs)</a>, <a href="api/logs.html#harmonic.logs.setup_logging">[1]</a>
+      <li><a href="api/index.html#harmonic.model_legacy.HyperSphere.set_centre">set_centre() (harmonic.model_legacy.HyperSphere method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere.set_centre">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres">set_centres() (harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres_and_inv_covariance">set_centres_and_inv_covariance() (harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres_and_inv_covariance">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model_legacy.HyperSphere.set_inv_covariance">set_inv_covariance() (harmonic.model_legacy.HyperSphere method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere.set_inv_covariance">[1]</a>
+
+      <ul>
+        <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_inv_covariance">(harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_inv_covariance">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="api/index.html#harmonic.model_legacy.HyperSphere.set_precomputed_values">set_precomputed_values() (harmonic.model_legacy.HyperSphere method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere.set_precomputed_values">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/index.html#harmonic.model_legacy.HyperSphere.set_R">set_R() (harmonic.model_legacy.HyperSphere method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.HyperSphere.set_R">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model_legacy.KernelDensityEstimate.set_scales">set_scales() (harmonic.model_legacy.KernelDensityEstimate method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.KernelDensityEstimate.set_scales">[1]</a>
+</li>
+      <li><a href="api/evidence.html#harmonic.Evidence.set_shift">set_shift() (harmonic.Evidence method)</a>, <a href="api/index.html#harmonic.Evidence.set_shift">[1]</a>
+</li>
+      <li><a href="api/index.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_weights">set_weights() (harmonic.model_legacy.ModifiedGaussianMixtureModel method)</a>, <a href="api/model_legacy.html#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_weights">[1]</a>
+</li>
+      <li><a href="api/flows.html#harmonic.flows.RealNVP.setup">setup() (harmonic.flows.RealNVP method)</a>, <a href="api/index.html#harmonic.flows.RealNVP.setup">[1]</a>
+
+      <ul>
+        <li><a href="api/flows.html#harmonic.flows.RQSpline.setup">(harmonic.flows.RQSpline method)</a>, <a href="api/index.html#harmonic.flows.RQSpline.setup">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="api/index.html#harmonic.logs.setup_logging">setup_logging() (in module harmonic.logs)</a>, <a href="api/logs.html#harmonic.logs.setup_logging">[1]</a>
+</li>
       <li><a href="api/chains.html#harmonic.Chains.shallowcopy">shallowcopy() (harmonic.Chains method)</a>, <a href="api/index.html#harmonic.Chains.shallowcopy">[1]</a>
 </li>
       <li><a href="api/evidence.html#harmonic.Shifting">Shifting (class in harmonic)</a>, <a href="api/index.html#harmonic.Shifting">[1]</a>

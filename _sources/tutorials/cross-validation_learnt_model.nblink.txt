@@ -1,3 +1,0 @@
-{
-    "path": "../assets/static_notebooks/cross-validation_learnt_model.ipynb"
-}

@@ -64,9 +64,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/cross-validation_learnt_model.html">Model cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/basic_usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/checkpointing.html">Checkpointing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -102,7 +100,7 @@
 <h1>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline"></a></h1>
 <p>Automatically generated documentation for <strong>harmonic</strong> APIs. All functionality is accessible through a pip installation of the <strong>harmonic</strong> package.</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Chains</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Evidence</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Model</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Logs</button><button aria-controls="panel-0-0-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-4" name="0-4" role="tab" tabindex="-1">Utilities</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><dl class="py class">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Chains</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Evidence</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Flows</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Models</button><button aria-controls="panel-0-0-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-4" name="0-4" role="tab" tabindex="-1">Legacy Models</button><button aria-controls="panel-0-0-5" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-5" name="0-5" role="tab" tabindex="-1">Logs</button><button aria-controls="panel-0-0-6" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-6" name="0-6" role="tab" tabindex="-1">Utilities</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><dl class="py class">
 <dt class="sig sig-object py" id="harmonic.Chains">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Chains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Chains" title="Permalink to this definition"></a></dt>
 <dd><p>Class to store samples from multiple MCMC chains.</p>
@@ -688,7 +686,953 @@ may prove optimal for certain settings.</p>
 </dl>
 </dd></dl>
 
-</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"></div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><span class="target" id="module-harmonic.logs"></span><dl class="py function">
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><dl class="py class">
+<dt class="sig sig-object py" id="harmonic.flows.RealNVP">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RealNVP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_features:</span> <span class="pre">int,</span> <span class="pre">n_scaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2,</span> <span class="pre">n_unscaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4,</span> <span class="pre">parent:</span> <span class="pre">Optional[Union[Type[flax.linen.module.Module],</span> <span class="pre">Type[flax.core.scope.Scope],</span> <span class="pre">Type[flax.linen.module._Sentinel]]]</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;,</span> <span class="pre">name:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP" title="Permalink to this definition"></a></dt>
+<dd><p>Real-valued non-volume preserving flow using flax and tfp-jax.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_features</strong> (<em>int</em>) – Number of features in the data.</p></li>
+<li><p><strong>n_scaled_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – Non-zero number of layers in the flow. Defaults to 2.</p></li>
+<li><p><strong>n_unscaled_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of unscaled layers in the flow. Defaults to 4.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RealNVP.log_prob">
+<span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RealNVP.log_prob" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the log probability of the flow for a batched input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>jnp.ndarray</em><em> (</em><em>batch_size</em><em>, </em><em>ndim</em><em>)</em>) – Sample for which to predict posterior values.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
+Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predicted log_e posterior value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>jnp.ndarray (batch_size,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RealNVP.make_flow">
+<span class="sig-name descname"><span class="pre">make_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP.make_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Make tfp-jax distribution object containing the RealNVP flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
+Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Base Gaussian transformed by scaled contained in the scaled_layers</dt><dd><p>attribute, followed by unscaled affine coupling layers contained in the
+unscaled_layers attribute.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tfb.Distribution</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If n_scaled_layers is not positive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RealNVP.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.random.PRNGKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RealNVP.sample" title="Permalink to this definition"></a></dt>
+<dd><p>”
+Sample from the flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rng</strong> (<em>Union</em><em>[</em><em>Array</em><em>, </em><em>PRNGKeyArray</em><em>]</em><em>)</em>) – Key used in random number generation process.</p></li>
+<li><p><strong>num_samples</strong> (<em>int</em>) – Number of samples generated.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
+Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Samples from fitted distribution.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>jnp.array (num_samples, ndim)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RealNVP.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP.setup" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a Module lazily (similar to a lazy <code class="docutils literal notranslate"><span class="pre">__init__</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">setup</span></code> is called once lazily on a module instance when a module
+is bound, immediately before any other methods like <code class="docutils literal notranslate"><span class="pre">__call__</span></code> are
+invoked, or before a <code class="docutils literal notranslate"><span class="pre">setup</span></code>-defined attribute on <cite>self</cite> is accessed.</p>
+<p>This can happen in three cases:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Immediately when invoking <code class="xref py py-meth docutils literal notranslate"><span class="pre">apply()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">init()</span></code> or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">init_and_output()</span></code>.</p></li>
+<li><p>Once the module is given a name by being assigned to an attribute of
+another module inside the other module’s <code class="docutils literal notranslate"><span class="pre">setup</span></code> method
+(see <code class="xref py py-meth docutils literal notranslate"><span class="pre">__setattr__()</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModule</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+  <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">submodule</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1"># Accessing `submodule` attributes does not yet work here.</span>
+
+    <span class="c1"># The following line invokes `self.__setattr__`, which gives</span>
+    <span class="c1"># `submodule` the name &quot;conv1&quot;.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">submodule</span>
+
+    <span class="c1"># Accessing `submodule` attributes or methods is now safe and</span>
+    <span class="c1"># either causes setup() to be called once.</span>
+</pre></div>
+</div>
+</li>
+<li><p>Once a module is constructed inside a method wrapped with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">compact()</span></code>, immediately before another method is called or
+<code class="docutils literal notranslate"><span class="pre">setup</span></code> defined attribute is accessed.</p></li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="harmonic.flows.RQSpline">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RQSpline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_features:</span> <span class="pre">int,</span> <span class="pre">num_layers:</span> <span class="pre">int,</span> <span class="pre">hidden_size:</span> <span class="pre">Sequence[int],</span> <span class="pre">num_bins:</span> <span class="pre">int,</span> <span class="pre">spline_range:</span> <span class="pre">Sequence[float]</span> <span class="pre">=</span> <span class="pre">(-10.0,</span> <span class="pre">10.0),</span> <span class="pre">parent:</span> <span class="pre">Optional[Union[Type[flax.linen.module.Module],</span> <span class="pre">Type[flax.core.scope.Scope],</span> <span class="pre">Type[flax.linen.module._Sentinel]]]</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;,</span> <span class="pre">name:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline" title="Permalink to this definition"></a></dt>
+<dd><p>Rational quadratic spline normalizing flow model using distrax.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_features</strong> (<em>int</em>) – Number of features in the data.</p></li>
+<li><p><strong>num_layers</strong> (<em>int</em>) – Number of layers in the flow.</p></li>
+<li><p><strong>num_bins</strong> (<em>int</em>) – Number of bins in the spline.</p></li>
+<li><p><strong>hidden_size</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Size of the hidden layers in the conditioner.</p></li>
+<li><p><strong>spline_range</strong> (<em>Sequence</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Range of the spline. Defaults to (-10, 10)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from github.com/kazewong/flowMC</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RQSpline.log_prob">
+<span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RQSpline.log_prob" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the log probability of the flow for a batched input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>jnp.ndarray</em><em> (</em><em>batch_size</em><em>, </em><em>ndim</em><em>)</em>) – Sample for which to predict posterior values.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
+Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predicted log_e posterior value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>jnp.ndarray (batch_size,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RQSpline.make_flow">
+<span class="sig-name descname"><span class="pre">make_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline.make_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Make distrax distribution containing the rational quadratic spline flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
+Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Base Gaussian transformed by rational quadratic spline flow.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RQSpline.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.random.PRNGKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RQSpline.sample" title="Permalink to this definition"></a></dt>
+<dd><p>”
+Sample from the flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rng</strong> (<em>Union</em><em>[</em><em>Array</em><em>, </em><em>PRNGKeyArray</em><em>]</em><em>)</em>) – Key used in random number generation process.</p></li>
+<li><p><strong>num_samples</strong> (<em>int</em>) – Number of samples generated.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
+Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Samples from fitted distribution.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>jnp.array (num_samples, ndim)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.flows.RQSpline.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline.setup" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a Module lazily (similar to a lazy <code class="docutils literal notranslate"><span class="pre">__init__</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">setup</span></code> is called once lazily on a module instance when a module
+is bound, immediately before any other methods like <code class="docutils literal notranslate"><span class="pre">__call__</span></code> are
+invoked, or before a <code class="docutils literal notranslate"><span class="pre">setup</span></code>-defined attribute on <cite>self</cite> is accessed.</p>
+<p>This can happen in three cases:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Immediately when invoking <code class="xref py py-meth docutils literal notranslate"><span class="pre">apply()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">init()</span></code> or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">init_and_output()</span></code>.</p></li>
+<li><p>Once the module is given a name by being assigned to an attribute of
+another module inside the other module’s <code class="docutils literal notranslate"><span class="pre">setup</span></code> method
+(see <code class="xref py py-meth docutils literal notranslate"><span class="pre">__setattr__()</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModule</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+  <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">submodule</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1"># Accessing `submodule` attributes does not yet work here.</span>
+
+    <span class="c1"># The following line invokes `self.__setattr__`, which gives</span>
+    <span class="c1"># `submodule` the name &quot;conv1&quot;.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">submodule</span>
+
+    <span class="c1"># Accessing `submodule` attributes or methods is now safe and</span>
+    <span class="c1"># either causes setup() to be called once.</span>
+</pre></div>
+</div>
+</li>
+<li><p>Once a module is constructed inside a method wrapped with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">compact()</span></code>, immediately before another method is called or
+<code class="docutils literal notranslate"><span class="pre">setup</span></code> defined attribute is accessed.</p></li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><span class="target" id="module-harmonic.model"></span><dl class="py class">
+<dt class="sig sig-object py" id="harmonic.model.FlowModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.model.</span></span><span class="sig-name descname"><span class="pre">FlowModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.FlowModel" title="Permalink to this definition"></a></dt>
+<dd><p>Normalizing flow model to approximate the log_e posterior by a normalizing flow.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model.FlowModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax.Array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Array([0,</span> <span class="pre">1000],</span> <span class="pre">dtype=uint32)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.FlowModel.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the parameters of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>jnp.ndarray</em><em> (</em><em>nsamples</em><em>, </em><em>ndim</em><em>)</em>) – Training samples.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Batch size used when training flow. Default = 64.</p></li>
+<li><p><strong>epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of epochs flow is trained for. Default = 3.</p></li>
+<li><p><strong>key</strong> (<em>Union</em><em>[</em><em>jax.Array</em><em>, </em><em>jax.random.PRNGKeyArray</em><em>]</em><em>, </em><em>optional</em>) – Key used in random number generation process.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Controls if progress bar and current loss are displayed when training. Default = False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the second dimension of X is not the same as ndim.</p></li>
+<li><p><strong>NotImplementedError</strong> – If called directly from FlowModel class.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model.FlowModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax.Array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax.Array</span></span></span><a class="headerlink" href="#harmonic.model.FlowModel.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Predict the value of log_e posterior at batched input x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>jnp.ndarray</em><em> (</em><em>batch_size</em><em>, </em><em>ndim</em><em>)</em>) – Sample for which to
+predict posterior values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predicted log_e posterior value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>jnp.ndarray (batch_size,)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If temperature is negative or greater than 1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model.FlowModel.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_sample</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Array([0,</span> <span class="pre">0],</span> <span class="pre">dtype=uint32)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax.Array</span></span></span><a class="headerlink" href="#harmonic.model.FlowModel.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from trained flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nsample</strong> (<em>int</em>) – Number of samples generated.</p></li>
+<li><p><strong>rng_key</strong> (<em>Union</em><em>[</em><em>jax.Array</em><em>, </em><em>jax.random.PRNGKeyArray</em><em>]</em><em>)</em><em>, </em><em>optional</em>) – Key used in random number generation process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If temperature is negative or greater than 1.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Samples from fitted distribution.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>jnp.array (n_sample, ndim)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="harmonic.model.RQSplineModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.model.</span></span><span class="sig-name descname"><span class="pre">RQSplineModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[64,</span> <span class="pre">64]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spline_range</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(-</span> <span class="pre">10.0,</span> <span class="pre">10.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.RQSplineModel" title="Permalink to this definition"></a></dt>
+<dd><p>Rational quadratic spline flow model to approximate the log_e posterior by a normalizing flow.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model.RQSplineModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[64,</span> <span class="pre">64]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spline_range</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(-</span> <span class="pre">10.0,</span> <span class="pre">10.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.RQSplineModel.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor setting the hyper-parameters and domains of the model.</p>
+<p>Must be implemented by derived class (currently abstract).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ndim_in</strong> (<em>int</em>) – Dimension of the problem to solve.</p></li>
+<li><p><strong>n_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of layers in the flow. Defaults to 8.</p></li>
+<li><p><strong>n_bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bins in the spline. Defaults to 8.</p></li>
+<li><p><strong>hidden_size</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Size of the hidden layers in the conditioner. Defaults to [64, 64].</p></li>
+<li><p><strong>spline_range</strong> (<em>Sequence</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Range of the spline. Defaults to (-10.0, 10.0).</p></li>
+<li><p><strong>standardize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates if mean and variance should be removed from training data when training the flow. Defaults to False.</p></li>
+<li><p><strong>learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for adam optimizer used in the fit method. Defaults to 0.001.</p></li>
+<li><p><strong>momentum</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for Adam optimizer used in the fit method. Defaults to 0.9.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and &lt;=1. Defaults to 0.8.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the ndim_in is not positive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="harmonic.model.RealNVPModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.model.</span></span><span class="sig-name descname"><span class="pre">RealNVPModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_scaled_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_unscaled_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.RealNVPModel" title="Permalink to this definition"></a></dt>
+<dd><p>Normalizing flow model to approximate the log_e posterior by a NVP normalizing flow.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model.RealNVPModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_scaled_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_unscaled_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.RealNVPModel.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor setting the hyper-parameters of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ndim_in</strong> (<em>int</em>) – Dimension of the problem to solve.</p></li>
+<li><p><strong>n_scaled_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of layers with scaler in RealNVP flow. Default = 2.</p></li>
+<li><p><strong>n_unscaled_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of layers without scaler in RealNVP flow. Default = 4.</p></li>
+<li><p><strong>learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for adam optimizer used in the fit method. Default = 0.001.</p></li>
+<li><p><strong>momentum</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for Adam optimizer used in the fit method. Default = 0.9</p></li>
+<li><p><strong>standardize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates if mean and variance should be removed from training data when training the flow. Default = False</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Scale factor by which the base distribution Gaussian is compressed in the prediction step. Should be positive and &lt;=1. Default = 0.8.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the ndim_in is not positive.</p></li>
+<li><p><strong>ValueError</strong> – If n_scaled_layers is not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="harmonic.model.make_training_loop">
+<span class="sig-prename descclassname"><span class="pre">harmonic.model.</span></span><span class="sig-name descname"><span class="pre">make_training_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model.make_training_loop" title="Permalink to this definition"></a></dt>
+<dd><p>Create a function that trains an NF model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> – a neural network model with a <cite>log_prob</cite> method.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>wrapper function that trains the model.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>train_flow (Callable)</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from github.com/kazewong/flowMC</p>
+</div>
+</dd></dl>
+
+</div><div aria-labelledby="tab-0-0-4" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-4" name="0-4" role="tabpanel" tabindex="0"><span class="target" id="module-harmonic.model_legacy"></span><dl class="py class">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.model_legacy.</span></span><span class="sig-name descname"><span class="pre">HyperSphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere" title="Permalink to this definition"></a></dt>
+<dd><p>HyperSphere Model to approximate the log_e posterior by a hyper-ellipsoid.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor setting the parameters of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dim_in</strong> (<em>long</em>) – Dimension of the problem to solve.</p></li>
+<li><p><strong>domains</strong> (<em>list</em>) – A list of length 1 containing a 1D array of length
+2 containing the lower and upper bound of the radius of the
+hyper-sphere.</p></li>
+<li><p><strong>hyper_parameters</strong> (<em>None</em>) – Should not be set as there are no
+hyper-parameters for this model (in general, however, models can
+have hyper-parameters).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the hyper_parameters variable is not None.</p></li>
+<li><p><strong>ValueError</strong> – If the length of domains list is not one.</p></li>
+<li><p><strong>ValueError</strong> – If the ndim_in is not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the parameters of the model (i.e. its radius).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</p></li>
+<li><p><strong>Y</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>]</em>) – Target log_e posterior values for each
+sample in X.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A tuple containing the following objects.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>success (bool): Whether fit successful.</p></li>
+<li><p>objective (double): Value of objective at optimal point.</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(bool, double)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the first dimension of X is not the same as
+    Y.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the second dimension of X is not the same as
+    ndim.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Use model to predict the value of log_e posterior at point x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>double</em>) – Sample of which to predict posterior value.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predicted posterior value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(double)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere.set_R">
+<span class="sig-name descname"><span class="pre">set_R</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere.set_R" title="Permalink to this definition"></a></dt>
+<dd><p>Set the radius of the hyper-sphere and calculate its volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>R</strong> (<em>double</em>) – The radius of the hyper-sphere.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the radius is a NaN.</p></li>
+<li><p><strong>ValueError</strong> – If the radius is not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere.set_centre">
+<span class="sig-name descname"><span class="pre">set_centre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centre_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere.set_centre" title="Permalink to this definition"></a></dt>
+<dd><p>Set centre of the hyper-sphere.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>centre_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Centre of sphere.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the length of the centre array is not the same as
+    ndim.</p></li>
+<li><p><strong>ValueError</strong> – If the centre array contains a NaN.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere.set_inv_covariance">
+<span class="sig-name descname"><span class="pre">set_inv_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_covariance_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere.set_inv_covariance" title="Permalink to this definition"></a></dt>
+<dd><p>Set diagonal inverse covariances for the hyper-sphere.</p>
+<p>Only diagonal covariance structure is supported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inv_covariance_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Diagonal of inverse
+covariance matrix that defines the ellipse.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the length of the inv_covariance array is not equal
+    to ndim.</p></li>
+<li><p><strong>ValueError</strong> – If the inv_covariance array contains a NaN.</p></li>
+<li><p><strong>ValueError</strong> – If the inv_covariance array contains a value that is
+    not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.HyperSphere.set_precomputed_values">
+<span class="sig-name descname"><span class="pre">set_precomputed_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.HyperSphere.set_precomputed_values" title="Permalink to this definition"></a></dt>
+<dd><p>Precompute volume of the hyper-sphere (scaled ellipse) and squared radius.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="harmonic.model_legacy.KernelDensityEstimate">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.model_legacy.</span></span><span class="sig-name descname"><span class="pre">KernelDensityEstimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.KernelDensityEstimate" title="Permalink to this definition"></a></dt>
+<dd><p>KernelDensityEstimate model to approximate the log_e posterior using kernel
+density estimation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.KernelDensityEstimate.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.KernelDensityEstimate.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor setting the hyper-parameters and domains of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ndim</strong> (<em>long</em>) – Dimension of the problem to solve.</p></li>
+<li><p><strong>domains</strong> (<em>list</em>) – List of length 0 since domain not considered for
+Kernel Density Estimation.</p></li>
+<li><p><strong>hyper_parameters</strong> (<em>list</em>) – A list of length 1 containing the diameter
+in scaled units of the hyper-spheres to use in the Kernel
+Density Estimate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the hyper_parameters list is not length 1.</p></li>
+<li><p><strong>ValueError</strong> – If the length of domains list is not 0.</p></li>
+<li><p><strong>ValueError</strong> – If the ndim_in is not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.KernelDensityEstimate.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.KernelDensityEstimate.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the parameters of the model.</p>
+<p>Fit is performed as follows.</p>
+<p>Set the scales of the model from the samples.</p>
+<p>Create the dictionary containing all the information on which samples
+are in which pixel in a grid where each pixel size is the same as the
+diameter of the hyper-spheres to be placed on each sample.</p>
+<p>The key is an index of the grid (c type ordering) and the value is a
+list containing the indexes in the sample array of all the samples in
+that index 3.</p>
+<p>Precompute the normalisation factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</p></li>
+<li><p><strong>Y</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>]</em>) – Target log_e posterior values for each
+sample in X.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether fit successful.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(bool)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the first dimension of X is not the same as Y.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the second dimension of X is not the same as
+    ndim.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.KernelDensityEstimate.precompute_normalising_factor">
+<span class="sig-name descname"><span class="pre">precompute_normalising_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.KernelDensityEstimate.precompute_normalising_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Precompute the log_e normalisation factor of the density estimation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if the second dimension of X is not the same as
+    ndim.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.KernelDensityEstimate.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.KernelDensityEstimate.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Predict the value of the posterior at point x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – 1D array of sample of shape (ndim) to predict
+posterior value.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predicted log_e posterior value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(double)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.KernelDensityEstimate.set_scales">
+<span class="sig-name descname"><span class="pre">set_scales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.KernelDensityEstimate.set_scales" title="Permalink to this definition"></a></dt>
+<dd><p>Set the scales of the hyper-spheres based on the min and max sample in each
+dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if the second dimension of X is not the same as
+    ndim.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.model_legacy.</span></span><span class="sig-name descname"><span class="pre">ModifiedGaussianMixtureModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[3,</span> <span class="pre">1e-08,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel" title="Permalink to this definition"></a></dt>
+<dd><p>ModifiedGaussianMixtureModel (MGMM) to approximate the log_e posterior by a
+modified Gaussian mixture model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[3,</span> <span class="pre">1e-08,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor setting the hyper-parameters and domains of the model of the
+MGMM which models the posterior as a group of Gaussians.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ndim</strong> (<em>long</em>) – Dimension of the problem to solve.</p></li>
+<li><p><strong>domains</strong> (<em>list</em>) – A list of length 1 with the range of scale
+parameter of the covariance matrix, i.e. the range of alpha,
+where C’ = alpha * C_samples, and C_samples is the diagonal of
+the covariance in the samples in each cluster.</p></li>
+<li><p><strong>hyper_parameters</strong> (<em>list</em>) – A list of length 5, the first of which
+should be number of clusters, the second is the regularisation
+parameter gamma, the third is the learning rate, the fourth is
+the maximum number of iterations and the fifth is the batch
+size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the hyper_parameters list is not length 5.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the length of domains list is not 1.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the ndim is not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the parameters of the model as follows.</p>
+<p>If centres and inv_covariances not set:
+- Find clusters using the k-means clustering from scikit learn.
+- Use the samples in the clusters to find the centres and covariance
+matricies.</p>
+<p>Then minimize the objective function using the gradients and mini-batch
+stochastic descent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>, </em><em>ndim</em><em>]</em>) – Sample x coordinates.</p></li>
+<li><p><strong>Y</strong> (<em>double ndarray</em><em>[</em><em>nsamples</em><em>]</em>) – Target log_e posterior values for each
+sample in X.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether fit successful.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(bool)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the first dimension of X is not the same as
+    Y.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the first dimension of X is not the same as
+    Y.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the second dimension of X is not the same
+    as ndim.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Predict the value of the posterior at point x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Sample of shape (ndim) at which to
+predict posterior value.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predicted log_e posterior value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(double)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.set_alphas">
+<span class="sig-name descname"><span class="pre">set_alphas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alphas_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_alphas" title="Permalink to this definition"></a></dt>
+<dd><p>Set the alphas (i.e. scales).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alphas_in</strong> (<em>double ndarray</em><em>[</em><em>ngaussians</em><em>]</em>) – Alpha scalings.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the input array length is not ngaussians.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the input array contains a NaN.</p></li>
+<li><p><strong>ValueError</strong> – Raised if at least one of the alphas not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres">
+<span class="sig-name descname"><span class="pre">set_centres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centres_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres" title="Permalink to this definition"></a></dt>
+<dd><p>Set the centres of the Gaussians.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>centres_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Centres.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the input array is not the correct shape.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the input array contains a NaN.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres_and_inv_covariance">
+<span class="sig-name descname"><span class="pre">set_centres_and_inv_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centres_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_covariance_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_centres_and_inv_covariance" title="Permalink to this definition"></a></dt>
+<dd><p>Set the centres and inverse covariance of the Gaussians.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centres_in</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Centres.</p></li>
+<li><p><strong>inv_covariance</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Inverse
+covariance of the Gaussians.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the input arrays are not the correct shape.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the input arrays contain a NaN.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the input covariance contains a number that
+    is not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.set_inv_covariance">
+<span class="sig-name descname"><span class="pre">set_inv_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_covariance_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_inv_covariance" title="Permalink to this definition"></a></dt>
+<dd><p>Set the inverse covariance of the Gaussians.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inv_covariance</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>, </em><em>ngaussians</em><em>]</em>) – Inverse
+covariance of the Gaussians.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the input array is not the correct shape.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the input array contains a NaN.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the input array contains a number that is
+    not positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="harmonic.model_legacy.ModifiedGaussianMixtureModel.set_weights">
+<span class="sig-name descname"><span class="pre">set_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.ModifiedGaussianMixtureModel.set_weights" title="Permalink to this definition"></a></dt>
+<dd><p>Set the weights of the Gaussians.</p>
+<p>The weights are the softmax of the betas (without normalisation), i.e.
+the betas are the log_e of the weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>weights_in</strong> (<em>double ndarray</em><em>[</em><em>ngaussians</em><em>]</em>) – 1D array containing the
+weights (no need to normalise).</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the input array length is not ngaussians.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the input array contains a NaN.</p></li>
+<li><p><strong>ValueError</strong> – Raised if at least one of the weights is negative.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the sum of the weights is too close to
+    zero.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="harmonic.model_legacy.beta_to_weights_wrap">
+<span class="sig-prename descclassname"><span class="pre">harmonic.model_legacy.</span></span><span class="sig-name descname"><span class="pre">beta_to_weights_wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngaussians</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.beta_to_weights_wrap" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to calculate the weights from the beta_weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<em>double ndarray</em><em>[</em><em>ngaussians</em><em>]</em>) – Beta values to be converted.</p></li>
+<li><p><strong>ngaussians</strong> (<em>long</em>) – The number of Gaussians in the model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Weight values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(double ndarray[ngaussians])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="harmonic.model_legacy.calculate_gaussian_normalisation_wrap">
+<span class="sig-prename descclassname"><span class="pre">harmonic.model_legacy.</span></span><span class="sig-name descname"><span class="pre">calculate_gaussian_normalisation_wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_covariance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.calculate_gaussian_normalisation_wrap" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to calculate the normalisation for evaluate_one_gaussian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>double</em>) – The scaling parameter of the covariance matrix.</p></li>
+<li><p><strong>inv_covariance</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Diagonal of inverse
+covariance matrix.</p></li>
+<li><p><strong>ndim</strong> (<em>long</em>) – Dimension of the problem.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The normalisation factor.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(double)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="harmonic.model_legacy.delta_theta_ij_wrap">
+<span class="sig-prename descclassname"><span class="pre">harmonic.model_legacy.</span></span><span class="sig-name descname"><span class="pre">delta_theta_ij_wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_covariance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.delta_theta_ij_wrap" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to evaluate delta_theta_ij squared which is part of the gradient of
+the objective function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Position of current sample.</p></li>
+<li><p><strong>mu</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Centre of the Gaussian.</p></li>
+<li><p><strong>inv_covariance</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Diagonal of inverse
+covariance matrix.</p></li>
+<li><p><strong>ndim</strong> (<em>long</em>) – Dimension of the problem.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of delta_theta_ij squared.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(double)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="harmonic.model_legacy.evaluate_one_gaussian_wrap">
+<span class="sig-prename descclassname"><span class="pre">harmonic.model_legacy.</span></span><span class="sig-name descname"><span class="pre">evaluate_one_gaussian_wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_covariance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.model_legacy.evaluate_one_gaussian_wrap" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to evaluate one Gaussian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Postion where the Gaussian is to be
+evaluated.</p></li>
+<li><p><strong>mu</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Centre of the Gaussian.</p></li>
+<li><p><strong>inv_covariance</strong> (<em>double ndarray</em><em>[</em><em>ndim</em><em>]</em>) – Diagonal of inverse
+covariance matrix.</p></li>
+<li><p><strong>alpha</strong> (<em>double</em>) – Scaling parameter of the covariance matrix.</p></li>
+<li><p><strong>weight</strong> (<em>double</em>) – Weight applied to that Gaussian.</p></li>
+<li><p><strong>ndim</strong> (<em>long</em>) – Dimension of the problem.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Height of the Gaussian.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(double)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div><div aria-labelledby="tab-0-0-5" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-5" name="0-5" role="tabpanel" tabindex="0"><span class="target" id="module-harmonic.logs"></span><dl class="py function">
 <dt class="sig sig-object py" id="harmonic.logs.critical_log">
 <span class="sig-prename descclassname"><span class="pre">harmonic.logs.</span></span><span class="sig-name descname"><span class="pre">critical_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.logs.critical_log" title="Permalink to this definition"></a></dt>
 <dd><p>Log a critical message (e.g. core code failures etc).</p>
@@ -755,7 +1699,7 @@ ranges).</p>
 </dl>
 </dd></dl>
 
-</div><div aria-labelledby="tab-0-0-4" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-4" name="0-4" role="tabpanel" tabindex="0"><span class="target" id="module-harmonic.utils"></span><dl class="py function">
+</div><div aria-labelledby="tab-0-0-6" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-6" name="0-6" role="tabpanel" tabindex="0"><span class="target" id="module-harmonic.utils"></span><dl class="py function">
 <dt class="sig sig-object py" id="harmonic.utils.cross_validation">
 <span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">cross_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">chains</span></em>, <em class="sig-param"><span class="pre">domains</span></em>, <em class="sig-param"><span class="pre">hyper_parameters</span></em>, <em class="sig-param"><span class="pre">nfold=2</span></em>, <em class="sig-param"><span class="pre">modelClass=&lt;class</span> <span class="pre">'harmonic.model_legacy.KernelDensityEstimate'&gt;</span></em>, <em class="sig-param"><span class="pre">seed=-1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.cross_validation" title="Permalink to this definition"></a></dt>
 <dd><p>Perform n-fold validation for given model using chains to be split into

@@ -28,7 +28,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Namespaces" href="../api/index.html" />
-    <link rel="prev" title="Model cross-validation" href="cross-validation_learnt_model.html" /> 
+    <link rel="prev" title="Basic Usage" href="basic_usage.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -65,9 +65,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cross-validation_hyper-parameters.html">Hyper-parameter cross-validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cross-validation_learnt_model.html">Model cross-validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Checkpointing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Basic-problem-setup">Basic problem setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id1">Checkpointing</a></li>
@@ -105,31 +103,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <p><a class="reference external" href="https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/checkpointing.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<div class="section" id="Checkpointing">
+  <div class="section" id="Checkpointing">
 <h1>Checkpointing<a class="headerlink" href="#Checkpointing" title="Permalink to this headline"></a></h1>
 <p>During high-dimensional Bayesian analysis, which is typically computationally heavy, one must frequently run sampling and/or evidence estimation for long periods of time.</p>
 <p>One issue often encountered is that the computing facilities may go offline or timeout during this period, thus discarding any values computed already.</p>
-<p>To avoid this issue harmonic supports <em>checkpointing</em>, which allows the user to periodically <em>save</em> the progress of the computation, and then resume from the saved point (the <em>checkpoint</em>).</p>
-<p>This example illustrates how one may use harmonic with checkpointing.</p>
+<p>To avoid this issue <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> supports <em>checkpointing</em>, which allows the user to periodically <em>save</em> the progress of the computation, and then resume from the saved point (the <em>checkpoint</em>).</p>
+<p>This interactive tutorial illustrates how one may use <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> with checkpointing.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
+<span class="c1"># Install packages</span>
+<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">harmonic</span> <span class="n">emcee</span> <span class="n">corner</span> <span class="n">getdist</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
+<span class="c1"># Import modules</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
+<span class="kn">import</span> <span class="nn">emcee</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="Basic-problem-setup">
 <h2>Basic problem setup<a class="headerlink" href="#Basic-problem-setup" title="Permalink to this headline"></a></h2>
-<p>As always, import the relevant python modules.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">emcee</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../../..&#39;</span><span class="p">)</span>
-<span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
-</pre></div>
-</div>
-</div>
 <p>Define a Bayesian posterior function (here we’ll use a simple Gaussian example).</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
@@ -165,10 +171,10 @@
 </pre></div>
 </div>
 </div>
-<p>Note that the final function init_cov is used to randomly assign a diagonal covariance proportional to the identiy matrix.</p>
-<p>Then define parameters for <a class="reference external" href="https://emcee.readthedocs.io/en/stable/">emcee</a> and the covariance of our Gaussian example.</p>
+<p>Note that the final function <code class="docutils literal notranslate"><span class="pre">init_cov</span></code> is used to randomly assign a diagonal covariance proportional to the identiy matrix.</p>
+<p>Then define parameters for <code class="docutils literal notranslate"><span class="pre">`emcee</span></code> &lt;<a class="reference external" href="https://emcee.readthedocs.io/en/stable/">https://emcee.readthedocs.io/en/stable/</a>&gt;`__ and the covariance of our Gaussian example.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define parameters for emcee sampling</span>
@@ -186,9 +192,9 @@
 </pre></div>
 </div>
 </div>
-<p>For absolute simplicity let’s use the harmonic HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.</p>
+<p>For absolute simplicity let’s use the <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate hyper-sphere model</span>
@@ -206,7 +212,7 @@
 <h2>Checkpointing<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <p>Now we need to run the sampler to collect samples but we wish to checkpoint periodically to protect against system crashes or timeouts. One simple way to do this is to execute the following loop.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set initial random position and state</span>
@@ -222,7 +228,7 @@
 <span class="k">for</span> <span class="n">chain_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chain_iterations</span><span class="p">):</span>
     <span class="c1"># Run the emcee sampler from previous endpoint</span>
     <span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nchains</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">ln_posterior</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">inv_cov</span><span class="p">])</span>
-    <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">rstate</span><span class="p">)</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">samples_per_chain</span><span class="o">/</span><span class="n">chain_iterations</span><span class="p">,</span> <span class="n">rstate0</span><span class="o">=</span><span class="n">rstate</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">rstate</span><span class="p">)</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">samples_per_chain</span><span class="o">/</span><span class="n">chain_iterations</span><span class="p">),</span> <span class="n">rstate0</span><span class="o">=</span><span class="n">rstate</span><span class="p">)</span>
 
     <span class="c1"># Collect and format samples</span>
     <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">[:,:,:])</span>
@@ -245,13 +251,13 @@
 </pre></div>
 </div>
 </div>
-<p>Of course, it is not typically necessary to deserialize the Evidence class following each checkpoint but only if execution halts.</p>
+<p>Of course, it is not typically necessary to deserialize the <code class="docutils literal notranslate"><span class="pre">Evidence</span></code> class following each checkpoint but only if execution halts.</p>
 </div>
 <div class="section" id="Compute-the-Bayesian-evidence">
 <h2>Compute the Bayesian evidence<a class="headerlink" href="#Compute-the-Bayesian-evidence" title="Permalink to this headline"></a></h2>
 <p>Finally we simply compute the learnt harmonic mean estimator. Here, we elect to compute the evidence in log space.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence</span><span class="p">,</span> <span class="n">ln_evidence_std</span> <span class="o">=</span> <span class="n">cal_ev</span><span class="o">.</span><span class="n">compute_ln_evidence</span><span class="p">()</span>
@@ -263,7 +269,7 @@
 <h2>Results<a class="headerlink" href="#Results" title="Permalink to this headline"></a></h2>
 <p>For the simple Gaussian example considered, it’s also straightforward to compute the evidence analytically.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
@@ -285,45 +291,39 @@
 </pre></div>
 </div>
 </div>
-<p>Let’s also compute the evidence analytically so that we can compare it to the value computed by harmonic.</p>
+<p>Let’s also compute the evidence analytically so that we can compare it to the value computed by <code class="docutils literal notranslate"><span class="pre">harmonic</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence_analytic</span> <span class="o">=</span> <span class="n">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Let’s compare the value computed by harmonic and analytically.</p>
+<p>Let’s compare the value computed by <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> and analytically.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_evidence</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_evidence_std</span><span class="p">))</span> <span class="o">-</span> <span class="n">ln_evidence</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence_err_neg</span><span class="p">,</span> <span class="n">ln_evidence_err_pos</span> <span class="o">=</span> <span class="n">cal_ev</span><span class="o">.</span><span class="n">compute_ln_inv_evidence_errors</span><span class="p">()</span>
+<span class="n">ln_evidence_err_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">ln_evidence_err_pos</span> <span class="o">-</span> <span class="n">ln_evidence_err_neg</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ln_evidence_err_neg = </span><span class="si">{</span><span class="n">ln_evidence_err_neg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ln_evidence_err_pos = </span><span class="si">{</span><span class="n">ln_evidence_err_pos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ln_evidence_err_avg = </span><span class="si">{</span><span class="n">ln_evidence_err_avg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ln_evidence (harmonic) = </span><span class="si">{}</span><span class="s1"> +/- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ln_evidence</span><span class="p">,</span> <span class="n">ln_evidence_err</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ln_evidence (harmonic) = </span><span class="si">{}</span><span class="s1"> (+ </span><span class="si">{}</span><span class="s1"> / </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ln_evidence</span><span class="p">,</span> <span class="n">ln_evidence_err_pos</span><span class="p">,</span> <span class="n">ln_evidence_err_neg</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ln_evidence (analytic) = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ln_evidence_analytic</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;nsigma = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ln_evidence</span> <span class="o">-</span> <span class="n">ln_evidence_analytic</span><span class="p">)</span> <span class="o">/</span> <span class="n">ln_evidence_err</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;nsigma = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ln_evidence</span> <span class="o">-</span> <span class="n">ln_evidence_analytic</span><span class="p">)</span> <span class="o">/</span> <span class="n">ln_evidence_err_avg</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-ln_evidence (harmonic) = 9.191328725973255 +/- 0.0032251202241564414
-ln_evidence (analytic) = 9.189385332046726
-nsigma = 0.6025803044405069
-</pre></div></div>
-</div>
-<p>As expected, the evidence computed by harmonic is close to that computed analytically.</p>
+<p>As expected, the evidence computed by <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> is close to that computed analytically.</p>
 </div>
 </div>
 
@@ -331,7 +331,7 @@ nsigma = 0.6025803044405069
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cross-validation_learnt_model.html" class="btn btn-neutral float-left" title="Model cross-validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_usage.html" class="btn btn-neutral float-left" title="Basic Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../api/index.html" class="btn btn-neutral float-right" title="Namespaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
