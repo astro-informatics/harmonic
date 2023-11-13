@@ -1,7 +1,6 @@
 [report]
 omit = *test_*
 fail_under = 80
-threshold = 5
 
 [run]
 plugins = Cython.Coverage
