@@ -10,7 +10,5 @@ One should note that **harmonic** acts on chains of posterior samples to infer t
    :caption: Tutorials:
 
    basic_usage.nblink
-   cross-validation_hyper-parameters.nblink
-   cross-validation_learnt_model.nblink
    checkpointing.nblink
    
