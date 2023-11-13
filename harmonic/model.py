@@ -221,7 +221,6 @@ class FlowModel(mda.Model):
 
         # 1D input must be handled by directly calling the flow
         if len(x.shape) == 1:
-            print("Input is 1D")
             logprob = self.flow.apply(
                 {"params": self.state.params, "variables": self.variables},
                 x,
