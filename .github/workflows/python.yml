@@ -31,7 +31,7 @@ jobs:
     
     - name: Run tests
       run: |
-        pytest --cov-report term --cov=harmonic --cov-config=.coveragerc --cov-fail-under=50
+        pytest --cov-report term --cov=harmonic --cov-config=.coveragerc --cov-fail-under=50 --threshold=5
         codecov --token d8f839b7-cf16-4d43-83c7-9d595f6e1d44
 
     - name: Build Documentation
