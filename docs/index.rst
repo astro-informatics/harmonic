@@ -1,4 +1,4 @@
-|GitHub| |Build Status| |Docs| |CodeCov| |PyPI| |GPL license| |ArXiv|
+|GitHub| |Build Status| |Docs| |CodeCov| |PyPI| |GPL license| |ArXiv1| |ArXiv2| |ArXiv3|
 
 .. |GitHub| image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
    :target: https://github.com/astro-informatics/harmonic
@@ -9,8 +9,14 @@
 .. |CodeCov| image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
    :target: https://codecov.io/gh/astro-informatics/harmonic
 
-.. |ArXiv| image:: http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat
+.. |ArXiv1| image:: http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat
    :target: https://arxiv.org/abs/2111.12720
+
+.. |ArXiv2| image:: http://img.shields.io/badge/arXiv-2207.04037-orange.svg?style=flat
+   :target: https://arxiv.org/abs/2207.04037
+
+.. |ArXiv3| image:: http://img.shields.io/badge/arXiv-2307.00048-orange.svg?style=flat
+   :target: https://arxiv.org/abs/2307.00048
 
 .. |GPL license| image:: https://img.shields.io/badge/License-GPL-blue.svg
    :target: http://perso.crans.org/besson/LICENSE.html
@@ -65,7 +71,7 @@ Now, suppose you have collected many posterior samples, perhaps drawn using `emc
    chains_train, chains_infer = hm.utils.split_data(chains, training_proportion=0.5)
 
    # Select a machine learning model and train it 
-   model = hm.model.[select a model](model hyper-parameters)
+   model = hm.model.[select a flow model](model hyper-parameters)
    fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
 
    # Instantiate harmonic's evidence class

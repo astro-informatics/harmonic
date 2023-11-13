@@ -9,14 +9,14 @@ harmonic
     :target: https://astro-informatics.github.io/harmonic/
 .. image:: https://codecov.io/gh/astro-informatics/harmonic/branch/main/graph/badge.svg?token=1s4SATphHV
     :target: https://codecov.io/gh/astro-informatics/harmonic
-.. .. image:: https://badge.fury.io/py/harmonic.svg
-..     :target: https://badge.fury.io/py/harmonic
 .. image:: https://img.shields.io/badge/License-GPL-blue.svg
     :target: http://perso.crans.org/besson/LICENSE.html
 .. image:: http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat
     :target: https://arxiv.org/abs/2111.12720
-.. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
-..     :target: https://pypi.python.org/pypi/harmonic/
+.. image:: http://img.shields.io/badge/arXiv-2207.04037-red.svg?style=flat
+    :target: https://arxiv.org/abs/2207.04037
+.. image:: http://img.shields.io/badge/arXiv-2307.00048-red.svg?style=flat
+    :target: https://arxiv.org/abs/2307.00048
 
 
 **Python package to efficiently compute the learnt harmonic mean estimator of the Bayesian evidence**
@@ -50,6 +50,30 @@ A BibTeX entry for the paper is:
           year = 2021
      }
 
+Please *also* cite `Spurio Mancini et al. (2022) <https://arxiv.org/abs/2207.04037>`_ if this code has been of use in a simulation-based inference project.
+
+A BibTeX entry for the paper is:
+
+.. code-block::
+
+     @article{harmonic_sbi,
+        author = {Spurio Mancini, A. and Docherty, M. M. and Price, M. A. and McEwen, J. D.},
+         title = {{B}ayesian model comparison for simulation-based inference},
+       journal = {ArXiv},
+        eprint = {arXiv:2207.04037},
+          year = 2022
+     }
+
+.. code-block::
+
+     @article{harmonic_flows,
+        author = {Polanska, A. and Price, M. A. and Spurio Mancini, A. and McEwen, J. D.},
+         title = {Learned harmonic mean estimation of the marginal likelihood with normalizing flows},
+       journal = {ArXiv},
+        eprint = {arXiv:2307.00048},
+          year = 2023
+     }
+
 License
 -------
 
@@ -60,7 +84,8 @@ the non-commercial use condition (see `LICENSE_EXT.txt <https://github.com/astro
 
      harmonic
      Copyright (C) 2021 Jason D. McEwen, Christopher G. R. Wallis, 
-     Matthew A. Price, Matthew M. Docherty & contributors
+     Matthew A. Price, Matthew M. Docherty, Alessio Spurio Mancini, 
+     Alicja Polanska & contributors
 
      This program is released under the GPL-3 license (see LICENSE.txt), 
      subject to a non-commercial use condition (see LICENSE_EXT.txt).

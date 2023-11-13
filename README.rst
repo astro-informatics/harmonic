@@ -14,6 +14,8 @@
     :target: https://arxiv.org/abs/2111.12720
 .. image:: http://img.shields.io/badge/arXiv-2207.04037-red.svg?style=flat
     :target: https://arxiv.org/abs/2207.04037
+.. image:: http://img.shields.io/badge/arXiv-2307.00048-red.svg?style=flat
+    :target: https://arxiv.org/abs/2307.00048
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
@@ -121,6 +123,16 @@ A BibTeX entry for the paper is:
        journal = {ArXiv},
         eprint = {arXiv:2207.04037},
           year = 2022
+     }
+
+.. code-block::
+
+     @article{harmonic_flows,
+        author = {Polanska, A. and Price, M. A. and Spurio Mancini, A. and McEwen, J. D.},
+         title = {Learned harmonic mean estimation of the marginal likelihood with normalizing flows},
+       journal = {ArXiv},
+        eprint = {arXiv:2307.00048},
+          year = 2023
      }
 
 License
