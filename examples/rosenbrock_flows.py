@@ -4,13 +4,8 @@ import emcee
 import time
 import matplotlib.pyplot as plt
 from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
-
-sys.path.append("examples")
-import utils
-from harmonic import model as md
+import ex_utils
 
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
@@ -117,11 +112,13 @@ def ln_posterior(x, ln_prior, a=1.0, b=100.0):
 
 
 def run_example(
-    ndim=2, nchains=100, samples_per_chain=1000, nburn=500, plot_corner=False
+    flow_type, ndim=2, nchains=100, samples_per_chain=1000, nburn=500, plot_corner=False
 ):
     """Run Rosenbrock example.
 
     Args:
+
+        flow_type: Which flow model to use, "RealNVP" or "RQSpline".
 
         ndim: Dimension.
 
@@ -146,10 +143,17 @@ def run_example(
     savefigs = True
     a = 1.0
     b = 100.0
-    epochs_num = 8
-    temperature = 0.9
+
+    save_name_start = "examples/plots/" + flow_type
+
+    if flow_type == "RealNVP":
+        epochs_num = 8
+    elif flow_type == "RQSpline":
+        epochs_num = 5
+
+    temperature = 0.8
     training_proportion = 0.5
-    standardize = False
+    standardize = True
     """
     Set prior parameters.
     """
@@ -220,7 +224,14 @@ def run_example(
         # Fit model
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        model = md.RealNVPModel(ndim, standardize=standardize, temperature=temperature)
+        if flow_type == "RealNVP":
+            model = hm.model.RealNVPModel(
+                ndim, standardize=standardize, temperature=temperature
+            )
+        if flow_type == "RQSpline":
+            model = hm.model.RQSplineModel(
+                ndim, standardize=standardize, temperature=temperature
+            )
         model.fit(chains_train.samples, epochs=epochs_num)
 
         # =======================================================================
@@ -239,7 +250,7 @@ def run_example(
         if ndim == 2:
             hm.logs.debug_log("Compute evidence by numerical integration...")
             ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior, a=a, b=b)
-            ln_posterior_grid, x_grid, y_grid = utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=-10.0,
                 xmax=10.0,
@@ -335,17 +346,10 @@ def run_example(
         # Create corner/triangle plot.
         created_plots = False
         if plot_corner and i_realisation == 0:
-            utils.plot_corner(samples.reshape((-1, ndim)))
+            hm.utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                plt.savefig(
-                    "examples/plots/nvp_rosenbrock_corner.png", bbox_inches="tight"
-                )
-
-            utils.plot_getdist(samples.reshape((-1, ndim)))
-            if savefigs:
-                plt.savefig(
-                    "examples/plots/nvp_rosenbrock_getdist.png", bbox_inches="tight"
-                )
+                save_name = save_name_start + "_rosenbrock_getdist.png"
+                plt.savefig(save_name, bbox_inches="tight")
 
             plt.show(block=False)
 
@@ -356,18 +360,22 @@ def run_example(
             num_samp = chains_train.samples.shape[0]
             samps_compressed = np.array(model.sample(num_samp))
 
-            utils.plot_getdist_compare(
+            hm.utils.plot_getdist_compare(
                 chains_train.samples, samps_compressed, legend_fontsize=12.5
             )
             if savefigs:
-                plt.savefig(
-                    "examples/plots/nvp_rosenbrock_corner_all_T"
+                save_name = (
+                    save_name_start
+                    + "_rosenbrock_corner_all_T"
                     + str(temperature)
-                    + ".png",
+                    + ".png"
+                )
+                plt.savefig(
+                    save_name,
                     bbox_inches="tight",
                     dpi=300,
                 )
-            created_plots = True
+            plt.show(block=False)
 
             created_plots = True
 
@@ -384,16 +392,21 @@ def run_example(
     # ===========================================================================
     # Save out realisations of statistics for analysis.
     if n_realisations > 1:
-        np.savetxt(
-            "examples/data/nvp_rosenbrock_evidence_inv_T"
+        save_name = (
+            save_name_start
+            + "_rosenbrock_evidence_inv_T"
             + str(temperature)
-            + "_realisations.dat",
+            + "_realisations.dat"
+        )
+        np.savetxt(
+            save_name,
             evidence_inv_summary,
         )
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
+        save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
         np.savetxt(
-            "examples/data/nvp_rosenbrock_evidence_inv" + "_analytic.dat",
+            save_name,
             evidence_inv_analytic_summary,
         )
 
@@ -412,6 +425,9 @@ if __name__ == "__main__":
     nchains = 200
     samples_per_chain = 5000
     nburn = 2000
+
+    # flow_str = "RealNVP"
+    flow_str = "RQSpline"
     np.random.seed(20)
 
     hm.logs.info_log("Rosenbrock example")
@@ -426,4 +442,6 @@ if __name__ == "__main__":
     hm.logs.debug_log("-------------------------")
 
     # Run example.
-    samples = run_example(ndim, nchains, samples_per_chain, nburn, plot_corner=True)
+    samples = run_example(
+        flow_str, ndim, nchains, samples_per_chain, nburn, plot_corner=True
+    )

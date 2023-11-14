@@ -5,7 +5,7 @@ import os
 import sys
 
 sys.path.append("examples")
-import utils
+import ex_utils
 
 savefigs = True
 
@@ -37,7 +37,7 @@ evidence_inv_analytic = np.loadtxt(args.filename_analytic)
 
 # Plot inverse evidence.
 plt.rcParams.update({"font.size": 20})
-ax = utils.plot_realisations(
+ax = ex_utils.plot_realisations(
     mc_estimates=evidence_inv_realisations,
     std_estimated=np.sqrt(np.mean(evidence_inv_var_realisations)),
     analytic_val=evidence_inv_analytic,
@@ -56,7 +56,7 @@ if savefigs:
     )
 
 # Plot variance of inverse evidence.
-ax = utils.plot_realisations(
+ax = ex_utils.plot_realisations(
     mc_estimates=evidence_inv_var_realisations,
     std_estimated=np.sqrt(np.mean(evidence_inv_var_var_realisations)),
 )
