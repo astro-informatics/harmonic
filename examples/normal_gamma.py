@@ -414,7 +414,7 @@ def run_example(
         # Create corner/triangle plot.
         if plot_corner:
             labels = [r"$\mu$", r"$\tau$"]
-            hm.utils.plot_corner(samples.reshape((-1, ndim)), labels)
+            ex_utils.plot_corner(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig(
                     "examples/plots/normalgamma_corner_tau" + str(tau_prior) + ".pdf",

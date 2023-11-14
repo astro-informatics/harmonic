@@ -331,7 +331,7 @@ def run_example(
         # Create corner/triangle plot.
         created_plots = False
         if plot_corner and i_realisation == 0:
-            hm.utils.plot_corner(samples.reshape((-1, ndim)))
+            ex_utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
                 plt.savefig("examples/plots/rastrigin_corner.png", bbox_inches="tight")
 

@@ -3,14 +3,7 @@ import sys
 import emcee
 import scipy.special as sp
 import time
-import matplotlib.pyplot as plt
-from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
-
-sys.path.append("examples")
-import utils
 
 
 def ln_likelihood(y, theta, x):
