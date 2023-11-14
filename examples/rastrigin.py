@@ -4,12 +4,10 @@ import emcee
 import time
 import matplotlib.pyplot as plt
 from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
 
 sys.path.append("examples")
-import utils
+import ex_utils
 
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
@@ -237,7 +235,7 @@ def run_example(
         if ndim == 2:
             hm.logs.debug_log("Compute evidence by numerical integration...")
             ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior)
-            ln_posterior_grid, x_grid, y_grid = utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=-6.0,
                 xmax=6.0,
@@ -333,11 +331,11 @@ def run_example(
         # Create corner/triangle plot.
         created_plots = False
         if plot_corner and i_realisation == 0:
-            utils.plot_corner(samples.reshape((-1, ndim)))
+            hm.utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
                 plt.savefig("examples/plots/rastrigin_corner.png", bbox_inches="tight")
 
-            utils.plot_getdist(samples.reshape((-1, ndim)))
+            hm.utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
                 plt.savefig("examples/plots/rastrigin_getdist.png", bbox_inches="tight")
 
@@ -349,7 +347,7 @@ def run_example(
             # Plot ln_posterior surface.
             # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0
             i_chain = 0
-            ax = utils.plot_surface(
+            ax = ex_utils.plot_surface(
                 ln_posterior_grid,
                 x_grid,
                 y_grid,
@@ -365,7 +363,7 @@ def run_example(
                 )
 
             # Plot posterior image.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 np.exp(ln_posterior_grid),
                 x_grid,
                 y_grid,
@@ -379,7 +377,7 @@ def run_example(
                 )
 
             # Evaluate model on grid.
-            model_grid, x_grid, y_grid = utils.eval_func_on_grid(
+            model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
                 model.predict,
                 xmin=-6.0,
                 xmax=6.0,
@@ -391,7 +389,7 @@ def run_example(
             # model_grid[model_grid<-100.0] = -100.0
 
             # Plot model.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
             )
             # ax.set_clim(vmin=-2.0, vmax=2.0)
@@ -401,7 +399,7 @@ def run_example(
                 )
 
             # Plot exponential of model.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
             )
             # ax.set_clim(vmin=0.0, vmax=6.0)

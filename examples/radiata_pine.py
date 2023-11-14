@@ -4,13 +4,10 @@ import emcee
 import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
 
 sys.path.append("examples")
-import utils
+import ex_utils
 
 
 def ln_likelihood(y, x, n, alpha, beta, tau):
@@ -517,11 +514,11 @@ def run_example(
     # Create corner/triangle plot.
     created_plots = False
     if plot_corner:
-        utils.plot_corner(samples.reshape((-1, ndim)))
+        ex_utils.plot_corner(samples.reshape((-1, ndim)))
         if savefigs:
             plt.savefig("examples/plots/radiatapine_corner.png", bbox_inches="tight")
 
-        utils.plot_getdist(samples.reshape((-1, ndim)))
+        hm.utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
             plt.savefig("examples/plots/radiatapine_getdist.png", bbox_inches="tight")
 
@@ -536,7 +533,7 @@ def run_example(
         # print("x01x1: x = {}".format(x))
         return model.predict(x)
 
-    model_grid, x_grid, y_grid = utils.eval_func_on_grid(
+    model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
         model_predict_x0x1,
         xmin=2900.0,
         xmax=3100.0,
@@ -547,7 +544,9 @@ def run_example(
     )
 
     # Plot model.
-    ax = utils.plot_image(model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$")
+    ax = ex_utils.plot_image(
+        model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
+    )
     plt.xlabel("$x_0$")
     plt.ylabel("$x_1$")
     # plt.axis('equal')
@@ -557,7 +556,7 @@ def run_example(
         )
 
     # Plot exponential of model.
-    ax = utils.plot_image(
+    ax = ex_utils.plot_image(
         np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
     )
     plt.xlabel("$x_0$")
@@ -576,7 +575,7 @@ def run_example(
         # print("x1x2: x = {}".format(x))
         return model.predict(x)
 
-    model_grid, x_grid, y_grid = utils.eval_func_on_grid(
+    model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
         model_predict_x1x2,
         xmin=185.0 - 30.0,
         xmax=185.0 + 30.0,
@@ -587,7 +586,9 @@ def run_example(
     )
 
     # Plot model.
-    ax = utils.plot_image(model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$")
+    ax = ex_utils.plot_image(
+        model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
+    )
     plt.xlabel("$x_1$")
     plt.ylabel("$x_2$")
     # plt.axis('equal')
@@ -597,7 +598,7 @@ def run_example(
         )
 
     # Plot exponential of model.
-    ax = utils.plot_image(
+    ax = ex_utils.plot_image(
         np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
     )
     plt.xlabel("$x_1$")
@@ -616,7 +617,7 @@ def run_example(
         x = np.append(x, x_2d[1])
         return model.predict(x)
 
-    model_grid, x_grid, y_grid = utils.eval_func_on_grid(
+    model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
         model_predict_x0x2,
         xmin=2900.0,
         xmax=3100.0,
@@ -627,7 +628,9 @@ def run_example(
     )
 
     # Plot model.
-    ax = utils.plot_image(model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$")
+    ax = ex_utils.plot_image(
+        model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
+    )
     plt.xlabel("$x_0$")
     plt.ylabel("$x_1$")
     # plt.axis('equal')
@@ -638,7 +641,7 @@ def run_example(
         )
 
     # Plot exponential of model.
-    ax = utils.plot_image(
+    ax = ex_utils.plot_image(
         np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
     )
     plt.xlabel("$x_0$")
