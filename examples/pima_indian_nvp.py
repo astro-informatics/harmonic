@@ -1,20 +1,8 @@
 import numpy as np
-import sys
 import emcee
-import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
-
-sys.path.append("examples")
-import utils
-
-sys.path.append("harmonic")
-import model as md
-import flows
 
 
 def ln_likelihood(y, theta, x):
@@ -255,7 +243,7 @@ def run_example(
     minimises the validation variances.
     """
 
-    model = md.RealNVPModel(
+    model = hm.model.RealNVPModel(
         ndim,
         n_scaled_layers=n_scaled,
         n_unscaled_layers=n_unscaled,
@@ -279,7 +267,7 @@ def run_example(
     else:
         model_lab = "model2"
 
-    utils.plot_getdist_compare(
+    hm.utils.plot_getdist_compare(
         chains_train.samples, samps_compressed, labels=labels, legend_fontsize=17
     )
 

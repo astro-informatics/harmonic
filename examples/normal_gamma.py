@@ -5,12 +5,10 @@ import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
 from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
 
 sys.path.append("examples")
-import utils
+import ex_utils
 
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
@@ -416,7 +414,7 @@ def run_example(
         # Create corner/triangle plot.
         if plot_corner:
             labels = [r"$\mu$", r"$\tau$"]
-            utils.plot_corner(samples.reshape((-1, ndim)), labels)
+            hm.utils.plot_corner(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig(
                     "examples/plots/normalgamma_corner_tau" + str(tau_prior) + ".pdf",
@@ -424,7 +422,7 @@ def run_example(
                 )
 
             labels = [r"\mu", r"\tau"]
-            utils.plot_getdist(samples.reshape((-1, ndim)), labels)
+            hm.utils.plot_getdist(samples.reshape((-1, ndim)), labels)
             if savefigs:
                 plt.savefig(
                     "examples/plots/normalgamma_getdist_tau" + str(tau_prior) + ".pdf",
@@ -443,7 +441,7 @@ def run_example(
                 x_n=x_n,
                 prior_params=prior_params,
             )
-            ln_posterior_grid, x_grid, y_grid = utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=-0.6,
                 xmax=0.6,
@@ -454,7 +452,7 @@ def run_example(
             )
 
             # Plot posterior image.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 np.exp(ln_posterior_grid),
                 x_grid,
                 y_grid,
@@ -473,12 +471,12 @@ def run_example(
                 )
 
             # Evaluate model on grid.
-            model_grid, x_grid, y_grid = utils.eval_func_on_grid(
+            model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
                 model.predict, xmin=-0.6, xmax=0.6, ymin=0.4, ymax=1.8, nx=500, ny=500
             )
 
             # Plot model.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
             )
             # ax.set_clim(vmin=-2.0, vmax=2.0)
@@ -492,7 +490,7 @@ def run_example(
                 )
 
             # Plot exponential of model.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
             )
             # ax.set_clim(vmin=0.0, vmax=10.0)

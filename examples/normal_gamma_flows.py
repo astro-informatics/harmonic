@@ -1,19 +1,9 @@
 import numpy as np
-import sys
 import emcee
 import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
-
-sys.path.append("examples")
-import utils
-
-sys.path.append("harmonic")
-import model as md
 
 
 def ln_likelihood(x_mean, x_std, x_n, mu, tau):
@@ -149,6 +139,7 @@ def ln_analytic_evidence(x_mean, x_std, x_n, prior_params):
 
 
 def run_example(
+    flow_type,
     ndim=2,
     nchains=100,
     samples_per_chain=1000,
@@ -159,6 +150,7 @@ def run_example(
     """Run Normal-Gamma example.
 
     Args:
+            flow_type: Which flow model to use, "RealNVP" or "RQSpline".
 
             ndim: Dimension.
 
@@ -171,6 +163,8 @@ def run_example(
             plot_corner: Plot marginalised distributions if true.
 
             plot_comparison: Plot accuracy for various tau priors if true.
+
+            flow_type: Which flow model to use, "RealNVP" or "RQSpline".
 
     """
 
@@ -193,11 +187,17 @@ def run_example(
 
     training_proportion = 0.5
     temperature = 0.9
-    epochs_num = 100
-    standardize = False
-
     plot_comparison_2var = True
     temperature_2 = 0.95
+
+    if flow_type == "RealNVP":
+        epochs_num = 100
+    elif flow_type == "RQSpline":
+        epochs_num = 10
+
+    save_name_start = "examples/plots/" + flow_type
+
+    standardize = True
 
     # ===========================================================================
     # Simulate data
@@ -268,7 +268,14 @@ def run_example(
         # Fit model
         # =======================================================================
         hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        model = md.RealNVPModel(ndim, standardize=standardize, temperature=temperature)
+        if flow_type == "RealNVP":
+            model = hm.model.RealNVPModel(
+                ndim, standardize=standardize, temperature=temperature
+            )
+        elif flow_type == "RQSpline":
+            model = hm.model.RQSplineModel(
+                ndim, standardize=standardize, temperature=temperature
+            )
         model.fit(chains_train.samples, epochs=epochs_num)
 
         # ===================================================================
@@ -373,23 +380,17 @@ def run_example(
 
         # Create corner/triangle plot.
         if plot_corner:
-            labels = [r"$\mu$", r"$\tau$"]
-            utils.plot_corner(samples.reshape((-1, ndim)), labels)
-            if savefigs:
-                plt.savefig(
-                    "examples/plots/nvp_normalgamma_corner_tau"
-                    + str(tau_prior)
-                    + ".pdf",
-                    bbox_inches="tight",
-                )
-
             labels = [r"\mu", r"\tau"]
-            utils.plot_getdist(samples.reshape((-1, ndim)), labels)
+            hm.utils.plot_getdist(samples.reshape((-1, ndim)), labels)
             if savefigs:
-                plt.savefig(
-                    "examples/plots/nvp_normalgamma_getdist_tau"
+                save_name = (
+                    save_name_start
+                    + "_normalgamma_getdist_tau"
                     + str(tau_prior)
-                    + ".pdf",
+                    + ".pdf"
+                )
+                plt.savefig(
+                    save_name,
                     bbox_inches="tight",
                 )
 
@@ -402,17 +403,21 @@ def run_example(
             num_samp = chains_train.samples.shape[0]
             samps_compressed = np.array(model.sample(num_samp))
 
-            utils.plot_getdist_compare(
+            hm.utils.plot_getdist_compare(
                 chains_train.samples, samps_compressed, labels, legend_fontsize=12.5
             )
 
             if savefigs:
-                plt.savefig(
-                    "examples/plots/nvp_normalgamma_corner_all_"
+                save_name = (
+                    save_name_start
+                    + "_normalgamma_corner_all_"
                     + str(temperature)
                     + "tau"
                     + str(tau_prior)
-                    + ".png",
+                    + ".png"
+                )
+                plt.savefig(
+                    save_name,
                     bbox_inches="tight",
                     dpi=300,
                 )
@@ -445,8 +450,11 @@ def run_example(
             elinewidth=2,
         )
         if savefigs:
+            save_name = (
+                save_name_start + "_normalgamma_comparison" + str(temperature) + ".pdf"
+            )
             plt.savefig(
-                "examples/plots/nvp_normalgamma_comparison" + str(temperature) + ".pdf",
+                save_name,
                 bbox_inches="tight",
             )
         plt.show(block=False)
@@ -484,12 +492,16 @@ def run_example(
         )
         ax.legend(loc="lower right")
         if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_normalgamma_comparison_"
+            save_name = (
+                save_name_start
+                + "_normalgamma_comparison_"
                 + str(temperature)
                 + "_"
                 + str(temperature_2)
-                + ".pdf",
+                + ".pdf"
+            )
+            plt.savefig(
+                save_name,
                 bbox_inches="tight",
                 dpi=3000,
             )
@@ -513,6 +525,8 @@ if __name__ == "__main__":
     nchains = 200
     samples_per_chain = 1500
     nburn = 500
+    # flow_str = "RealNVP"
+    flow_str = "RQSpline"
     np.random.seed(1)
 
     hm.logs.info_log("Normal-Gamma example")
@@ -528,5 +542,11 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(
-        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_comparison=True
+        flow_str,
+        ndim,
+        nchains,
+        samples_per_chain,
+        nburn,
+        plot_corner=True,
+        plot_comparison=True,
     )

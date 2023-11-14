@@ -4,8 +4,6 @@ from matplotlib import cm
 from matplotlib.colors import LightSource
 from mpl_toolkits.mplot3d import Axes3D
 import corner
-from getdist import plots, MCSamples
-import getdist
 
 
 def plot_corner(samples, labels=None):
@@ -27,85 +25,6 @@ def plot_corner(samples, labels=None):
     else:
         labels_corner = labels
     fig = corner.corner(samples, labels=labels_corner)
-
-
-def plot_getdist(samples, labels=None):
-    """
-    Plot triangle plot of marginalised distributions using getdist package.
-
-    Args:
-        - samples:
-            2D array of shape (ndim, nsamples) containing samples.
-        - labels:
-            Array of strings containing axis labels.
-
-    Returns:
-        - None
-    """
-
-    getdist.chains.print_load_details = False
-
-    ndim = samples.shape[1]
-    names = ["x%s" % i for i in range(ndim)]
-    if labels is None:
-        labels = ["x_%s" % i for i in range(ndim)]
-
-    mcsamples = MCSamples(samples=samples, names=names, labels=labels)
-    g = plots.getSubplotPlotter()
-    g.triangle_plot([mcsamples], filled=True)
-
-
-def plot_getdist_compare(
-    samples1, samples2, labels=None, fontsize=17, legend_fontsize=15
-):
-    """
-    Plot triangle plot of marginalised distributions using getdist package.
-
-    Args:
-        samples1 : 2D array of shape (ndim, nsamples) containing samples from the posterior.
-
-        samples2 : 2D array of shape (ndim, nsamples) containing samples from the concentrated flow.
-
-        labels: Array of strings containing axis labels for both sets of samples.
-
-        fontsize: Plot fontsize.
-
-        legend_fontsize: Plot legend fontsize.
-
-    Returns:
-        None
-    """
-
-    getdist.chains.print_load_details = False
-    # getdist.plots.GetDistPlotSettings(constrained_layout=True)
-
-    ndim = samples1.shape[1]
-    names = ["x%s" % i for i in range(ndim)]
-    if labels is None:
-        labels = ["x_%s" % i for i in range(ndim)]
-
-    mcsamples1 = MCSamples(
-        samples=samples1, names=names, labels=labels, label="Posterior"
-    )
-
-    mcsamples2 = MCSamples(
-        samples=samples2, names=names, labels=labels, label="Concentrated flow"
-    )
-
-    g = plots.getSubplotPlotter(width_inch=10.5 / 2.54)
-    # g.settings.scaling = False
-    g.settings.axes_fontsize = fontsize
-    g.settings.legend_fontsize = legend_fontsize  # 17.5
-    g.settings.axes_labelsize = fontsize
-    g.settings.linewidth = 2
-    g.settings.constrained_layout = True
-    g.settings.legend_loc = "upper right"
-    g.triangle_plot(
-        [mcsamples1, mcsamples2],
-        filled=True,
-        contour_colors=["red", "tab:blue"],
-        line_args=[{"ls": "-", "color": "red"}, {"ls": "--", "color": "blue"}],
-    )
 
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):

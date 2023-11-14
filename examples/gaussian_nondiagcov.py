@@ -1,16 +1,14 @@
 import numpy as np
-import sys
 import emcee
+import sys
 import time
 import matplotlib.pyplot as plt
 from functools import partial
 from matplotlib import cm
-
-sys.path.append(".")
 import harmonic as hm
 
 sys.path.append("examples")
-import utils
+import ex_utils
 
 
 def ln_analytic_evidence(ndim, cov):
@@ -110,7 +108,7 @@ def run_example(
     clock = time.process_time()
 
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 2
     evidence_inv_summary = np.zeros((n_realisations, 3))
     for i_realisation in range(n_realisations):
         if n_realisations > 0:
@@ -251,13 +249,13 @@ def run_example(
         # Create corner/triangle plot.
         # ======================================================================
         if plot_corner and i_realisation == 0:
-            utils.plot_corner(samples.reshape((-1, ndim)))
+            ex_utils.plot_corner(samples.reshape((-1, ndim)))
             if savefigs:
                 plt.savefig(
                     "examples/plots/gaussian_nondiagcov_corner.png", bbox_inches="tight"
                 )
 
-            utils.plot_getdist(samples.reshape((-1, ndim)))
+            hm.utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
                 plt.savefig(
                     "examples/plots/gaussian_nondiagcov_getdist.png",
@@ -281,7 +279,7 @@ def run_example(
             # 2D surface plot of posterior.
             # ==================================================================
             ln_posterior_func = partial(ln_posterior, inv_cov=inv_cov)
-            ln_posterior_grid, x_grid, y_grid = utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=xmin,
                 xmax=xmax,
@@ -291,7 +289,7 @@ def run_example(
                 ny=nx,
             )
             i_chain = 0
-            ax = utils.plot_surface(
+            ax = ex_utils.plot_surface(
                 np.exp(ln_posterior_grid),
                 x_grid,
                 y_grid,
@@ -316,7 +314,7 @@ def run_example(
             # Image of posterior samples overlayed with contour plot.
             # ==================================================================
             # Plot posterior image.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 np.exp(ln_posterior_grid),
                 x_grid,
                 y_grid,
@@ -347,7 +345,7 @@ def run_example(
                     ln_model_grid[i, j] = model.predict(np.array([x[i, j], y[i, j]]))
 
             i_chain = 0
-            ax = utils.plot_surface(
+            ax = ex_utils.plot_surface(
                 np.exp(ln_model_grid), x_grid, y_grid, contour_z_offset=-0.075
             )
             ax.set_zlabel(r"$\mathcal{L}$")
@@ -365,7 +363,7 @@ def run_example(
             # Projection of posteior onto x1,x2 plane with contours.
             # ==================================================================
             # Plot posterior image.
-            ax = utils.plot_image(
+            ax = ex_utils.plot_image(
                 np.exp(ln_model_grid),
                 x_grid,
                 y_grid,

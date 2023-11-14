@@ -148,7 +148,7 @@ def test_validation_fit_indexes():
     indexes = list(np.random.permutation(nchains))
     # creates [2, 8, 4, 9, 1, 6, 7, 3, 0, 5]
 
-    nchains_in_val_set = nchains / nfold
+    nchains_in_val_set = int(nchains / nfold)
 
     with pytest.raises(ValueError):
         utils.validation_fit_indexes(nfold, nchains_in_val_set, nfold, indexes)

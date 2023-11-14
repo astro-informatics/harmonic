@@ -1,20 +1,9 @@
 import numpy as np
-import sys
 import emcee
 import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
-
-sys.path.append("examples")
-import utils
-
-sys.path.append("harmonic")
-import model as md
-import flows
 
 
 def ln_likelihood(y, x, n, alpha, beta, tau):
@@ -301,11 +290,18 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
 
 
 def run_example(
-    model_1=True, nchains=100, samples_per_chain=1000, nburn=500, plot_corner=False
+    flow_type,
+    model_1=True,
+    nchains=100,
+    samples_per_chain=1000,
+    nburn=500,
+    plot_corner=False,
 ):
     """Run Radiata Pine example.
 
     Args:
+
+        flow_type: Which flow model to use, "RealNVP" or "RQSpline".
 
         model_1: Consider model 1 if true, otherwise model 2.
 
@@ -324,13 +320,27 @@ def run_example(
     # Set general parameters.
     savefigs = True
 
+    save_name_start = "examples/plots/" + flow_type
+
     training_proportion = 0.5
-    temperature = 0.9
-    epochs_num = 50
-    n_scaled = 3
-    n_unscaled = 3
+    temperature = 0.8
     learning_rate = 0.001
     standardize = True
+
+    # RealNVP parameters
+    n_scaled = 3
+    n_unscaled = 3
+
+    # Spline parameters
+    n_layers = 5
+    n_bins = 5
+    hidden_size = [32, 32]
+    spline_range = (-10.0, 10.0)
+
+    if flow_type == "RealNVP":
+        epochs_num = 50
+    if flow_type == "RQSpline":
+        epochs_num = 30
 
     # ===========================================================================
     # Set-up Priors
@@ -436,15 +446,26 @@ def run_example(
     Fit model by selecing the configuration of hyper-parameters which 
     minimises the validation variances.
     """
-    model = md.RealNVPModel(
-        ndim,
-        n_scaled_layers=n_scaled,
-        n_unscaled_layers=n_unscaled,
-        learning_rate=learning_rate,
-        standardize=standardize,
-        temperature=temperature,
-    )
-    # model = md.RQSplineFlow(ndim)
+
+    if flow_type == "RealNVP":
+        model = hm.model.RealNVPModel(
+            ndim,
+            n_scaled_layers=n_scaled,
+            n_unscaled_layers=n_unscaled,
+            learning_rate=learning_rate,
+            standardize=standardize,
+            temperature=temperature,
+        )
+    if flow_type == "RQSpline":
+        model = hm.model.RQSplineModel(
+            ndim,
+            n_layers=n_layers,
+            n_bins=n_bins,
+            hidden_size=hidden_size,
+            spline_range=spline_range,
+            standardize=standardize,
+            temperature=temperature,
+        )
     model.fit(chains_train.samples, epochs=epochs_num)
 
     # ===========================================================================
@@ -518,17 +539,10 @@ def run_example(
     # Create corner/triangle plot.
     created_plots = False
     if plot_corner:
-        utils.plot_corner(samples.reshape((-1, ndim)))
+        hm.utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_corner.png", bbox_inches="tight"
-            )
-
-        utils.plot_getdist(samples.reshape((-1, ndim)))
-        if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_getdist.png", bbox_inches="tight"
-            )
+            save_name = save_name_start + "_radiatapine_getdist.png"
+            plt.savefig(save_name, bbox_inches="tight")
 
         plt.show(block=False)
 
@@ -540,17 +554,15 @@ def run_example(
         # samps = np.array(model.sample(num_samp, temperature=1.))
         samps_compressed = np.array(model.sample(num_samp, temperature=temperature))
 
-        utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+        hm.utils.plot_getdist_compare(chains_train.samples, samps_compressed)
         if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_corner_all.png", bbox_inches="tight"
-            )
+            save_name = save_name_start + "_radiatapine_getdist.png"
+            plt.savefig(save_name, bbox_inches="tight")
 
-        utils.plot_getdist(samps_compressed)
+        hm.utils.plot_getdist(samps_compressed)
         if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_flow_getdist.png", bbox_inches="tight"
-            )
+            save_name = save_name_start + "_radiatapine_flow_getdist.png"
+            plt.savefig(save_name, bbox_inches="tight")
 
         created_plots = True
 
@@ -566,9 +578,11 @@ if __name__ == "__main__":
     model_1 = True
     nchains = 400
     # nchains = 10
-    samples_per_chain = 20000
-    # samples_per_chain = 2000
-    nburn = 2000
+    # samples_per_chain = 20000
+    samples_per_chain = 5000
+    nburn = 500
+    flow_str = "RealNVP"
+    # flow_str = "RQSpline"
     # nburn = 100
     np.random.seed(2)
 
@@ -588,4 +602,6 @@ if __name__ == "__main__":
     hm.logs.debug_log("-------------------------")
 
     # Run example.
-    samples = run_example(model_1, nchains, samples_per_chain, nburn, plot_corner=True)
+    samples = run_example(
+        flow_str, model_1, nchains, samples_per_chain, nburn, plot_corner=True
+    )
