@@ -552,7 +552,7 @@ def run_example(
 
         num_samp = chains_train.samples.shape[0]
         # samps = np.array(model.sample(num_samp, temperature=1.))
-        samps_compressed = np.array(model.sample(num_samp, temperature=temperature))
+        samps_compressed = np.array(model.sample(num_samp))
 
         hm.utils.plot_getdist_compare(chains_train.samples, samps_compressed)
         if savefigs:
