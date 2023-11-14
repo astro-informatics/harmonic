@@ -14,6 +14,8 @@
     :target: https://arxiv.org/abs/2111.12720
 .. image:: http://img.shields.io/badge/arXiv-2207.04037-red.svg?style=flat
     :target: https://arxiv.org/abs/2207.04037
+.. image:: http://img.shields.io/badge/arXiv-2307.00048-red.svg?style=flat
+    :target: https://arxiv.org/abs/2307.00048
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
@@ -115,12 +117,23 @@ A BibTeX entry for the paper is:
 
 .. code-block::
 
-     @article{harmonic_sbi,
-        author = {Spurio Mancini, A. and Docherty, M. M. and Price, M. A. and McEwen, J. D.},
-         title = {{B}ayesian model comparison for simulation-based inference},
-       journal = {ArXiv},
-        eprint = {arXiv:2207.04037},
-          year = 2022
+     @article{spurio-mancini:harmonic_sbi,
+        author   = {A.~Spurio Mancini and M.~M.~Docherty and M.~A.~Price and J.~D.~McEwen},
+        doi      = {10.1093/rasti/rzad051},
+        eprint   = {arXiv:2207.04037},
+        journal  = {{RASTI}, in press},
+        title    = {{B}ayesian model comparison for simulation-based inference},
+        year     = {2023}
+     }
+
+.. code-block::
+
+     @inproceedings{polanska:harmonic_nfs_maxent,
+        author    = {A.~Polanska and M.~A.~Price and A.~Spurio Mancini and J.~D.~McEwen},
+        booktitle = {International Workshop on Bayesian Inference and Maximum Entropy Methods in Science and Engineering},
+        eprint    = {arXiv:2307.00048},
+        title     = {Learned harmonic mean estimation of the marginal likelihood with normalizing flows},
+        year      = {2023}
      }
 
 License

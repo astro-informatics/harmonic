@@ -12,10 +12,18 @@ Automatically generated documentation for **harmonic** APIs. All functionality i
 	.. tab:: Evidence
 
 		.. include:: evidence.rst
+	
+	.. tab:: Flows
 
-	.. tab:: Model
+		.. include:: flows.rst
+
+	.. tab:: Models
 
 		.. include:: model.rst
+	
+	.. tab:: Legacy Models
+
+		.. include:: model_legacy.rst
 
 	.. tab:: Logs
 

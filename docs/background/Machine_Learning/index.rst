@@ -9,9 +9,15 @@ We present three examples of models that can be used to learn appropriate target
 Learning from posterior samples
 =======================================================
 
-Here we cover several functional forms for the learned model :math:`\varphi(\theta)` which are used throughout the code. Hyper-parameters of these models can be considered nodes of a conventional network, the values of which are learnt from a small sub-set of posterior samples.
+Here we cover several functional forms for the learned flow models :math:`\varphi(\theta)` which are used throughout the code. For these models no hyper-parameter optimisation is required, the flow should do all the heavy lifting for us!
+
+We also provide support for legacy models, which are somewhat less expressive but nonetheless useful for simple posterior distributions. Hyper-parameters of these models can be considered nodes of a conventional network, the values of which are learnt from a small sub-set of posterior samples.
 
 .. tabs::
+
+   .. tab:: Normalising Flow
+
+      .. include:: flows.rst
 
    .. tab:: Hyper-Sphere
 
