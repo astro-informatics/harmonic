@@ -4,6 +4,7 @@ import harmonic as hm
 import getdist
 from harmonic import model_legacy
 from getdist import plots
+import matplotlib as plt
 
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
@@ -420,7 +421,7 @@ def cross_validation(
 
     indexes = list(np.random.permutation(chains.nchains))
 
-    nchains_in_val_set = chains.nchains / nfold
+    nchains_in_val_set = int(chains.nchains / nfold)
 
     for i_fold in range(nfold):
         indexes_val, indexes_fit = validation_fit_indexes(
