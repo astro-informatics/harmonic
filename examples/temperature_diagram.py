@@ -1,16 +1,14 @@
 import jax.numpy as jnp
 import jax
-from sklearn.datasets import make_swiss_roll
 import matplotlib.pyplot as plt
 import numpy as np
 from getdist import plots, MCSamples
 import tensorflow_probability as tfp
+import harmonic as hm
 
 tfp = tfp.substrates.jax
 tfd = tfp.distributions
 tfb = tfp.bijectors
-from harmonic import model as md
-from harmonic import flows
 
 
 def get_moon(sigma, resolution=1024):
@@ -100,7 +98,7 @@ if __name__ == "__main__":
     epochs_num = 100
 
     posterior_samples = np.array(get_moon(0.05).sample(batch_size, seed=seed))
-    model = md.RealNVPModel(
+    model = hm.model.RealNVPModel(
         ndim, n_scaled_layers=n_scaled, n_unscaled_layers=n_unscaled
     )
     model.fit(posterior_samples, epochs=epochs_num, verbose=True)
