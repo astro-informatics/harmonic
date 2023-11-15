@@ -1,11 +1,9 @@
 import numpy as np
-import sys
 import emcee
 import time
 import matplotlib.pyplot as plt
 from functools import partial
 import harmonic as hm
-import ex_utils
 
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
@@ -144,6 +142,7 @@ def run_example(
     a = 1.0
     b = 100.0
 
+    # Beginning of path where plots will be saved
     save_name_start = "examples/plots/" + flow_type
 
     if flow_type == "RealNVP":
@@ -250,7 +249,7 @@ def run_example(
         if ndim == 2:
             hm.logs.debug_log("Compute evidence by numerical integration...")
             ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior, a=a, b=b)
-            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=-10.0,
                 xmax=10.0,

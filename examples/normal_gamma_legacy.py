@@ -441,7 +441,7 @@ def run_example(
                 x_n=x_n,
                 prior_params=prior_params,
             )
-            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=-0.6,
                 xmax=0.6,
@@ -471,7 +471,7 @@ def run_example(
                 )
 
             # Evaluate model on grid.
-            model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+            model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
                 model.predict, xmin=-0.6, xmax=0.6, ymin=0.4, ymax=1.8, nx=500, ny=500
             )
 

@@ -27,47 +27,6 @@ def plot_corner(samples, labels=None):
     fig = corner.corner(samples, labels=labels_corner)
 
 
-def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
-    """
-    Evalute 2D function on a grid.
-
-    Args:
-        - func:
-            Function to evalate.
-        - xmin:
-            Minimum x value to consider in grid domain.
-        - xmax:
-            Maximum x value to consider in grid domain.
-        - ymin:
-            Minimum y value to consider in grid domain.
-        - ymax:
-            Maximum y value to consider in grid domain.
-        - nx:
-            Number of samples to include in grid in x direction.
-        - ny:
-            Number of samples to include in grid in y direction.
-
-    Returns:
-        - func_eval_grid:
-            Function values evaluated on the 2D grid.
-        - x_grid:
-            x values over the 2D grid.
-        - y_grid:
-            y values over the 2D grid.
-    """
-
-    # Evaluate func over grid.
-    x = np.linspace(xmin, xmax, nx)
-    y = np.linspace(ymin, ymax, ny)
-    x_grid, y_grid = np.meshgrid(x, y)
-    func_eval_grid = np.zeros((nx, ny))
-    for i in range(nx):
-        for j in range(ny):
-            func_eval_grid[i, j] = func(np.array([x_grid[i, j], y_grid[i, j]]))
-
-    return func_eval_grid, x_grid, y_grid
-
-
 def plot_surface(
     func_eval_grid,
     x_grid,

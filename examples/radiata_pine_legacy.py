@@ -533,7 +533,7 @@ def run_example(
         # print("x01x1: x = {}".format(x))
         return model.predict(x)
 
-    model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+    model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
         model_predict_x0x1,
         xmin=2900.0,
         xmax=3100.0,
@@ -575,7 +575,7 @@ def run_example(
         # print("x1x2: x = {}".format(x))
         return model.predict(x)
 
-    model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+    model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
         model_predict_x1x2,
         xmin=185.0 - 30.0,
         xmax=185.0 + 30.0,
@@ -617,7 +617,7 @@ def run_example(
         x = np.append(x, x_2d[1])
         return model.predict(x)
 
-    model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+    model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
         model_predict_x0x2,
         xmin=2900.0,
         xmax=3100.0,

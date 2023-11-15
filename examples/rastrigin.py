@@ -235,7 +235,7 @@ def run_example(
         if ndim == 2:
             hm.logs.debug_log("Compute evidence by numerical integration...")
             ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior)
-            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=-6.0,
                 xmax=6.0,
@@ -377,7 +377,7 @@ def run_example(
                 )
 
             # Evaluate model on grid.
-            model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+            model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
                 model.predict,
                 xmin=-6.0,
                 xmax=6.0,
