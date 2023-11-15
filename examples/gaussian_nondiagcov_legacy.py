@@ -279,7 +279,7 @@ def run_example(
             # 2D surface plot of posterior.
             # ==================================================================
             ln_posterior_func = partial(ln_posterior, inv_cov=inv_cov)
-            ln_posterior_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+            ln_posterior_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
                 ln_posterior_func,
                 xmin=xmin,
                 xmax=xmax,
