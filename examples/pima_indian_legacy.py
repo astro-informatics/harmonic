@@ -1,7 +1,5 @@
 import numpy as np
-import sys
 import emcee
-import scipy.special as sp
 import time
 import harmonic as hm
 

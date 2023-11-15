@@ -5,8 +5,6 @@ import emcee
 import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-
-sys.path.append("examples")
 import ex_utils
 import gc
 

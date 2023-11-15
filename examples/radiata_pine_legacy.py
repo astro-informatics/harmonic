@@ -1,12 +1,9 @@
 import numpy as np
-import sys
 import emcee
 import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
 import harmonic as hm
-
-sys.path.append("examples")
 import ex_utils
 
 

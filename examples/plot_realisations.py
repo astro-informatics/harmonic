@@ -2,9 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 import os
-import sys
-
-sys.path.append("examples")
 import ex_utils
 
 savefigs = True
