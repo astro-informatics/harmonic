@@ -103,6 +103,7 @@ def run_example(
     elif flow_type == "RQSpline":
         epochs_num = 3
 
+    # Beginning of path where plots will be saved
     save_name_start = "examples/plots/" + flow_type
 
     temperature = 0.8

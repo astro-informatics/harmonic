@@ -320,6 +320,7 @@ def run_example(
     # Set general parameters.
     savefigs = True
 
+    # Beginning of path where plots will be saved
     save_name_start = "examples/plots/" + flow_type
 
     training_proportion = 0.5
