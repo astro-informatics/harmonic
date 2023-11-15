@@ -5,6 +5,8 @@ import time
 import matplotlib.pyplot as plt
 from functools import partial
 import harmonic as hm
+
+sys.path.append("examples")
 import ex_utils
 
 
@@ -112,13 +114,16 @@ def ln_posterior(x, ln_prior, a=1.0, b=100.0):
 
 
 def run_example(
-    flow_type, ndim=2, nchains=100, samples_per_chain=1000, nburn=500, plot_corner=False
+    ndim=2,
+    nchains=100,
+    samples_per_chain=1000,
+    nburn=500,
+    plot_corner=False,
+    plot_surface=False,
 ):
     """Run Rosenbrock example.
 
     Args:
-
-        flow_type: Which flow model to use, "RealNVP" or "RQSpline".
 
         ndim: Dimension.
 
@@ -129,6 +134,9 @@ def run_example(
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
+
+        plot_surface: Plot surface and samples if true.
+
     """
 
     if ndim != 2:
@@ -141,19 +149,14 @@ def run_example(
     Configure machine learning parameters
     """
     savefigs = True
+    nfold = 2
+    nhyper = 2
+    step = -2
+    domain = []
+    hyper_parameters = [[10 ** (R)] for R in range(-nhyper + step, step)]
+    hm.logs.debug_log("Hyper-parameters = {}".format(hyper_parameters))
     a = 1.0
     b = 100.0
-
-    save_name_start = "examples/plots/" + flow_type
-
-    if flow_type == "RealNVP":
-        epochs_num = 8
-    elif flow_type == "RQSpline":
-        epochs_num = 5
-
-    temperature = 0.8
-    training_proportion = 0.5
-    standardize = True
     """
     Set prior parameters.
     """
@@ -182,7 +185,7 @@ def run_example(
     """
     Set up and run multiple simulations
     """
-    n_realisations = 1
+    n_realisations = 100
     evidence_inv_summary = np.zeros((n_realisations, 3))
     for i_realisation in range(n_realisations):
         if n_realisations > 1:
@@ -216,23 +219,43 @@ def run_example(
         """
         chains = hm.Chains(ndim)
         chains.add_chains_3d(samples, lnprob)
-        chains_train, chains_test = hm.utils.split_data(
-            chains, training_proportion=training_proportion
-        )
+        chains_train, chains_test = hm.utils.split_data(chains, training_proportion=0.5)
 
         # =======================================================================
-        # Fit model
+        # Perform cross-validation
         # =======================================================================
-        hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-        if flow_type == "RealNVP":
-            model = hm.model.RealNVPModel(
-                ndim, standardize=standardize, temperature=temperature
-            )
-        if flow_type == "RQSpline":
-            model = hm.model.RQSplineModel(
-                ndim, standardize=standardize, temperature=temperature
-            )
-        model.fit(chains_train.samples, epochs=epochs_num)
+        hm.logs.info_log("Perform cross-validation...")
+        """
+        There are several different machine learning models. Cross-validation
+        allows the software to select the optimal model and the optimal model 
+        hyper-parameters for a given situation.
+        """
+        validation_variances = hm.utils.cross_validation(
+            chains_train,
+            domain,
+            hyper_parameters,
+            nfold=nfold,
+            modelClass=hm.model_legacy.KernelDensityEstimate,
+            seed=0,
+        )
+        hm.logs.debug_log("validation_variances = {}".format(validation_variances))
+        best_hyper_param_ind = np.argmin(validation_variances)
+        best_hyper_param = hyper_parameters[best_hyper_param_ind]
+        hm.logs.debug_log("Best hyper-parameter = {}".format(best_hyper_param))
+
+        # =======================================================================
+        # Fit optimal model hyper-parameters
+        # =======================================================================
+        hm.logs.info_log("Fit model...")
+        """
+        Fit model by selecing the configuration of hyper-parameters which 
+        minimises the validation variances.
+        """
+        model = hm.model_legacy.KernelDensityEstimate(
+            ndim, domain, hyper_parameters=best_hyper_param
+        )
+        fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
+        hm.logs.debug_log("Fit success = {}".format(fit_success))
 
         # =======================================================================
         # Computing evidence using learnt model and emcee chains
@@ -346,37 +369,86 @@ def run_example(
         # Create corner/triangle plot.
         created_plots = False
         if plot_corner and i_realisation == 0:
+            ex_utils.plot_corner(samples.reshape((-1, ndim)))
+            if savefigs:
+                plt.savefig("examples/plots/rosenbrock_corner.png", bbox_inches="tight")
+
             hm.utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                save_name = save_name_start + "_rosenbrock_getdist.png"
-                plt.savefig(save_name, bbox_inches="tight")
-
-            plt.show(block=False)
-
-            # =======================================================================
-            # Visualise distributions
-            # =======================================================================
-
-            num_samp = chains_train.samples.shape[0]
-            samps_compressed = np.array(model.sample(num_samp))
-
-            hm.utils.plot_getdist_compare(
-                chains_train.samples, samps_compressed, legend_fontsize=12.5
-            )
-            if savefigs:
-                save_name = (
-                    save_name_start
-                    + "_rosenbrock_corner_all_T"
-                    + str(temperature)
-                    + ".png"
-                )
                 plt.savefig(
-                    save_name,
-                    bbox_inches="tight",
-                    dpi=300,
+                    "examples/plots/rosenbrock_getdist.png", bbox_inches="tight"
                 )
-            plt.show(block=False)
 
+            plt.show(block=False)
+            created_plots = True
+
+        # In 2D case, plot surface/image and samples.
+        if plot_surface and ndim == 2 and i_realisation == 0:
+            # Plot ln_posterior surface.
+            # ln_posterior_grid[ln_posterior_grid<-100.0] = -100.0
+            i_chain = 0
+            ax = ex_utils.plot_surface(
+                ln_posterior_grid,
+                x_grid,
+                y_grid,
+                samples[i_chain, :, :].reshape((-1, ndim)),
+                lnprob[i_chain, :].reshape((-1, 1)),
+            )
+            # ax.set_zlim(-100.0, 0.0)
+            ax.set_zlabel(r"$\log \mathcal{L}$")
+            if savefigs:
+                plt.savefig(
+                    "examples/plots/rosenbrock_lnposterior_surface.png",
+                    bbox_inches="tight",
+                )
+
+            # Plot posterior image.
+            ax = ex_utils.plot_image(
+                np.exp(ln_posterior_grid),
+                x_grid,
+                y_grid,
+                samples.reshape((-1, ndim)),
+                colorbar_label=r"$\mathcal{L}$",
+            )
+            # ax.set_clim(vmin=0.0, vmax=0.003)
+            if savefigs:
+                plt.savefig(
+                    "examples/plots/rosenbrock_posterior_image.png", bbox_inches="tight"
+                )
+
+            # Evaluate model on grid.
+            model_grid, x_grid, y_grid = ex_utils.eval_func_on_grid(
+                model.predict,
+                xmin=-10.0,
+                xmax=10.0,
+                ymin=-5.0,
+                ymax=15.0,
+                nx=1000,
+                ny=1000,
+            )
+            # model_grid[model_grid<-100.0] = -100.0
+
+            # Plot model.
+            ax = ex_utils.plot_image(
+                model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
+            )
+            # ax.set_clim(vmin=-2.0, vmax=2.0)
+            if savefigs:
+                plt.savefig(
+                    "examples/plots/rosenbrock_model_image.png", bbox_inches="tight"
+                )
+
+            # Plot exponential of model.
+            ax = ex_utils.plot_image(
+                np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
+            )
+            # ax.set_clim(vmin=0.0, vmax=10.0)
+            if savefigs:
+                plt.savefig(
+                    "examples/plots/rosenbrock_modelexp_image.png", bbox_inches="tight"
+                )
+
+            plt.show(block=False)
             created_plots = True
 
         # Save out realisations for voilin plot.
@@ -392,21 +464,14 @@ def run_example(
     # ===========================================================================
     # Save out realisations of statistics for analysis.
     if n_realisations > 1:
-        save_name = (
-            save_name_start
-            + "_rosenbrock_evidence_inv_T"
-            + str(temperature)
-            + "_realisations.dat"
-        )
         np.savetxt(
-            save_name,
+            "examples/data/rosenbrock_evidence_inv" + "_realisations.dat",
             evidence_inv_summary,
         )
         evidence_inv_analytic_summary = np.zeros(1)
         evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-        save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
         np.savetxt(
-            save_name,
+            "examples/data/rosenbrock_evidence_inv" + "_analytic.dat",
             evidence_inv_analytic_summary,
         )
 
@@ -425,9 +490,6 @@ if __name__ == "__main__":
     nchains = 200
     samples_per_chain = 5000
     nburn = 2000
-
-    # flow_str = "RealNVP"
-    flow_str = "RQSpline"
     np.random.seed(20)
 
     hm.logs.info_log("Rosenbrock example")
@@ -443,5 +505,5 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(
-        flow_str, ndim, nchains, samples_per_chain, nburn, plot_corner=True
+        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=True
     )
