@@ -1,13 +1,11 @@
 import numpy as np
 import sys
-
-sys.path.append(".")
 import harmonic as hm
 import emcee
 import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-import utils
+import ex_utils
 import gc
 
 
@@ -267,7 +265,7 @@ def run_example(
     # ======================================================================
     created_plots = False
     if plot_corner and i_realisation == 0:
-        utils.plot_corner(samples.reshape((-1, ndim)))
+        ex_utils.plot_corner(samples.reshape((-1, ndim)))
 
         if savefigs:
             plt.savefig("examples/plots/nD_gaussian_corner.png", bbox_inches="tight")

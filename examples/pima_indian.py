@@ -1,16 +1,8 @@
 import numpy as np
-import sys
 import emcee
-import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
-
-sys.path.append("examples")
-import utils
 
 
 def ln_likelihood(y, theta, x):
@@ -106,7 +98,6 @@ def run_example(
     samples_per_chain=1000,
     nburn=500,
     plot_corner=False,
-    plot_surface=False,
 ):
     """Run Pima Indians example.
 
@@ -123,9 +114,6 @@ def run_example(
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
-
-        plot_surface: Plot surface and samples if true.
-
     """
 
     # Set_dimension
@@ -133,6 +121,7 @@ def run_example(
         ndim = 5
     else:
         ndim = 6
+
     hm.logs.debug_log("Dimensionality = {}".format(ndim))
 
     # ===========================================================================
@@ -185,12 +174,12 @@ def run_example(
     """
     Configure machine learning parameters.
     """
-    nfold = 3
-    training_proportion = 0.25
-    hyper_parameters_MGMM = [[1, 1e-8, 0.1, 6, 10], [2, 1e-8, 0.5, 6, 10]]
-    hyper_parameters_sphere = [None]
-    domains_sphere = [np.array([1e-2, 1e0])]
-    domains_MGMM = [np.array([1e-2, 1e0])]
+
+    training_proportion = 0.5
+    temperature = 0.9
+    epochs_num = 50
+    n_scaled = 6
+    n_unscaled = 2
 
     # ===========================================================================
     # Compute random positions to draw from for emcee sampler.
@@ -245,76 +234,53 @@ def run_example(
         chains, training_proportion=training_proportion
     )
 
-    # ===========================================================================
-    # Perform cross-validation
-    # ===========================================================================
-    hm.logs.info_log("Perform cross-validation...")
+    # =======================================================================
+    # Fit model
+    # =======================================================================
+    hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
     """
-    There are several different machine learning models. Cross-validation
-    allows the software to select the optimal model and the optimal model 
-    hyper-parameters for a given situation.
+    Fit model by selecing the configuration of hyper-parameters which 
+    minimises the validation variances.
     """
-    # MGMM model
-    validation_variances_MGMM = hm.utils.cross_validation(
-        chains_train,
-        domains_MGMM,
-        hyper_parameters_MGMM,
-        nfold=nfold,
-        modelClass=hm.model_legacy.ModifiedGaussianMixtureModel,
-        seed=0,
-    )
-    hm.logs.debug_log(
-        "Validation variances of MGMM = {}".format(validation_variances_MGMM)
-    )
-    best_hyper_param_MGMM_ind = np.argmin(validation_variances_MGMM)
-    best_hyper_param_MGMM = hyper_parameters_MGMM[best_hyper_param_MGMM_ind]
 
-    # Hyper-spherical model
-    validation_variances_sphere = hm.utils.cross_validation(
-        chains_train,
-        domains_sphere,
-        hyper_parameters_sphere,
-        nfold=nfold,
-        modelClass=hm.model_legacy.HyperSphere,
-        seed=0,
+    model = hm.model.RealNVPModel(
+        ndim,
+        n_scaled_layers=n_scaled,
+        n_unscaled_layers=n_unscaled,
+        temperature=temperature,
     )
-    hm.logs.debug_log(
-        "Validation variances of sphere = {}".format(validation_variances_sphere)
-    )
-    best_hyper_param_sphere_ind = np.argmin(validation_variances_sphere)
-    best_hyper_param_sphere = hyper_parameters_sphere[best_hyper_param_sphere_ind]
+    model.fit(chains_train.samples, epochs=epochs_num)
 
-    # ===========================================================================
-    # Select the optimal model from cross-validation results
-    # ===========================================================================
-    hm.logs.info_log("Select optimal model...")
-    """
-    This simply uses the cross-validation results to choose the model which 
-    has the smallest validation variance -- i.e. the best model for the job.
-    """
-    best_var_MGMM = validation_variances_MGMM[best_hyper_param_MGMM_ind]
-    best_var_sphere = validation_variances_sphere[best_hyper_param_sphere_ind]
-    if best_var_MGMM < best_var_sphere:
-        hm.logs.info_log(
-            "Using MGMM with hyper_parameters = {}".format(best_hyper_param_MGMM)
-        )
-        model = hm.model_legacy.ModifiedGaussianMixtureModel(
-            ndim, domains_MGMM, hyper_parameters=best_hyper_param_MGMM
-        )
+    # =======================================================================
+    # Visualise distributions
+    # =======================================================================
+
+    num_samp = chains_train.samples.shape[0]
+    # samps = np.array(model.sample(num_samp, temperature=1.))
+    samps_compressed = np.array(model.sample(num_samp))
+
+    labels = ["Bias", "NP", "PGC", "BMI", "DP", "AGE"]
+
+    if model_1:
+        model_lab = "model1"
+        labels = labels[:-1]
     else:
-        hm.logs.info_log("Using HyperSphere")
-        model = hm.model_legacy.HyperSphere(
-            ndim, domains_sphere, hyper_parameters=best_hyper_param_sphere
-        )
+        model_lab = "model2"
 
-    # ===========================================================================
-    # Fit learnt model for container function
-    # ===========================================================================
-    """
-    Once the model is selected the model is fit to chain samples.
-    """
-    fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
-    hm.logs.debug_log("Fit success = {}".format(fit_success))
+    hm.utils.plot_getdist_compare(
+        chains_train.samples, samps_compressed, labels=labels, legend_fontsize=17
+    )
+
+    if savefigs:
+        plt.savefig(
+            "examples/plots/nvp_pima_indian_corner_all_{}_T{}_tau{}_".format(
+                n_scaled + n_unscaled, temperature, tau
+            )
+            + model_lab
+            + ".png",
+            bbox_inches="tight",
+            dpi=300,
+        )
 
     # ===========================================================================
     # Computing evidence using learnt model and emcee chains
@@ -403,11 +369,5 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(
-        model_1,
-        tau,
-        nchains,
-        samples_per_chain,
-        nburn,
-        plot_corner=False,
-        plot_surface=False,
+        model_1, tau, nchains, samples_per_chain, nburn, plot_corner=True
     )

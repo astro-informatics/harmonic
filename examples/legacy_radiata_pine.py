@@ -1,20 +1,10 @@
 import numpy as np
-import sys
 import emcee
 import scipy.special as sp
 import time
 import matplotlib.pyplot as plt
-from functools import partial
-
-sys.path.append(".")
 import harmonic as hm
-
-sys.path.append("examples")
-import utils
-
-sys.path.append("harmonic")
-import model as md
-import flows
+import ex_utils
 
 
 def ln_likelihood(y, x, n, alpha, beta, tau):
@@ -301,7 +291,12 @@ def ln_evidence_analytic(x, y, n, mu_0, r_0, s_0, a_0, b_0):
 
 
 def run_example(
-    model_1=True, nchains=100, samples_per_chain=1000, nburn=500, plot_corner=False
+    model_1=True,
+    nchains=100,
+    samples_per_chain=1000,
+    nburn=500,
+    plot_corner=False,
+    plot_surface=False,
 ):
     """Run Radiata Pine example.
 
@@ -316,6 +311,9 @@ def run_example(
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
+
+        plot_surface: Plot surface and samples if true.
+
     """
 
     ndim = 3
@@ -324,13 +322,10 @@ def run_example(
     # Set general parameters.
     savefigs = True
 
-    training_proportion = 0.5
-    temperature = 0.9
-    epochs_num = 50
-    n_scaled = 3
-    n_unscaled = 3
-    learning_rate = 0.001
-    standardize = True
+    nfold = 3
+    training_proportion = 0.25
+    hyper_parameters_sphere = [None]
+    domains_sphere = [np.array([1e-1, 5e0])]
 
     # ===========================================================================
     # Set-up Priors
@@ -428,24 +423,22 @@ def run_example(
         chains, training_proportion=training_proportion
     )
 
-    # =======================================================================
-    # Fit model
-    # =======================================================================
-    hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
+    # ===========================================================================
+    # Fit learnt model for container function
+    # ===========================================================================
+    hm.logs.info_log("Select model...")
     """
-    Fit model by selecing the configuration of hyper-parameters which 
-    minimises the validation variances.
+    This could simply use the cross-validation results to choose the model which 
+    has the smallest validation variance -- i.e. the best model for the job. Here
+    however we manually select the hyper-sphere model.
     """
-    model = md.RealNVPModel(
-        ndim,
-        n_scaled_layers=n_scaled,
-        n_unscaled_layers=n_unscaled,
-        learning_rate=learning_rate,
-        standardize=standardize,
-        temperature=temperature,
-    )
-    # model = md.RQSplineFlow(ndim)
-    model.fit(chains_train.samples, epochs=epochs_num)
+
+    hm.logs.info_log("Using HyperSphere")
+    model = hm.model_legacy.HyperSphere(ndim, domains_sphere, hyper_parameters=None)
+
+    fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
+    hm.logs.debug_log("fit_success = {}".format(fit_success))
+    hm.logs.debug_log("model.R = {}".format(model.R))
 
     # ===========================================================================
     # Computing evidence using learnt model and emcee chains
@@ -518,41 +511,145 @@ def run_example(
     # Create corner/triangle plot.
     created_plots = False
     if plot_corner:
-        utils.plot_corner(samples.reshape((-1, ndim)))
+        ex_utils.plot_corner(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_corner.png", bbox_inches="tight"
-            )
+            plt.savefig("examples/plots/radiatapine_corner.png", bbox_inches="tight")
 
-        utils.plot_getdist(samples.reshape((-1, ndim)))
+        hm.utils.plot_getdist(samples.reshape((-1, ndim)))
         if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_getdist.png", bbox_inches="tight"
-            )
+            plt.savefig("examples/plots/radiatapine_getdist.png", bbox_inches="tight")
 
         plt.show(block=False)
-
-        # =======================================================================
-        # Visualise distributions
-        # =======================================================================
-
-        num_samp = chains_train.samples.shape[0]
-        # samps = np.array(model.sample(num_samp, temperature=1.))
-        samps_compressed = np.array(model.sample(num_samp, temperature=temperature))
-
-        utils.plot_getdist_compare(chains_train.samples, samps_compressed)
-        if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_corner_all.png", bbox_inches="tight"
-            )
-
-        utils.plot_getdist(samps_compressed)
-        if savefigs:
-            plt.savefig(
-                "examples/plots/nvp_radiatapine_flow_getdist.png", bbox_inches="tight"
-            )
-
         created_plots = True
+
+    # Plot model over first two parameters.
+
+    def model_predict_x0x1(x_2d):
+        x2 = 1.4e-5
+        x = np.append(x_2d, [x2])
+        # print("x01x1: x = {}".format(x))
+        return model.predict(x)
+
+    model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
+        model_predict_x0x1,
+        xmin=2900.0,
+        xmax=3100.0,
+        ymin=185.0 - 30.0,
+        ymax=185.0 + 30.0,
+        nx=1000,
+        ny=1000,
+    )
+
+    # Plot model.
+    ax = ex_utils.plot_image(
+        model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
+    )
+    plt.xlabel("$x_0$")
+    plt.ylabel("$x_1$")
+    # plt.axis('equal')
+    if savefigs:
+        plt.savefig(
+            "examples/plots/radiatapine_model_x0x1_image.png", bbox_inches="tight"
+        )
+
+    # Plot exponential of model.
+    ax = ex_utils.plot_image(
+        np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
+    )
+    plt.xlabel("$x_0$")
+    plt.ylabel("$x_1$")
+    # plt.axis('equal')
+    if savefigs:
+        plt.savefig(
+            "examples/plots/radiatapine_modelexp_x0x1_image.png", bbox_inches="tight"
+        )
+
+    # Plot model over second and third parameters.
+
+    def model_predict_x1x2(x_2d):
+        x0 = 3000.0
+        x = np.append([x0], x_2d)
+        # print("x1x2: x = {}".format(x))
+        return model.predict(x)
+
+    model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
+        model_predict_x1x2,
+        xmin=185.0 - 30.0,
+        xmax=185.0 + 30.0,
+        ymin=a_0 / b_0 - 0.5e-5,
+        ymax=a_0 / b_0 + 0.5e-5,
+        nx=1000,
+        ny=1000,
+    )
+
+    # Plot model.
+    ax = ex_utils.plot_image(
+        model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
+    )
+    plt.xlabel("$x_1$")
+    plt.ylabel("$x_2$")
+    # plt.axis('equal')
+    if savefigs:
+        plt.savefig(
+            "examples/plots/radiatapine_model_x1x2_image.png", bbox_inches="tight"
+        )
+
+    # Plot exponential of model.
+    ax = ex_utils.plot_image(
+        np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
+    )
+    plt.xlabel("$x_1$")
+    plt.ylabel("$x_2$")
+    # plt.axis('equal')
+    if savefigs:
+        plt.savefig(
+            "examples/plots/radiatapine_modelexp_x1x2_image.png", bbox_inches="tight"
+        )
+
+    # Plot model over first and third parameters.
+
+    def model_predict_x0x2(x_2d):
+        x1 = 185.0
+        x = np.append(x_2d[0], [x1])
+        x = np.append(x, x_2d[1])
+        return model.predict(x)
+
+    model_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
+        model_predict_x0x2,
+        xmin=2900.0,
+        xmax=3100.0,
+        ymin=a_0 / b_0 - 0.5e-5,
+        ymax=a_0 / b_0 + 0.5e-5,
+        nx=1000,
+        ny=1000,
+    )
+
+    # Plot model.
+    ax = ex_utils.plot_image(
+        model_grid, x_grid, y_grid, colorbar_label=r"$\log \varphi$"
+    )
+    plt.xlabel("$x_0$")
+    plt.ylabel("$x_1$")
+    # plt.axis('equal')
+
+    if savefigs:
+        plt.savefig(
+            "examples/plots/radiatapine_model_x0x2_image.png", bbox_inches="tight"
+        )
+
+    # Plot exponential of model.
+    ax = ex_utils.plot_image(
+        np.exp(model_grid), x_grid, y_grid, colorbar_label=r"$\varphi$"
+    )
+    plt.xlabel("$x_0$")
+    plt.ylabel("$x_2$")
+    # plt.axis('equal')
+    if savefigs:
+        plt.savefig(
+            "examples/plots/radiatapine_modelexp_x0x2_image.png", bbox_inches="tight"
+        )
+
+    plt.show(block=False)
 
     if created_plots:
         input("\nPress Enter to continue...")
@@ -565,11 +662,8 @@ if __name__ == "__main__":
     # Define parameters.
     model_1 = True
     nchains = 400
-    # nchains = 10
     samples_per_chain = 20000
-    # samples_per_chain = 2000
     nburn = 2000
-    # nburn = 100
     np.random.seed(2)
 
     hm.logs.info_log("Radiata Pine example")
@@ -588,4 +682,6 @@ if __name__ == "__main__":
     hm.logs.debug_log("-------------------------")
 
     # Run example.
-    samples = run_example(model_1, nchains, samples_per_chain, nburn, plot_corner=True)
+    samples = run_example(
+        model_1, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=True
+    )
