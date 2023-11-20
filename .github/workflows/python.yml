@@ -32,7 +32,9 @@ jobs:
     - name: Run tests
       run: |
         pytest --cov .
-        codecov --token d8f839b7-cf16-4d43-83c7-9d595f6e1d44
+    
+    - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
 
     - name: Build Documentation
       run: |
