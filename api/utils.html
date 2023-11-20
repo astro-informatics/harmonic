@@ -94,7 +94,7 @@
              
   <span class="target" id="module-harmonic.utils"></span><dl class="py function">
 <dt class="sig sig-object py" id="harmonic.utils.cross_validation">
-<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">cross_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">chains</span></em>, <em class="sig-param"><span class="pre">domains</span></em>, <em class="sig-param"><span class="pre">hyper_parameters</span></em>, <em class="sig-param"><span class="pre">nfold=2</span></em>, <em class="sig-param"><span class="pre">modelClass=&lt;class</span> <span class="pre">'harmonic.model_legacy.KernelDensityEstimate'&gt;</span></em>, <em class="sig-param"><span class="pre">seed=-1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.cross_validation" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">cross_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">chains</span></em>, <em class="sig-param"><span class="pre">domains:</span> <span class="pre">List</span></em>, <em class="sig-param"><span class="pre">hyper_parameters:</span> <span class="pre">List</span></em>, <em class="sig-param"><span class="pre">nfold=2</span></em>, <em class="sig-param"><span class="pre">modelClass=&lt;class</span> <span class="pre">'harmonic.model_legacy.KernelDensityEstimate'&gt;</span></em>, <em class="sig-param"><span class="pre">seed:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#harmonic.utils.cross_validation" title="Permalink to this definition"></a></dt>
 <dd><p>Perform n-fold validation for given model using chains to be split into
 validation and training data.</p>
 <p>First, splits data into nfold chunks. Second, fits the model using each of
@@ -107,12 +107,12 @@ This can be used to decide which hyper-parameters list was better.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>chains</strong> (<a class="reference internal" href="index.html#harmonic.Chains" title="harmonic.Chains"><em>Chains</em></a>) – Chains containing samples (to be split into
 training and validation data herein).</p></li>
-<li><p><strong>domains</strong> (<em>list</em>) – Domains of the model’s parameters.</p></li>
-<li><p><strong>hyper_parameters</strong> (<em>list</em>) – List of hyper_parameters where each entry is a
+<li><p><strong>domains</strong> (<em>List</em>) – Domains of the model’s parameters.</p></li>
+<li><p><strong>hyper_parameters</strong> (<em>List</em>) – List of hyper_parameters where each entry is a
 hyper_parameter list to be considered.</p></li>
 <li><p><strong>modelClass</strong> (<em>Model</em>) – Model that is being cross validated (default =
 KernelDensityEstimate).</p></li>
-<li><p><strong>seed</strong> (<em>long</em>) – Seed for random number generator when drawing the chains
+<li><p><strong>seed</strong> (<em>int</em>) – Seed for random number generator when drawing the chains
 (if this is negative the seed is not set).</p></li>
 </ul>
 </dd>
@@ -120,7 +120,7 @@ KernelDensityEstimate).</p></li>
 <dd class="field-even"><p>Mean log validation variance (averaged over nfolds) for each hyper-parameter.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(list)</p>
+<dd class="field-odd"><p>(List)</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>ValueError</strong> – Raised if model is not one of the posible models.</p>
@@ -129,8 +129,88 @@ KernelDensityEstimate).</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="harmonic.utils.eval_func_on_grid">
+<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">eval_func_on_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.eval_func_on_grid" title="Permalink to this definition"></a></dt>
+<dd><p>Evalute 2D function on a grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>-</em>) – Function to evalate.</p></li>
+<li><p><strong>xmin</strong> (<em>-</em>) – Minimum x value to consider in grid domain.</p></li>
+<li><p><strong>xmax</strong> (<em>-</em>) – Maximum x value to consider in grid domain.</p></li>
+<li><p><strong>ymin</strong> (<em>-</em>) – Minimum y value to consider in grid domain.</p></li>
+<li><p><strong>ymax</strong> (<em>-</em>) – Maximum y value to consider in grid domain.</p></li>
+<li><p><strong>nx</strong> (<em>-</em>) – Number of samples to include in grid in x direction.</p></li>
+<li><p><strong>ny</strong> (<em>-</em>) – Number of samples to include in grid in y direction.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Function values evaluated on the 2D grid.
+- x_grid:</p>
+<blockquote>
+<div><p>x values over the 2D grid.</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>y_grid:</dt><dd><p>y values over the 2D grid.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>func_eval_grid</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="harmonic.utils.plot_getdist">
+<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">plot_getdist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.plot_getdist" title="Permalink to this definition"></a></dt>
+<dd><p>Plot triangle plot of marginalised distributions using getdist package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>-</em>) – 2D array of shape (ndim, nsamples) containing samples.</p></li>
+<li><p><strong>labels</strong> (<em>-</em>) – Array of strings containing axis labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="harmonic.utils.plot_getdist_compare">
+<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">plot_getdist_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">17</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.plot_getdist_compare" title="Permalink to this definition"></a></dt>
+<dd><p>Plot triangle plot of marginalised distributions using getdist package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples1</strong> – 2D array of shape (ndim, nsamples) containing samples from the posterior.</p></li>
+<li><p><strong>samples2</strong> – 2D array of shape (ndim, nsamples) containing samples from the concentrated flow.</p></li>
+<li><p><strong>labels</strong> – Array of strings containing axis labels for both sets of samples.</p></li>
+<li><p><strong>fontsize</strong> – Plot fontsize.</p></li>
+<li><p><strong>legend_fontsize</strong> – Plot legend fontsize.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="harmonic.utils.split_data">
-<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">split_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_proportion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.split_data" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">split_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_proportion</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span></span></span><a class="headerlink" href="#harmonic.utils.split_data" title="Permalink to this definition"></a></dt>
 <dd><p>Split the data in a chains instance into two (e.g. training and test sets).</p>
 <p>New chains instances can be used for training and calculation the evidence
 on the “test” set.</p>
@@ -140,19 +220,19 @@ into the training set and the following go into the test set.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>chains</strong> (<a class="reference internal" href="index.html#harmonic.Chains" title="harmonic.Chains"><em>Chains</em></a>) – Instance of a chains class containing the data to be split.</p></li>
-<li><p><strong>training_proportion</strong> (<em>double</em>) – Proportion of data to be used in training
+<li><p><strong>training_proportion</strong> (<em>float</em>) – Proportion of data to be used in training
 (default=0.5)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>A tuple containing the following two Chains.</p>
 <blockquote>
-<div><ul class="simple">
-<li><p>chains_train (Chains): Instance of a chains class containing
-chains to be used to fit the model (e.g. training).</p></li>
-<li><p>chains_test (Chains): Instance of a chains class containing
-chains to be used to calculate the evidence (e.g. testing).</p></li>
-</ul>
+<div><dl class="simple">
+<dt>chains_train (Chains): Instance of a chains class containing</dt><dd><p>chains to be used to fit the model (e.g. training).</p>
+</dd>
+<dt>chains_test (Chains): Instance of a chains class containing</dt><dd><p>chains to be used to calculate the evidence (e.g. testing).</p>
+</dd>
+</dl>
 </div></blockquote>
 </p>
 </dd>
@@ -172,32 +252,30 @@ chains to be used to calculate the evidence (e.g. testing).</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="harmonic.utils.validation_fit_indexes">
-<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">validation_fit_indexes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_fold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nchains_in_val_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.utils.validation_fit_indexes" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">harmonic.utils.</span></span><span class="sig-name descname"><span class="pre">validation_fit_indexes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_fold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nchains_in_val_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#harmonic.utils.validation_fit_indexes" title="Permalink to this definition"></a></dt>
 <dd><p>Extract the correct indexes for the chains of the validation and training
 sets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i_fold</strong> (<em>long</em>) – Cross-validation iteration to perform.</p></li>
-<li><p><strong>nchains_in_val_set</strong> (<em>long</em>) – The number of chains that will go in each
+<li><p><strong>i_fold</strong> (<em>int</em>) – Cross-validation iteration to perform.</p></li>
+<li><p><strong>nchains_in_val_set</strong> (<em>int</em>) – The number of chains that will go in each
 validation set.</p></li>
-<li><p><strong>nfold</strong> (<em>long</em>) – Number of fold validation sets to be made.</p></li>
-<li><p><strong>indexes</strong> (<em>list</em>) – List of the chains to be used in fold validation that
+<li><p><strong>nfold</strong> (<em>int</em>) – Number of fold validation sets to be made.</p></li>
+<li><p><strong>indexes</strong> (<em>List</em>) – List of the chains to be used in fold validation that
 need to be split.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>A tuple containing the following two lists of indices.</p>
 <blockquote>
-<div><ul class="simple">
-<li><p>indexes_val (list): List of indexes for the validation set.</p></li>
-<li><p>indexes_fit (list): List of indexes for the training set.</p></li>
-</ul>
+<div><p>indexes_val (List): List of indexes for the validation set.</p>
+<p>indexes_fit (List): List of indexes for the training set.</p>
 </div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(list, list)</p>
+<dd class="field-odd"><p>(List, List)</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>ValueError</strong> – Raised if the value of i_fold does not fall between 0 and
