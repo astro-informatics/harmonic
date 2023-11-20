@@ -1,3 +1,5 @@
+ignore:
+  - "**/utils*"
 coverage:
   status:
     patch: false
