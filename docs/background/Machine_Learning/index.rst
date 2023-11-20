@@ -31,4 +31,4 @@ We also provide support for legacy models, which are somewhat less expressive bu
 
       .. include:: mgmm.rst
 
-.. note:: This list of models is by no means comprehensive, and bespoke models may be implemented which perform better (*i.e.* lower cross-validation variance) in specific use-cases.
+.. note:: This list of models is by no means comprehensive, and bespoke models may be implemented which perform better in specific use-cases.
