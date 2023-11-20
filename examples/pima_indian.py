@@ -256,7 +256,6 @@ def run_example(
     # =======================================================================
 
     num_samp = chains_train.samples.shape[0]
-    # samps = np.array(model.sample(num_samp, temperature=1.))
     samps_compressed = np.array(model.sample(num_samp))
 
     labels = ["Bias", "NP", "PGC", "BMI", "DP", "AGE"]
@@ -267,20 +266,21 @@ def run_example(
     else:
         model_lab = "model2"
 
-    hm.utils.plot_getdist_compare(
-        chains_train.samples, samps_compressed, labels=labels, legend_fontsize=17
-    )
-
-    if savefigs:
-        plt.savefig(
-            "examples/plots/nvp_pima_indian_corner_all_{}_T{}_tau{}_".format(
-                n_scaled + n_unscaled, temperature, tau
-            )
-            + model_lab
-            + ".png",
-            bbox_inches="tight",
-            dpi=300,
+    if plot_corner:
+        hm.utils.plot_getdist_compare(
+            chains_train.samples, samps_compressed, labels=labels, legend_fontsize=17
         )
+
+        if savefigs:
+            plt.savefig(
+                "examples/plots/nvp_pima_indian_corner_all_{}_T{}_tau{}_".format(
+                    n_scaled + n_unscaled, temperature, tau
+                )
+                + model_lab
+                + ".png",
+                bbox_inches="tight",
+                dpi=300,
+            )
 
     # ===========================================================================
     # Computing evidence using learnt model and emcee chains
