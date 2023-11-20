@@ -126,6 +126,10 @@ A BibTeX entry for the paper is:
         year     = {2023}
      }
 
+Please *also* cite `Polanska et al. (2023) <https://arxiv.org/abs/2307.00048>`_ if using normalizing flow models.
+
+A BibTeX entry for the paper is:
+
 .. code-block::
 
      @inproceedings{polanska:harmonic_nfs_maxent,
