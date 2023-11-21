@@ -84,10 +84,10 @@ def make_training_loop(model):
             if verbose:
                 if num_epochs > 10:
                     if epoch % int(num_epochs / 10) == 0:
-                        pbar.set_description(f"Training NF, current loss: {value:.3f}")
+                        pbar.set_description(f"Training NF")
                 else:
                     if epoch == num_epochs:
-                        pbar.set_description(f"Training NF, current loss: {value:.3f}")
+                        pbar.set_description(f"Training NF")
 
         return rng, best_state, loss_values
 
