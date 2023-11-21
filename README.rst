@@ -12,9 +12,9 @@
     :target: http://perso.crans.org/besson/LICENSE.html
 .. image:: http://img.shields.io/badge/arXiv-2111.12720-orange.svg?style=flat
     :target: https://arxiv.org/abs/2111.12720
-.. image:: http://img.shields.io/badge/arXiv-2207.04037-red.svg?style=flat
+.. image:: http://img.shields.io/badge/arXiv-2207.04037-orange.svg?style=flat
     :target: https://arxiv.org/abs/2207.04037
-.. image:: http://img.shields.io/badge/arXiv-2307.00048-red.svg?style=flat
+.. image:: http://img.shields.io/badge/arXiv-2307.00048-orange.svg?style=flat
     :target: https://arxiv.org/abs/2307.00048
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
