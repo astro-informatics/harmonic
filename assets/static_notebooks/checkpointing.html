@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; Harmonic 1.1.1 documentation</title>
+  <title>&lt;no title&gt; &mdash; Harmonic 1.2.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -35,7 +35,7 @@
             <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.1.1
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -98,6 +98,23 @@
 <dt>{</dt><dd><p>“cell_type”: “markdown”,
 “metadata”: {</p>
 <blockquote>
+<div><p>“colab_type”: “text”,
+“id”: “view-in-github”</p>
+</div></blockquote>
+<p>},
+“source”: [</p>
+<blockquote>
+<div><p>“&lt;a href=&quot;<a class="reference external" href="https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/checkpointing.ipynb">https://colab.research.google.com/github/astro-informatics/harmonic/blob/main/notebooks/checkpointing.ipynb</a>&quot; target=&quot;_parent&quot;&gt;&lt;img src=&quot;<a class="reference external" href="https://colab.research.google.com/assets/colab-badge.svg">https://colab.research.google.com/assets/colab-badge.svg</a>&quot; alt=&quot;Open In Colab&quot;/&gt;&lt;/a&gt;”</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“cell_type”: “markdown”,
+“metadata”: {</p>
+<blockquote>
 <div><p>“id”: “jPCvO91ZUA7o”</p>
 </div></blockquote>
 <p>},
@@ -106,8 +123,7 @@
 <div><p>“# Checkpointing”</p>
 </div></blockquote>
 <p>]</p>
-</dd>
-</dl>
+</div></blockquote>
 <p>},
 {</p>
 <blockquote>
@@ -152,7 +168,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 1,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “1OtVkBf7OAIF”</p>
@@ -190,7 +206,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 2,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “8PgO6f4VQSpD”</p>
@@ -253,7 +269,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 3,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “xjsxOkX0QSzL”</p>
@@ -288,7 +304,7 @@
 <p>},
 “source”: [</p>
 <blockquote>
-<div><p>“For absolute simplicity let’s use the <cite>harmonic</cite> HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.”</p>
+<div><p>“Let’s use the <cite>harmonic</cite> rational quadratic spline model with default parameters.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -296,7 +312,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 4,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “Ju_YJlk2QS7x”</p>
@@ -305,13 +321,10 @@
 “outputs”: [],
 “source”: [</p>
 <blockquote>
-<div><p>“# Instantiate hyper-sphere modeln”,
-“domains_sphere = [np.array([1E0,1E0])] # Not used since not training model.n”,
-“model = hm.model.HyperSphere(ndim, domains_sphere) n”,
-“n”,
-“# Fit model by hand by fixing radiusn”,
-“model.set_R(np.sqrt(ndim)) # A good rule of thumb for a Gaussian with a diagonal covariancen”,
-“model.fitted = True”</p>
+<div><p>“# Instantiate modeln”,
+“model = hm.model.RQSplineModel(ndim) n”,
+“# How many epochs model will be trained forn”,
+“epochs_num = 4”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -336,13 +349,27 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 5,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “us1kBuWlQZTy”</p>
 </div></blockquote>
 <p>},
-“outputs”: [],
+“outputs”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“name”: “stderr”,
+“output_type”: “stream”,
+“text”: [</p>
+<blockquote>
+<div><p>“Training NF: 100%|██████████| 4/4 [01:45&lt;00:00, 26.27s/it]n”</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>],
 “source”: [</p>
 <blockquote>
 <div><p>“# Set initial random position and staten”,
@@ -350,10 +377,12 @@
 “rstate = np.random.get_state()n”,
 “n”,
 “# Define how often to checkpoint the evidence classn”,
-“chain_iterations = 10n”,
+“chain_iterations = 5n”,
 “n”,
-“# Instantiate the evidence classn”,
-“cal_ev = hm.Evidence(nchains, model)n”,
+“# Discard burn inn”,
+“sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[inv_cov])n”,
+“(pos, prob, rstate) = sampler.run_mcmc(pos, nburn, rstate0=rstate)n”,
+“n”,
 “n”,
 “for chain_i in range(chain_iterations):n”,
 ”    # Run the emcee sampler from previous endpointn”,
@@ -361,20 +390,30 @@
 ”    (pos, prob, rstate) = sampler.run_mcmc(pos, int(samples_per_chain/chain_iterations), rstate0=rstate)n”,
 ”    n”,
 ”    # Collect and format samplesn”,
-”    samples = np.ascontiguousarray(sampler.chain[:,:,:])n”,
-”    lnprob = np.ascontiguousarray(sampler.lnprobability[:,:])n”,
+”    samples = sampler.chainn”,
+”    lnprob = sampler.lnprobabilityn”,
 ”    chains = hm.Chains(ndim)n”,
 ”    chains.add_chains_3d(samples, lnprob)n”,
 ”    n”,
-”    # 1) Deserialize the Evidence classn”,
-”    if chain_i &gt; 0:n”,
+”    if chain_i == 0:n”,
+”        # Fit model on first set of samplesn”,
+”        model.fit(samples.reshape((-1,ndim)), epochs = epochs_num, verbose = True)n”,
+“n”,
+”        # Instantiate the evidence classn”,
+”        cal_ev = hm.Evidence(nchains, model)n”,
+“n”,
+”        # Serialize the Evidence Class n”,
+”        cal_ev.serialize(&quot;.temp.gaussian_example_{}.dat&quot;.format(ndim))n”,
+”        n”,
+”    # After model is trained, start calculating the evidencen”,
+”    else:n”,
+”        # 1) Deserialize the Evidence classn”,
 ”        cal_ev = hm.Evidence.deserialize(&quot;.temp.gaussian_example_{}.dat&quot;.format(ndim))n”,
-”    n”,
-”    # 2) Add these new chains to Evidence classn”,
-”    cal_ev.add_chains(chains)n”,
-”    n”,
-”    # 3) Serialize the Evidence Class n”,
-”    cal_ev.serialize(&quot;.temp.gaussian_example_{}.dat&quot;.format(ndim))n”,
+”        # 2) Add these new chains to Evidence classn”,
+”        cal_ev.add_chains(chains)n”,
+”        n”,
+”        # 3) Serialize the Evidence Class n”,
+”        cal_ev.serialize(&quot;.temp.gaussian_example_{}.dat&quot;.format(ndim))n”,
 ”    n”,
 ”    # Clear memory n”,
 ”    del chains, samples, lnprob, sampler, prob”</p>
@@ -409,7 +448,7 @@
 <blockquote>
 <div><p>“## Compute the Bayesian evidencen”,
 “n”,
-“Finally we simply compute the learnt harmonic mean estimator.  Here, we elect to compute the evidence in log space.”</p>
+“Finally we simply compute the learnt harmonic mean estimator.”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -417,7 +456,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 6,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “Eel3bSORQZW0”</p>
@@ -426,7 +465,7 @@
 “outputs”: [],
 “source”: [</p>
 <blockquote>
-<div><p>“ln_evidence, ln_evidence_std = cal_ev.compute_ln_evidence()”</p>
+<div><p>“ln_evidence = - cal_ev.ln_evidence_inv”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -451,7 +490,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 7,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “eSxxNW1KQZZc”</p>
@@ -498,7 +537,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 8,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “efPNgW8qQZcW”</p>
@@ -530,13 +569,29 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 9,
 “metadata”: {</p>
 <blockquote>
 <div><p>“id”: “WrB47hA3QZfM”</p>
 </div></blockquote>
 <p>},
-“outputs”: [],
+“outputs”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“name”: “stdout”,
+“output_type”: “stream”,
+“text”: [</p>
+<blockquote>
+<div><p>“ln_evidence_err_neg = -0.0031277022888513755n”,
+“ln_evidence_err_pos = 0.0031179502607592245n”,
+“ln_evidence_err_avg = 0.0031228262748053n”</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>],
 “source”: [</p>
 <blockquote>
 <div><p>“ln_evidence_err_neg, ln_evidence_err_pos = cal_ev.compute_ln_inv_evidence_errors()n”,
@@ -551,7 +606,7 @@
 {</p>
 <blockquote>
 <div><p>“cell_type”: “code”,
-“execution_count”: null,
+“execution_count”: 10,
 “metadata”: {</p>
 <blockquote>
 <div><dl class="simple">
@@ -563,7 +618,23 @@
 “outputId”: “cc01f114-07e0-4abe-ea2f-72fede5943f8”</p>
 </div></blockquote>
 <p>},
-“outputs”: [],
+“outputs”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“name”: “stdout”,
+“output_type”: “stream”,
+“text”: [</p>
+<blockquote>
+<div><p>“ln_evidence (harmonic) = 9.186614990234375 (+ 0.0031179502607592245 / -0.0031277022888513755)n”,
+“ln_evidence (analytic) = 9.189385332046726n”,
+“nsigma = 0.887126458074755n”</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>],
 “source”: [</p>
 <blockquote>
 <div><p>“print(‘ln_evidence (harmonic) = {} (+ {} / {})’.format(ln_evidence, ln_evidence_err_pos, ln_evidence_err_neg))n”,
@@ -605,8 +676,7 @@
 <p>},
 “kernelspec”: {</p>
 <blockquote>
-<div><p>“display_name”: “Python 3.9.0 (‘s2fft’)”,
-“language”: “python”,
+<div><p>“display_name”: “Python 3”,
 “name”: “python3”</p>
 </div></blockquote>
 <p>},
@@ -623,16 +693,7 @@
 “name”: “python”,
 “nbconvert_exporter”: “python”,
 “pygments_lexer”: “ipython3”,
-“version”: “3.9.0”</p>
-</div></blockquote>
-<p>},
-“vscode”: {</p>
-<blockquote>
-<div><dl class="simple">
-<dt>“interpreter”: {</dt><dd><p>“hash”: “3425e24474cbe920550266ea26b478634978cc419579f9dbcf479231067df6a3”</p>
-</dd>
-</dl>
-<p>}</p>
+“version”: “3.9.18”</p>
 </div></blockquote>
 <p>}</p>
 </div></blockquote>
@@ -651,7 +712,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty.</p>
+    <p>&#169; Copyright 2023, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Alicja Polanska.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

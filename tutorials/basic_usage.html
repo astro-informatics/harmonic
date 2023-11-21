@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Basic Usage &mdash; Harmonic 1.1.1 documentation</title>
+  <title>Basic Usage &mdash; Harmonic 1.2.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -40,7 +40,7 @@
             <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.1.1
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -68,8 +68,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Basic Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Define-Bayesian-posterior-function">Define Bayesian posterior function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Compute-samples-using-emcee">Compute samples using <code class="docutils literal notranslate"><span class="pre">emcee</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Compute-evidence-using-harmonic">Compute evidence using <code class="docutils literal notranslate"><span class="pre">harmonic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Collating-samples-using-harmonic.chains-class">Collating samples using <code class="docutils literal notranslate"><span class="pre">harmonic.chains</span></code> class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Compute-evidence-using-harmonic">Compute evidence using <code class="docutils literal notranslate"><span class="pre">harmonic</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Collating-samples-using-harmonic.chains-class">Collating samples using <code class="docutils literal notranslate"><span class="pre">harmonic.chains</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Train-the-machine-learning-model">Train the machine learning model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Posterior-triangle-plot">Posterior triangle plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Compute-the-Bayesian-evidence">Compute the Bayesian evidence</a></li>
@@ -112,7 +112,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="Basic-Usage">
+  <p><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></p>
+<div class="section" id="Basic-Usage">
 <h1>Basic Usage<a class="headerlink" href="#Basic-Usage" title="Permalink to this headline"></a></h1>
 <p>In this interactive tutorial we demonstrate basic usage of <code class="docutils literal notranslate"><span class="pre">harmonic</span></code>, using <code class="docutils literal notranslate"><span class="pre">emcee</span></code> as the sampler.</p>
 <div class="nbinput nblast docutils container">
@@ -122,16 +123,6 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
 <span class="c1"># Install packages</span>
 <span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">harmonic</span> <span class="n">emcee</span> <span class="n">getdist</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
-<span class="c1"># Google Colaboratory-specific: clone useful utils module from harmonic repo</span>
-<span class="err">!</span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">astro</span><span class="o">-</span><span class="n">informatics</span><span class="o">/</span><span class="n">harmonic</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 </div>
@@ -146,7 +137,6 @@
 <span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">emcee</span>
-<span class="kn">from</span> <span class="nn">harmonic</span> <span class="kn">import</span> <span class="n">model_nf</span>
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 </pre></div>
 </div>
@@ -228,9 +218,8 @@
 <h2>Compute evidence using <code class="docutils literal notranslate"><span class="pre">harmonic</span></code><a class="headerlink" href="#Compute-evidence-using-harmonic" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">harmonic</span></code> requires only posterior samples. There are no constraints on the type of sampling algorithm used.</p>
 <p>Once we have posterior samples to hand, they can be post-processed using <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> to compute the Bayesian evidence.</p>
-</div>
 <div class="section" id="Collating-samples-using-harmonic.chains-class">
-<h2>Collating samples using <code class="docutils literal notranslate"><span class="pre">harmonic.chains</span></code> class<a class="headerlink" href="#Collating-samples-using-harmonic.chains-class" title="Permalink to this headline"></a></h2>
+<h3>Collating samples using <code class="docutils literal notranslate"><span class="pre">harmonic.chains</span></code> class<a class="headerlink" href="#Collating-samples-using-harmonic.chains-class" title="Permalink to this headline"></a></h3>
 <p>We first configure the chains into a <code class="docutils literal notranslate"><span class="pre">harmonic</span></code>-friendly shape, which we do as follows.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -253,6 +242,7 @@
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="Train-the-machine-learning-model">
 <h3>Train the machine learning model<a class="headerlink" href="#Train-the-machine-learning-model" title="Permalink to this headline"></a></h3>
 <p>We simply select the model we wish to adopt and fit the model.</p>
@@ -264,12 +254,12 @@
 
 <span class="n">n_scaled_layers</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">n_unscaled_layers</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">temperature</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="mf">0.8</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">model_nf</span><span class="o">.</span><span class="n">RealNVPModel</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">standardize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">RealNVPModel</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">standardize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
 <span class="n">epochs_num</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="c1"># Train model</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chains_train</span><span class="o">.</span><span class="n">samples</span><span class="p">),</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs_num</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">chains_train</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs_num</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -278,25 +268,21 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Training NF, current loss: 6.950: 100%|██████████| 20/20 [01:51&lt;00:00,  5.58s/it]
+Training NF, current loss: 6.947: 100%|██████████| 20/20 [01:51&lt;00:00,  5.59s/it]
 </pre></div></div>
 </div>
 </div>
 <div class="section" id="Posterior-triangle-plot">
 <h3>Posterior triangle plot<a class="headerlink" href="#Posterior-triangle-plot" title="Permalink to this headline"></a></h3>
-<p>Let’s also plot slices of the posterior using these samples to see what we’re working with! It is important for the concentrated flow (here we set temperature equal to 0.9) to be contained within the posterior. If this is not the case, the evidence estimate will not be accurate. If the flow is not contained within the posterior, try reducing the temperature or learning the posterior better by training for longer or changing the model architecture or hyperparameters.</p>
+<p>Let’s also plot slices of the posterior using these samples to see what we’re working with! It is important for the concentrated flow (here we set temperature equal to 0.8) to be contained within the posterior. If this is not the case, the evidence estimate will not be accurate. If the flow is not contained within the posterior, try reducing the temperature or learning the posterior better by training for longer or changing the model architecture or hyperparameters.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../examples&quot;</span><span class="p">)</span>
-<span class="kn">import</span> <span class="nn">utils</span> <span class="k">as</span> <span class="nn">ex_utils</span>
-
-<span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="p">))</span>
 <span class="n">samp_num</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">flow_samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">samp_num</span><span class="p">)</span>
-<span class="n">ex_utils</span><span class="o">.</span><span class="n">plot_getdist_compare</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">flow_samples</span><span class="p">)</span>
+<span class="n">hm</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">plot_getdist_compare</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">flow_samples</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -320,7 +306,8 @@ Training NF, current loss: 6.950: 100%|██████████| 20/20 [01
 
 <span class="c1"># Pass the evidence class the inference chains and compute the evidence!</span>
 <span class="n">ev</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">chains_infer</span><span class="p">)</span>
-<span class="n">evidence</span><span class="p">,</span> <span class="n">evidence_std</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compute_evidence</span><span class="p">()</span>
+<span class="n">ln_inv_evidence</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">ln_evidence_inv</span>
+<span class="n">err_ln_inv_evidence</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compute_ln_inv_evidence_errors</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -355,8 +342,6 @@ Training NF, current loss: 6.950: 100%|██████████| 20/20 [01
     <span class="k">return</span> <span class="n">ln_norm_lik</span>
 
 <span class="n">ln_inv_evidence_analytic</span> <span class="o">=</span> <span class="o">-</span><span class="n">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">)</span>
-<span class="n">ln_inv_evidence</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">ln_evidence_inv</span>
-<span class="n">err_ln_inv_evidence</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compute_ln_inv_evidence_errors</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -376,9 +361,9 @@ Training NF, current loss: 6.950: 100%|██████████| 20/20 [01
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ln inverse evidence (harmonic) = -4.594318333913113 +/- (-0.0024400552018210885, 0.0024341158219083224)
+ln inverse evidence (harmonic) = -4.595915794372559 +/- (-0.003410517655520678, 0.0033989255487287665)
 ln inverse evidence (analytic) = -4.594692666023363
-nsigma = [-0.15341133  0.15378566]
+nsigma = [-0.35863422  0.35985735]
 </pre></div></div>
 </div>
 <p>As expected, the evidence computed by <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> is close to that computed analytically.</p>
@@ -397,7 +382,7 @@ nsigma = [-0.15341133  0.15378566]
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty.</p>
+    <p>&#169; Copyright 2023, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Alicja Polanska.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

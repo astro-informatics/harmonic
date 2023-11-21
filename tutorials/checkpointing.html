@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checkpointing &mdash; Harmonic 1.1.1 documentation</title>
+  <title>Checkpointing &mdash; Harmonic 1.2.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -40,7 +40,7 @@
             <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.1.1
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -103,7 +103,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="Checkpointing">
+  <p><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></p>
+<div class="section" id="Checkpointing">
 <h1>Checkpointing<a class="headerlink" href="#Checkpointing" title="Permalink to this headline"></a></h1>
 <p>During high-dimensional Bayesian analysis, which is typically computationally heavy, one must frequently run sampling and/or evidence estimation for long periods of time.</p>
 <p>One issue often encountered is that the computing facilities may go offline or timeout during this period, thus discarding any values computed already.</p>
@@ -120,7 +121,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
@@ -135,7 +136,7 @@
 <h2>Basic problem setup<a class="headerlink" href="#Basic-problem-setup" title="Permalink to this headline"></a></h2>
 <p>Define a Bayesian posterior function (here we’ll use a simple Gaussian example).</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
@@ -174,7 +175,7 @@
 <p>Note that the final function <code class="docutils literal notranslate"><span class="pre">init_cov</span></code> is used to randomly assign a diagonal covariance proportional to the identiy matrix.</p>
 <p>Then define parameters for <code class="docutils literal notranslate"><span class="pre">`emcee</span></code> &lt;<a class="reference external" href="https://emcee.readthedocs.io/en/stable/">https://emcee.readthedocs.io/en/stable/</a>&gt;`__ and the covariance of our Gaussian example.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define parameters for emcee sampling</span>
@@ -192,18 +193,15 @@
 </pre></div>
 </div>
 </div>
-<p>For absolute simplicity let’s use the <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> HyperSphere model and rather than learn the model from training samples we will simply fix the radius of the model.</p>
+<p>Let’s use the <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> rational quadratic spline model with default parameters.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate hyper-sphere model</span>
-<span class="n">domains_sphere</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1E0</span><span class="p">,</span><span class="mf">1E0</span><span class="p">])]</span> <span class="c1"># Not used since not training model.</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">HyperSphere</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">domains_sphere</span><span class="p">)</span>
-
-<span class="c1"># Fit model by hand by fixing radius</span>
-<span class="n">model</span><span class="o">.</span><span class="n">set_R</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span> <span class="c1"># A good rule of thumb for a Gaussian with a diagonal covariance</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fitted</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">RQSplineModel</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+<span class="c1"># How many epochs model will be trained for</span>
+<span class="n">epochs_num</span> <span class="o">=</span> <span class="mi">4</span>
 </pre></div>
 </div>
 </div>
@@ -211,8 +209,8 @@
 <div class="section" id="id1">
 <h2>Checkpointing<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <p>Now we need to run the sampler to collect samples but we wish to checkpoint periodically to protect against system crashes or timeouts. One simple way to do this is to execute the following loop.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set initial random position and state</span>
@@ -220,10 +218,12 @@
 <span class="n">rstate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
 
 <span class="c1"># Define how often to checkpoint the evidence class</span>
-<span class="n">chain_iterations</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">chain_iterations</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="c1"># Instantiate the evidence class</span>
-<span class="n">cal_ev</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span><span class="n">nchains</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+<span class="c1"># Discard burn in</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nchains</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">ln_posterior</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">inv_cov</span><span class="p">])</span>
+<span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">rstate</span><span class="p">)</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">nburn</span><span class="p">,</span> <span class="n">rstate0</span><span class="o">=</span><span class="n">rstate</span><span class="p">)</span>
+
 
 <span class="k">for</span> <span class="n">chain_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chain_iterations</span><span class="p">):</span>
     <span class="c1"># Run the emcee sampler from previous endpoint</span>
@@ -231,36 +231,54 @@
     <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">rstate</span><span class="p">)</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">samples_per_chain</span><span class="o">/</span><span class="n">chain_iterations</span><span class="p">),</span> <span class="n">rstate0</span><span class="o">=</span><span class="n">rstate</span><span class="p">)</span>
 
     <span class="c1"># Collect and format samples</span>
-    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">[:,:,:])</span>
-    <span class="n">lnprob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">lnprobability</span><span class="p">[:,:])</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">chain</span>
+    <span class="n">lnprob</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">lnprobability</span>
     <span class="n">chains</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Chains</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
     <span class="n">chains</span><span class="o">.</span><span class="n">add_chains_3d</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">lnprob</span><span class="p">)</span>
 
-    <span class="c1"># 1) Deserialize the Evidence class</span>
-    <span class="k">if</span> <span class="n">chain_i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">chain_i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Fit model on first set of samples</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">ndim</span><span class="p">)),</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs_num</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Instantiate the evidence class</span>
+        <span class="n">cal_ev</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span><span class="n">nchains</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+        <span class="c1"># Serialize the Evidence Class</span>
+        <span class="n">cal_ev</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">&quot;.temp.gaussian_example_</span><span class="si">{}</span><span class="s2">.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span>
+
+    <span class="c1"># After model is trained, start calculating the evidence</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># 1) Deserialize the Evidence class</span>
         <span class="n">cal_ev</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Evidence</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="s2">&quot;.temp.gaussian_example_</span><span class="si">{}</span><span class="s2">.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span>
+        <span class="c1"># 2) Add these new chains to Evidence class</span>
+        <span class="n">cal_ev</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span>
 
-    <span class="c1"># 2) Add these new chains to Evidence class</span>
-    <span class="n">cal_ev</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span>
-
-    <span class="c1"># 3) Serialize the Evidence Class</span>
-    <span class="n">cal_ev</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">&quot;.temp.gaussian_example_</span><span class="si">{}</span><span class="s2">.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span>
+        <span class="c1"># 3) Serialize the Evidence Class</span>
+        <span class="n">cal_ev</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">&quot;.temp.gaussian_example_</span><span class="si">{}</span><span class="s2">.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span>
 
     <span class="c1"># Clear memory</span>
     <span class="k">del</span> <span class="n">chains</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">lnprob</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span> <span class="n">prob</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Training NF: 100%|██████████| 4/4 [01:45&lt;00:00, 26.27s/it]
+</pre></div></div>
+</div>
 <p>Of course, it is not typically necessary to deserialize the <code class="docutils literal notranslate"><span class="pre">Evidence</span></code> class following each checkpoint but only if execution halts.</p>
 </div>
 <div class="section" id="Compute-the-Bayesian-evidence">
 <h2>Compute the Bayesian evidence<a class="headerlink" href="#Compute-the-Bayesian-evidence" title="Permalink to this headline"></a></h2>
-<p>Finally we simply compute the learnt harmonic mean estimator. Here, we elect to compute the evidence in log space.</p>
+<p>Finally we simply compute the learnt harmonic mean estimator.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence</span><span class="p">,</span> <span class="n">ln_evidence_std</span> <span class="o">=</span> <span class="n">cal_ev</span><span class="o">.</span><span class="n">compute_ln_evidence</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence</span> <span class="o">=</span> <span class="o">-</span> <span class="n">cal_ev</span><span class="o">.</span><span class="n">ln_evidence_inv</span>
 </pre></div>
 </div>
 </div>
@@ -269,7 +287,7 @@
 <h2>Results<a class="headerlink" href="#Results" title="Permalink to this headline"></a></h2>
 <p>For the simple Gaussian example considered, it’s also straightforward to compute the evidence analytically.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
@@ -293,7 +311,7 @@
 </div>
 <p>Let’s also compute the evidence analytically so that we can compare it to the value computed by <code class="docutils literal notranslate"><span class="pre">harmonic</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence_analytic</span> <span class="o">=</span> <span class="n">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">)</span>
@@ -301,8 +319,8 @@
 </div>
 </div>
 <p>Let’s compare the value computed by <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> and analytically.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ln_evidence_err_neg</span><span class="p">,</span> <span class="n">ln_evidence_err_pos</span> <span class="o">=</span> <span class="n">cal_ev</span><span class="o">.</span><span class="n">compute_ln_inv_evidence_errors</span><span class="p">()</span>
@@ -313,8 +331,18 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ln_evidence_err_neg = -0.0031277022888513755
+ln_evidence_err_pos = 0.0031179502607592245
+ln_evidence_err_avg = 0.0031228262748053
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ln_evidence (harmonic) = </span><span class="si">{}</span><span class="s1"> (+ </span><span class="si">{}</span><span class="s1"> / </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ln_evidence</span><span class="p">,</span> <span class="n">ln_evidence_err_pos</span><span class="p">,</span> <span class="n">ln_evidence_err_neg</span><span class="p">))</span>
@@ -322,6 +350,16 @@
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;nsigma = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ln_evidence</span> <span class="o">-</span> <span class="n">ln_evidence_analytic</span><span class="p">)</span> <span class="o">/</span> <span class="n">ln_evidence_err_avg</span><span class="p">))</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ln_evidence (harmonic) = 9.186614990234375 (+ 0.0031179502607592245 / -0.0031277022888513755)
+ln_evidence (analytic) = 9.189385332046726
+nsigma = 0.887126458074755
+</pre></div></div>
 </div>
 <p>As expected, the evidence computed by <code class="docutils literal notranslate"><span class="pre">harmonic</span></code> is close to that computed analytically.</p>
 </div>
@@ -338,7 +376,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty.</p>
+    <p>&#169; Copyright 2023, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Alicja Polanska.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learning a suitable target distribution &mdash; Harmonic 1.1.1 documentation</title>
+  <title>Learning a suitable target distribution &mdash; Harmonic 1.2.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -40,7 +40,7 @@
             <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.1.1
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -110,7 +110,25 @@ one can learn an approximation of the posterior that is normalised.  The approxi
 <p>Here we cover several functional forms for the learned flow models <span class="math notranslate nohighlight">\(\varphi(\theta)\)</span> which are used throughout the code. For these models no hyper-parameter optimisation is required, the flow should do all the heavy lifting for us!</p>
 <p>We also provide support for legacy models, which are somewhat less expressive but nonetheless useful for simple posterior distributions. Hyper-parameters of these models can be considered nodes of a conventional network, the values of which are learnt from a small sub-set of posterior samples.</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Normalising Flow</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Hyper-Sphere</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Kernel Density Estimator</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Modified Gaussian Mixtures</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><p>Details to follow.</p>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Normalising Flow</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Hyper-Sphere</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Kernel Density Estimator</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Modified Gaussian Mixtures</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><p>Normalizing flows are a class of probabilistic models that allow one to evaluate the density of and sample from a learned probability distribution (for a review see <a class="reference external" href="https://arxiv.org/abs/1912.02762">(Papamakarios et al., 2021)</a>). They consist of a series of transformations that are applied to a simple base distribution.  A vector <span class="math notranslate nohighlight">\(\theta\)</span>
+of an unknown distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span>, can be expressed through a transformation <span class="math notranslate nohighlight">\(T\)</span> of a vector <span class="math notranslate nohighlight">\(z\)</span> sampled from a base distribution <span class="math notranslate nohighlight">\(q(z)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\theta = T(z), \text{ where } z \sim q(z).\]</div>
+<p>Typically the base distribution is chosen so that its density can be evaluated simply and that it can be sampled from easily. Often a Gaussian is used for the base distribution.
+The unknown distribution can then be recovered by the change of variables formula:</p>
+<div class="math notranslate nohighlight">
+\[p(\theta) = q(z) \vert \det J_{T}(z)  \vert^{-1},\]</div>
+<p>where <span class="math notranslate nohighlight">\(J_{T}(z)\)</span> is the Jacobian corresponding to transformation <span class="math notranslate nohighlight">\(T\)</span>. In a flow-based model <span class="math notranslate nohighlight">\(T\)</span> consists of a series of learned transformations that are each invertible and differentiable, so that the full transformation is also invertible and differentiable.  This allows us to compose multiple simple transformations with learned parameters, into what is called a flow, obtaining a normalized approximation of the unknown distribution that we can sample from and evaluate.  Careful attention is given to construction of the transformations such that the determinant of the Jacobian can be computed easily.</p>
+<p><strong>Real NVP Flows</strong></p>
+<p>A relatively simple example of a normalizing flow is the real-valued non-volume preserving (real NVP) flow introduced in <a class="reference external" href="https://arxiv.org/abs/1605.08803">(Dinh et al., 2016)</a>.
+It consists of a series of bijective transformations given by affine coupling layers. Consider the <span class="math notranslate nohighlight">\(D\)</span> dimensional input <span class="math notranslate nohighlight">\(z\)</span>, split into elements up to and following <span class="math notranslate nohighlight">\(d\)</span>, respectively, <span class="math notranslate nohighlight">\(z_{1:d}\)</span> and <span class="math notranslate nohighlight">\(z_{d+1:D}\)</span>, for <span class="math notranslate nohighlight">\(d&lt;D\)</span>.  Given input <span class="math notranslate nohighlight">\(z\)</span>, the output <span class="math notranslate nohighlight">\(y\)</span> of an affine couple layer is calculated by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y_{1:d} =   &amp; z_{1:d} ;                                                 \\
+y_{d+1:D} = &amp; z_{d+1:D} \odot \exp\bigl(s(z_{1:d})\bigr) +  t(z_{1:d}),\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\odot\)</span> denotes Hadamard (elementwise) multiplication.
+The scale <span class="math notranslate nohighlight">\(s\)</span> and translation <span class="math notranslate nohighlight">\(t\)</span> are typically represented by neural networks with learnable parameters that take as input <span class="math notranslate nohighlight">\(z_{1:d}\)</span>.  This construction is easily invertible and ensures the Jacobian is a lower-triangular matrix, making its determinant efficient to calculate.</p>
+<p><strong>Rational Quadratic Spline Flows</strong></p>
+<p>A more complex and expressive class of flows are rational quadratic spline flows described in detail in <a class="reference external" href="https://arxiv.org/abs/1906.04032">(Durkan et al., 2019)</a>. The architecture is similar to Real NVP flows, but the layers include monotonic splines. These are piecewise functions consisting of multiple segments of monotonic rational-quadratics with learned parameters. Such layers are combined with alternating affine transformations to create the normalizing flow. Rational quadratic spline flows are well-suited to higher dimensional and more complex problems than real NVP flows.</p>
 </div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><p>The simplest model one may wish to consider is a hyper-sphere, much like the truncated harmonic mean estimator. However, here we learn the optimal radius of the hyper-sphere, rather than setting the radius based on arbitrary level-sets of the posterior as in <a class="reference external" href="https://aip.scitation.org/doi/pdf/10.1063/1.3275622?casa_token=-zryxMRjTG4AAAAA:R5AtxFgs17dICu_rs2nCHELMxiOTl1-KtGm-yKhq4uv3Xz45Pa1imaUUpOFfFGqeFqwOAqNMIuNy">Robert and Wraith (2009)</a>.</p>
 <p>Consider the target distribution defined by the normalised hyper-sphere</p>
 <div class="math notranslate nohighlight">
@@ -192,7 +210,7 @@ While the modified Gaussian mixture model can effectively handle multimodal dist
 </div></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This list of models is by no means comprehensive, and bespoke models may be implemented which perform better (<em>i.e.</em> lower cross-validation variance) in specific use-cases.</p>
+<p>This list of models is by no means comprehensive, and bespoke models may be implemented which perform better in specific use-cases.</p>
 </div>
 </div>
 </div>
@@ -208,7 +226,7 @@ While the modified Gaussian mixture model can effectively handle multimodal dist
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty.</p>
+    <p>&#169; Copyright 2023, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Alicja Polanska.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
