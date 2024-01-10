@@ -71,8 +71,8 @@ Now, suppose you have collected many posterior samples, perhaps drawn using `emc
    chains_train, chains_infer = hm.utils.split_data(chains, training_proportion=0.5)
 
    # Select a machine learning model and train it 
-   model = hm.model.[select a flow model](model hyper-parameters)
-   fit_success = model.fit(chains_train.samples, chains_train.ln_posterior)
+   model = hm.model.[select a flow model](ndim, model hyper-parameters)
+   model.fit(chains_train.samples)
 
    # Instantiate harmonic's evidence class
    ev = hm.Evidence(chains_infer.nchains, model)
