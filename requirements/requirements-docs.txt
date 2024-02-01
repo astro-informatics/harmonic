@@ -1,7 +1,7 @@
 sphinx
 nbsphinx-link
 sphinx-rtd-theme
-sphinx_toolbox=
+sphinx_toolbox
 sphinx-tabs
 sphinx-rtd-dark-mode
 sphinxcontrib-bibtex
