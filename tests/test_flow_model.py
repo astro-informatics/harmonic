@@ -162,7 +162,7 @@ def test_flows_gaussian_pdf(model, var):
     if isinstance(model, md.RealNVPModel):
         epochs = 200
     elif isinstance(model, md.RQSplineModel):
-        epochs = 60
+        epochs = 70
 
     # Initialize a PRNG key (you can use any valid key)
     key = jax.random.PRNGKey(0)
