@@ -5,11 +5,13 @@ import jax
 import harmonic as hm
 
 real_nvp_2D = md.RealNVPModel(2, standardize=True)
-spline_4D = md.RQSplineModel(4, standardize=True)
+spline_4D = md.RQSplineModel(4, n_layers=2, n_bins=64, standardize=True)
+spline_3D  = md.RQSplineModel(3,n_layers=2, n_bins=64, standardize=False)
 
 model_classes = [md.RealNVPModel, md.RQSplineModel]
 
-models_to_test = [real_nvp_2D, spline_4D]
+models_to_test = [real_nvp_2D, spline_4D, spline_3D]
+gaussian_var = [0.1,0.5, 1.,10.]
 
 # Make models for serialization tests
 # NVP params
@@ -54,13 +56,14 @@ spline_serialization = md.RQSplineModel(
 models_serialization = [real_NVP_serialization, spline_serialization]
 
 
-def standard_nd_gaussian_pdf(x):
+def standard_nd_gaussian_pdf(x, var=1.):
     """
     Calculate the probability density function (PDF) of an n-dimensional Gaussian
-    distribution with zero mean and unit covariance.
+    distribution with zero mean and diagonal covariance with entries var.
 
     Parameters:
     - x: Input vector of length n.
+    - var: Gaussian variance
 
     Returns:
     - pdf: log PDF value at input vector x.
@@ -68,10 +71,10 @@ def standard_nd_gaussian_pdf(x):
     n = len(x)
 
     # The normalizing constant (coefficient)
-    C = -jnp.log(2 * jnp.pi) * n / 2
+    C = -jnp.log(2 * jnp.pi* var) * n / 2
 
     # Calculate the Mahalanobis distance
-    mahalanobis_dist = jnp.dot(x, x)
+    mahalanobis_dist = jnp.dot(x, x)/var
 
     # Calculate the PDF value
     pdf = C - 0.5 * mahalanobis_dist
@@ -149,6 +152,42 @@ def test_flow_is_fitted(model):
 
 
 @pytest.mark.parametrize("model", models_to_test)
+@pytest.mark.parametrize("var", gaussian_var)
+def test_flows_gaussian_pdf(model, var):
+    # Define the number of dimensions and the mean of the Gaussian
+    ndim = model.ndim
+    num_samples = 10000
+
+    if isinstance(model, md.RealNVPModel):
+        epochs = 160
+    elif isinstance(model, md.RQSplineModel):
+        epochs = 40
+
+    # Initialize a PRNG key (you can use any valid key)
+    key = jax.random.PRNGKey(0)
+    mean = jnp.zeros(ndim)
+    cov = jnp.eye(ndim)*var
+
+    # Generate random samples from the Gaussian distribution
+    samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
+
+    model.fit(samples, epochs=epochs, verbose=True)
+    model.temperature = 1.0
+
+    test = jnp.ones(ndim) * 0.2
+    predicted_pdf = model.predict(test)
+    analytic_pdf = standard_nd_gaussian_pdf(test, var=var)
+    print("T ", var, "Predicted log pdf ", predicted_pdf, " Analytic log pdf", analytic_pdf)
+    assert jnp.exp(predicted_pdf) == pytest.approx(jnp.exp(analytic_pdf), rel=0.1), "Flow probability density not in agreement with analytical value"
+
+    temp = 0.5
+    model.temperature = temp
+    predicted_pdf = model.predict(test)
+    analytic_pdf = standard_nd_gaussian_pdf(test, var=var*temp)
+    print("T ", var, "Predicted log pdf ", predicted_pdf, " Analytic log pdf", analytic_pdf)
+    assert jnp.exp(predicted_pdf) == pytest.approx(jnp.exp(analytic_pdf), rel=0.1), "Reduced flow probability density not in agreement with analytical value"
+
+@pytest.mark.parametrize("model", models_to_test)
 def test_flows_gaussian(model):
     # Define the number of dimensions and the mean of the Gaussian
     ndim = model.ndim
@@ -174,11 +213,6 @@ def test_flows_gaussian(model):
     flow_samples = model.sample(nsamples)
     sample_var = jnp.var(flow_samples, axis=0)
     sample_mean = jnp.mean(flow_samples, axis=0)
-
-    test = jnp.ones(ndim) * 0.2
-    assert jnp.exp(model.predict(test)) == pytest.approx(
-        jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
-    ), "Flow probability density not in agreement with analytical value"
 
     for i in range(ndim):
         assert sample_mean[i] == pytest.approx(0.0, abs=0.15), (
