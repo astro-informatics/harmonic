@@ -1,6 +1,6 @@
 numpy
-setuptools
-wheel
+setuptools==68.0.0
+wheel==0.41.0
 cython>=0.29.30
 ipython>=8.4.0
 jupyter>=1.0.0
