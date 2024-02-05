@@ -13,6 +13,6 @@ jax
 jaxlib
 flax
 #chex==0.1.6
-distrax==0.1.3
+distrax
 cloudpickle
 getdist
