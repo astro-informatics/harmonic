@@ -1,26 +1,30 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>&lt;no title&gt; &mdash; Harmonic 1.2.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/custom_tabs.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=798747b0" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom_tabs.css?v=82e1095b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/dark_mode_css/general.css?v=c0a7eb24" />
+      <link rel="stylesheet" type="text/css" href="../../_static/dark_mode_css/dark.css?v=70edf1c7" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script src="../../_static/dark_mode_js/default_light.js"></script>
-        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+        <script src="../../_static/dark_mode_js/default_light.js?v=c2e647ce"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -31,15 +35,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html">
-            <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -81,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>&lt;no title&gt;</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/assets/static_notebooks/basic_usage.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -212,19 +220,19 @@
 “source”: [</p>
 <blockquote>
 <div><p>“def ln_posterior(x, inv_cov):n”,
-”    &quot;&quot;&quot;Compute log_e of posterior of n dimensional multivariate Gaussian.n”,
+“    &quot;&quot;&quot;Compute log_e of posterior of n dimensional multivariate Gaussian.n”,
 “n”,
-”    Args:n”,
+“    Args:n”,
 “n”,
-”        x: Position at which to evaluate posterior.n”,
+“        x: Position at which to evaluate posterior.n”,
 “n”,
-”    Returns:n”,
+“    Returns:n”,
 “n”,
-”        double: Value of posterior at x.n”,
+“        double: Value of posterior at x.n”,
 “n”,
-”    &quot;&quot;&quot;n”,
+“    &quot;&quot;&quot;n”,
 “n”,
-”    return -jnp.dot(x,jnp.dot(inv_cov,x))/2.0”</p>
+“    return -jnp.dot(x,jnp.dot(inv_cov,x))/2.0”</p>
 </div></blockquote>
 <p>]</p>
 </div></blockquote>
@@ -615,22 +623,22 @@
 “source”: [</p>
 <blockquote>
 <div><p>“def ln_analytic_evidence(ndim, cov):n”,
-”    &quot;&quot;&quot;Compute analytic evidence for nD Gaussian.n”,
+“    &quot;&quot;&quot;Compute analytic evidence for nD Gaussian.n”,
 “n”,
-”    Args:n”,
+“    Args:n”,
 “n”,
-”        ndim: Dimension of Gaussian.n”,
+“        ndim: Dimension of Gaussian.n”,
 “n”,
-”        cov: Covariance matrix.n”,
+“        cov: Covariance matrix.n”,
 “n”,
-”    Returns:n”,
+“    Returns:n”,
 “n”,
-”        double: Analytic evidence.n”,
+“        double: Analytic evidence.n”,
 “n”,
-”    &quot;&quot;&quot;n”,
-”    n”,
-”    ln_norm_lik = 0.5*ndim*np.log(2*np.pi) + 0.5*np.log(np.linalg.det(cov))n”,
-”    return ln_norm_likn”,
+“    &quot;&quot;&quot;n”,
+“    n”,
+“    ln_norm_lik = 0.5*ndim*np.log(2*np.pi) + 0.5*np.log(np.linalg.det(cov))n”,
+“    return ln_norm_likn”,
 “n”,
 “ln_inv_evidence_analytic = -ln_analytic_evidence(ndim, inv_cov)”</p>
 </div></blockquote>

@@ -1,28 +1,32 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Harmonic mean estimator &mdash; Harmonic 1.2.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/custom_tabs.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=798747b0" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom_tabs.css?v=82e1095b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/dark_mode_css/general.css?v=c0a7eb24" />
+      <link rel="stylesheet" type="text/css" href="../../_static/dark_mode_css/dark.css?v=70edf1c7" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script src="../../_static/dark_mode_js/default_light.js"></script>
-        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="../../_static/dark_mode_js/default_light.js?v=c2e647ce"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -35,15 +39,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html">
-            <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -88,8 +96,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Harmonic mean estimator</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Harmonic mean estimator</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/background/Harmonic_Estimator/original_harmonic_mean.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -99,8 +107,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="harmonic-mean-estimator">
-<h1>Harmonic mean estimator<a class="headerlink" href="#harmonic-mean-estimator" title="Permalink to this headline"></a></h1>
+  <section id="harmonic-mean-estimator">
+<h1>Harmonic mean estimator<a class="headerlink" href="#harmonic-mean-estimator" title="Link to this heading"></a></h1>
 <p>The harmonic mean estimator was first proposed by <a class="reference external" href="https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.2517-6161.1994.tb01956.x">Newton &amp; Raftery (1994)</a> who showed that the marginal likelihood <span class="math notranslate nohighlight">\(z\)</span> can be estimated from the harmonic mean of the likelihood, given posterior samples. This follows by considering the expectation of the reciprocal of the likelihood with respect to the posterior distribution:</p>
 <div class="math notranslate nohighlight">
 \[\rho = \mathbb{E}_{\text{P}(\theta | y)} \biggl[\frac{1}{\mathcal{L}(\theta)} \biggr] = \int \,\text{d} \theta\frac{1}{\mathcal{L}(\theta)} \text{P}(\theta | y) = \int \,\text{d} \theta \frac{1}{\mathcal{L}(\theta)} \frac{\mathcal{L}(\theta) \pi(\theta)}{z} = \frac{1}{z},\]</div>
@@ -112,15 +120,15 @@
 <p class="admonition-title">Warning</p>
 <p>As immediately realised by Neal (1994), this estimator can fail catastrophically since its variance can become very large and may not be finite. Review articles that consider a number of alternative methods to estimate the marginal likelihood have also found that the harmonic mean estimator is not robust and can be highly inaccurate, see <em>e.g.</em> <a class="reference external" href="http://adsabs.harvard.edu/pdf/2007ASPC..371..224C">Clyde (2007)</a> and <a class="reference external" href="https://arxiv.org/pdf/1111.1957.pdf">Friel (2012)</a>. To understand why the estimator can lead to extremely large variance we consider an importance sampling interpretation of the harmonic mean estimator.</p>
 </div>
-<div class="section" id="importance-sampling-interpretation">
-<h2>Importance sampling interpretation<a class="headerlink" href="#importance-sampling-interpretation" title="Permalink to this headline"></a></h2>
+<section id="importance-sampling-interpretation">
+<h2>Importance sampling interpretation<a class="headerlink" href="#importance-sampling-interpretation" title="Link to this heading"></a></h2>
 <p>The harmonic mean estimator can be interpreted as importance sampling.  Consider the reciprocal marginal likelihood, which may be expressed in terms of the prior and posterior by</p>
 <div class="math notranslate nohighlight">
 \[\rho = \int \,\text{d} \theta \: \frac{1}{\mathcal{L}(\theta)} \: \text{P}(\theta | y) = \int \,\text{d} \theta \: \frac{1}{z} \: \frac{\pi(\theta)}{\text{P}(\theta | y)} \: \text{P}(\theta | y).\]</div>
 <p>It is clear the estimator has an importance sampling interpretation where the importance sampling target distribution is the prior <span class="math notranslate nohighlight">\(\pi(\theta)\)</span>, while the sampling density is the posterior <span class="math notranslate nohighlight">\(\text{P}(\theta | y)\)</span>, in contrast to typical importance sampling scenarios.</p>
 <p>For importance sampling to be effective, one requires the sampling density to have fatter tails than the target distribution, <em>i.e.</em> to have greater probability mass in the tails of the distribution. Typically the prior has fatter tails than the posterior since the posterior updates our initial understanding of the underlying parameters <span class="math notranslate nohighlight">\(\theta\)</span> that are encoded in the prior, in the presence of new data <span class="math notranslate nohighlight">\(y\)</span>. For the harmonic mean estimator the importance sampling density (the posterior) typically does <strong>not</strong> have fatter tails than the target (the prior) and so importance sampling is not effective. This explains why the original harmonic mean estimator can be problematic. A number of variants of the original harmonic mean estimator have been intorduced in an attempt to address this issue.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

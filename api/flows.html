@@ -1,26 +1,30 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>&lt;no title&gt; &mdash; Harmonic 1.2.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/custom_tabs.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/dark_mode_css/general.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/dark_mode_css/dark.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=798747b0" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom_tabs.css?v=82e1095b" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/general.css?v=c0a7eb24" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/dark.css?v=70edf1c7" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script src="../_static/dark_mode_js/default_light.js"></script>
-        <script src="../_static/dark_mode_js/theme_switcher.js"></script>
+        <script src="../_static/dark_mode_js/default_light.js?v=c2e647ce"></script>
+        <script src="../_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -31,15 +35,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -81,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>&lt;no title&gt;</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/flows.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -94,10 +102,10 @@
              
   <dl class="py class">
 <dt class="sig sig-object py" id="harmonic.flows.RealNVP">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RealNVP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_features:</span> <span class="pre">int,</span> <span class="pre">n_scaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2,</span> <span class="pre">n_unscaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4,</span> <span class="pre">parent:</span> <span class="pre">Optional[Union[Type[flax.linen.module.Module],</span> <span class="pre">Type[flax.core.scope.Scope],</span> <span class="pre">Type[flax.linen.module._Sentinel]]]</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;,</span> <span class="pre">name:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RealNVP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_features:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_scaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_unscaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">~typing.Type[~flax.linen.module.Module]</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~typing.Type[~flax.linen.module._Sentinel]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP" title="Link to this definition"></a></dt>
 <dd><p>Real-valued non-volume preserving flow using flax and tfp-jax.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_features</strong> (<em>int</em>) – Number of features in the data.</p></li>
 <li><p><strong>n_scaled_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – Non-zero number of layers in the flow. Defaults to 2.</p></li>
@@ -107,20 +115,20 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RealNVP.log_prob">
-<span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RealNVP.log_prob" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#harmonic.flows.RealNVP.log_prob" title="Link to this definition"></a></dt>
 <dd><p>Evaluate the log probability of the flow for a batched input.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>jnp.ndarray</em><em> (</em><em>batch_size</em><em>, </em><em>ndim</em><em>)</em>) – Sample for which to predict posterior values.</p></li>
 <li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Predicted log_e posterior value.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>jnp.ndarray (batch_size,)</p>
 </dd>
 </dl>
@@ -128,14 +136,14 @@ Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RealNVP.make_flow">
-<span class="sig-name descname"><span class="pre">make_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP.make_flow" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">make_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP.make_flow" title="Link to this definition"></a></dt>
 <dd><p>Make tfp-jax distribution object containing the RealNVP flow.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Base Gaussian transformed by scaled contained in the scaled_layers</dt><dd><p>attribute, followed by unscaled affine coupling layers contained in the
 unscaled_layers attribute.</p>
@@ -143,10 +151,10 @@ unscaled_layers attribute.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tfb.Distribution</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If n_scaled_layers is not positive.</p>
 </dd>
 </dl>
@@ -154,11 +162,11 @@ unscaled_layers attribute.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RealNVP.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.random.PRNGKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RealNVP.sample" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PRNGKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#harmonic.flows.RealNVP.sample" title="Link to this definition"></a></dt>
 <dd><p>”
 Sample from the flow.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rng</strong> (<em>Union</em><em>[</em><em>Array</em><em>, </em><em>PRNGKeyArray</em><em>]</em><em>)</em>) – Key used in random number generation process.</p></li>
 <li><p><strong>num_samples</strong> (<em>int</em>) – Number of samples generated.</p></li>
@@ -166,10 +174,10 @@ Sample from the flow.</p>
 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Samples from fitted distribution.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>jnp.array (num_samples, ndim)</p>
 </dd>
 </dl>
@@ -177,11 +185,11 @@ Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RealNVP.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP.setup" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP.setup" title="Link to this definition"></a></dt>
 <dd><p>Initializes a Module lazily (similar to a lazy <code class="docutils literal notranslate"><span class="pre">__init__</span></code>).</p>
 <p><code class="docutils literal notranslate"><span class="pre">setup</span></code> is called once lazily on a module instance when a module
 is bound, immediately before any other methods like <code class="docutils literal notranslate"><span class="pre">__call__</span></code> are
-invoked, or before a <code class="docutils literal notranslate"><span class="pre">setup</span></code>-defined attribute on <cite>self</cite> is accessed.</p>
+invoked, or before a <code class="docutils literal notranslate"><span class="pre">setup</span></code>-defined attribute on <code class="docutils literal notranslate"><span class="pre">self</span></code> is accessed.</p>
 <p>This can happen in three cases:</p>
 <blockquote>
 <div><ol class="arabic">
@@ -190,18 +198,18 @@ invoked, or before a <code class="docutils literal notranslate"><span class="pre
 <li><p>Once the module is given a name by being assigned to an attribute of
 another module inside the other module’s <code class="docutils literal notranslate"><span class="pre">setup</span></code> method
 (see <code class="xref py py-meth docutils literal notranslate"><span class="pre">__setattr__()</span></code>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModule</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">submodule</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyModule</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">submodule</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
-    <span class="c1"># Accessing `submodule` attributes does not yet work here.</span>
+<span class="go">...     # Accessing `submodule` attributes does not yet work here.</span>
 
-    <span class="c1"># The following line invokes `self.__setattr__`, which gives</span>
-    <span class="c1"># `submodule` the name &quot;conv1&quot;.</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">submodule</span>
+<span class="go">...     # The following line invokes `self.__setattr__`, which gives</span>
+<span class="go">...     # `submodule` the name &quot;conv1&quot;.</span>
+<span class="go">...     self.conv1 = submodule</span>
 
-    <span class="c1"># Accessing `submodule` attributes or methods is now safe and</span>
-    <span class="c1"># either causes setup() to be called once.</span>
+<span class="go">...     # Accessing `submodule` attributes or methods is now safe and</span>
+<span class="go">...     # either causes setup() to be called once.</span>
 </pre></div>
 </div>
 </li>
@@ -216,10 +224,10 @@ another module inside the other module’s <code class="docutils literal notrans
 
 <dl class="py class">
 <dt class="sig sig-object py" id="harmonic.flows.RQSpline">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RQSpline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_features:</span> <span class="pre">int,</span> <span class="pre">num_layers:</span> <span class="pre">int,</span> <span class="pre">hidden_size:</span> <span class="pre">Sequence[int],</span> <span class="pre">num_bins:</span> <span class="pre">int,</span> <span class="pre">spline_range:</span> <span class="pre">Sequence[float]</span> <span class="pre">=</span> <span class="pre">(-10.0,</span> <span class="pre">10.0),</span> <span class="pre">parent:</span> <span class="pre">Optional[Union[Type[flax.linen.module.Module],</span> <span class="pre">Type[flax.core.scope.Scope],</span> <span class="pre">Type[flax.linen.module._Sentinel]]]</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;,</span> <span class="pre">name:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RQSpline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_features:</span> <span class="pre">int,</span> <span class="pre">num_layers:</span> <span class="pre">int,</span> <span class="pre">hidden_size:</span> <span class="pre">~typing.Sequence[int],</span> <span class="pre">num_bins:</span> <span class="pre">int,</span> <span class="pre">spline_range:</span> <span class="pre">~typing.Sequence[float]</span> <span class="pre">=</span> <span class="pre">(-10.0,</span> <span class="pre">10.0),</span> <span class="pre">parent:</span> <span class="pre">~typing.Type[~flax.linen.module.Module]</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~typing.Type[~flax.linen.module._Sentinel]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;,</span> <span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline" title="Link to this definition"></a></dt>
 <dd><p>Rational quadratic spline normalizing flow model using distrax.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_features</strong> (<em>int</em>) – Number of features in the data.</p></li>
 <li><p><strong>num_layers</strong> (<em>int</em>) – Number of layers in the flow.</p></li>
@@ -235,20 +243,20 @@ another module inside the other module’s <code class="docutils literal notrans
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RQSpline.log_prob">
-<span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RQSpline.log_prob" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#harmonic.flows.RQSpline.log_prob" title="Link to this definition"></a></dt>
 <dd><p>Evaluate the log probability of the flow for a batched input.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>jnp.ndarray</em><em> (</em><em>batch_size</em><em>, </em><em>ndim</em><em>)</em>) – Sample for which to predict posterior values.</p></li>
 <li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Predicted log_e posterior value.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>jnp.ndarray (batch_size,)</p>
 </dd>
 </dl>
@@ -256,14 +264,14 @@ Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RQSpline.make_flow">
-<span class="sig-name descname"><span class="pre">make_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline.make_flow" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">make_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline.make_flow" title="Link to this definition"></a></dt>
 <dd><p>Make distrax distribution containing the rational quadratic spline flow.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor by which base Gaussian unit covariance matrix is scaled.
 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Base Gaussian transformed by rational quadratic spline flow.</p>
 </dd>
 </dl>
@@ -271,11 +279,11 @@ Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RQSpline.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax._src.random.PRNGKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax._src.numpy.lax_numpy.array</span></span></span><a class="headerlink" href="#harmonic.flows.RQSpline.sample" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PRNGKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#harmonic.flows.RQSpline.sample" title="Link to this definition"></a></dt>
 <dd><p>”
 Sample from the flow.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rng</strong> (<em>Union</em><em>[</em><em>Array</em><em>, </em><em>PRNGKeyArray</em><em>]</em><em>)</em>) – Key used in random number generation process.</p></li>
 <li><p><strong>num_samples</strong> (<em>int</em>) – Number of samples generated.</p></li>
@@ -283,10 +291,10 @@ Sample from the flow.</p>
 Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Samples from fitted distribution.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>jnp.array (num_samples, ndim)</p>
 </dd>
 </dl>
@@ -294,11 +302,11 @@ Should be between 0 and 1 for use in evidence estimation. Defaults to 1.</p></li
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.flows.RQSpline.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline.setup" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline.setup" title="Link to this definition"></a></dt>
 <dd><p>Initializes a Module lazily (similar to a lazy <code class="docutils literal notranslate"><span class="pre">__init__</span></code>).</p>
 <p><code class="docutils literal notranslate"><span class="pre">setup</span></code> is called once lazily on a module instance when a module
 is bound, immediately before any other methods like <code class="docutils literal notranslate"><span class="pre">__call__</span></code> are
-invoked, or before a <code class="docutils literal notranslate"><span class="pre">setup</span></code>-defined attribute on <cite>self</cite> is accessed.</p>
+invoked, or before a <code class="docutils literal notranslate"><span class="pre">setup</span></code>-defined attribute on <code class="docutils literal notranslate"><span class="pre">self</span></code> is accessed.</p>
 <p>This can happen in three cases:</p>
 <blockquote>
 <div><ol class="arabic">
@@ -307,18 +315,18 @@ invoked, or before a <code class="docutils literal notranslate"><span class="pre
 <li><p>Once the module is given a name by being assigned to an attribute of
 another module inside the other module’s <code class="docutils literal notranslate"><span class="pre">setup</span></code> method
 (see <code class="xref py py-meth docutils literal notranslate"><span class="pre">__setattr__()</span></code>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModule</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">submodule</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyModule</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">submodule</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
-    <span class="c1"># Accessing `submodule` attributes does not yet work here.</span>
+<span class="go">...     # Accessing `submodule` attributes does not yet work here.</span>
 
-    <span class="c1"># The following line invokes `self.__setattr__`, which gives</span>
-    <span class="c1"># `submodule` the name &quot;conv1&quot;.</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">submodule</span>
+<span class="go">...     # The following line invokes `self.__setattr__`, which gives</span>
+<span class="go">...     # `submodule` the name &quot;conv1&quot;.</span>
+<span class="go">...     self.conv1 = submodule</span>
 
-    <span class="c1"># Accessing `submodule` attributes or methods is now safe and</span>
-    <span class="c1"># either causes setup() to be called once.</span>
+<span class="go">...     # Accessing `submodule` attributes or methods is now safe and</span>
+<span class="go">...     # either causes setup() to be called once.</span>
 </pre></div>
 </div>
 </li>

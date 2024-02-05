@@ -1,28 +1,32 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>&lt;no title&gt; &mdash; Harmonic 1.2.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/custom_tabs.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/dark_mode_css/general.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/dark_mode_css/dark.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=798747b0" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom_tabs.css?v=82e1095b" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/general.css?v=c0a7eb24" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/dark.css?v=70edf1c7" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script src="../_static/dark_mode_js/default_light.js"></script>
-        <script src="../_static/dark_mode_js/theme_switcher.js"></script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="../_static/dark_mode_js/default_light.js?v=c2e647ce"></script>
+        <script src="../_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -33,15 +37,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -83,8 +91,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>&lt;no title&gt;</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/evidence.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,17 +104,17 @@
              
   <dl class="py class">
 <dt class="sig sig-object py" id="harmonic.Evidence">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Evidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Evidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence" title="Link to this definition"></a></dt>
 <dd><p>Compute inverse evidence values from chains, using posterior model.</p>
 <p>Multiple chains can be added in sequence (to avoid having to store very
 long chains).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nchains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Shifting.MEAN_SHIFT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.__init__" title="Link to this definition"></a></dt>
 <dd><p>Construct evidence class for computing inverse evidence values from
 set number of chains and initialised posterior model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nchains</strong> (<em>int</em>) – Number of chains that will be used in the
 computation.</p></li>
@@ -116,7 +124,7 @@ been fitted.</p></li>
 computation. Selected from enumerate class.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the number of chains is not positive.</p></li>
 <li><p><strong>ValueError</strong> – Raised if the number of dimensions is not positive.</p></li>
@@ -128,7 +136,7 @@ computation. Selected from enumerate class.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.add_chains">
-<span class="sig-name descname"><span class="pre">add_chains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chains</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.add_chains" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_chains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chains</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.add_chains" title="Link to this definition"></a></dt>
 <dd><p>Add new chains and calculate an estimate of the inverse evidence, its
 variance, and the variance of the variance.</p>
 <p>Calculations are performed by using running averages of the totals for
@@ -138,11 +146,11 @@ rationale is that not all samples need to be stored in memory for
 high-dimensional problems.  Note that the same number of chains needs to
 be considered for each call.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>chains</strong> (<a class="reference internal" href="index.html#harmonic.Chains" title="harmonic.Chains"><em>Chains</em></a>) – An instance of the chains class containing the chains to
 be used in the calculation.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the input number of chains to not match the
     number of chains already set up.</p></li>
@@ -154,18 +162,18 @@ be used in the calculation.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.check_basic_diagnostic">
-<span class="sig-name descname"><span class="pre">check_basic_diagnostic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.check_basic_diagnostic" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_basic_diagnostic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.check_basic_diagnostic" title="Link to this definition"></a></dt>
 <dd><p>Perform basic diagonstic check on sanity of evidence calculations.</p>
 <p>If these tests pass it does <em>not</em> necessarily mean the evidence is
 accurate and other tests should still be performed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Whether diagnostic tests pass.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Boolean</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Warnings</strong> – Raised if the diagnostic tests fail.</p>
 </dd>
 </dl>
@@ -173,10 +181,10 @@ accurate and other tests should still be performed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.compute_evidence">
-<span class="sig-name descname"><span class="pre">compute_evidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.compute_evidence" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_evidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.compute_evidence" title="Link to this definition"></a></dt>
 <dd><p>Compute evidence from the inverse evidence.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><p>Tuple containing the following.</p>
 <blockquote>
 <div><ul class="simple">
@@ -187,7 +195,7 @@ evidence.</p></li>
 </div></blockquote>
 </p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>(double, double)</p>
 </dd>
 </dl>
@@ -195,10 +203,10 @@ evidence.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.compute_ln_evidence">
-<span class="sig-name descname"><span class="pre">compute_ln_evidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.compute_ln_evidence" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_ln_evidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.compute_ln_evidence" title="Link to this definition"></a></dt>
 <dd><p>Compute log_e of evidence from the inverse evidence.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><p>Tuple containing the following.</p>
 <blockquote>
 <div><ul class="simple">
@@ -212,7 +220,7 @@ evidence.</p></li>
 </div></blockquote>
 </p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>(double, double)</p>
 </dd>
 </dl>
@@ -220,7 +228,7 @@ evidence.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.compute_ln_inv_evidence_errors">
-<span class="sig-name descname"><span class="pre">compute_ln_inv_evidence_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.compute_ln_inv_evidence_errors" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_ln_inv_evidence_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.compute_ln_inv_evidence_errors" title="Link to this definition"></a></dt>
 <dd><p>Compute lower and uppper errors on the log_e of the inverse evidence.</p>
 <p>Compute the log-space error <span class="math notranslate nohighlight">\(\hat{\zeta}_\pm\)</span> defined by</p>
 <div class="math notranslate nohighlight">
@@ -229,7 +237,7 @@ evidence.</p></li>
 <div class="math notranslate nohighlight">
 \[\hat{\zeta}_\pm = \log(1 \pm \hat{\sigma} / \hat{\rho}) .\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><p>Tuple containing the following.</p>
 <blockquote>
 <div><ul class="simple">
@@ -239,7 +247,7 @@ evidence.</p></li>
 </div></blockquote>
 </p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>(double, double)</p>
 </dd>
 </dl>
@@ -247,16 +255,16 @@ evidence.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.deserialize">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.deserialize" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.deserialize" title="Link to this definition"></a></dt>
 <dd><p>Deserialize Evidence object from file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – Name of file from which to read evidence object.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Evidence object deserialized from file.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference internal" href="index.html#harmonic.Evidence" title="harmonic.Evidence">Evidence</a>)</p>
 </dd>
 </dl>
@@ -264,14 +272,14 @@ evidence.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.get_masks">
-<span class="sig-name descname"><span class="pre">get_masks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_start_ixs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">jax.Array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">jax.Array</span></span></span><a class="headerlink" href="#harmonic.Evidence.get_masks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_masks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_start_ixs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Array</span></span></span><a class="headerlink" href="#harmonic.Evidence.get_masks" title="Link to this definition"></a></dt>
 <dd><p>Create mask array for a 2D array of concatenated chains of different lengths.
 :param chain_start_ixs: Start indices of chains</p>
 <blockquote>
 <div><p>in Chain object.</p>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt>Mask array with each row corresponding to a chain</dt><dd><p>and entries with boolean values depending on if given sample at that
 position is in that chain.</p>
@@ -279,7 +287,7 @@ position is in that chain.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>jnp.ndarray[nchains,nsamples]</p>
 </dd>
 </dl>
@@ -287,7 +295,7 @@ position is in that chain.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.process_run">
-<span class="sig-name descname"><span class="pre">process_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.process_run" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.process_run" title="Link to this definition"></a></dt>
 <dd><p>Use the running totals of realspace running_sum and nsamples_per_chain to
 calculate an estimate of the inverse evidence, its variance, and the
 variance of the variance.</p>
@@ -297,10 +305,10 @@ variance estimates from the running totals.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.serialize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.serialize" title="Link to this definition"></a></dt>
 <dd><p>Serialize evidence object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>string</em>) – Name of file to save evidence object.</p>
 </dd>
 </dl>
@@ -308,13 +316,13 @@ variance estimates from the running totals.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="harmonic.Evidence.set_shift">
-<span class="sig-name descname"><span class="pre">set_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shift_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.set_shift" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shift_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Evidence.set_shift" title="Link to this definition"></a></dt>
 <dd><p>Set the shift value of log_e posterior values to aid numerical stability.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shift_value</strong> (<em>float</em>) – Shift value.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if shift_value is NaN.</p></li>
 <li><p><strong>ValueError</strong> – Raised if one attempts to set shift when another
@@ -328,43 +336,43 @@ variance estimates from the running totals.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="harmonic.Shifting">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Shifting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Shifting" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.</span></span><span class="sig-name descname"><span class="pre">Shifting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.Shifting" title="Link to this definition"></a></dt>
 <dd><p>Enumeration to define which log-space shifting to adopt. Different choices
 may prove optimal for certain settings.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="harmonic.Shifting.ABS_MAX_SHIFT">
-<span class="sig-name descname"><span class="pre">ABS_MAX_SHIFT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#harmonic.Shifting.ABS_MAX_SHIFT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ABS_MAX_SHIFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#harmonic.Shifting.ABS_MAX_SHIFT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="harmonic.Shifting.MAX_SHIFT">
-<span class="sig-name descname"><span class="pre">MAX_SHIFT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#harmonic.Shifting.MAX_SHIFT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">MAX_SHIFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#harmonic.Shifting.MAX_SHIFT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="harmonic.Shifting.MEAN_SHIFT">
-<span class="sig-name descname"><span class="pre">MEAN_SHIFT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#harmonic.Shifting.MEAN_SHIFT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">MEAN_SHIFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#harmonic.Shifting.MEAN_SHIFT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="harmonic.Shifting.MIN_SHIFT">
-<span class="sig-name descname"><span class="pre">MIN_SHIFT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#harmonic.Shifting.MIN_SHIFT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">MIN_SHIFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#harmonic.Shifting.MIN_SHIFT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<span class="target" id="module-harmonic.evidence"></span><dl class="py function">
+<dl class="py function" id="module-harmonic.evidence">
 <dt class="sig sig-object py" id="harmonic.evidence.compute_bayes_factor">
-<span class="sig-prename descclassname"><span class="pre">harmonic.evidence.</span></span><span class="sig-name descname"><span class="pre">compute_bayes_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ev1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.evidence.compute_bayes_factor" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">harmonic.evidence.</span></span><span class="sig-name descname"><span class="pre">compute_bayes_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ev1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.evidence.compute_bayes_factor" title="Link to this definition"></a></dt>
 <dd><p>Compute Bayes factor of two models.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ev1</strong> (<em>float</em>) – Evidence value of model 1 with chains added.</p></li>
 <li><p><strong>ev2</strong> (<em>float</em>) – Evidence value of model 2 with chains added.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>Tuple containing the following.</p>
 <blockquote>
 <div><ul class="simple">
@@ -378,10 +386,10 @@ may prove optimal for certain settings.</p>
 </div></blockquote>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(float, float)</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if model 1 does not have chains added.</p></li>
 <li><p><strong>ValueError</strong> – Raised if model 2 does not have chains added.</p></li>
@@ -392,16 +400,16 @@ may prove optimal for certain settings.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="harmonic.evidence.compute_ln_bayes_factor">
-<span class="sig-prename descclassname"><span class="pre">harmonic.evidence.</span></span><span class="sig-name descname"><span class="pre">compute_ln_bayes_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ev1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.evidence.compute_ln_bayes_factor" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">harmonic.evidence.</span></span><span class="sig-name descname"><span class="pre">compute_ln_bayes_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ev1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.evidence.compute_ln_bayes_factor" title="Link to this definition"></a></dt>
 <dd><p>Computes log_e of Bayes factor of two models.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ev1</strong> (<em>float</em>) – Evidence object of model 1 with chains added.</p></li>
 <li><p><strong>ev2</strong> (<em>float</em>) – Evidence object of model 2 with chains added.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>Tuple containing the following.</p>
 <blockquote>
 <div><ul class="simple">
@@ -415,10 +423,10 @@ may prove optimal for certain settings.</p>
 </div></blockquote>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(float, float)</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if model 1 does not have chains added.</p></li>
 <li><p><strong>ValueError</strong> – Raised if model 2 does not have chains added.</p></li>
