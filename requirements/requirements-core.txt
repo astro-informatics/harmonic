@@ -12,6 +12,7 @@ tqdm
 jax
 jaxlib
 flax
+#chex==0.1.6
 distrax
 cloudpickle
 getdist
