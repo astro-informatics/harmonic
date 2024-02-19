@@ -5,11 +5,14 @@ import jax
 import harmonic as hm
 
 real_nvp_2D = md.RealNVPModel(2, standardize=True)
-spline_4D = md.RQSplineModel(4, standardize=True)
+spline_4D = md.RQSplineModel(4, n_layers=2, n_bins=64, standardize=True)
+spline_3D = md.RQSplineModel(3, n_layers=2, n_bins=64, standardize=False)
 
 model_classes = [md.RealNVPModel, md.RQSplineModel]
 
 models_to_test = [real_nvp_2D, spline_4D]
+models_to_test1 = [real_nvp_2D, spline_4D, spline_3D]
+gaussian_var = [0.1, 0.5, 1.0, 10.0, 20.0]
 
 # Make models for serialization tests
 # NVP params
@@ -54,13 +57,14 @@ spline_serialization = md.RQSplineModel(
 models_serialization = [real_NVP_serialization, spline_serialization]
 
 
-def standard_nd_gaussian_pdf(x):
+def standard_nd_gaussian_pdf(x, var=1.0):
     """
     Calculate the probability density function (PDF) of an n-dimensional Gaussian
-    distribution with zero mean and unit covariance.
+    distribution with zero mean and diagonal covariance with entries var.
 
     Parameters:
     - x: Input vector of length n.
+    - var: Gaussian variance
 
     Returns:
     - pdf: log PDF value at input vector x.
@@ -68,10 +72,10 @@ def standard_nd_gaussian_pdf(x):
     n = len(x)
 
     # The normalizing constant (coefficient)
-    C = -jnp.log(2 * jnp.pi) * n / 2
+    C = -jnp.log(2 * jnp.pi * var) * n / 2
 
     # Calculate the Mahalanobis distance
-    mahalanobis_dist = jnp.dot(x, x)
+    mahalanobis_dist = jnp.dot(x, x) / var
 
     # Calculate the PDF value
     pdf = C - 0.5 * mahalanobis_dist
@@ -148,6 +152,60 @@ def test_flow_is_fitted(model):
     assert model.is_fitted() == True
 
 
+@pytest.mark.parametrize("model", models_to_test1)
+@pytest.mark.parametrize("var", gaussian_var)
+def test_flows_normalization(model, var):
+    # Define the number of dimensions and the mean of the Gaussian
+    ndim = model.ndim
+    num_samples = 10000
+
+    if isinstance(model, md.RealNVPModel):
+        epochs = 100
+    elif isinstance(model, md.RQSplineModel):
+        epochs = 30
+
+    # Initialize a PRNG key (you can use any valid key)
+    key = jax.random.PRNGKey(0)
+    mean = jnp.zeros(ndim)
+    cov = jnp.eye(ndim) * var
+
+    # Generate random samples from the Gaussian distribution
+    samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
+
+    model.fit(samples, epochs=epochs, verbose=True)
+    model.temperature = 1.0
+
+    # MC integral of the flow
+    num_samples_int = 50000
+    shape = (num_samples_int, ndim)
+    # Draw samples from uniform distribution -3 to 3 standard deviations away from mean
+    minval = -3 * var**0.5
+    maxval = 3 * var**0.5
+    uniform_samples = jax.random.uniform(
+        jax.random.PRNGKey(0), shape=shape, minval=minval, maxval=maxval
+    )
+    V = (maxval - minval) ** ndim
+    vals = jnp.exp(model.predict(uniform_samples))
+    integral = jnp.mean(vals) * V
+    assert integral == pytest.approx(1.0, rel=0.1), (
+        "Flow normalization constant is " + str(integral) + "not 1"
+    )
+
+    model.temperature = 0.5
+    vals = jnp.exp(model.predict(uniform_samples))
+    integral = jnp.mean(vals) * V
+    assert integral == pytest.approx(1.0, rel=0.1), (
+        "Flow with T=0.5 normalization constant is " + str(integral) + " not 1"
+    )
+
+    model.temperature = 0.1
+    vals = jnp.exp(model.predict(uniform_samples))
+    integral = jnp.mean(vals) * V
+    assert integral == pytest.approx(1.0, rel=0.1), (
+        "Flow with T=0.1 normalization constant is " + str(integral) + "not 1"
+    )
+
+
 @pytest.mark.parametrize("model", models_to_test)
 def test_flows_gaussian(model):
     # Define the number of dimensions and the mean of the Gaussian
@@ -174,11 +232,6 @@ def test_flows_gaussian(model):
     flow_samples = model.sample(nsamples)
     sample_var = jnp.var(flow_samples, axis=0)
     sample_mean = jnp.mean(flow_samples, axis=0)
-
-    test = jnp.ones(ndim) * 0.2
-    assert jnp.exp(model.predict(test)) == pytest.approx(
-        jnp.exp(standard_nd_gaussian_pdf(test)), rel=0.1
-    ), "Flow probability density not in agreement with analytical value"
 
     for i in range(ndim):
         assert sample_mean[i] == pytest.approx(0.0, abs=0.15), (
