@@ -21,10 +21,9 @@
 
 |github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3|
 
-.. |logo| raw:: html
 
-   <img src="./docs/assets/harm_badge_simple.svg" align="center" height="52" width="52">
-   
+.. |logo| image:: ./docs/assets/harm_badge_simple.svg
+    
 |logo| Harmonic
 =================================================================================================================
 
