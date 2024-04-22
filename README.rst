@@ -27,8 +27,6 @@
     :height: 52
     :align: center
 
-<img align="left" width="52" height="52" src="./docs/assets/harm_badge_simple.svg">
-
 |logo| Harmonic
 =================================================================================================================
 
