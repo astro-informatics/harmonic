@@ -25,6 +25,7 @@
 .. |logo| image:: ./docs/assets/harm_badge_simple.svg
     :width: 52
     :height: 52
+    :align: middle
 
 |logo| Harmonic
 =================================================================================================================
