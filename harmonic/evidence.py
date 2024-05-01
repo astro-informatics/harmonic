@@ -70,6 +70,7 @@ class Evidence:
         self.nchains = nchains
         self.ndim = model.ndim
         self.evidence_inv = 0.0
+
         self.evidence_inv_var = 0.0
         self.evidence_inv_var_var = 0.0
         self.kurtosis = 0.0
@@ -77,6 +78,7 @@ class Evidence:
 
         # For statistics computed purely in log-space.
         self.ln_evidence_inv = 0.0
+        self.ln_evidence_inv_per_chain = None
         self.ln_evidence_inv_var = 0.0
         self.ln_evidence_inv_var_var = 0.0
         self.ln_kurtosis = 0.0
@@ -139,6 +141,10 @@ class Evidence:
         nsamples = jnp.sum(self.nsamples_per_chain)
 
         evidence_inv /= nsamples
+
+        self.ln_evidence_inv_per_chain = (
+            jnp.log(self.running_sum) - self.shift_value - jnp.log(nsamples_per_chain)
+        )
 
         """
         The following code computes the exponents of the variance and variance 
