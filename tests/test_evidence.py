@@ -324,6 +324,16 @@ def test_compute_bayes_factors():
     assert bf12 == pytest.approx(np.exp(ln_bf12))
     assert bf12_std == pytest.approx(np.exp(ln_bf12_std))
 
+    # Test bayes factor reduces to single evidence calculation.
+    ev2 = cbe.Evidence(nchains, sphere)
+    ev2.ln_evidence_inv = 0
+    ev2.ln_evidence_inv_var = -np.inf
+    ev2.chains_added = True
+    (bf12, bf12_std) = cbe.compute_bayes_factor(ev1, ev2)
+
+    (evidence, evidence_std) = ev1.compute_evidence()
+    assert bf12 == pytest.approx(evidence)
+    assert bf12_std == pytest.approx(evidence_std)
 
 @pytest.mark.parametrize("model", models_to_test_2)
 def test_serialization(model):
