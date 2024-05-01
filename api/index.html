@@ -571,6 +571,9 @@ evidence.</p></li>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>(double, double)</p>
 </dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if inverse evidence or its variance overflows.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -766,6 +769,8 @@ may prove optimal for certain settings.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if model 1 does not have chains added.</p></li>
 <li><p><strong>ValueError</strong> – Raised if model 2 does not have chains added.</p></li>
+<li><p><strong>ValueError</strong> – If inverse evidence or its variance for model 1 or model 2 too large
+    to store in non-log space.</p></li>
 </ul>
 </dd>
 </dl>
