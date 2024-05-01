@@ -216,18 +216,18 @@ def run_example(
     hm.logs.debug_log("---------------------------------")
     hm.logs.debug_log(
         "Inv Evidence: analytic = {}, estimate = {}".format(
-            np.exp(ln_rho), cal_ev.evidence_inv
+            np.exp(ln_rho), np.exp(cal_ev.ln_evidence_inv)
         )
     )
     hm.logs.debug_log(
         "Inv Evidence: std = {}, std / estimate = {}".format(
-            np.sqrt(cal_ev.evidence_inv_var),
-            np.sqrt(cal_ev.evidence_inv_var) / cal_ev.evidence_inv,
+            np.sqrt(np.exp(cal_ev.ln_evidence_inv_var)),
+            np.sqrt(np.exp(cal_ev.ln_evidence_inv_var)) / np.exp(cal_ev.ln_evidence_inv),
         )
     )
     hm.logs.info_log(
         "Inv Evidence: 100 * |analytic - estimate| / estimate = {}%".format(
-            100.0 * np.abs(np.exp(ln_rho) - cal_ev.evidence_inv) / cal_ev.evidence_inv
+            100.0 * np.abs(np.exp(ln_rho) - np.exp(cal_ev.ln_evidence_inv)) / np.exp(cal_ev.ln_evidence_inv)
         )
     )
 

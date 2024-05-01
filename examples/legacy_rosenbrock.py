@@ -308,13 +308,13 @@ def run_example(
         # ======================================================================
         hm.logs.debug_log(
             "Inv Evidence: numerical = {}, estimate = {}".format(
-                1.0 / evidence_numerical_integration, ev.evidence_inv
+                1.0 / evidence_numerical_integration, np.exp(ev.ln_evidence_inv)
             )
         )
         hm.logs.debug_log(
             "Inv Evidence: std = {}, std / estimate = {}".format(
-                np.sqrt(ev.evidence_inv_var),
-                np.sqrt(ev.evidence_inv_var) / ev.evidence_inv,
+                np.sqrt(np.exp(ev.ln_evidence_inv_var)),
+                np.sqrt(np.exp(ev.ln_evidence_inv_var)) / np.exp(ev.ln_evidence_inv),
             )
         )
         hm.logs.debug_log(
@@ -324,13 +324,13 @@ def run_example(
         )
         hm.logs.debug_log(
             "Inv Evidence: sqrt( var(var) )/ var = {}".format(
-                np.sqrt(ev.evidence_inv_var_var) / ev.evidence_inv_var
+                np.sqrt(np.exp(ev.ln_evidence_inv_var_var)) / np.exp(ev.ln_evidence_inv_var)
             )
         )
         hm.logs.info_log(
             "Inv Evidence: |numerical - estimate| / estimate = {}".format(
-                np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv)
-                / ev.evidence_inv
+                np.abs(1.0 / evidence_numerical_integration - np.exp(ev.ln_evidence_inv))
+                / np.exp(ev.ln_evidence_inv)
             )
         )
 
@@ -449,9 +449,9 @@ def run_example(
             created_plots = True
 
         # Save out realisations for voilin plot.
-        evidence_inv_summary[i_realisation, 0] = ev.evidence_inv
-        evidence_inv_summary[i_realisation, 1] = ev.evidence_inv_var
-        evidence_inv_summary[i_realisation, 2] = ev.evidence_inv_var_var
+        evidence_inv_summary[i_realisation, 0] = np.exp(ev.ln_evidence_inv)
+        evidence_inv_summary[i_realisation, 1] = np.exp(ev.ln_evidence_inv_var)
+        evidence_inv_summary[i_realisation, 2] = np.exp(ev.ln_evidence_inv_var_var)
 
     # ===========================================================================
     # End Timer.
