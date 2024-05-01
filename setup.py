@@ -40,18 +40,18 @@ extra_link_args = []
 
 setup(
     classifiers=[
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.10",
         "Operating System :: OS Independent",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
     ],
     name="harmonic",
-    version="1.1.1",
+    version="1.2.1",
     prefix=".",
     url="https://github.com/astro-informatics/harmonic",
-    author="Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & Contributors",
+    author="Jason D. McEwen, Alicja Polanska, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & Contributors",
     author_email="jason.mcewen@ucl.ac.uk",
     license="GNU General Public License v3 (GPLv3)",
     install_requires=required,
