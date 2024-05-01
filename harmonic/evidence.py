@@ -250,9 +250,6 @@ class Evidence:
 
         X = chains.samples
         Y = chains.ln_posterior
-        running_sum = self.running_sum
-        nsamples_per_chain = self.nsamples_per_chain
-        nsamples_eff_per_chain = self.nsamples_eff_per_chain
         nchains = self.nchains
 
         if self.batch_calculation:
@@ -261,7 +258,7 @@ class Evidence:
             lnargs = lnargs.at[jnp.isinf(lnargs)].set(jnp.nan)
 
         else:
-            # lnpred = np.zeros_like(Y)
+            lnpred = np.zeros_like(Y)
             lnargs = np.zeros_like(Y)
             for i_chains in range(nchains):
                 i_samples_start = chains.start_indices[i_chains]
