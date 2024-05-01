@@ -32,9 +32,9 @@ def test_constructor(model):
     rho = cbe.Evidence(nchains, model)
 
     assert rho.nchains == nchains
-    assert rho.evidence_inv == pytest.approx(0.0)
-    assert rho.evidence_inv_var == pytest.approx(0.0)
-    assert rho.evidence_inv_var_var == pytest.approx(0.0)
+    assert rho.ln_evidence_inv == pytest.approx(0.0)
+    assert rho.ln_evidence_inv_var == pytest.approx(0.0)
+    assert rho.ln_evidence_inv_var_var == pytest.approx(0.0)
     assert rho.running_sum.size == nchains
     assert rho.nsamples_per_chain.size == nchains
     assert rho.shift_value == pytest.approx(0.0)
@@ -82,9 +82,9 @@ def test_process_run_with_shift(model):
         / nchains**3
     )
 
-    assert rho.evidence_inv == pytest.approx(evidence_inv, abs=1e-7)
-    assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
-    assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
+    assert np.exp(rho.ln_evidence_inv) == pytest.approx(evidence_inv, abs=1e-7)
+    assert np.exp(rho.ln_evidence_inv_var) == pytest.approx(evidence_inv_var)
+    assert np.exp(rho.ln_evidence_inv_var_var) == pytest.approx(evidence_inv_var_var)
 
     rho = cbe.Evidence(nchains, model, cbe.Shifting.MEAN_SHIFT)
     np.random.seed(1)
@@ -106,9 +106,9 @@ def test_process_run_with_shift(model):
         / nchains**3
     )
 
-    assert rho.evidence_inv == pytest.approx(evidence_inv, abs=1e-7)
-    assert rho.evidence_inv_var == pytest.approx(evidence_inv_var)
-    assert rho.evidence_inv_var_var == pytest.approx(evidence_inv_var_var)
+    assert np.exp(rho.ln_evidence_inv) == pytest.approx(evidence_inv, abs=1e-7)
+    assert np.exp(rho.ln_evidence_inv_var) == pytest.approx(evidence_inv_var)
+    assert np.exp(rho.ln_evidence_inv_var_var) == pytest.approx(evidence_inv_var_var)
 
 
 def test_add_chains():
@@ -134,11 +134,11 @@ def test_add_chains():
     cal_ev = cbe.Evidence(nchains, sphere, cbe.Shifting.MEAN_SHIFT)
     cal_ev.add_chains(chain)
 
-    print("cal_ev.evidence_inv = {}".format(cal_ev.evidence_inv))
+    print("cal_ev.evidence_inv = {}".format(np.exp(cal_ev.ln_evidence_inv)))
 
-    assert cal_ev.evidence_inv == pytest.approx(0.159438606)
-    assert cal_ev.evidence_inv_var == pytest.approx(1.164628268e-07)
-    assert cal_ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
+    assert np.exp(cal_ev.ln_evidence_inv) == pytest.approx(0.159438606)
+    assert np.exp(cal_ev.ln_evidence_inv_var) == pytest.approx(1.164628268e-07)
+    assert np.exp(cal_ev.ln_evidence_inv_var_var)**0.5 == pytest.approx(1.142786462e-08)
 
     nsamples1 = 300
     chains1 = ch.Chains(ndim)
@@ -153,9 +153,9 @@ def test_add_chains():
     ev.add_chains(chains1)
     ev.add_chains(chains2)
 
-    assert ev.evidence_inv == pytest.approx(0.159438606)
-    assert ev.evidence_inv_var == pytest.approx(1.164628268e-07)
-    assert ev.evidence_inv_var_var**0.5 == pytest.approx(1.142786462e-08)
+    assert np.exp(ev.ln_evidence_inv) == pytest.approx(0.159438606)
+    assert np.exp(ev.ln_evidence_inv_var) == pytest.approx(1.164628268e-07)
+    assert np.exp(ev.ln_evidence_inv_var_var)**0.5 == pytest.approx(1.142786462e-08)
 
     return
 
@@ -223,8 +223,6 @@ def test_compute_evidence(model):
     ev_inv = 1e10
     ev_inv_var = 2e10
     ev = cbe.Evidence(nchains, model)
-    ev.evidence_inv = ev_inv
-    ev.evidence_inv_var = ev_inv_var
     ev.ln_evidence_inv = np.log(ev_inv)
     ev.ln_evidence_inv_var = np.log(ev_inv_var)
 
@@ -248,8 +246,6 @@ def test_compute_ln_inv_evidence_errors(model):
     ln_ev_inv = 10
     ln_ev_inv_var = 2 * ln_ev_inv
     ev = cbe.Evidence(nchains, model)
-    ev.evidence_inv = np.exp(ln_ev_inv)
-    ev.evidence_inv_var = np.exp(ln_ev_inv_var)
     ev.ln_evidence_inv = ln_ev_inv
     ev.ln_evidence_inv_var = ln_ev_inv_var
 
@@ -261,8 +257,6 @@ def test_compute_ln_inv_evidence_errors(model):
     ln_ev_inv = 10
     ln_ev_inv_var = ln_ev_inv
     ev = cbe.Evidence(nchains, model)
-    ev.evidence_inv = np.exp(ln_ev_inv)
-    ev.evidence_inv_var = np.exp(ln_ev_inv_var)
     ev.ln_evidence_inv = ln_ev_inv
     ev.ln_evidence_inv_var = ln_ev_inv_var
 
@@ -278,8 +272,6 @@ def test_compute_ln_inv_evidence_errors(model):
     ln_ev_inv = 10
     ln_ev_inv_var = 0.5 * ln_ev_inv
     ev = cbe.Evidence(nchains, model)
-    ev.evidence_inv = np.exp(ln_ev_inv)
-    ev.evidence_inv_var = np.exp(ln_ev_inv_var)
     ev.ln_evidence_inv = ln_ev_inv
     ev.ln_evidence_inv_var = ln_ev_inv_var
 
@@ -303,8 +295,8 @@ def test_compute_bayes_factors():
     ev1_inv = 1e10
     ev1_inv_var = 2e10
     ev1 = cbe.Evidence(nchains, sphere)
-    ev1.evidence_inv = ev1_inv
-    ev1.evidence_inv_var = ev1_inv_var
+    ev1.ln_evidence_inv = np.log(ev1_inv)
+    ev1.ln_evidence_inv_var = np.log(ev1_inv_var)
     ev1.chains_added = True
 
     ndim = 4
@@ -313,8 +305,8 @@ def test_compute_bayes_factors():
     ev2_inv = 3e10
     ev2_inv_var = 4e10
     ev2 = cbe.Evidence(nchains, sphere)
-    ev2.evidence_inv = ev2_inv
-    ev2.evidence_inv_var = ev2_inv_var
+    ev2.ln_evidence_inv = np.log(ev2_inv)
+    ev2.ln_evidence_inv_var = np.log(ev2_inv_var)
     ev2.chains_added = True
 
     bf12_check = ev2_inv / ev1_inv * (1.0 + ev2_inv_var / ev2_inv**2)
@@ -331,19 +323,6 @@ def test_compute_bayes_factors():
 
     assert bf12 == pytest.approx(np.exp(ln_bf12))
     assert bf12_std == pytest.approx(np.exp(ln_bf12_std))
-
-    # Test bayes factor reduces to single evidence calculation.
-    ev2_inv = 1.0
-    ev2_inv_var = 0.0
-    ev2 = cbe.Evidence(nchains, sphere)
-    ev2.evidence_inv = ev2_inv
-    ev2.evidence_inv_var = ev2_inv_var
-    ev2.chains_added = True
-    (bf12, bf12_std) = cbe.compute_bayes_factor(ev1, ev2)
-
-    (evidence, evidence_std) = ev1.compute_evidence()
-    assert bf12 == pytest.approx(evidence)
-    assert bf12_std == pytest.approx(evidence_std)
 
 
 @pytest.mark.parametrize("model", models_to_test_2)
@@ -379,9 +358,9 @@ def test_serialization(model):
 
     # Test evidence objects the same
     assert ev1.nchains == ev2.nchains
-    assert ev1.evidence_inv == ev2.evidence_inv
-    assert ev1.evidence_inv_var == ev2.evidence_inv_var
-    assert ev1.evidence_inv_var_var == ev2.evidence_inv_var_var
+    assert ev1.ln_evidence_inv == ev2.ln_evidence_inv
+    assert ev1.ln_evidence_inv_var == ev2.ln_evidence_inv_var
+    assert ev1.ln_evidence_inv_var_var == ev2.ln_evidence_inv_var_var
     assert ev1.running_sum.size == ev2.running_sum.size
     assert ev1.nsamples_per_chain.size == ev2.nsamples_per_chain.size
     assert ev1.shift_value == ev2.shift_value

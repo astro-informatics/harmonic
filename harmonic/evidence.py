@@ -69,9 +69,6 @@ class Evidence:
         # Chain parameters and realspace statistics
         self.nchains = nchains
         self.ndim = model.ndim
-        self.evidence_inv = 0.0
-        self.evidence_inv_var = 0.0
-        self.evidence_inv_var_var = 0.0
         self.kurtosis = 0.0
         self.n_eff = 0
 
@@ -183,13 +180,6 @@ class Evidence:
             - 4.0 * self.shift_value
             + np.log((kur - 1) + 2.0 / (n_eff - 1))
         )
-
-        # Compute inverse evidence statistics in real-space. In certain settings
-        # these values may return nan due to float overflow: in these cases one
-        # should use the log-space values.
-        self.evidence_inv = np.exp(self.ln_evidence_inv)
-        self.evidence_inv_var = np.exp(self.ln_evidence_inv_var)
-        self.evidence_inv_var_var = np.exp(self.ln_evidence_inv_var_var)
 
         return
 
@@ -424,15 +414,24 @@ class Evidence:
                 - evidence_std (double): Estimate of standard deviation of
                   evidence.
 
+        Raises:
+
+            ValueError: if inverse evidence or its variance overflows.
         """
 
         self.check_basic_diagnostic()
 
-        common_factor = 1.0 + self.evidence_inv_var / (self.evidence_inv**2)
+        evidence_inv = np.exp(self.ln_evidence_inv)
+        evidence_inv_var = np.exp(self.ln_evidence_inv_var)
 
-        evidence = common_factor / self.evidence_inv
+        if np.isnan(evidence_inv) or np.isnan(evidence_inv_var):
+            raise ValueError("Evidence is too large to represent in non-log space. Use log-space values instead.")
 
-        evidence_std = np.sqrt(self.evidence_inv_var) / (self.evidence_inv**2)
+        common_factor = 1.0 + evidence_inv_var / (evidence_inv**2)
+
+        evidence = common_factor / evidence_inv
+
+        evidence_std = np.sqrt(evidence_inv_var) / (evidence_inv**2)
 
         return (evidence, evidence_std)
 
@@ -555,6 +554,9 @@ def compute_bayes_factor(ev1, ev2):
         ValueError: Raised if model 1 does not have chains added.
 
         ValueError: Raised if model 2 does not have chains added.
+        
+        ValueError: If inverse evidence or its variance for model 1 or model 2 too large 
+            to store in non-log space.
 
     """
 
@@ -566,14 +568,25 @@ def compute_bayes_factor(ev1, ev2):
     ev1.check_basic_diagnostic()
     ev2.check_basic_diagnostic()
 
-    common_factor = 1.0 + ev1.evidence_inv_var / (ev1.evidence_inv**2)
+    evidence_inv_ev1 = np.exp(ev1.ln_evidence_inv)
+    evidence_inv_var_ev1 = np.exp(ev1.ln_evidence_inv_var)
 
-    bf12 = ev2.evidence_inv / ev1.evidence_inv * common_factor
+    evidence_inv_ev2 = np.exp(ev2.ln_evidence_inv)
+    evidence_inv_var_ev2 = np.exp(ev2.ln_evidence_inv_var)
+
+    if np.isnan(evidence_inv_ev1) or np.isnan(evidence_inv_var_ev1):
+        raise ValueError("Evidence for model 1 is too large to represent in non-log space. Use log-space values instead.")
+    if np.isnan(evidence_inv_ev2) or np.isnan(evidence_inv_var_ev2):
+        raise ValueError("Evidence for model 2 is too large to represent in non-log space. Use log-space values instead.")
+
+    common_factor = 1.0 + evidence_inv_var_ev1 / (evidence_inv_ev1**2)
+
+    bf12 = evidence_inv_ev2 / evidence_inv_ev1 * common_factor
 
     bf12_std = np.sqrt(
-        ev1.evidence_inv**2 * ev2.evidence_inv_var
-        + ev2.evidence_inv**2 * ev1.evidence_inv_var
-    ) / (ev1.evidence_inv**2)
+        evidence_inv_ev1**2 * evidence_inv_var_ev2
+        + evidence_inv_ev2**2 * evidence_inv_var_ev1
+    ) / (evidence_inv_ev1**2)
 
     return (bf12, bf12_std)
 
@@ -612,17 +625,28 @@ def compute_ln_bayes_factor(ev1, ev2):
     ev1.check_basic_diagnostic()
     ev2.check_basic_diagnostic()
 
-    common_factor = 1.0 + ev1.evidence_inv_var / (ev1.evidence_inv**2)
+    evidence_inv_ev1 = np.exp(ev1.ln_evidence_inv)
+    evidence_inv_var_ev1 = np.exp(ev1.ln_evidence_inv_var)
+
+    evidence_inv_ev2 = np.exp(ev2.ln_evidence_inv)
+    evidence_inv_var_ev2 = np.exp(ev2.ln_evidence_inv_var)
+
+    if np.isnan(evidence_inv_ev1) or np.isnan(evidence_inv_var_ev1):
+        raise ValueError("Evidence for model 1 is too large to represent in non-log space. Use log-space values instead.")
+    if np.isnan(evidence_inv_ev2) or np.isnan(evidence_inv_var_ev2):
+        raise ValueError("Evidence for model 2 is too large to represent in non-log space. Use log-space values instead.")
+
+    common_factor = 1.0 + evidence_inv_var_ev1 / (evidence_inv_ev1**2)
 
     ln_bf12 = (
-        np.log(ev2.evidence_inv) - np.log(ev1.evidence_inv) + np.log(common_factor)
+        np.log(evidence_inv_ev2) - np.log(evidence_inv_ev1) + np.log(common_factor)
     )
 
     factor = (
-        ev1.evidence_inv**2 * ev2.evidence_inv_var
-        + ev2.evidence_inv**2 * ev1.evidence_inv_var
+        evidence_inv_ev1**2 * evidence_inv_var_ev2
+        + evidence_inv_ev2**2 * evidence_inv_var_ev1
     )
 
-    ln_bf12_std = 0.5 * np.log(factor) - 2.0 * np.log(ev1.evidence_inv)
+    ln_bf12_std = 0.5 * np.log(factor) - 2.0 * np.log(evidence_inv_ev1)
 
     return (ln_bf12, ln_bf12_std)
