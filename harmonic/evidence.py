@@ -322,6 +322,13 @@ class Evidence:
                 added_nsamples_per_chain - nan_count_per_chain
             )
 
+            self.lnargmax = jnp.nanmax(lnargs)
+            self.lnargmin = jnp.nanmin(lnargs)
+            self.lnprobmax = jnp.nanmax(Y)
+            self.lnprobmin = jnp.nanmin(Y)
+            self.lnpredictmax = jnp.nanmax(lnpred)
+            self.lnpredictmin = jnp.nanmin(lnpred)
+
         else:
             for i_chains in range(nchains):
                 i_samples_start = chains.start_indices[i_chains]
