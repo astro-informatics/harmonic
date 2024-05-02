@@ -344,7 +344,7 @@ class Evidence:
         """
 
         NSAMPLES_EFF_WARNING_LEVEL = 30
-        LNARG_WARNING_LEVEL = 400.0
+        LNARG_WARNING_LEVEL = 1000.0
 
         tests_pass = True
 
@@ -390,8 +390,12 @@ class Evidence:
         evidence_inv = np.exp(self.ln_evidence_inv)
         evidence_inv_var = np.exp(self.ln_evidence_inv_var)
 
-        if np.isinf(np.nan_to_num(evidence_inv, nan=np.inf)) or np.isinf(np.nan_to_num(evidence_inv_var, nan=np.inf)):
-            raise ValueError("Evidence is too large to represent in non-log space. Use log-space values instead.")
+        if np.isinf(np.nan_to_num(evidence_inv, nan=np.inf)) or np.isinf(
+            np.nan_to_num(evidence_inv_var, nan=np.inf)
+        ):
+            raise ValueError(
+                "Evidence is too large to represent in non-log space. Use log-space values instead."
+            )
 
         common_factor = 1.0 + evidence_inv_var / (evidence_inv**2)
 
@@ -520,8 +524,8 @@ def compute_bayes_factor(ev1, ev2):
         ValueError: Raised if model 1 does not have chains added.
 
         ValueError: Raised if model 2 does not have chains added.
-        
-        ValueError: If inverse evidence or its variance for model 1 or model 2 too large 
+
+        ValueError: If inverse evidence or its variance for model 1 or model 2 too large
             to store in non-log space.
 
     """
@@ -540,10 +544,18 @@ def compute_bayes_factor(ev1, ev2):
     evidence_inv_ev2 = np.exp(ev2.ln_evidence_inv)
     evidence_inv_var_ev2 = np.exp(ev2.ln_evidence_inv_var)
 
-    if np.isinf(np.nan_to_num(evidence_inv_ev1, nan=np.inf)) or np.isinf(np.nan_to_num(evidence_inv_var_ev1, nan=np.inf)):
-        raise ValueError("Evidence for model 1 is too large to represent in non-log space. Use log-space values instead.")
-    if np.isinf(np.nan_to_num(evidence_inv_ev2, nan=np.inf)) or np.isinf(np.nan_to_num(evidence_inv_var_ev2, nan=np.inf)):
-        raise ValueError("Evidence for model 2 is too large to represent in non-log space. Use log-space values instead.")
+    if np.isinf(np.nan_to_num(evidence_inv_ev1, nan=np.inf)) or np.isinf(
+        np.nan_to_num(evidence_inv_var_ev1, nan=np.inf)
+    ):
+        raise ValueError(
+            "Evidence for model 1 is too large to represent in non-log space. Use log-space values instead."
+        )
+    if np.isinf(np.nan_to_num(evidence_inv_ev2, nan=np.inf)) or np.isinf(
+        np.nan_to_num(evidence_inv_var_ev2, nan=np.inf)
+    ):
+        raise ValueError(
+            "Evidence for model 2 is too large to represent in non-log space. Use log-space values instead."
+        )
 
     common_factor = 1.0 + evidence_inv_var_ev1 / (evidence_inv_ev1**2)
 
@@ -598,9 +610,13 @@ def compute_ln_bayes_factor(ev1, ev2):
     evidence_inv_var_ev2 = np.exp(ev2.ln_evidence_inv_var)
 
     if np.isnan(evidence_inv_ev1) or np.isnan(evidence_inv_var_ev1):
-        raise ValueError("Evidence for model 1 is too large to represent in non-log space. Use log-space values instead.")
+        raise ValueError(
+            "Evidence for model 1 is too large to represent in non-log space. Use log-space values instead."
+        )
     if np.isnan(evidence_inv_ev2) or np.isnan(evidence_inv_var_ev2):
-        raise ValueError("Evidence for model 2 is too large to represent in non-log space. Use log-space values instead.")
+        raise ValueError(
+            "Evidence for model 2 is too large to represent in non-log space. Use log-space values instead."
+        )
 
     common_factor = 1.0 + evidence_inv_var_ev1 / (evidence_inv_ev1**2)
 
