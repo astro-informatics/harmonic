@@ -210,7 +210,7 @@ class RQSpline(nn.Module):
     num_bins: int
     spline_range: Sequence[float] = (-10.0, 10.0)
     multimodal_base: bool = False
-    base_centers: Sequence[jnp.ndarray]] = None
+    base_centers: Sequence[jnp.ndarray] = None
 
     def setup(self):
         conditioner = []
