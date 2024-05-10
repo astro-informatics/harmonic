@@ -264,12 +264,11 @@ class RQSpline(nn.Module):
         flow = distrax.Inverse(distrax.Chain(layers))
 
         if not self.multimodal_base:
-            base_dist = distrax.Independent(
-                distrax.MultivariateNormalFullCovariance(
-                    loc=jnp.zeros(self.n_features),
-                    covariance_matrix=jnp.eye(self.n_features) * temperature,
-                )
+            base_dist = distrax.MultivariateNormalFullCovariance(
+                loc=jnp.zeros(self.n_features),
+                covariance_matrix=jnp.eye(self.n_features) * temperature,
             )
+
         else:
             base_dist = distrax.MixtureOfTwo(
                 0.5,
