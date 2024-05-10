@@ -234,6 +234,11 @@ class RQSpline(nn.Module):
 
         self.bijector_fn = bijector_fn
 
+        self.default_base_centers = [
+            jnp.zeros(self.n_features),
+            jnp.full(self.n_features, 2.0),
+        ]
+
     def make_flow(self, temperature: float = 1.0):
         """
         Make distrax distribution containing the rational quadratic spline flow.
@@ -272,24 +277,32 @@ class RQSpline(nn.Module):
             )
 
         else:
-            if self.base_centers is not None:
-                base_dist = (
+            if self.base_centers is None:
+                base_centers = self.default_base_centers
+            else:
+                base_centers = self.base_centers
+
+            # base_dist = (
+            #    distrax.MultivariateNormalFullCovariance(
+            #        loc=base_centers[0],
+            #        covariance_matrix=jnp.eye(self.n_features) * temperature,
+            #    ),
+            # )
+
+            base_dist = distrax.MultivariateNormalFullCovariance(
+                loc=base_centers[0],
+                covariance_matrix=jnp.eye(self.n_features) * temperature,
+            )
+
+            for i in range(1, len(base_centers)):
+                base_dist = distrax.MixtureOfTwo(
+                    0.5,
                     distrax.MultivariateNormalFullCovariance(
-                        loc=self.base_centers[0],
+                        loc=base_centers[i],
                         covariance_matrix=jnp.eye(self.n_features) * temperature,
                     ),
+                    base_dist,
                 )
-
-                for i in range(1, len(self.base_centers)):
-                    gaussian_center = self.base_centers[i]
-                    base_dist = distrax.MixtureOfTwo(
-                        0.5,
-                        distrax.MultivariateNormalFullCovariance(
-                            loc=gaussian_center,
-                            covariance_matrix=jnp.eye(self.n_features) * temperature,
-                        ),
-                        base_dist,
-                    )
 
         return base_dist, flow
 
