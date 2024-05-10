@@ -148,7 +148,7 @@ def run_example(
     if flow_type == "RealNVP":
         epochs_num = 8
     elif flow_type == "RQSpline":
-        epochs_num = 5
+        epochs_num = 15
 
     temperature = 0.8
     training_proportion = 0.5
@@ -229,9 +229,11 @@ def run_example(
             )
         if flow_type == "RQSpline":
             model = hm.model.RQSplineModel(
-                ndim, standardize=standardize, temperature=temperature
+                ndim,
+                standardize=standardize,
+                temperature=temperature,,
             )
-        model.fit(chains_train.samples, epochs=epochs_num)
+        model.fit(chains_train.samples, epochs=epochs_num, verbose=True)
 
         # =======================================================================
         # Computing evidence using learnt model and emcee chains
@@ -275,6 +277,15 @@ def run_example(
                 np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)
             )
         )
+
+        err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
+        hm.logs.info_log(
+            "Log inverse evidence: numerical = {}, estimate = {}, error = {}".format(
+                -np.log(evidence_numerical_integration),
+                ev.ln_evidence_inv,
+                err_ln_inv_evidence,
+            )
+        )
         diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
         hm.logs.info_log(
             "Evidence: |numerical - estimate| / estimate = {}".format(
@@ -282,36 +293,6 @@ def run_example(
             )
         )
 
-        # ======================================================================
-        # Display inverse evidence computation results.
-        # ======================================================================
-        hm.logs.debug_log(
-            "Inv Evidence: numerical = {}, estimate = {}".format(
-                1.0 / evidence_numerical_integration, ev.evidence_inv
-            )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: std = {}, std / estimate = {}".format(
-                np.sqrt(ev.evidence_inv_var),
-                np.sqrt(ev.evidence_inv_var) / ev.evidence_inv,
-            )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}".format(
-                ev.kurtosis, np.sqrt(2.0 / (ev.n_eff - 1))
-            )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: sqrt( var(var) )/ var = {}".format(
-                np.sqrt(ev.evidence_inv_var_var) / ev.evidence_inv_var
-            )
-        )
-        hm.logs.info_log(
-            "Inv Evidence: |numerical - estimate| / estimate = {}".format(
-                np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv)
-                / ev.evidence_inv
-            )
-        )
 
         # ===========================================================================
         # Display more technical details
@@ -379,9 +360,9 @@ def run_example(
             created_plots = True
 
         # Save out realisations for voilin plot.
-        evidence_inv_summary[i_realisation, 0] = ev.evidence_inv
-        evidence_inv_summary[i_realisation, 1] = ev.evidence_inv_var
-        evidence_inv_summary[i_realisation, 2] = ev.evidence_inv_var_var
+        evidence_inv_summary[i_realisation, 0] = ev.ln_evidence_inv
+        evidence_inv_summary[i_realisation, 1] = ev.ln_evidence_inv_var
+        evidence_inv_summary[i_realisation, 2] = ev.ln_evidence_inv_var_var
 
     # ===========================================================================
     # End Timer.
