@@ -209,6 +209,7 @@ class RQSpline(nn.Module):
     hidden_size: Sequence[int]
     num_bins: int
     spline_range: Sequence[float] = (-10.0, 10.0)
+    multimodal_base: bool = False
 
     def setup(self):
         conditioner = []
@@ -261,12 +262,26 @@ class RQSpline(nn.Module):
             mask = jnp.logical_not(mask)
 
         flow = distrax.Inverse(distrax.Chain(layers))
-        base_dist = distrax.Independent(
-            distrax.MultivariateNormalFullCovariance(
-                loc=jnp.zeros(self.n_features),
-                covariance_matrix=jnp.eye(self.n_features) * temperature,
+
+        if not self.multimodal_base:
+            base_dist = distrax.Independent(
+                distrax.MultivariateNormalFullCovariance(
+                    loc=jnp.zeros(self.n_features),
+                    covariance_matrix=jnp.eye(self.n_features) * temperature,
+                )
             )
-        )
+        else:
+            base_dist = distrax.MixtureOfTwo(
+                0.5,
+                distrax.MultivariateNormalFullCovariance(
+                    loc=jnp.zeros(self.n_features),
+                    covariance_matrix=jnp.eye(self.n_features) * temperature,
+                ),
+                distrax.MultivariateNormalFullCovariance(
+                    loc=jnp.full(self.n_features, 2.0),
+                    covariance_matrix=jnp.eye(self.n_features) * temperature,
+                ),
+            )
 
         return base_dist, flow
 

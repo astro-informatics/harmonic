@@ -223,9 +223,9 @@ class FlowModel(mda.Model):
             {"params": self.state.params, "variables": self.variables},
             x,
             temperature,
-            method=None
-            if len(x.shape) == 1
-            else self.flow.log_prob,  # 1D input must be handled by directly calling the flow
+            method=(
+                None if len(x.shape) == 1 else self.flow.log_prob
+            ),  # 1D input must be handled by directly calling the flow
         )
 
         if self.standardize:
@@ -353,6 +353,7 @@ class RQSplineModel(FlowModel):
         learning_rate: float = 0.001,
         momentum: float = 0.9,
         temperature: float = 0.8,
+        multimodal_base: bool = False,
     ):
         """Constructor setting the hyper-parameters and domains of the model.
 
@@ -398,4 +399,6 @@ class RQSplineModel(FlowModel):
         self.hidden_size = hidden_size
         self.n_bins = n_bins
         self.spline_range = spline_range
-        self.flow = flows.RQSpline(ndim_in, n_layers, hidden_size, n_bins, spline_range)
+        self.flow = flows.RQSpline(
+            ndim_in, n_layers, hidden_size, n_bins, spline_range, multimodal_base
+        )

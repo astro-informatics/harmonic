@@ -7,6 +7,9 @@ import harmonic as hm
 real_nvp_2D = md.RealNVPModel(2, standardize=True)
 spline_4D = md.RQSplineModel(4, n_layers=2, n_bins=64, standardize=True)
 spline_3D = md.RQSplineModel(3, n_layers=2, n_bins=64, standardize=False)
+spline_3D = md.RQSplineModel(
+    3, n_layers=2, n_bins=64, standardize=True, multimodal_base=True
+)
 
 model_classes = [md.RealNVPModel, md.RQSplineModel]
 
