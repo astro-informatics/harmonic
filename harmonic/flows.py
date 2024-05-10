@@ -2,7 +2,6 @@ from typing import Sequence, Callable
 import flax.linen as nn
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array
 import tensorflow_probability as tfp
 import distrax
 
@@ -211,7 +210,7 @@ class RQSpline(nn.Module):
     num_bins: int
     spline_range: Sequence[float] = (-10.0, 10.0)
     multimodal_base: bool = False
-    base_centers: Sequence[Array] = None
+    base_centers: Sequence[jnp.ndarray]] = None
 
     def setup(self):
         conditioner = []
