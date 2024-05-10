@@ -354,6 +354,7 @@ class RQSplineModel(FlowModel):
         momentum: float = 0.9,
         temperature: float = 0.8,
         multimodal_base: bool = False,
+        base_centers: Sequence[jax.Array] = None,
     ):
         """Constructor setting the hyper-parameters and domains of the model.
 
@@ -400,5 +401,11 @@ class RQSplineModel(FlowModel):
         self.n_bins = n_bins
         self.spline_range = spline_range
         self.flow = flows.RQSpline(
-            ndim_in, n_layers, hidden_size, n_bins, spline_range, multimodal_base
+            ndim_in,
+            n_layers,
+            hidden_size,
+            n_bins,
+            spline_range,
+            multimodal_base,
+            base_centers=base_centers,
         )

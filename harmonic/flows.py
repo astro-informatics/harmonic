@@ -2,6 +2,7 @@ from typing import Sequence, Callable
 import flax.linen as nn
 import jax
 import jax.numpy as jnp
+from jaxtyping import Array
 import tensorflow_probability as tfp
 import distrax
 
@@ -210,6 +211,7 @@ class RQSpline(nn.Module):
     num_bins: int
     spline_range: Sequence[float] = (-10.0, 10.0)
     multimodal_base: bool = False
+    base_centers: Sequence[Array] = None
 
     def setup(self):
         conditioner = []
@@ -270,17 +272,24 @@ class RQSpline(nn.Module):
             )
 
         else:
-            base_dist = distrax.MixtureOfTwo(
-                0.5,
-                distrax.MultivariateNormalFullCovariance(
-                    loc=jnp.zeros(self.n_features),
-                    covariance_matrix=jnp.eye(self.n_features) * temperature,
-                ),
-                distrax.MultivariateNormalFullCovariance(
-                    loc=jnp.full(self.n_features, 2.0),
-                    covariance_matrix=jnp.eye(self.n_features) * temperature,
-                ),
-            )
+            if self.base_centers is not None:
+                base_dist = (
+                    distrax.MultivariateNormalFullCovariance(
+                        loc=self.base_centers[0],
+                        covariance_matrix=jnp.eye(self.n_features) * temperature,
+                    ),
+                )
+
+                for i in range(1, len(self.base_centers)):
+                    gaussian_center = self.base_centers[i]
+                    base_dist = distrax.MixtureOfTwo(
+                        0.5,
+                        distrax.MultivariateNormalFullCovariance(
+                            loc=gaussian_center,
+                            covariance_matrix=jnp.eye(self.n_features) * temperature,
+                        ),
+                        base_dist,
+                    )
 
         return base_dist, flow
 

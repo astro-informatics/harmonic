@@ -7,14 +7,38 @@ import harmonic as hm
 real_nvp_2D = md.RealNVPModel(2, standardize=True)
 spline_4D = md.RQSplineModel(4, n_layers=2, n_bins=64, standardize=True)
 spline_3D = md.RQSplineModel(3, n_layers=2, n_bins=64, standardize=False)
-spline_3D = md.RQSplineModel(
+spline_3D_multimodal_base = md.RQSplineModel(
     3, n_layers=2, n_bins=64, standardize=True, multimodal_base=True
+)
+spline_3D_multimodal_base_4G = md.RQSplineModel(
+    3,
+    n_layers=2,
+    n_bins=64,
+    standardize=True,
+    multimodal_base=True,
+    base_centers=[
+        jnp.array([0.0, 0.0, 0.0]),
+        jnp.array([1.0, 2.0, 0.0]),
+        jnp.array([3.0, 5.0, 0.0]),
+        jnp.array([2.0, 2.0, 2.0]),
+    ],
 )
 
 model_classes = [md.RealNVPModel, md.RQSplineModel]
 
-models_to_test = [real_nvp_2D, spline_4D]
-models_to_test1 = [real_nvp_2D, spline_4D, spline_3D]
+models_to_test = [
+    real_nvp_2D,
+    spline_4D,
+    spline_3D_multimodal_base,
+    spline_3D_multimodal_base_4G,
+]
+models_to_test1 = [
+    real_nvp_2D,
+    spline_4D,
+    spline_3D,
+    spline_3D_multimodal_base,
+    spline_3D_multimodal_base_4G,
+]
 gaussian_var = [0.1, 0.5, 1.0, 10.0, 20.0]
 
 # Make models for serialization tests
