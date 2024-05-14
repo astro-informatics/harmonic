@@ -16,10 +16,12 @@
     :target: https://arxiv.org/abs/2207.04037
 .. |arxiv3| image:: http://img.shields.io/badge/arXiv-2307.00048-orange.svg?style=flat
     :target: https://arxiv.org/abs/2307.00048
+.. |arxiv4| image:: http://img.shields.io/badge/arXiv:2405.05969-orange.svg?style=flat
+    :target: https://arxiv.org/abs/2405.05969
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
-|github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3|
+|github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3| |arxiv4|
 
 
 .. |logo| image:: ./docs/assets/harm_badge_simple.svg
@@ -115,6 +117,22 @@ A BibTeX entry for the paper is:
           year = 2021
      }
 
+
+Please *also* cite `Polanska et al. (2024) <https://arxiv.org/abs/2405.05969>`_ if using normalizing flow models.
+
+A BibTeX entry for the paper is:
+
+.. code-block::
+
+    @misc{polanska2024learned,
+        title={Learned harmonic mean estimation of the Bayesian evidence with normalizing flows}, 
+        author={Alicja Polanska and Matthew A. Price and Davide Piras and Alessio Spurio Mancini and Jason D. McEwen},
+        year={2024},
+        eprint={2405.05969},
+        archivePrefix={arXiv},
+        primaryClass={astro-ph.IM}
+    }
+
 Please *also* cite `Spurio Mancini et al. (2022) <https://arxiv.org/abs/2207.04037>`_ if this code has been of use in a simulation-based inference project.
 
 A BibTeX entry for the paper is:
@@ -130,19 +148,6 @@ A BibTeX entry for the paper is:
         year     = {2023}
      }
 
-Please *also* cite `Polanska et al. (2023) <https://arxiv.org/abs/2307.00048>`_ if using normalizing flow models.
-
-A BibTeX entry for the paper is:
-
-.. code-block::
-
-     @inproceedings{polanska:harmonic_nfs_maxent,
-        author    = {A.~Polanska and M.~A.~Price and A.~Spurio Mancini and J.~D.~McEwen},
-        booktitle = {International Workshop on Bayesian Inference and Maximum Entropy Methods in Science and Engineering},
-        eprint    = {arXiv:2307.00048},
-        title     = {Learned harmonic mean estimation of the marginal likelihood with normalizing flows},
-        year      = {2023}
-     }
 
 License
 =======
