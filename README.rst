@@ -73,7 +73,7 @@ and running the install script, within the root directory, with one command
 
 .. code-block:: bash
 
-    bash build_harmonic.sh
+    pip install .
 
 To check the install has worked correctly run the unit tests with 
 
