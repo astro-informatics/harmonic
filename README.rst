@@ -69,7 +69,7 @@ The ``harmonic`` package can also be installed from source by running
     git clone https://github.com/astro-informatics/harmonic
     cd harmonic
 
-and running the install script, within the root directory, with one command 
+and installing within the root directory, with one command 
 
 .. code-block:: bash
 
