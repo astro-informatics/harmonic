@@ -16,7 +16,7 @@
     :target: https://arxiv.org/abs/2207.04037
 .. |arxiv3| image:: http://img.shields.io/badge/arXiv-2307.00048-orange.svg?style=flat
     :target: https://arxiv.org/abs/2307.00048
-.. |arxiv4| image:: http://img.shields.io/badge/arXiv:2405.05969-orange.svg?style=flat
+.. |arxiv4| image:: http://img.shields.io/badge/arXiv-2405.05969-orange.svg?style=flat
     :target: https://arxiv.org/abs/2405.05969
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
