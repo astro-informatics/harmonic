@@ -1,4 +1,4 @@
-|GitHub| |Build Status| |Docs| |CodeCov| |PyPI| |GPL license| |ArXiv1| |ArXiv2| |ArXiv3|
+|GitHub| |Build Status| |Docs| |CodeCov| |PyPI| |GPL license| |ArXiv1| |ArXiv2| |ArXiv3| |ArXiv4|
 
 .. |GitHub| image:: https://img.shields.io/badge/GitHub-harmonic-brightgreen.svg?style=flat
    :target: https://github.com/astro-informatics/harmonic
@@ -17,6 +17,9 @@
 
 .. |ArXiv3| image:: http://img.shields.io/badge/arXiv-2307.00048-orange.svg?style=flat
    :target: https://arxiv.org/abs/2307.00048
+
+.. |ArXiv4| image:: http://img.shields.io/badge/arXiv-2405.05969-orange.svg?style=flat
+    :target: https://arxiv.org/abs/2405.05969
 
 .. |GPL license| image:: https://img.shields.io/badge/License-GPL-blue.svg
    :target: http://perso.crans.org/besson/LICENSE.html
