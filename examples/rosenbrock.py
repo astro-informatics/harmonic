@@ -7,7 +7,7 @@ import harmonic as hm
 
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
-    """Compute log_e of uniform prior.
+    """Compute log_e uniform prior.
 
     Args:
 
