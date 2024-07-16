@@ -26,7 +26,8 @@
 
 .. image:: ./docs/assets/harm_badge_simple.svg
     :width: 32
- Harmonic
+
+Harmonic
 =================================================================================================================
 
 ``harmonic`` is an open source, well tested and documented Python implementation of the *learnt harmonic mean estimator* (`McEwen et al. 2021 <https://arxiv.org/abs/2111.12720>`_) to compute the marginal likelihood (Bayesian evidence), required for Bayesian model selection.
