@@ -1,4 +1,4 @@
-numpy <= 1.26.4
+numpy == 1.26.4
 setuptools==68.0.0
 wheel==0.41.0
 cython>=0.29.30
