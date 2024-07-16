@@ -24,7 +24,7 @@
 |github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3| |arxiv4|
 
 
-.. image:: https://github.com/astro-informatics/harmonic/blob/main/docs/assets/harm_badge_simple.svg
+.. image:: ./docs/assets/harm_badge_simple.svg
     :width: 32
     :height: 32
     :align: center
