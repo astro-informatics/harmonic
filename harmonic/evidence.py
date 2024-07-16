@@ -460,7 +460,7 @@ class Evidence:
         if np.abs(ratio - 1.0) > 1e-8:
             ln_evidence_err_neg = np.log(1.0 - ratio)
         else:
-            ln_evidence_err_neg = np.NINF
+            ln_evidence_err_neg = -np.inf
 
         ln_evidence_err_pos = np.log(1.0 + ratio)
 
