@@ -138,7 +138,9 @@ def test_add_chains():
 
     assert np.exp(cal_ev.ln_evidence_inv) == pytest.approx(0.159438606)
     assert np.exp(cal_ev.ln_evidence_inv_var) == pytest.approx(1.164628268e-07)
-    assert np.exp(cal_ev.ln_evidence_inv_var_var)**0.5 == pytest.approx(1.142786462e-08)
+    assert np.exp(cal_ev.ln_evidence_inv_var_var) ** 0.5 == pytest.approx(
+        1.142786462e-08
+    )
 
     nsamples1 = 300
     chains1 = ch.Chains(ndim)
@@ -155,7 +157,7 @@ def test_add_chains():
 
     assert np.exp(ev.ln_evidence_inv) == pytest.approx(0.159438606)
     assert np.exp(ev.ln_evidence_inv_var) == pytest.approx(1.164628268e-07)
-    assert np.exp(ev.ln_evidence_inv_var_var)**0.5 == pytest.approx(1.142786462e-08)
+    assert np.exp(ev.ln_evidence_inv_var_var) ** 0.5 == pytest.approx(1.142786462e-08)
 
     return
 
@@ -250,7 +252,7 @@ def test_compute_ln_inv_evidence_errors(model):
     ev.ln_evidence_inv_var = ln_ev_inv_var
 
     zeta_neg, zeta_pos = ev.compute_ln_inv_evidence_errors()
-    assert zeta_neg == np.NINF
+    assert zeta_neg == -np.inf
     assert zeta_pos == pytest.approx(np.log(2.0))
 
     # Check case where ln_ev_inv_var = ln_ev_inv
@@ -310,9 +312,7 @@ def test_compute_bayes_factors():
     ev2.chains_added = True
 
     bf12_check = ev2_inv / ev1_inv * (1.0 + ev2_inv_var / ev2_inv**2)
-    bf12_var_check = (
-        ev1_inv**2 * ev2_inv_var + ev2_inv**2 * ev1_inv_var
-    ) / ev1_inv**4
+    bf12_var_check = (ev1_inv**2 * ev2_inv_var + ev2_inv**2 * ev1_inv_var) / ev1_inv**4
 
     (bf12, bf12_std) = cbe.compute_bayes_factor(ev1, ev2)
 
@@ -334,6 +334,7 @@ def test_compute_bayes_factors():
     (evidence, evidence_std) = ev1.compute_evidence()
     assert bf12 == pytest.approx(evidence)
     assert bf12_std == pytest.approx(evidence_std)
+
 
 @pytest.mark.parametrize("model", models_to_test_2)
 def test_serialization(model):
