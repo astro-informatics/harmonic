@@ -24,12 +24,11 @@
 |github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3| |arxiv4|
 
 
-.. |logo| image:: https://github.com/astro-informatics/harmonic/blob/main/docs/assets/harm_badge_simple.svg
+.. image:: https://github.com/astro-informatics/harmonic/blob/main/docs/assets/harm_badge_simple.svg
     :width: 32
     :height: 32
     :align: center
-
-|logo| Harmonic
+ Harmonic
 =================================================================================================================
 
 ``harmonic`` is an open source, well tested and documented Python implementation of the *learnt harmonic mean estimator* (`McEwen et al. 2021 <https://arxiv.org/abs/2111.12720>`_) to compute the marginal likelihood (Bayesian evidence), required for Bayesian model selection.
