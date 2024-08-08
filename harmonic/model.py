@@ -125,8 +125,11 @@ class FlowModel(mda.Model):
         self.standardize = standardize
         self.temperature = temperature
         self.flow = None
-        self.transformation_vmap = jax.vmap(transformation)
-        self.J_det_vmap = jax.vmap(log_J_det)
+        if not transformation is None:
+            self.transformation_vmap = jax.vmap(transformation)
+            self.J_det_vmap = jax.vmap(log_J_det)
+        else:
+            self.transformation_vmap = transformation
 
     def create_train_state(self, rng):
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
