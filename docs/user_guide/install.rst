@@ -38,7 +38,7 @@ Once within a fresh environment **harmonic** may be installed by cloning the Git
     git clone https://github.com/astro-informatics/harmonic
     cd harmonic
 
-and running the install script, within the root directory, with one command 
+and installing within the root directory, with one command 
 
 .. code-block:: bash
 
