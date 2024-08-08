@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Callable
 from harmonic import model_abstract as mda
 from harmonic import flows
 import jax
@@ -104,9 +104,16 @@ class FlowModel(mda.Model):
         momentum: float = 0.9,
         standardize: bool = False,
         temperature: float = 0.8,
+        transformation: Callable = None,
+        log_J_det: Callable = None,
     ):
         if ndim_in < 1:
             raise ValueError("Dimension must be greater than 0.")
+
+        if transformation != None and log_J_det == None:
+            raise ValueError(
+                "Please specify function to calculate Jacobian determinant of data transformation."
+            )
 
         self.ndim = ndim_in
         self.fitted = False
@@ -118,6 +125,8 @@ class FlowModel(mda.Model):
         self.standardize = standardize
         self.temperature = temperature
         self.flow = None
+        self.transformation_vmap = jax.vmap(transformation)
+        self.J_det_vmap = jax.vmap(log_J_det)
 
     def create_train_state(self, rng):
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
@@ -171,6 +180,9 @@ class FlowModel(mda.Model):
         state = self.create_train_state(rng_init)
 
         # set up standardisation
+        if not self.transformation_vmap is None:
+            X = self.transformation_vmap(X)
+
         if self.standardize:
             # self.pre_offset = jnp.min(X, axis = 0) #maxmin
             self.pre_offset = jnp.mean(X, axis=0)
@@ -216,6 +228,10 @@ class FlowModel(mda.Model):
         if temperature <= 0:
             raise ValueError("Scaling must be positive.")
 
+        if not self.transformation_vmap is None:
+            x_pre_transform = x.copy()
+            x = self.transformation_vmap(x)
+
         if self.standardize:
             x = (x - self.pre_offset) / self.pre_amp
 
@@ -227,6 +243,9 @@ class FlowModel(mda.Model):
                 None if len(x.shape) == 1 else self.flow.log_prob
             ),  # 1D input must be handled by directly calling the flow
         )
+
+        if not self.transformation_vmap is None:
+            logprob -= self.log_J_det_vmap(x_pre_transform)
 
         if self.standardize:
             logprob -= sum(jnp.log(self.pre_amp))
