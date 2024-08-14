@@ -245,7 +245,7 @@ def test_flows_gaussian(model):
         epochs = 20
 
     # Initialize a PRNG key (you can use any valid key)
-    key = jax.random.PRNGKey(0)
+    key = jax.random.PRNGKey(2)
     mean = jnp.zeros(ndim)
     cov = jnp.eye(ndim)
 
