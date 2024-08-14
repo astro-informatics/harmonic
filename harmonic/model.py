@@ -311,6 +311,8 @@ class RealNVPModel(FlowModel):
         momentum: float = 0.9,
         standardize: bool = False,
         temperature: float = 0.8,
+        transformation: Callable = None,
+        log_J_det: Callable = None,
     ):
         """Constructor setting the hyper-parameters of the model.
 
@@ -348,6 +350,8 @@ class RealNVPModel(FlowModel):
             momentum,
             standardize,
             temperature,
+            transformation,
+            log_J_det,
         )
 
         # Model parameters
@@ -377,6 +381,8 @@ class RQSplineModel(FlowModel):
         temperature: float = 0.8,
         multimodal_base: bool = False,
         base_centers: Sequence[jax.Array] = None,
+        transformation: Callable = None,
+        log_J_det: Callable = None,
     ):
         """Constructor setting the hyper-parameters and domains of the model.
 
@@ -415,6 +421,8 @@ class RQSplineModel(FlowModel):
             momentum,
             standardize,
             temperature,
+            transformation,
+            log_J_det,
         )
 
         # Flow parameters
