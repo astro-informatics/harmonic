@@ -112,7 +112,7 @@ class FlowModel(mda.Model):
 
         if transformation != None and log_J_det == None:
             raise ValueError(
-                "Please specify function to calculate Jacobian determinant of data transformation."
+                "Please specify function to calculate log of absolute value of the determinant Jacobian determinant of data transformation."
             )
 
         self.ndim = ndim_in
@@ -126,8 +126,8 @@ class FlowModel(mda.Model):
         self.temperature = temperature
         self.flow = None
         if not transformation is None:
-            self.transformation_vmap = jax.vmap(transformation, in_axes=0)
-            self.J_det_vmap = jax.vmap(log_J_det, in_axes=0)
+            self.transformation_vmap = jax.vmap(transformation, in_axes=(0, None))
+            self.log_J_det_vmap = jax.vmap(log_J_det, in_axes=(0, None))
         else:
             self.transformation_vmap = transformation
 
