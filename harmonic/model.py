@@ -126,8 +126,8 @@ class FlowModel(mda.Model):
         self.temperature = temperature
         self.flow = None
         if not transformation is None:
-            self.transformation_vmap = jax.vmap(transformation, in_axes=(0, None))
-            self.log_J_det_vmap = jax.vmap(log_J_det, in_axes=(0, None))
+            self.transformation_vmap = jax.vmap(transformation, in_axes=0)
+            self.log_J_det_vmap = jax.vmap(log_J_det, in_axes=0)
         else:
             self.transformation_vmap = transformation
 
