@@ -25,9 +25,9 @@ copyright = "2023, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, 
 author = "Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Alicja Polanska"
 
 # The short X.Y version
-version = "1.2.2"
+version = "1.2.3"
 # The full version, including alpha/beta/rc tags
-release = "1.2.2"
+release = "1.2.3"
 
 
 # -- General configuration  ---------------------------------------------------
