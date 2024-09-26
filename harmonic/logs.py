@@ -1,6 +1,7 @@
 import os
 import logging.config
 import logging
+from pathlib import Path
 import yaml
 import harmonic
 
@@ -24,41 +25,21 @@ def setup_logging(custom_yaml_path=None, default_level=logging.DEBUG):
         ValueError: Raised if logging.yaml is not in ./logs/ directory.
 
     """
-    if custom_yaml_path == None:
-        path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__)))
-            + "/logs/logging.yaml"
-        )
-    if custom_yaml_path != None:
-        path = custom_yaml_path
-    value = os.getenv("LOG_CFG", None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, "rt") as f:
-            config = yaml.safe_load(f.read())
-        if custom_yaml_path == None:
-            config["handlers"]["info_file_handler"]["filename"] = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__)))
-                + "/logs/info.log"
-            )
-            config["handlers"]["debug_file_handler"]["filename"] = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__)))
-                + "/logs/debug.log"
-            )
-            config["handlers"]["critical_file_handler"]["filename"] = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__)))
-                + "/logs/critical.log"
-            )
-            config["handlers"]["info_file_handler"]["filename"] = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.realpath(harmonic.__file__)))
-                + "/logs/info.log"
-            )
-        logging.config.dictConfig(config)
+    if "LOG_CFG" in os.environ:
+        path = Path(os.environ["LOG_CFG"])
+    elif custom_yaml_path is None:
+        path = Path(harmonic.__file__).parent / "default-logging-config.yaml"
     else:
-        logging.basicConfig(level=default_level)
-        raise ValueError("Logging config pathway incorrect.")
-        critical_log("Using custom config from {}".format(path))
+        path = Path(custom_yaml_path)
+    if not path.exists():
+        raise ValueError(f"Logging config path {path} does not exist.")
+    with open(path, "rt") as f:
+        config = yaml.safe_load(f.read())
+    if custom_yaml_path is None:
+        config["handlers"]["info_file_handler"]["filename"] = "info.log"
+        config["handlers"]["debug_file_handler"]["filename"] = "debug.log"
+        config["handlers"]["critical_file_handler"]["filename"] = "critical.log"
+    logging.config.dictConfig(config)
 
 
 def debug_log(message):
