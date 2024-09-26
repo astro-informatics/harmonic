@@ -48,7 +48,7 @@ setup(
         "Intended Audience :: Science/Research",
     ],
     name="harmonic",
-    version="1.2.2",
+    version="1.2.3",
     prefix=".",
     url="https://github.com/astro-informatics/harmonic",
     author="Jason D. McEwen, Alicja Polanska, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & Contributors",
@@ -59,6 +59,8 @@ setup(
     long_description_content_type="text/x-rst",
     long_description=long_description,
     packages=["harmonic"],
+    include_package_data=True,
+    package_data={"harmonic": ["default-logging-config.yaml"]},
     cmdclass={"build_ext": build_ext},
     ext_modules=cythonize(
         [
