@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; Harmonic 1.2.2 documentation</title>
+  <title>&lt;no title&gt; &mdash; Harmonic 1.2.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=798747b0" />
@@ -19,7 +19,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/documentation_options.js?v=590429e0"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -43,7 +43,7 @@
               <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.2.2
+                1.2.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -102,7 +102,7 @@
              
   <dl class="py class">
 <dt class="sig sig-object py" id="harmonic.flows.RealNVP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RealNVP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_features:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_scaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_unscaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">~typing.Type[~flax.linen.module.Module]</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~typing.Type[~flax.linen.module._Sentinel]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RealNVP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_features:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_scaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_unscaled_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">~flax.linen.module.Module</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~flax.linen.module._Sentinel</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RealNVP" title="Link to this definition"></a></dt>
 <dd><p>Real-valued non-volume preserving flow using flax and tfp-jax.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -224,7 +224,7 @@ another module inside the other module’s <code class="docutils literal notrans
 
 <dl class="py class">
 <dt class="sig sig-object py" id="harmonic.flows.RQSpline">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RQSpline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_features:</span> <span class="pre">int,</span> <span class="pre">num_layers:</span> <span class="pre">int,</span> <span class="pre">hidden_size:</span> <span class="pre">~typing.Sequence[int],</span> <span class="pre">num_bins:</span> <span class="pre">int,</span> <span class="pre">spline_range:</span> <span class="pre">~typing.Sequence[float]</span> <span class="pre">=</span> <span class="pre">(-10.0,</span> <span class="pre">10.0),</span> <span class="pre">parent:</span> <span class="pre">~typing.Type[~flax.linen.module.Module]</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~typing.Type[~flax.linen.module._Sentinel]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;,</span> <span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">harmonic.flows.</span></span><span class="sig-name descname"><span class="pre">RQSpline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_features:</span> <span class="pre">int,</span> <span class="pre">num_layers:</span> <span class="pre">int,</span> <span class="pre">hidden_size:</span> <span class="pre">~typing.Sequence[int],</span> <span class="pre">num_bins:</span> <span class="pre">int,</span> <span class="pre">spline_range:</span> <span class="pre">~typing.Sequence[float]</span> <span class="pre">=</span> <span class="pre">(-10.0,</span> <span class="pre">10.0),</span> <span class="pre">parent:</span> <span class="pre">~flax.linen.module.Module</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~flax.linen.module._Sentinel</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;,</span> <span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#harmonic.flows.RQSpline" title="Link to this definition"></a></dt>
 <dd><p>Rational quadratic spline normalizing flow model using distrax.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
