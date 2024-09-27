@@ -192,7 +192,7 @@ def run_example(
         ev = hm.Evidence(chains_test.nchains, model)
         # ev.set_mean_shift(0.0)
         ev.add_chains(chains_test)
-        ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
+        err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
 
         # Compute analytic evidence.
         if i_realisation == 0:
