@@ -131,7 +131,7 @@ def run_example(
         # Define the number of dimensions and the mean of the Gaussian
         num_samples = nchains * samples_per_chain
         # Initialize a PRNG key (you can use any valid key)
-        key = jax.random.PRNGKey(0)
+        key = jax.random.PRNGKey(i_realisation)
         mean = jnp.zeros(ndim)
 
         # Generate random samples from the 2D Gaussian distribution
