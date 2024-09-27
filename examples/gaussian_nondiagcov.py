@@ -102,7 +102,7 @@ def run_example(
         epochs_num = 5
     elif flow_type == "RQSpline":
         # epochs_num = 3
-        epochs_num = 100
+        epochs_num = 10
 
     # Beginning of path where plots will be saved
     save_name_start = "examples/plots/" + flow_type
@@ -210,19 +210,17 @@ def run_example(
                 -ev.ln_evidence_inv, -err_ln_inv_evidence[1], -err_ln_inv_evidence[0]
             )
         )
-        hm.logs.info_log("Analytic ln evidence is ", ln_evidence_analytic)
+        hm.logs.info_log("Analytic ln evidence is {}".format(ln_evidence_analytic))
         delta = -ln_evidence_analytic - ev.ln_evidence_inv
         hm.logs.info_log(
-            "Difference between analytic and harmonic  is ",
-            delta,
-            "+/-",
-            err_ln_inv_evidence[0],
-            err_ln_inv_evidence[1],
+            "Difference between analytic and harmonic  is {} +- {} {}".format(
+                delta, err_ln_inv_evidence[0], err_ln_inv_evidence[1]
+            )
         )
 
         hm.logs.debug_log("kurtosis = {}".format(ev.kurtosis), " Aim for ~3.")
         check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
-        hm.logs.debug_log("sqrt( var(var) ) / var = = {}".format(check))
+        hm.logs.debug_log("sqrt( var(var) ) / var = {}".format(check))
         hm.logs.debug_log(
             " Aim for sqrt( 2/(n_eff-1) ) = {}".format(np.sqrt(2.0 / (ev.n_eff - 1)))
         )
