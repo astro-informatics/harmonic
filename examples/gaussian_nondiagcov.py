@@ -198,56 +198,33 @@ def run_example(
         if i_realisation == 0:
             ln_evidence_analytic = ln_analytic_evidence(ndim, cov)
 
-        # ======================================================================
-        # Display evidence computation results.
-        # ======================================================================
         hm.logs.info_log("---------------------------------")
+        hm.logs.info_log("The inverse evidence in log space is:")
         hm.logs.info_log(
-            "Evidence: analytic = {}, estimated = {}".format(
-                np.exp(ln_evidence_analytic), np.exp(ln_evidence)
-            )
-        )
-        hm.logs.info_log(
-            "Evidence: std = {}, std / estimate = {}".format(
-                np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)
-            )
-        )
-        diff = np.log(np.abs(np.exp(ln_evidence_analytic) - np.exp(ln_evidence)))
-        hm.logs.info_log(
-            "Evidence: |analytic - estimate| / estimate = {}".format(
-                np.exp(diff - ln_evidence)
-            )
-        )
-        # ======================================================================
-        # Display inverse evidence computation results.
-        # ======================================================================
-        hm.logs.debug_log("---------------------------------")
-        hm.logs.debug_log(
-            "Inv Evidence: analytic = {}, estimate = {}".format(
-                np.exp(-ln_evidence_analytic), ev.evidence_inv
-            )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: std = {}, std / estimate = {}".format(
-                np.sqrt(ev.evidence_inv_var),
-                np.sqrt(ev.evidence_inv_var) / ev.evidence_inv,
-            )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}".format(
-                ev.kurtosis, np.sqrt(2.0 / (ev.n_eff - 1))
-            )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: sqrt( var(var) ) / var = {}".format(
-                np.sqrt(ev.evidence_inv_var_var) / ev.evidence_inv_var
+            "ln_inv_evidence = {} +/- {}".format(
+                ev.ln_evidence_inv, err_ln_inv_evidence
             )
         )
         hm.logs.info_log(
-            "Inv Evidence: |analytic - estimate| / estimate = {}".format(
-                np.abs(np.exp(-ln_evidence_analytic) - ev.evidence_inv)
-                / ev.evidence_inv
+            "ln evidence = {} +/- {} {}".format(
+                -ev.ln_evidence_inv, -err_ln_inv_evidence[1], -err_ln_inv_evidence[0]
             )
+        )
+        hm.logs.info_log("Analytic ln evidence is ", ln_evidence_analytic)
+        delta = -ln_evidence_analytic - ev.ln_evidence_inv
+        hm.logs.info_log(
+            "Difference between analytic and harmonic  is ",
+            delta,
+            "+/-",
+            err_ln_inv_evidence[0],
+            err_ln_inv_evidence[1],
+        )
+
+        hm.logs.debug_log("kurtosis = {}".format(ev.kurtosis), " Aim for ~3.")
+        check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
+        hm.logs.debug_log("sqrt( var(var) ) / var = = {}".format(check))
+        hm.logs.debug_log(
+            " Aim for sqrt( 2/(n_eff-1) ) = {}".format(np.sqrt(2.0 / (ev.n_eff - 1)))
         )
 
         # ===========================================================================
