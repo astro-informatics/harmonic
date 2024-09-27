@@ -218,7 +218,8 @@ def run_example(
             )
         )
 
-        hm.logs.debug_log("kurtosis = {}".format(ev.kurtosis), " Aim for ~3.")
+        hm.logs.debug_log("kurtosis = {}".format(ev.kurtosis))
+        hm.logs.debug_log(" Aim for ~3.")
         check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
         hm.logs.debug_log("sqrt( var(var) ) / var = {}".format(check))
         hm.logs.debug_log(
