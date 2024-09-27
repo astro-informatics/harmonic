@@ -101,7 +101,8 @@ def run_example(
     if flow_type == "RealNVP":
         epochs_num = 5
     elif flow_type == "RQSpline":
-        epochs_num = 3
+        # epochs_num = 3
+        epochs_num = 100
 
     # Beginning of path where plots will be saved
     save_name_start = "examples/plots/" + flow_type
@@ -112,7 +113,7 @@ def run_example(
 
     # Spline params
     n_layers = 5
-    n_bins = 5
+    n_bins = 16
     hidden_size = [32, 32]
     spline_range = (-10.0, 10.0)
 
@@ -314,6 +315,7 @@ def run_example(
 
             plt.show()
 
+        # Save out realisations for violin plot.
         evidence_inv_summary[i_realisation, 0] = ev.evidence_inv
         evidence_inv_summary[i_realisation, 1] = ev.evidence_inv_var
         evidence_inv_summary[i_realisation, 2] = ev.evidence_inv_var_var
@@ -347,11 +349,11 @@ if __name__ == "__main__":
     hm.logs.setup_logging()
 
     # Define parameters.
-    ndim = 5
+    ndim = 21
     nchains = 100
     samples_per_chain = 5000
-    flow_str = "RealNVP"
-    # flow_str = "RQSpline"
+    # flow_str = "RealNVP"
+    flow_str = "RQSpline"
     np.random.seed(10)  # used for initializing covariance matrix
 
     hm.logs.info_log("Non-diagonal Covariance Gaussian example")
