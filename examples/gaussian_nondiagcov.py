@@ -122,7 +122,7 @@ def run_example(
 
     # Run multiple realisations.
     n_realisations = 1
-    evidence_inv_summary = np.zeros((n_realisations, 3))
+    ln_evidence_inv_summary = np.zeros((n_realisations, 3))
     for i_realisation in range(n_realisations):
         if n_realisations > 0:
             hm.logs.info_log(
@@ -292,9 +292,9 @@ def run_example(
             plt.show()
 
         # Save out realisations for violin plot.
-        evidence_inv_summary[i_realisation, 0] = ev.evidence_inv
-        evidence_inv_summary[i_realisation, 1] = ev.evidence_inv_var
-        evidence_inv_summary[i_realisation, 2] = ev.evidence_inv_var_var
+        ln_evidence_inv_summary[i_realisation, 0] = ev.ln_evidence_inv
+        ln_evidence_inv_summary[i_realisation, 1] = ev.ln_evidence_inv_var
+        ln_evidence_inv_summary[i_realisation, 2] = ev.ln_evidence_inv_var_var
 
     clock = time.process_time() - clock
     hm.logs.info_log("Execution_time = {}s".format(clock))
@@ -302,18 +302,18 @@ def run_example(
     if n_realisations > 1:
         save_name = (
             save_name_start
-            + "_gaussian_nondiagcov_evidence_inv"
+            + "_gaussian_nondiagcov_ln_evidence_inv"
             + "_realisations_{}D.dat".format(ndim)
         )
-        np.savetxt(save_name, evidence_inv_summary)
-        evidence_inv_analytic_summary = np.zeros(1)
-        evidence_inv_analytic_summary[0] = np.exp(-ln_evidence_analytic)
+        np.savetxt(save_name, ln_evidence_inv_summary)
+        ln_evidence_inv_analytic_summary = np.zeros(1)
+        ln_evidence_inv_analytic_summary[0] = -ln_evidence_analytic
         save_name = (
             save_name_start
-            + "_gaussian_nondiagcov_evidence_inv"
+            + "_gaussian_nondiagcov_ln_evidence_inv"
             + "_analytic_{}D.dat".format(ndim)
         )
-        np.savetxt(save_name, evidence_inv_analytic_summary)
+        np.savetxt(save_name, ln_evidence_inv_analytic_summary)
 
     created_plots = True
     if created_plots:
