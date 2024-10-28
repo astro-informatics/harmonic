@@ -118,8 +118,7 @@ def ln_posterior(x, ln_prior, a=1.0, b=100.0):
 
     """
 
-    # ln_L = ln_likelihood(x, a=a, b=b)
-    ln_L = rosenbrock_likelihood(x)
+    ln_L = ln_likelihood(x, a=a, b=b)
 
     if not np.isfinite(ln_L):
         return -np.inf
@@ -223,9 +222,13 @@ def run_example(
         chains.
         """
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
-        sampler = emcee.EnsembleSampler(
-            nchains, ndim, ln_posterior, args=[ln_prior, a, b]
-        )
+        if ndim == 2:
+            sampler = emcee.EnsembleSampler(
+                nchains, ndim, ln_posterior, args=[ln_prior, a, b]
+            )
+        else:
+            sampler = emcee.EnsembleSampler(nchains, ndim, rosenbrock_likelihood)
+
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
         samples = np.ascontiguousarray(sampler.chain[:, nburn:, :])
@@ -448,13 +451,15 @@ def run_example(
             save_name,
             ln_evidence_inv_summary,
         )
-        evidence_inv_analytic_summary = np.zeros(1)
-        evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-        save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
-        np.savetxt(
-            save_name,
-            evidence_inv_analytic_summary,
-        )
+
+        if ndim == 2:
+            evidence_inv_analytic_summary = np.zeros(1)
+            evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
+            save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
+            np.savetxt(
+                save_name,
+                evidence_inv_analytic_summary,
+            )
 
     if created_plots:
         input("\nPress Enter to continue...")
@@ -468,9 +473,9 @@ if __name__ == "__main__":
 
     # Define parameters.
     ndim = 10
-    nchains = 200
-    samples_per_chain = 6000
-    nburn = 3000
+    nchains = 1000
+    samples_per_chain = 10e6
+    nburn = 10000
 
     # flow_str = "RealNVP"
     flow_str = "RQSpline"
