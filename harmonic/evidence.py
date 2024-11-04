@@ -251,7 +251,7 @@ class Evidence:
         Y = chains.ln_posterior
         nchains = self.nchains
 
-        if not num_slices is None:
+        if num_slices is not None:
             if num_slices > X.shape[0]:
                 raise ValueError(
                     "Can't split chains into more blocks than there are samples."
