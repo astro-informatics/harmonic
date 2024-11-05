@@ -205,7 +205,7 @@ def run_example(
     """
     Set up and run multiple simulations
     """
-    n_realisations = 2
+    n_realisations = 1
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 1:
@@ -300,15 +300,22 @@ def run_example(
             # ======================================================================
             # Display evidence computation results.
             # ======================================================================
-            hm.logs.debug_log(
+            hm.logs.info_log(
                 "Evidence: numerical = {}, estimate = {}".format(
                     evidence_numerical_integration, np.exp(ln_evidence)
                 )
             )
 
+            hm.logs.info_log(
+                "Ln evidence numerical = {}".format(
+                    np.log(evidence_numerical_integration)
+                )
+            )
+
             hm.logs.debug_log(
                 "Inv Evidence: numerical = {}, estimate = {}".format(
-                    1.0 / evidence_numerical_integration, ev.evidence_inv
+                    1.0 / evidence_numerical_integration,
+                    np.exp(ev.ln_evidence_inv),
                 )
             )
             diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
@@ -320,8 +327,11 @@ def run_example(
 
             hm.logs.info_log(
                 "Inv Evidence: |numerical - estimate| / estimate = {}".format(
-                    np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv)
-                    / ev.evidence_inv
+                    np.abs(
+                        1.0 / evidence_numerical_integration
+                        - np.exp(ev.ln_evidence_inv)
+                    )
+                    / np.exp(ev.ln_evidence_inv)
                 )
             )
 
@@ -472,10 +482,10 @@ if __name__ == "__main__":
     lg.setup_logging()
 
     # Define parameters.
-    ndim = 10
-    nchains = 1000
-    samples_per_chain = 10e6
-    nburn = 10000
+    ndim = 2
+    nchains = 100
+    samples_per_chain = 5000
+    nburn = 1000
 
     # flow_str = "RealNVP"
     flow_str = "RQSpline"
