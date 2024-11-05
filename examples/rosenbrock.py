@@ -4,6 +4,8 @@ import time
 import matplotlib.pyplot as plt
 from functools import partial
 import harmonic as hm
+import harmonic.logs as lg
+from scipy.optimize import rosen
 
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
@@ -82,6 +84,21 @@ def ln_likelihood(x, a=1.0, b=100.0):
     return -f
 
 
+def filter_outside_unit(x, log_l):
+    # if x.ndim == 2:
+    #    log_l = np.where(np.any((x < 0) | (x > 1), axis=-1), -np.inf, log_l)
+    if np.any(x < 0) or np.any(x > 1):
+        log_l = -np.inf
+    return log_l
+
+
+def rosenbrock_likelihood(x):
+
+    log_l = -rosen((x.T - 0.5) * 10)
+
+    return filter_outside_unit(x, log_l)
+
+
 def ln_posterior(x, ln_prior, a=1.0, b=100.0):
     """Compute log_e of posterior.
 
@@ -129,8 +146,8 @@ def run_example(
         plot_corner: Plot marginalised distributions if true.
     """
 
-    if ndim != 2:
-        raise ValueError("Only ndim=2 is supported (ndim={} specified)".format(ndim))
+    # if ndim != 2:
+    #    raise ValueError("Only ndim=2 is supported (ndim={} specified)".format(ndim))
 
     # ===========================================================================
     # Configure Parameters.
@@ -143,16 +160,23 @@ def run_example(
     b = 100.0
 
     # Beginning of path where plots will be saved
-    save_name_start = "examples/plots/" + flow_type
+    save_name_start = "examples/plots/" + flow_type + "_" + str(ndim) + "D"
 
     if flow_type == "RealNVP":
         epochs_num = 8
     elif flow_type == "RQSpline":
-        epochs_num = 5
+        # epochs_num = 5
+        epochs_num = 50
 
     temperature = 0.8
     training_proportion = 0.5
     standardize = True
+    # Spline params
+    n_layers = 5
+    n_bins = 5
+    hidden_size = [32, 32]
+    spline_range = (-10.0, 10.0)
+
     """
     Set prior parameters.
     """
@@ -182,7 +206,7 @@ def run_example(
     Set up and run multiple simulations
     """
     n_realisations = 1
-    evidence_inv_summary = np.zeros((n_realisations, 3))
+    ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 1:
             hm.logs.info_log(
@@ -198,9 +222,13 @@ def run_example(
         chains.
         """
         pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
-        sampler = emcee.EnsembleSampler(
-            nchains, ndim, ln_posterior, args=[ln_prior, a, b]
-        )
+        if ndim == 2:
+            sampler = emcee.EnsembleSampler(
+                nchains, ndim, ln_posterior, args=[ln_prior, a, b]
+            )
+        else:
+            sampler = emcee.EnsembleSampler(nchains, ndim, rosenbrock_likelihood)
+
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
         samples = np.ascontiguousarray(sampler.chain[:, nburn:, :])
@@ -229,9 +257,15 @@ def run_example(
             )
         if flow_type == "RQSpline":
             model = hm.model.RQSplineModel(
-                ndim, standardize=standardize, temperature=temperature
+                ndim,
+                n_layers=n_layers,
+                n_bins=n_bins,
+                hidden_size=hidden_size,
+                spline_range=spline_range,
+                standardize=standardize,
+                temperature=temperature,
             )
-        model.fit(chains_train.samples, epochs=epochs_num)
+        model.fit(chains_train.samples, epochs=epochs_num, verbose=True)
 
         # =======================================================================
         # Computing evidence using learnt model and emcee chains
@@ -244,6 +278,7 @@ def run_example(
         ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
         ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
+        err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
 
         # Compute analytic evidence.
         if ndim == 2:
@@ -262,56 +297,43 @@ def run_example(
             dy = y_grid[1, 0] - y_grid[0, 0]
             evidence_numerical_integration = np.sum(np.exp(ln_posterior_grid)) * dx * dy
 
-        # ======================================================================
-        # Display evidence computation results.
-        # ======================================================================
-        hm.logs.debug_log(
-            "Evidence: numerical = {}, estimate = {}".format(
-                evidence_numerical_integration, np.exp(ln_evidence)
+            # ======================================================================
+            # Display evidence computation results.
+            # ======================================================================
+            hm.logs.info_log(
+                "Evidence: numerical = {}, estimate = {}".format(
+                    evidence_numerical_integration, np.exp(ln_evidence)
+                )
             )
-        )
-        hm.logs.debug_log(
-            "Evidence: std = {}, std / estimate = {}".format(
-                np.exp(ln_evidence_std), np.exp(ln_evidence_std - ln_evidence)
-            )
-        )
-        diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
-        hm.logs.info_log(
-            "Evidence: |numerical - estimate| / estimate = {}".format(
-                np.exp(diff - ln_evidence)
-            )
-        )
 
-        # ======================================================================
-        # Display inverse evidence computation results.
-        # ======================================================================
-        hm.logs.debug_log(
-            "Inv Evidence: numerical = {}, estimate = {}".format(
-                1.0 / evidence_numerical_integration, ev.evidence_inv
+            hm.logs.info_log(
+                "Ln evidence numerical = {}".format(
+                    np.log(evidence_numerical_integration)
+                )
             )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: std = {}, std / estimate = {}".format(
-                np.sqrt(ev.evidence_inv_var),
-                np.sqrt(ev.evidence_inv_var) / ev.evidence_inv,
+
+            hm.logs.debug_log(
+                "Inv Evidence: numerical = {}, estimate = {}".format(
+                    1.0 / evidence_numerical_integration,
+                    np.exp(ev.ln_evidence_inv),
+                )
             )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: kurtosis = {}, sqrt( 2 / ( n_eff - 1 ) ) = {}".format(
-                ev.kurtosis, np.sqrt(2.0 / (ev.n_eff - 1))
+            diff = np.log(np.abs(evidence_numerical_integration - np.exp(ln_evidence)))
+            hm.logs.info_log(
+                "Evidence: |numerical - estimate| / estimate = {}".format(
+                    np.exp(diff - ln_evidence)
+                )
             )
-        )
-        hm.logs.debug_log(
-            "Inv Evidence: sqrt( var(var) )/ var = {}".format(
-                np.sqrt(ev.evidence_inv_var_var) / ev.evidence_inv_var
+
+            hm.logs.info_log(
+                "Inv Evidence: |numerical - estimate| / estimate = {}".format(
+                    np.abs(
+                        1.0 / evidence_numerical_integration
+                        - np.exp(ev.ln_evidence_inv)
+                    )
+                    / np.exp(ev.ln_evidence_inv)
+                )
             )
-        )
-        hm.logs.info_log(
-            "Inv Evidence: |numerical - estimate| / estimate = {}".format(
-                np.abs(1.0 / evidence_numerical_integration - ev.evidence_inv)
-                / ev.evidence_inv
-            )
-        )
 
         # ===========================================================================
         # Display more technical details
@@ -341,6 +363,43 @@ def run_example(
             "nsamples eff per chain = \n{}".format(ev.nsamples_eff_per_chain)
         )
         hm.logs.debug_log("===============================")
+
+        print(
+            "ln_inv_evidence = {} +/- {}".format(
+                ev.ln_evidence_inv, err_ln_inv_evidence
+            )
+        )
+        print(
+            "ln evidence = {} +/- {} {}".format(
+                -ev.ln_evidence_inv, -err_ln_inv_evidence[1], -err_ln_inv_evidence[0]
+            )
+        )
+        print("kurtosis = {}".format(ev.kurtosis), " Aim for ~3.")
+        # print("ln inverse evidence per chain ", ev.ln_evidence_inv_per_chain)
+        # print(
+        #    "Average ln inverse evidence per chain ",#
+        #    np.mean(ev.ln_evidence_inv_per_chain),
+        # )
+        print(
+            "lnargmax",
+            ev.lnargmax,
+            "lnargmin",
+            ev.lnargmin,
+            "lnprobmax",
+            ev.lnprobmax,
+            "lnprobmin",
+            ev.lnprobmin,
+            "lnpredictmax",
+            ev.lnpredictmax,
+            "lnpredictmin",
+            ev.lnpredictmin,
+        )
+        check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
+        print(
+            check,
+            " Aim for sqrt( 2/(n_eff-1) ) = {}".format(np.sqrt(2.0 / (ev.n_eff - 1))),
+        )
+        print("sqrt(evidence_inv_var_var) / evidence_inv_var = {}".format(check))
 
         # Create corner/triangle plot.
         created_plots = False
@@ -378,10 +437,11 @@ def run_example(
 
             created_plots = True
 
-        # Save out realisations for voilin plot.
-        evidence_inv_summary[i_realisation, 0] = ev.evidence_inv
-        evidence_inv_summary[i_realisation, 1] = ev.evidence_inv_var
-        evidence_inv_summary[i_realisation, 2] = ev.evidence_inv_var_var
+        ln_evidence_inv_summary[i_realisation, 0] = ev.ln_evidence_inv
+        ln_evidence_inv_summary[i_realisation, 1] = err_ln_inv_evidence[0]
+        ln_evidence_inv_summary[i_realisation, 2] = err_ln_inv_evidence[1]
+        ln_evidence_inv_summary[i_realisation, 3] = ev.ln_evidence_inv_var
+        ln_evidence_inv_summary[i_realisation, 4] = ev.ln_evidence_inv_var_var
 
     # ===========================================================================
     # End Timer.
@@ -399,15 +459,17 @@ def run_example(
         )
         np.savetxt(
             save_name,
-            evidence_inv_summary,
+            ln_evidence_inv_summary,
         )
-        evidence_inv_analytic_summary = np.zeros(1)
-        evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-        save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
-        np.savetxt(
-            save_name,
-            evidence_inv_analytic_summary,
-        )
+
+        if ndim == 2:
+            evidence_inv_analytic_summary = np.zeros(1)
+            evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
+            save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
+            np.savetxt(
+                save_name,
+                evidence_inv_analytic_summary,
+            )
 
     if created_plots:
         input("\nPress Enter to continue...")
@@ -417,13 +479,13 @@ def run_example(
 
 if __name__ == "__main__":
     # Setup logging config.
-    hm.logs.setup_logging()
+    lg.setup_logging()
 
     # Define parameters.
     ndim = 2
-    nchains = 200
+    nchains = 100
     samples_per_chain = 5000
-    nburn = 2000
+    nburn = 1000
 
     # flow_str = "RealNVP"
     flow_str = "RQSpline"
