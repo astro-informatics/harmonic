@@ -630,10 +630,10 @@ if __name__ == "__main__":
 
     # Define parameters.
     ndim = 10
-    nchains = 1000
-    samples_per_chain = 10**8
+    nchains = 200
+    samples_per_chain = 10**7
     nburn = 5000
-    chain_iterations = 1000
+    chain_iterations = 500
 
     # flow_str = "RealNVP"
     flow_str = "RQSpline"
