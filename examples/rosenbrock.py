@@ -231,7 +231,7 @@ def run_example(
             hm.logs.info_log(
                 "Realisation number = {}/{}".format(i_realisation + 1, n_realisations)
             )
-        sample = True
+        sample = False
         if sample:
             # =======================================================================
             # Run Emcee to recover posterior samples
@@ -307,6 +307,8 @@ def run_example(
         # Configure emcee chains for harmonic
         # =======================================================================
         estimate_evidence = True
+        thin = True
+        thin_by = 10**4
         if estimate_evidence:
             for i in range(chain_iterations):
 
@@ -325,6 +327,8 @@ def run_example(
                     "rb",
                 ) as f:
                     samples = np.load(f)
+                    if thin:
+                        samples = samples[:, ::thin_by]
                 with open(
                     "examples/plots/logprob_rosenbrock_"
                     + str(ndim)
@@ -340,6 +344,8 @@ def run_example(
                     "rb",
                 ) as f:
                     lnprob = np.load(f)
+                    if thin:
+                        lnprob = lnprob[::thin_by]
 
                 chains = hm.Chains(ndim)
                 chains.add_chains_3d(samples, lnprob)
