@@ -6,6 +6,7 @@ from functools import partial
 import harmonic as hm
 import harmonic.logs as lg
 from scipy.optimize import rosen
+from tqdm import tqdm
 
 
 def ln_prior_uniform(x, xmin=-10.0, xmax=10.0, ymin=-5.0, ymax=15.0):
@@ -168,12 +169,20 @@ def run_example(
         # epochs_num = 5
         epochs_num = 50
 
+    sample = False
+    estimate_evidence = True
+    thin = True
+    thin_by = 10**3 #10**3 #these should be a factor of samples per chain
+    training_thin_by = 10
+    load_model = False
+    num_repeats = 20
+
     temperature = 0.8
     training_proportion = 0.5
     standardize = True
     # Spline params
-    n_layers = 5
-    n_bins = 5
+    n_layers = 3
+    n_bins = 32
     hidden_size = [32, 32]
     spline_range = (-10.0, 10.0)
 
@@ -192,8 +201,6 @@ def run_example(
             + "b_"
             + str(epochs_num)
             + "e_"
-            + str(temperature)
-            + "T"
         )
 
     """
@@ -224,366 +231,297 @@ def run_example(
     """
     Set up and run multiple simulations
     """
-    n_realisations = 1
-    ln_evidence_inv_summary = np.zeros((n_realisations, 5))
-    for i_realisation in range(n_realisations):
-        if n_realisations > 1:
-            hm.logs.info_log(
-                "Realisation number = {}/{}".format(i_realisation + 1, n_realisations)
+
+
+    if sample:
+        # =======================================================================
+        # Run Emcee to recover posterior samples
+        # =======================================================================
+        hm.logs.info_log("Run sampling...")
+        """
+        Feed emcee the ln_posterior function, starting positions and recover 
+        chains.
+        """
+        pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
+        if ndim == 2:
+            sampler = emcee.EnsembleSampler(
+                nchains, ndim, ln_posterior, args=[ln_prior, a, b]
             )
-        sample = False
-        if sample:
-            # =======================================================================
-            # Run Emcee to recover posterior samples
-            # =======================================================================
-            hm.logs.info_log("Run sampling...")
-            """
-            Feed emcee the ln_posterior function, starting positions and recover 
-            chains.
-            """
-            pos = np.random.rand(ndim * nchains).reshape((nchains, ndim)) * 0.1
+        else:
+            sampler = emcee.EnsembleSampler(nchains, ndim, rosenbrock_likelihood)
+
+        rstate = np.random.get_state()
+        sampler.run_mcmc(pos, nburn, rstate0=rstate)
+
+        for i in range(chain_iterations):
             if ndim == 2:
                 sampler = emcee.EnsembleSampler(
                     nchains, ndim, ln_posterior, args=[ln_prior, a, b]
                 )
             else:
-                sampler = emcee.EnsembleSampler(nchains, ndim, rosenbrock_likelihood)
+                sampler = emcee.EnsembleSampler(
+                    nchains, ndim, rosenbrock_likelihood
+                )
+                (pos, prob, rstate) = sampler.run_mcmc(
+                    pos,
+                    int(samples_per_chain / chain_iterations),
+                    rstate0=rstate,
+                )
 
-            rstate = np.random.get_state()
-            sampler.run_mcmc(pos, nburn, rstate0=rstate)
+            samples = sampler.chain
+            lnprob = sampler.lnprobability
 
-            for i in range(chain_iterations):
-                if ndim == 2:
-                    sampler = emcee.EnsembleSampler(
-                        nchains, ndim, ln_posterior, args=[ln_prior, a, b]
-                    )
-                else:
-                    sampler = emcee.EnsembleSampler(
-                        nchains, ndim, rosenbrock_likelihood
-                    )
-                    (pos, prob, rstate) = sampler.run_mcmc(
-                        pos,
-                        int(samples_per_chain / chain_iterations),
-                        rstate0=rstate,
-                    )
+            with open(
+                "examples/plots/samples_rosenbrock_"
+                + str(ndim)
+                + "D_"
+                + str(nchains)
+                + "ch_"
+                + str(samples_per_chain)
+                + "s_"
+                + str(nburn)
+                + "bi_"
+                + str(i)
+                + ".npy",
+                "wb",
+            ) as f:
+                np.save(f, samples)
+            with open(
+                "examples/plots/logprob_rosenbrock_"
+                + str(ndim)
+                + "D_"
+                + str(nchains)
+                + "ch_"
+                + str(samples_per_chain)
+                + "s_"
+                + str(nburn)
+                + "bi_"
+                + str(i)
+                + ".npy",
+                "wb",
+            ) as f:
+                np.save(f, lnprob)
 
-                samples = sampler.chain
-                lnprob = sampler.lnprobability
+            del samples, lnprob, sampler, prob
 
-                with open(
-                    "examples/plots/samples_rosenbrock_"
-                    + str(ndim)
-                    + "D_"
-                    + str(nchains)
-                    + "ch_"
-                    + str(samples_per_chain)
-                    + "s_"
-                    + str(nburn)
-                    + "bi_"
-                    + str(i)
-                    + ".npy",
-                    "wb",
-                ) as f:
-                    np.save(f, samples)
-                with open(
-                    "examples/plots/logprob_rosenbrock_"
-                    + str(ndim)
-                    + "D_"
-                    + str(nchains)
-                    + "ch_"
-                    + str(samples_per_chain)
-                    + "s_"
-                    + str(nburn)
-                    + "bi_"
-                    + str(i)
-                    + ".npy",
-                    "wb",
-                ) as f:
-                    np.save(f, lnprob)
+    # =======================================================================
+    # Configure emcee chains for harmonic
+    # =======================================================================
+    
+    if not thin:
+        thin_by = 1
+    samples_used_size = int(samples_per_chain/thin_by * ((chain_iterations-1)/chain_iterations)) #store samples used for inference
+    print(samples_used_size)
+    samples_used = np.empty((nchains, samples_used_size, ndim))
+    if estimate_evidence:
+        hm.logs.info_log("Compute evidence...")
+        temps_to_consider = [0.7, 0.75, 0.8]
+        ln_evidence_inv_summary = np.zeros((len(temps_to_consider)*num_repeats, 6))
+        
+        ix_start = 0
+        for i_T in range(len(temps_to_consider)):
+            temp = temps_to_consider[i_T]
 
-                del samples, lnprob, sampler, prob
+            for i_realisation in range(num_repeats):
 
-        # =======================================================================
-        # Configure emcee chains for harmonic
-        # =======================================================================
-        estimate_evidence = True
-        thin = True
-        thin_by = 10**4
-        if estimate_evidence:
-            for i in range(chain_iterations):
+                print(temp, i_realisation)
+                for i in tqdm(range(chain_iterations)):
 
-                with open(
-                    "examples/plots/samples_rosenbrock_"
-                    + str(ndim)
-                    + "D_"
-                    + str(nchains)
-                    + "ch_"
-                    + str(samples_per_chain)
-                    + "s_"
-                    + str(nburn)
-                    + "bi_"
-                    + str(i)
-                    + ".npy",
-                    "rb",
-                ) as f:
-                    samples = np.load(f)
-                    if thin:
-                        samples = samples[:, ::thin_by]
-                with open(
-                    "examples/plots/logprob_rosenbrock_"
-                    + str(ndim)
-                    + "D_"
-                    + str(nchains)
-                    + "ch_"
-                    + str(samples_per_chain)
-                    + "s_"
-                    + str(nburn)
-                    + "bi_"
-                    + str(i)
-                    + ".npy",
-                    "rb",
-                ) as f:
-                    lnprob = np.load(f)
-                    if thin:
-                        lnprob = lnprob[::thin_by]
+                    with open(
+                        "examples/plots/samples_rosenbrock_"
+                        + str(ndim)
+                        + "D_"
+                        + str(nchains)
+                        + "ch_"
+                        + str(samples_per_chain)
+                        + "s_"
+                        + str(nburn)
+                        + "bi_"
+                        + str(i)
+                        + ".npy",
+                        "rb",
+                    ) as f:
+                        samples = np.load(f)
+                        if i == 1:
+                            print("samples shape", samples.shape)
+                        if thin and i == 0:
+                            samples = samples[:, ix_start::training_thin_by, :]
+                        if thin and i > 0:
+                            samples = samples[:, ix_start::thin_by, :]
+                            if i == 1:
+                                print("samples shape after thinning", samples.shape)
+                        
+                    with open(
+                        "examples/plots/logprob_rosenbrock_"
+                        + str(ndim)
+                        + "D_"
+                        + str(nchains)
+                        + "ch_"
+                        + str(samples_per_chain)
+                        + "s_"
+                        + str(nburn)
+                        + "bi_"
+                        + str(i)
+                        + ".npy",
+                        "rb",
+                    ) as f:
+                        lnprob = np.load(f)
+                        if thin and i == 0:
+                            lnprob = lnprob[:, ix_start::training_thin_by]
+                        if thin and i >0:
+                            lnprob = lnprob[:, ix_start::thin_by]
+                    chains = hm.Chains(ndim)
+                    chains.add_chains_3d(samples, lnprob)
 
-                chains = hm.Chains(ndim)
-                chains.add_chains_3d(samples, lnprob)
+                    if i == 0:
+                        # =======================================================================
+                        # Fit model
+                        # =======================================================================
+                        if load_model:
+                            print("Loading in model...")
+                            load_lab = "examples/models" + save_name_start[14:] + "_start" + str(ix_start) + "_model"
+                            if flow_type == "RealNVP":
+                                model = hm.model.RealNVPModel.deserialize(load_lab)
+                            if flow_type == "RQSpline":
+                                model = hm.model.RQSplineModel.deserialize(load_lab)
+                        else:
+                            hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
+                            if flow_type == "RealNVP":
+                                model = hm.model.RealNVPModel(
+                                    ndim, standardize=standardize, temperature=temperature
+                                )
+                            if flow_type == "RQSpline":
+                                model = hm.model.RQSplineModel(
+                                    ndim,
+                                    n_layers=n_layers,
+                                    n_bins=n_bins,
+                                    hidden_size=hidden_size,
+                                    spline_range=spline_range,
+                                    standardize=standardize,
+                                    temperature=temperature,
+                                )
+                            model.fit(chains.samples, epochs=epochs_num, verbose=True)
+                            model_lab = "examples/models/" + save_name_start[14:] + "_start" + str(ix_start) + "_model"
+                            model.serialize(model_lab)
 
-                if i == 0:
-                    # =======================================================================
-                    # Fit model
-                    # =======================================================================
-                    hm.logs.info_log("Fit model for {} epochs...".format(epochs_num))
-                    if flow_type == "RealNVP":
-                        model = hm.model.RealNVPModel(
-                            ndim, standardize=standardize, temperature=temperature
+                        model.temperature = temp
+
+                        ev = hm.Evidence(nchains, model)
+                    # After model is trained, start calculating the evidence
+                    else:
+                        # =======================================================================
+                        # Computing evidence using learnt model and emcee chains
+                        # =======================================================================
+                        """
+                        Instantiates the evidence class with a given model. Adds some chains and 
+                        computes the log-space evidence (marginal likelihood).
+                        """
+                        samples_used[:, (i-1)*int(samples_per_chain/(thin_by*chain_iterations)):i*int(samples_per_chain/(thin_by*chain_iterations)), :] = samples
+                        ev.add_chains(chains)
+
+                        if i == chain_iterations -1:
+                            ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
+                            err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
+                            print("Temperature is ", temp, " start ix is ", ix_start)
+                            print(
+                                "ln evidence = {} +/- {} {}".format(
+                                    -ev.ln_evidence_inv,
+                                    -err_ln_inv_evidence[1],
+                                    -err_ln_inv_evidence[0],
+                                )
+                            )
+                            print("kurtosis = {}".format(ev.kurtosis), " Aim for ~3.")
+                            # print("ln inverse evidence per chain ", ev.ln_evidence_inv_per_chain)
+                            # print(
+                            #    "Average ln inverse evidence per chain ",#
+                            #    np.mean(ev.ln_evidence_inv_per_chain),
+                            # )
+                            print(
+                                "lnargmax",
+                                ev.lnargmax,
+                                "lnargmin",
+                                ev.lnargmin,
+                                "lnprobmax",
+                                ev.lnprobmax,
+                                "lnprobmin",
+                                ev.lnprobmin,
+                                "lnpredictmax",
+                                ev.lnpredictmax,
+                                "lnpredictmin",
+                                ev.lnpredictmin,
+                            )
+                            check = np.exp(
+                                0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var
+                            )
+                            print(
+                                check,
+                                " Aim for sqrt( 2/(n_eff-1) ) = {}".format(
+                                    np.sqrt(2.0 / (ev.n_eff - 1))
+                                ),
+                            )
+                            print(
+                                "sqrt(evidence_inv_var_var) / evidence_inv_var = {}".format(
+                                    check
+                                )
+                            )
+
+                            ln_evidence_inv_summary[i_realisation + i_T*num_repeats, 0] = ev.ln_evidence_inv
+                            ln_evidence_inv_summary[i_realisation + i_T*num_repeats, 1] = err_ln_inv_evidence[0]
+                            ln_evidence_inv_summary[i_realisation + i_T*num_repeats, 2] = err_ln_inv_evidence[1]
+                            ln_evidence_inv_summary[i_realisation + i_T*num_repeats, 3] = ev.ln_evidence_inv_var
+                            ln_evidence_inv_summary[i_realisation + i_T*num_repeats, 4] = ev.ln_evidence_inv_var_var
+                            ln_evidence_inv_summary[i_realisation + i_T*num_repeats, 5] = temp
+
+                    # Compute analytic evidence.
+                    if ndim == 2:
+                        hm.logs.debug_log("Compute evidence by numerical integration...")
+                        ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior, a=a, b=b)
+                        ln_posterior_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
+                            ln_posterior_func,
+                            xmin=-10.0,
+                            xmax=10.0,
+                            ymin=-5.0,
+                            ymax=15.0,
+                            nx=1000,
+                            ny=1000,
                         )
-                    if flow_type == "RQSpline":
-                        model = hm.model.RQSplineModel(
-                            ndim,
-                            n_layers=n_layers,
-                            n_bins=n_bins,
-                            hidden_size=hidden_size,
-                            spline_range=spline_range,
-                            standardize=standardize,
-                            temperature=temperature,
+                        dx = x_grid[0, 1] - x_grid[0, 0]
+                        dy = y_grid[1, 0] - y_grid[0, 0]
+                        evidence_numerical_integration = (
+                            np.sum(np.exp(ln_posterior_grid)) * dx * dy
                         )
-                    model.fit(chains.samples, epochs=epochs_num, verbose=True)
 
-                    ev = hm.Evidence(nchains, model)
-                # After model is trained, start calculating the evidence
-                else:
-                    # =======================================================================
-                    # Computing evidence using learnt model and emcee chains
-                    # =======================================================================
-                    hm.logs.info_log("Compute evidence...")
-                    """
-                    Instantiates the evidence class with a given model. Adds some chains and 
-                    computes the log-space evidence (marginal likelihood).
-                    """
-                    ev = hm.Evidence(nchains, model)
-                    ev.add_chains(chains)
-
-                    ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-                    err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
-
-                    print(
-                        "ln evidence = {} +/- {} {}".format(
-                            -ev.ln_evidence_inv,
-                            -err_ln_inv_evidence[1],
-                            -err_ln_inv_evidence[0],
-                        )
-                    )
-                    print("kurtosis = {}".format(ev.kurtosis), " Aim for ~3.")
-                    # print("ln inverse evidence per chain ", ev.ln_evidence_inv_per_chain)
-                    # print(
-                    #    "Average ln inverse evidence per chain ",#
-                    #    np.mean(ev.ln_evidence_inv_per_chain),
-                    # )
-                    print(
-                        "lnargmax",
-                        ev.lnargmax,
-                        "lnargmin",
-                        ev.lnargmin,
-                        "lnprobmax",
-                        ev.lnprobmax,
-                        "lnprobmin",
-                        ev.lnprobmin,
-                        "lnpredictmax",
-                        ev.lnpredictmax,
-                        "lnpredictmin",
-                        ev.lnpredictmin,
-                    )
-                    check = np.exp(
-                        0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var
-                    )
-                    print(
-                        check,
-                        " Aim for sqrt( 2/(n_eff-1) ) = {}".format(
-                            np.sqrt(2.0 / (ev.n_eff - 1))
-                        ),
-                    )
-                    print(
-                        "sqrt(evidence_inv_var_var) / evidence_inv_var = {}".format(
-                            check
-                        )
-                    )
-
-            # Compute analytic evidence.
-            if ndim == 2:
-                hm.logs.debug_log("Compute evidence by numerical integration...")
-                ln_posterior_func = partial(ln_posterior, ln_prior=ln_prior, a=a, b=b)
-                ln_posterior_grid, x_grid, y_grid = hm.utils.eval_func_on_grid(
-                    ln_posterior_func,
-                    xmin=-10.0,
-                    xmax=10.0,
-                    ymin=-5.0,
-                    ymax=15.0,
-                    nx=1000,
-                    ny=1000,
-                )
-                dx = x_grid[0, 1] - x_grid[0, 0]
-                dy = y_grid[1, 0] - y_grid[0, 0]
-                evidence_numerical_integration = (
-                    np.sum(np.exp(ln_posterior_grid)) * dx * dy
-                )
-
-                # ======================================================================
-                # Display evidence computation results.
-                # ======================================================================
-                hm.logs.info_log(
-                    "Evidence: numerical = {}, estimate = {}".format(
-                        evidence_numerical_integration, np.exp(ln_evidence)
-                    )
-                )
-
-                hm.logs.info_log(
-                    "Ln evidence numerical = {}".format(
-                        np.log(evidence_numerical_integration)
-                    )
-                )
-
-                hm.logs.debug_log(
-                    "Inv Evidence: numerical = {}, estimate = {}".format(
-                        1.0 / evidence_numerical_integration,
-                        np.exp(ev.ln_evidence_inv),
-                    )
-                )
-                diff = np.log(
-                    np.abs(evidence_numerical_integration - np.exp(ln_evidence))
-                )
-                hm.logs.info_log(
-                    "Evidence: |numerical - estimate| / estimate = {}".format(
-                        np.exp(diff - ln_evidence)
-                    )
-                )
-
-                hm.logs.info_log(
-                    "Inv Evidence: |numerical - estimate| / estimate = {}".format(
-                        np.abs(
-                            1.0 / evidence_numerical_integration
-                            - np.exp(ev.ln_evidence_inv)
-                        )
-                        / np.exp(ev.ln_evidence_inv)
-                    )
-                )
-
-            # ===========================================================================
-            # Display more technical details
-            # ===========================================================================
-            hm.logs.debug_log("---------------------------------")
-            hm.logs.debug_log("Technical Details")
-            hm.logs.debug_log("---------------------------------")
-            hm.logs.debug_log(
-                "lnargmax = {}, lnargmin = {}".format(ev.lnargmax, ev.lnargmin)
-            )
-            hm.logs.debug_log(
-                "lnprobmax = {}, lnprobmin = {}".format(ev.lnprobmax, ev.lnprobmin)
-            )
-            hm.logs.debug_log(
-                "lnpredictmax = {}, lnpredictmin = {}".format(
-                    ev.lnpredictmax, ev.lnpredictmin
-                )
-            )
-            hm.logs.debug_log("---------------------------------")
-            hm.logs.debug_log(
-                "shift = {}, shift setting = {}".format(ev.shift_value, ev.shift)
-            )
-            hm.logs.debug_log("running sum total = {}".format(sum(ev.running_sum)))
-            hm.logs.debug_log("running sum = \n{}".format(ev.running_sum))
-            hm.logs.debug_log("nsamples per chain = \n{}".format(ev.nsamples_per_chain))
-            hm.logs.debug_log(
-                "nsamples eff per chain = \n{}".format(ev.nsamples_eff_per_chain)
-            )
-            hm.logs.debug_log("===============================")
-
-            print(
-                "ln_inv_evidence = {} +/- {}".format(
-                    ev.ln_evidence_inv, err_ln_inv_evidence
-                )
-            )
-            print(
-                "ln evidence = {} +/- {} {}".format(
-                    -ev.ln_evidence_inv,
-                    -err_ln_inv_evidence[1],
-                    -err_ln_inv_evidence[0],
-                )
-            )
-            print("kurtosis = {}".format(ev.kurtosis), " Aim for ~3.")
-            # print("ln inverse evidence per chain ", ev.ln_evidence_inv_per_chain)
-            # print(
-            #    "Average ln inverse evidence per chain ",#
-            #    np.mean(ev.ln_evidence_inv_per_chain),
-            # )
-            print(
-                "lnargmax",
-                ev.lnargmax,
-                "lnargmin",
-                ev.lnargmin,
-                "lnprobmax",
-                ev.lnprobmax,
-                "lnprobmin",
-                ev.lnprobmin,
-                "lnpredictmax",
-                ev.lnpredictmax,
-                "lnpredictmin",
-                ev.lnpredictmin,
-            )
-            check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
-            print(
-                check,
-                " Aim for sqrt( 2/(n_eff-1) ) = {}".format(
-                    np.sqrt(2.0 / (ev.n_eff - 1))
-                ),
-            )
-            print("sqrt(evidence_inv_var_var) / evidence_inv_var = {}".format(check))
-
+                ix_start += 1
             # Create corner/triangle plot.
             created_plots = False
-            if plot_corner and i_realisation == 0:
-                hm.utils.plot_getdist(samples.reshape((-1, ndim)))
-                if savefigs:
-                    save_name = save_name_start + "_rosenbrock_getdist.png"
-                    plt.savefig(save_name, bbox_inches="tight")
-
-                plt.show(block=False)
+            if plot_corner:
 
                 # =======================================================================
                 # Visualise distributions
                 # =======================================================================
 
-                num_samp = chains.samples.shape[0]
+
+                samples_inference = samples_used.reshape((-1, ndim))
+
+                if False:
+                    hm.utils.plot_getdist(samples_inference)
+                    if savefigs:
+                        save_name = save_name_start + "_rosenbrock_getdist.png"
+                        plt.savefig(save_name, bbox_inches="tight")
+
+                    plt.show(block=False)
+
+                num_samp = 5000
                 samps_compressed = np.array(model.sample(num_samp))
 
                 hm.utils.plot_getdist_compare(
-                    chains.samples, samps_compressed, legend_fontsize=12.5
+                    samples_inference, samps_compressed, legend_fontsize=12.5
                 )
                 if savefigs:
                     save_name = (
                         save_name_start
                         + "_rosenbrock_corner_all_T"
-                        + str(temperature)
+                        + str(temp)
                         + ".png"
                     )
                     plt.savefig(
@@ -595,11 +533,6 @@ def run_example(
 
                 created_plots = True
 
-            ln_evidence_inv_summary[i_realisation, 0] = ev.ln_evidence_inv
-            ln_evidence_inv_summary[i_realisation, 1] = err_ln_inv_evidence[0]
-            ln_evidence_inv_summary[i_realisation, 2] = err_ln_inv_evidence[1]
-            ln_evidence_inv_summary[i_realisation, 3] = ev.ln_evidence_inv_var
-            ln_evidence_inv_summary[i_realisation, 4] = ev.ln_evidence_inv_var_var
 
     # ===========================================================================
     # End Timer.
@@ -608,26 +541,24 @@ def run_example(
 
     # ===========================================================================
     # Save out realisations of statistics for analysis.
-    if n_realisations > 1:
-        save_name = (
-            save_name_start
-            + "_rosenbrock_evidence_inv_T"
-            + str(temperature)
-            + "_realisations.dat"
-        )
+
+    save_name = (
+        save_name_start
+        + "_rosenbrock_ln_evidence_inv_vary_T.dat"
+    )
+    np.savetxt(
+        save_name,
+        ln_evidence_inv_summary,
+    )
+
+    if ndim == 2:
+        evidence_inv_analytic_summary = np.zeros(1)
+        evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
+        save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
         np.savetxt(
             save_name,
-            ln_evidence_inv_summary,
+            evidence_inv_analytic_summary,
         )
-
-        if ndim == 2:
-            evidence_inv_analytic_summary = np.zeros(1)
-            evidence_inv_analytic_summary[0] = 1.0 / evidence_numerical_integration
-            save_name = save_name_start + "_rosenbrock_evidence_inv" + "_analytic.dat"
-            np.savetxt(
-                save_name,
-                evidence_inv_analytic_summary,
-            )
 
 
 if __name__ == "__main__":
