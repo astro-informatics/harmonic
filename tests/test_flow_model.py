@@ -179,8 +179,8 @@ def test_flows_normalization(model, var):
     num_samples_int = 200000
     shape = (num_samples_int, ndim)
     # Draw samples from uniform distribution -3 to 3 standard deviations away from mean
-    minval = -4 * var**0.5
-    maxval = 4 * var**0.5
+    minval = -3 * var**0.5
+    maxval = 3 * var**0.5
     uniform_samples = jax.random.uniform(
         jax.random.PRNGKey(0), shape=shape, minval=minval, maxval=maxval
     )
