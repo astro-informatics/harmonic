@@ -176,7 +176,7 @@ def test_flows_normalization(model, var):
     model.temperature = 1.0
 
     # MC integral of the flow
-    num_samples_int = 100000
+    num_samples_int = 200000
     shape = (num_samples_int, ndim)
     # Draw samples from uniform distribution -3 to 3 standard deviations away from mean
     minval = -4 * var**0.5
