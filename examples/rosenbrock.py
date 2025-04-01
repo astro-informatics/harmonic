@@ -166,14 +166,14 @@ def run_example(
         epochs_num = 8
     elif flow_type == "RQSpline":
         # epochs_num = 5
-        epochs_num = 50
+        epochs_num = 10
 
     temperature = 0.8
     training_proportion = 0.5
     standardize = True
     # Spline params
-    n_layers = 5
-    n_bins = 5
+    n_layers = 3
+    n_bins = 8
     hidden_size = [32, 32]
     spline_range = (-10.0, 10.0)
 
@@ -205,7 +205,7 @@ def run_example(
     """
     Set up and run multiple simulations
     """
-    n_realisations = 100
+    n_realisations = 50
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 1:
@@ -489,7 +489,7 @@ if __name__ == "__main__":
 
     # flow_str = "RealNVP"
     flow_str = "RQSpline"
-    np.random.seed(20)
+    np.random.seed(2)
 
     hm.logs.info_log("Rosenbrock example")
 
