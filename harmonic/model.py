@@ -162,8 +162,14 @@ class FlowModel(mda.Model):
                 "This method cannot be used in the FlowModel class directly. Use a class with a specific flow implemented (RealNVPModel, RQSplineModel)."
             )
 
+        if self.ndim == 1:
+            if len(X.shape) == 1:
+                X = X[:, None] #Transform to (N, 1) for vector input
+            
         if X.shape[1] != self.ndim:
-            raise ValueError("X second dimension not the same as ndim.")
+            raise ValueError("X dimension does not match ndim.")
+
+        print("X shape ", X.shape)
 
         key, rng_model, rng_init, rng_train = jax.random.split(key, 4)
 
@@ -175,7 +181,15 @@ class FlowModel(mda.Model):
             # self.pre_offset = jnp.min(X, axis = 0) #maxmin
             self.pre_offset = jnp.mean(X, axis=0)
             # self.pre_amp = (jnp.max(X, axis=0) - self.pre_offset)
-            self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
+            print("X shape ", X.shape)
+            print("Offset ", self.pre_offset)
+            if self.ndim == 1:
+                self.pre_offset = self.pre_offset[0]
+                self.pre_amp = jnp.sqrt(jnp.var(X, axis=0))[0]  # sqrt of the variance for 1D
+                print("Offset ", self.pre_offset)
+                print("Amp ", self.pre_amp)
+            else:
+                self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
 
             X = (X - self.pre_offset) / self.pre_amp
 

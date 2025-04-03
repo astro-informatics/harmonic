@@ -4,14 +4,20 @@ import jax.numpy as jnp
 import jax
 import harmonic as hm
 
+
+real_nvp_1D = md.RealNVPModel(1, standardize=True)
+spline_1D = md.RQSplineModel(1, n_layers=3, n_bins=4, standardize=True)
 real_nvp_2D = md.RealNVPModel(2, standardize=True)
 spline_4D = md.RQSplineModel(4, n_layers=2, n_bins=64, standardize=True)
 spline_3D = md.RQSplineModel(3, n_layers=2, n_bins=64, standardize=False)
 
 model_classes = [md.RealNVPModel, md.RQSplineModel]
 
-models_to_test = [real_nvp_2D, spline_4D]
-models_to_test1 = [real_nvp_2D, spline_4D, spline_3D]
+
+#models_to_test = [real_nvp_2D, spline_4D, real_nvp_1D, spline_1D]
+#models_to_test1 = [real_nvp_2D, spline_4D, spline_3D, real_nvp_1D, spline_1D]
+models_to_test = [real_nvp_1D, spline_1D]
+models_to_test1 = [real_nvp_1D, spline_1D]
 gaussian_var = [0.1, 0.5, 1.0, 10.0, 20.0]
 
 # Make models for serialization tests
@@ -210,7 +216,7 @@ def test_flows_normalization(model, var):
 def test_flows_gaussian(model):
     # Define the number of dimensions and the mean of the Gaussian
     ndim = model.ndim
-    num_samples = 10000
+    num_samples = 20000
 
     if isinstance(model, md.RealNVPModel):
         epochs = 80
@@ -219,15 +225,19 @@ def test_flows_gaussian(model):
 
     # Initialize a PRNG key (you can use any valid key)
     key = jax.random.PRNGKey(0)
-    mean = jnp.zeros(ndim)
-    cov = jnp.eye(ndim)
 
-    # Generate random samples from the 2D Gaussian distribution
-    samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
+    if ndim == 1:
+        samples = jax.random.normal(key, shape=(num_samples,))
+    else:
+        mean = jnp.zeros(ndim)
+        cov = jnp.eye(ndim)
+
+        # Generate random samples from the Gaussian distribution
+        samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
 
     model.fit(samples, epochs=epochs, verbose=True)
 
-    nsamples = 10000
+    nsamples = 20000
     model.temperature = 1.0
     flow_samples = model.sample(nsamples)
     sample_var = jnp.var(flow_samples, axis=0)

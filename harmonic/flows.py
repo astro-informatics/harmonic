@@ -65,22 +65,28 @@ class RealNVP(nn.Module):
         ix = jnp.arange(self.n_features)
         permutation = [ix[-1], *ix[:-1]]
 
+        # Ensure fraction_masked is valid
+        valid_fraction_masked =  0.5 if self.n_features > 1 else 0.0  
+        print("Valid fraction masked is ", valid_fraction_masked)
+
         # assume n_scaled_layers is not 0
         for i in range(self.n_scaled_layers - 1):
             chain.append(
-                tfb.RealNVP(fraction_masked=0.5, bijector_fn=self.scaled_layers[i])
+                tfb.RealNVP(fraction_masked=valid_fraction_masked, bijector_fn=self.scaled_layers[i])
             )
-            chain.append(tfb.Permute(permutation))
+            if self.n_features > 1:
+                chain.append(tfb.Permute(permutation))
 
         chain.append(
-            tfb.RealNVP(fraction_masked=0.5, bijector_fn=self.scaled_layers[-1])
+            tfb.RealNVP(fraction_masked=valid_fraction_masked, bijector_fn=self.scaled_layers[-1])
         )
 
         for i in range(self.n_unscaled_layers):
-            chain.append(tfb.Permute(permutation))
+            if self.n_features > 1:
+                chain.append(tfb.Permute(permutation))
             chain.append(
                 tfb.RealNVP(
-                    fraction_masked=0.5,
+                    fraction_masked=valid_fraction_masked,
                     bijector_fn=self.unscaled_layers[i],
                 )
             )
@@ -113,6 +119,8 @@ class RealNVP(nn.Module):
         """
 
         flow = self.make_flow(temperature=temperature)
+        print("Input to Dense layer shape:", x.shape)
+
         return flow.log_prob(x)
 
     def sample(
@@ -150,10 +158,14 @@ class RealNVP(nn.Module):
         Returns:
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
-        get_logprob = jax.vmap(self.__call__, in_axes=[0, None])
-        logprob = get_logprob(x, temperature)
 
-        return logprob
+        if self.n_features == 1:
+            return self.__call__(x, temperature)
+        else:
+            get_logprob = jax.vmap(self.__call__, in_axes=[0, None])
+            logprob = get_logprob(x, temperature)
+
+            return logprob
 
 
 class AffineCoupling(nn.Module):
@@ -326,10 +338,13 @@ class RQSpline(nn.Module):
             jnp.ndarray (batch_size,): Predicted log_e posterior value.
         """
 
-        get_logprob = jax.vmap(self.__call__, in_axes=[0, None])
-        logprob = get_logprob(x, temperature)
+        if self.n_features == 1:
+            return self.__call__(x, temperature)
+        else:
+            get_logprob = jax.vmap(self.__call__, in_axes=[0, None])
+            logprob = get_logprob(x, temperature)
 
-        return logprob
+            return logprob
 
 
 class Reshape(nn.Module):
