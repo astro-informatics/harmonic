@@ -2,8 +2,6 @@ from typing import Tuple, List
 import numpy as np
 import harmonic as hm
 import getdist
-from harmonic import model_legacy
-from getdist import plots
 import matplotlib as plt
 
 
@@ -263,7 +261,7 @@ def cross_validation(
     domains: List,
     hyper_parameters: List,
     nfold=2,
-    modelClass=model_legacy.KernelDensityEstimate,
+    modelClass=None,
     seed: int = -1,
 ) -> List:
     """Perform n-fold validation for given model using chains to be split into
@@ -285,8 +283,8 @@ def cross_validation(
         hyper_parameters (List): List of hyper_parameters where each entry is a
             hyper_parameter list to be considered.
 
-        modelClass (Model): Model that is being cross validated (default =
-            KernelDensityEstimate).
+        modelClass (Model): Model that is being cross validated (defaults to
+            KernelDensityEstimate inside function).
 
         seed (int): Seed for random number generator when drawing the chains
             (if this is negative the seed is not set).
@@ -300,6 +298,9 @@ def cross_validation(
         ValueError: Raised if model is not one of the posible models.
 
     """
+
+    if modelClass is None:
+        modelClass = hm.model_legacy.KernelDensityEstimate
 
     ln_validation_variances = np.zeros((nfold, len(hyper_parameters)))
 
