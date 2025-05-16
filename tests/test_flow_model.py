@@ -176,7 +176,7 @@ def test_flows_normalization(model, var):
     model.temperature = 1.0
 
     # MC integral of the flow
-    num_samples_int = 50000
+    num_samples_int = 200000
     shape = (num_samples_int, ndim)
     # Draw samples from uniform distribution -3 to 3 standard deviations away from mean
     minval = -3 * var**0.5
@@ -227,7 +227,7 @@ def test_flows_gaussian(model):
 
     model.fit(samples, epochs=epochs, verbose=True)
 
-    nsamples = 5000
+    nsamples = 10000
     model.temperature = 1.0
     flow_samples = model.sample(nsamples)
     sample_var = jnp.var(flow_samples, axis=0)
