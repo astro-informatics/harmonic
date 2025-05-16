@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Basic Usage &mdash; Harmonic 1.2.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=798747b0" />
@@ -135,12 +135,12 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
 <span class="c1"># Import modules</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">harmonic</span> <span class="k">as</span> <span class="nn">hm</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">import</span> <span class="nn">emcee</span>
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">harmonic</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 </pre></div>
 </div>
 </div>
@@ -155,7 +155,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute log_e of posterior of n dimensional multivariate Gaussian.</span>
 
 <span class="sd">    Args:</span>
@@ -326,7 +326,7 @@ Training NF, current loss: 6.947: 100%|██████████| 20/20 [01
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ln_analytic_evidence</span><span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute analytic evidence for nD Gaussian.</span>
 
 <span class="sd">    Args:</span>
