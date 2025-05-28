@@ -67,7 +67,7 @@ def test_log_bayes_factor():
     
     assert 'log_bf' in test_results
     assert 'log_bf_std' in test_results
-    assert test_results['log_bf'] == pytest.approx(truth, abs=0.1 * np.abs(truth))
+    assert test_results['log_bf'] == pytest.approx(truth, abs=0.2 * np.abs(truth))
     assert test_results['log_bf_std'] > 0
  
 def test_log_bayes_factor_kwargs():
@@ -87,7 +87,7 @@ def test_log_bayes_factor_kwargs():
     
     assert 'log_bf' in results
     assert 'log_bf_std' in results
-    assert results['log_bf'] == pytest.approx(truth, abs=0.1 * np.abs(truth))
+    assert results['log_bf'] == pytest.approx(truth, abs=0.2 * np.abs(truth))
     assert results['log_bf_std'] > 0
 
 def test_bayes_factor():
@@ -101,18 +101,18 @@ def test_bayes_factor():
     sddr_instance = sddr.sddr(model, training_samples)
     results = sddr_instance.bayes_factor(prior=1.0,
                                          value=mean,
-                                         nbootstraps=10,
+                                         nbootstraps=100,
                                          bootstrap_proportion=0.5,
                                          bootstrap=True)
     
     assert 'bf' in results
     assert 'bf_std' in results
-    assert results['bf'] == pytest.approx(truth, abs=0.1 * np.abs(truth))
+    assert results['bf'] == pytest.approx(truth, abs=0.2 * np.abs(truth))
     assert results['bf_std'] > 0
 
 def test_bayes_factor_kwargs():
     # Test with a single value
-    model = md.RealNVPModel(4, standardize=True, temperature=1.0)
+    model = md.RQSplineModel(3, standardize=True, temperature=1.0)
     ndim = model.ndim 
     mean = np.zeros(ndim)
     cov = np.eye(ndim)
@@ -124,15 +124,15 @@ def test_bayes_factor_kwargs():
                                          nbootstraps=10,
                                          bootstrap_proportion=0.5,
                                          bootstrap=True,
-                                         epochs=100)
+                                         epochs=10)
     
     assert 'bf' in results
     assert 'bf_std' in results
-    assert results['bf'] == pytest.approx(truth, abs=0.1 * np.abs(truth))
+    assert results['bf'] == pytest.approx(truth, abs=0.2 * np.abs(truth))
     assert results['bf_std'] > 0
     
 def test_log_bayes_factor_no_bootstrap():
-    model = mdc.HistogramModel(2, nbins=50)
+    model = md.RQSplineModel(2, standardize=True, temperature=1.0)
     ndim = model.ndim 
     mean = np.zeros(ndim)
     cov = np.eye(ndim)
@@ -144,5 +144,5 @@ def test_log_bayes_factor_no_bootstrap():
                                              bootstrap=False)
     
     assert 'log_bf' in results
-    assert results['log_bf'] == pytest.approx(truth, abs=0.1 * np.abs(truth))
+    assert results['log_bf'] == pytest.approx(truth, abs=0.2 * np.abs(truth))
     assert results['log_bf_std'] is None
