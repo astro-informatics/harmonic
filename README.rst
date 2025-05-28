@@ -95,7 +95,7 @@ Comprehensive  `documentation for harmonic <https://astro-informatics.github.io/
 Contributors
 ============
 
-`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://cosmomatt.github.io/>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_, `Alessio Spurio Mancini <https://www.alessiospuriomancini.com/>`_, `Alicja Polanska <https://alicjaap.github.io/>`_.
+`Jason D. McEwen <http://www.jasonmcewen.org/>`_, `Christopher G. R. Wallis <https://scholar.google.co.uk/citations?user=Igl7nakAAAAJ&hl=en>`_, `Matthew A. Price <https://cosmomatt.github.io/>`_, `Matthew M. Docherty <https://mdochertyastro.com/>`_, `Alessio Spurio Mancini <https://www.alessiospuriomancini.com/>`_, `Alicja Polanska <https://alicjaap.github.io/>`_, `Kiyam Lin <https://kiyam.co.uk/>`_.
 
 
 Attribution
