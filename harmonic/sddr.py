@@ -1,38 +1,44 @@
 import numpy as np
-from dataclasses import dataclass
+import jax.numpy as jnp
 from tqdm import tqdm
 from copy import deepcopy
+from harmonic import model_abstract as mda
 import warnings
 
-@dataclass
 class sddr:
-    """Class to compute the Bayes factor between two models.
-
+    """Class to compute the Bayes factor between two models with the Savage-Dicky density ratio.
+       
     Args:
-        model (Model): The density estimator model to use.
-        samples (np.ndarray): The samples to use for the Bayes factor computation.
+        model (Model): An instance of a posterior model class that has not been fitted.
+        samples (np.ndarray): The marginalised samples to use for the Bayes factor computation with the SDDR.
+            Shape should be (nsamples, ndim) where nsamples is the number of samples
+            and ndim is the number of dimensions of the model.
     """
-    model: object
-    samples: np.ndarray
+    
+    def __init__(self, model: mda.Model, samples: np.ndarray[tuple[np.float64, np.float64]]):
+        self.model = model
+        self.samples = samples
 
-    def __post_init__(self):
-        if self.model.ndim < 1:
-            raise ValueError("ndim must be greater than 0.")
         if self.model.is_fitted():
             raise ValueError("Model is already fitted, pass in an unfitted model.")
         
-        if self.model.ndim != self.samples.shape[1]:
+        if len(self.samples.shape) == 1:
+            self.samples = self.samples.reshape(-1, 1)
+        elif self.model.ndim != self.samples.shape[1]:
             raise ValueError(
                 f"Model ndim {self.model.ndim} does not match samples shape {self.samples.shape[1]}."
+            )
+            
+        if self.model.ndim == 1 and self.model.__class__.__name__ == 'RealNVPModel':
+            raise ValueError(
+                "RealNVPModel is not supported for 1D SDDR computation. Use HistogramModel or RQSplineModel instead."
             )
         
         if not hasattr(self.model, 'temperature'):
             pass
-        elif self.model.temperature == 1:
-            pass
-        else:
+        elif self.model.temperature != 1:
             raise ValueError(
-                "Model temperature must be None or 1 for SDDR computation."
+                "Model temperature must be 1 for the flow models for SDDR computation."
             )
         
         allowed_models = ['HistogramModel', 'RealNVPModel', 'RQSplineModel']
@@ -43,20 +49,23 @@ class sddr:
      
     def log_bayes_factor(self, 
                          log_prior: float, 
-                         value: float | np.ndarray, 
+                         value: float | np.ndarray[tuple[np.float64]], 
+                         bootstrap: bool = True,
                          nbootstraps: int = 10, 
                          bootstrap_proportion: float = 0.5, 
-                         bootstrap: bool = True,
-                         **kwargs) -> dict:
+                         **kwargs) -> tuple:
         """Compute the log SDDR for the given value and log prior.
 
         Args:
             log_prior (float): Log prior value.
-            value (float): Value to compute the log Bayes factor via SDDR for.
+            value (float | np.ndarray): Value to compute the log Bayes factor via SDDR for.
+            bootstrap (bool): Whether to use bootstrapping or not. 
+                Bootstrapping is used to obtain errors on the SDDR estimate.
+                Each bootstrapped sample is a random subset of the original samples.
+                Those subsets are used to train independent models, which are then used to compute the SDDR.
             nbootstraps (int): Number of bootstraps to use.
             bootstrap_proportion (float): Proportion of samples to use for
                 bootstrapping.
-            bootstrap (bool): Whether to use bootstrapping or not.
             **kwargs: Additional arguments to pass to the model.
         Returns:
             dict: Dictionary containing the log Bayes factor and its standard deviation.
@@ -67,7 +76,7 @@ class sddr:
         
         if bootstrap:
             self.log_bf_bootstrapped = np.zeros(nbootstraps)
-            for i in tqdm(range(nbootstraps)):
+            for i in tqdm(range(nbootstraps), desc="Bootstrapping: "):
                 bootstrapped_indices = np.random.choice(
                     self.nsamples,
                     int(self.nsamples * bootstrap_proportion),
@@ -76,8 +85,6 @@ class sddr:
                 sddr_model = deepcopy(self.model)
                 sddr_model.fit(X = bootstrapped_samples, **kwargs)
                  
-                if isinstance(value, int):  # To account for the 1D case
-                    value = np.array(value)
                 marginal_post_log_prob = sddr_model.predict(value)
                 
                 self.log_bf_bootstrapped[i] = marginal_post_log_prob - log_prior
@@ -93,35 +100,36 @@ class sddr:
             self.log_bf_std = None
             del sddr_model
             
-        return {'log_bf': self.log_bf, 'log_bf_std': self.log_bf_std}
+        return (self.log_bf, self.log_bf_std)
     
     def bayes_factor(self,
                      prior: float,
-                     value: float | np.ndarray,
+                     value: float | np.ndarray[tuple[np.float64]],
+                     bootstrap: bool = True,
                      nbootstraps: int = 10,
                      bootstrap_proportion: float = 0.5,
-                     bootstrap: bool = True,
-                     **kwargs) -> dict:
+                     **kwargs) -> tuple:
         """Compute the log SDDR for the given value and log prior.
 
         Args:
             prior (float): Prior probability.
-            value (float): Value to compute the Bayes factor via SDDR for.
+            value (float | np.ndarray): Value to compute the Bayes factor via SDDR for.
+            bootstrap (bool): Whether to use bootstrapping or not. 
+                Bootstrapping is used to obtain errors on the SDDR estimate.
+                Each bootstrapped sample is a random subset of the original samples.
+                Those subsets are used to train independent models, which are then used to compute the SDDR.
             nbootstraps (int): Number of bootstraps to use.
             bootstrap_proportion (float): Proportion of samples to use for
                 bootstrapping.
-            bootstrap (bool): Whether to use bootstrapping or not.
             **kwargs: Additional arguments to pass to the model.
         Returns:
             dict: Dictionary containing the Bayes factor and its standard deviation.
         """
         
-        _ = self.log_bayes_factor(np.log(prior), value, nbootstraps, bootstrap_proportion, bootstrap, **kwargs)
+        _ = self.log_bayes_factor(np.log(prior), value, bootstrap, nbootstraps, bootstrap_proportion, **kwargs)
         
-        if self.log_bf:
-            self.bf = np.exp(self.log_bf)
-        if self.log_bf_std:
-            self.bf_std = np.exp(self.log_bf_bootstrapped).std()
+        self.bf = np.exp(self.log_bf)
+        self.bf_std = np.exp(self.log_bf_bootstrapped).std()
         
-        return {'bf': self.bf, 'bf_std': self.bf_std}
+        return (self.bf, self.bf_std)
             

@@ -32,6 +32,22 @@ def test_histogram_is_fitted(model):
     training_samples = np.random.rand(1000, ndim)
     model.fit(training_samples)
     assert model.is_fitted() is True
+    
+def test_histogram_fit():
+    model = mdc.HistogramModel(2, nbins=20)
+    with pytest.raises(ValueError):
+        model.fit(np.random.rand(1000, 3))
+        
+def test_histogram_out_of_range_predict():
+    model = mdc.HistogramModel(2, nbins=20)
+    training_samples = np.random.rand(1000, 2)
+    model.fit(training_samples)
+    
+    with pytest.raises(ValueError):
+        model.predict(np.array([-1.0]))
+        
+    with pytest.raises(ValueError):
+        model.predict(np.array([2.0]))
 
 @pytest.mark.parametrize("model", models_to_test)
 def test_histogram_predict(model):

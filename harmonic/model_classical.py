@@ -1,33 +1,31 @@
 import numpy as np
 from harmonic import model_abstract as mda
-from dataclasses import dataclass
 import jax.numpy as jnp
 
-@dataclass
 class HistogramModel(mda.Model):
-    """Class to compute the histogram model for the given value and log prior.
+    """Histogram model where a density is fitted with a normalized histogram. 
+        To be used with the SDDR computation only.
 
     Args:
         ndim (float): Prior probability.
         nbins (int): Number of bins to use for the histogram.
 
     """
-    ndim: int
-    nbins: int = 20
     
-    def __post_init__(self):
-        if self.ndim < 1:
+    def __init__(self, ndim: int, nbins: int = 20):
+        if ndim < 1:
             raise ValueError("Dimension must be greater than 0.")
-        if self.nbins < 2:
+        if nbins < 2:
             raise ValueError("Number of bins must be greater than 1.")
         
+        self.ndim = ndim
+        self.nbins = nbins
         self.fitted = False
     
     def fit(self, X: jnp.ndarray):
         """Fit the histogram model to the data.
         
         Args:
-
             X (jnp.ndarray (nsamples, ndim)): Training samples.
         
         
@@ -51,15 +49,22 @@ class HistogramModel(mda.Model):
         return 
     
     def predict(self, value: float | np.ndarray) -> float:
-        """Predict the value of the histogram model."""
+        """Predict the value of the histogram model.
+        Args: 
+            value (float | np.ndarray): Value to predict the histogram for.
+        Returns:
+            float: Log probability of the value in the histogram.
+        Raises:
+            ValueError: Raised if the value is outside the range of the histogram bins.
+        """
          
         value = np.atleast_1d(value)
         bin_indices = [np.digitize(v, edges) - 1 for v, edges in zip(value, self.bin_edges)]
         
-        if np.logical_or(np.asarray(bin_indices) < 0, np.asarray(bin_indices) > self.nbins).any():
+        if np.logical_or(np.asarray(bin_indices) < 0, np.asarray(bin_indices) >= self.nbins).any():
             raise ValueError(
-                f"Value {value} is outside the range of the histogram bins"
-                f"This means that it is outside of the support of your samples"
+                f"Value {value} is outside the range of the histogram bins."
+                f"This means that it is outside of the support of your samples."
             )
         
         bin_indices = tuple(bin_indices)
