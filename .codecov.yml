@@ -1,7 +1,6 @@
 ignore:
   - "**/utils*"
   - "tests/*"
-  - "harmonic/model_legacy.pyx"
 
 coverage:
   status:
