@@ -2,9 +2,12 @@
 branch = True
 source =
     harmonic
-    harmonic/model_legacy.pyx
+
+[report]
+omit =
+    */tests/*
+    */harmonic/model_legacy.pyx
 
 [coverage:paths]
-# So coverage can combine source from .py and generated .c files
 source =
     */harmonic
