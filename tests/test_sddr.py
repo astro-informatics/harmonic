@@ -114,7 +114,7 @@ def test_log_bayes_factor_kwargs():
 
 def test_bayes_factor():
     # Test with a single value
-    model = mdc.RQSplineModel(2, standardize=True, temperature=1.0)
+    model = md.RQSplineModel(2, standardize=True, temperature=1.0)
     ndim = model.ndim 
     mean = np.zeros(ndim)
     cov = np.eye(ndim)
