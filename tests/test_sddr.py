@@ -37,12 +37,13 @@ def test_sddr_constructor(model):
     model.fit(samples)
     with pytest.raises(ValueError):
         sddr.sddr(model, samples)
-    
-    # Test temperature
-    if hasattr(model, 'temperature'):
-        model.temperature = 0.5
-        with pytest.raises(ValueError):
-            sddr.sddr(model, samples)
+     
+def test_sddr_temperature():
+    samples = np.random.rand(100, 2)
+    model = md.RQSplineModel(2, standardize=True, temperature=0.8)
+    # Test valid temperature
+    with pytest.raises(ValueError):
+        sddr.sddr(model, samples)
 
 def test_unsupported_model():
     samples = np.random.rand(100, 2)
@@ -113,7 +114,7 @@ def test_log_bayes_factor_kwargs():
 
 def test_bayes_factor():
     # Test with a single value
-    model = mdc.HistogramModel(2, nbins=50)
+    model = mdc.RQSplineModel(2, standardize=True, temperature=1.0)
     ndim = model.ndim 
     mean = np.zeros(ndim)
     cov = np.eye(ndim)
