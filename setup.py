@@ -73,6 +73,6 @@ setup(
                 extra_compile_args=[],
             ),
         ],
-        compiler_directives={"linetrace": True, "language_level": "3"},
+        compiler_directives={"linetrace": True, "language_level": "2"},
     ),
 )
