@@ -1,5 +1,4 @@
 import numpy as np
-import jax.numpy as jnp
 from tqdm import tqdm
 from copy import deepcopy
 from harmonic import model_abstract as mda
