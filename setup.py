@@ -66,6 +66,7 @@ setup(
                 "harmonic.model_legacy",
                 package_dir=["harmonic"],
                 sources=["harmonic/model_legacy.pyx"],
+                define_macros=[("CYTHON_TRACE", "1")],
                 include_dirs=include_dirs,
                 libraries=[],
                 extra_link_args=extra_link_args,
