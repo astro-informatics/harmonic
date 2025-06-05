@@ -1,7 +1,6 @@
 ignore:
   - "**/utils*"
   - "tests/*"
-  - "*.pyx"
 
 coverage:
   status:
