@@ -46,7 +46,7 @@ setup(
         "Intended Audience :: Science/Research",
     ],
     name="harmonic",
-    version="1.2.3",
+    version="1.3.0",
     prefix=".",
     url="https://github.com/astro-informatics/harmonic",
     author="Jason D. McEwen, Alicja Polanska, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & Contributors",
