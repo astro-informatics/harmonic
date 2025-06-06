@@ -1,0 +1,957 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title># `harmonic &lt;https://github.com/astro-informatics/harmonic&gt;`__ - SDDR Interactive Tutorial &mdash; Harmonic 1.2.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=798747b0" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom_tabs.css?v=82e1095b" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/general.css?v=c0a7eb24" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/dark.css?v=70edf1c7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=590429e0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/dark_mode_js/default_light.js?v=c2e647ce"></script>
+      <script src="../_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/harm_badge_simple.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/original_harmonic_mean.html">Harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/retargetd_harmonic_mean.html">Re-targeted harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Harmonic_Estimator/learnt_harmonic_mean.html">Learnt harmonic mean estimator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Machine_Learning/index.html">Learning a suitable target distribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Bayes_Factors/bayes_factors.html">Bayes factors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background/Log_space_statistics/log_variance.html">Log-space variance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkpointing.html">Checkpointing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">Namespaces</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Harmonic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"># <code class="docutils literal notranslate"><span class="pre">`harmonic</span></code> &lt;https://github.com/astro-informatics/harmonic&gt;`__ - <strong>SDDR</strong> Interactive Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/sddr.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a class="reference external" href="https://github.com/astro-informatics/harmonic/blob/main/notebooks/gaussian_sddr_exmple.ipynb"><img alt="colab image" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<center><p><img alt="93cec4d84865498a922ef1198a7e2539" class="no-scaled-link" src="https://raw.githubusercontent.com/astro-informatics/harmonic/fa99200ddd9c942921439cfbadf30c6ede7226f3/docs/assets/harm_badge_simple.svg" style="width: 250px; height: 250px;" /></p>
+<section id="#-`harmonic-&lt;https://github.com/astro-informatics/harmonic&gt;`__---SDDR-Interactive-Tutorial">
+<h1># <code class="docutils literal notranslate"><span class="pre">`harmonic</span></code> &lt;<a class="reference external" href="https://github.com/astro-informatics/harmonic">https://github.com/astro-informatics/harmonic</a>&gt;`__ - <strong>SDDR</strong> Interactive Tutorial<a class="headerlink" href="##-`harmonic-<https://github.com/astro-informatics/harmonic>`__---SDDR-Interactive-Tutorial" title="Link to this heading"></a></h1>
+<p>In this interactive tutorial we demonstrate basic usage of <code class="docutils literal notranslate"><span class="pre">sddr</span></code>, using <code class="docutils literal notranslate"><span class="pre">`emcee</span></code> &lt;<a class="reference external" href="https://emcee.readthedocs.io/en/stable/">https://emcee.readthedocs.io/en/stable/</a>&gt;`__ as the sampler.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
+<span class="c1"># Install packages</span>
+<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">harmonic</span> <span class="n">emcee</span> <span class="n">nautilus</span><span class="o">-</span><span class="n">sampler</span> <span class="n">getdist</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">getdist</span><span class="w"> </span><span class="kn">import</span> <span class="n">plots</span><span class="p">,</span> <span class="n">MCSamples</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">multivariate_normal</span><span class="p">,</span> <span class="n">norm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">harmonic</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nautilus</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prior</span><span class="p">,</span> <span class="n">Sampler</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Notebook-outline">
+<h1>Notebook outline<a class="headerlink" href="#Notebook-outline" title="Link to this heading"></a></h1>
+<p>We’re going to calculate a SDDR with a simple Gaussian model</p>
+<p>First, let’s define some helper functions</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ln_likelihood</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">simulator</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">simulator</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">chi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ij-&gt;i&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_cov</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">chi2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ln_posterior</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">simulator</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">,</span> <span class="n">prior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the log posterior.&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">ln_posterior</span> <span class="o">=</span> <span class="n">ln_likelihood</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">simulator</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">)</span> <span class="o">+</span> <span class="n">prior</span><span class="o">.</span><span class="n">logpdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ln_posterior</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">init_diag_cov</span><span class="p">(</span><span class="n">ndim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise random diagonal covariance matrix.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        ndim: Dimension of Gaussian.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        double ndarray[ndim, ndim]: Covariance matrix of shape (ndim,ndim).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ndim</span><span class="p">,</span> <span class="n">ndim</span><span class="p">))</span>
+    <span class="n">diag_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="n">diag_cov</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cov</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">init_cov</span><span class="p">(</span><span class="n">ndim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise random non-diagonal covariance matrix.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        ndim: Dimension of Gaussian.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        cov: Covariance matrix of shape (ndim,ndim).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ndim</span><span class="p">,</span> <span class="n">ndim</span><span class="p">))</span>
+    <span class="n">diag_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="n">diag_cov</span><span class="p">)</span>
+    <span class="n">off_diag_size</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">cov</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="n">i</span> <span class="o">*</span> <span class="n">off_diag_size</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cov</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">cov</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">cov</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cov</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">cov</span>
+</pre></div>
+</div>
+</div>
+<section id="MCMC-functions">
+<h2>MCMC functions<a class="headerlink" href="#MCMC-functions" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_mcmc</span><span class="p">(</span>
+    <span class="n">nchains</span><span class="p">,</span> <span class="n">nparams</span><span class="p">,</span> <span class="n">ln_posterior</span><span class="p">,</span> <span class="n">mock_simulator</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">samples_per_chain</span><span class="p">,</span> <span class="n">nburn</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">prior</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">nchains</span><span class="p">)</span>
+
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span>
+        <span class="n">nwalkers</span><span class="o">=</span><span class="n">nchains</span><span class="p">,</span>
+        <span class="n">ndim</span><span class="o">=</span><span class="n">nparams</span><span class="p">,</span>
+        <span class="n">log_prob_fn</span><span class="o">=</span><span class="n">ln_posterior</span><span class="p">,</span>
+        <span class="n">vectorize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="c1"># moves=emcee.moves.StretchMove(),</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">mock_simulator</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">inv_cov</span><span class="p">,</span> <span class="n">prior</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">samples_per_chain</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">[:,</span> <span class="n">nburn</span><span class="p">:,</span> <span class="p">:])</span>
+    <span class="n">log_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">lnprobability</span><span class="p">[:,</span> <span class="n">nburn</span><span class="p">:])</span>
+    <span class="n">flat_samples</span><span class="p">,</span> <span class="n">flat_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+        <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">flat_log_prob</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+        <span class="n">sampler</span><span class="o">.</span><span class="n">get_log_prob</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">chain</span><span class="p">[:,</span> <span class="n">nburn</span><span class="p">:,</span> <span class="p">:])</span>
+    <span class="n">log_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">lnprobability</span><span class="p">[:,</span> <span class="n">nburn</span><span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">flat_samples</span><span class="p">,</span> <span class="n">flat_weights</span><span class="p">,</span> <span class="n">flat_log_prob</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">log_prob</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Plotting-function">
+<h2>Plotting function<a class="headerlink" href="#Plotting-function" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">triangle_plot</span><span class="p">(</span>
+    <span class="n">mc_samples</span><span class="p">,</span>
+    <span class="n">truth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">params_to_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">savefig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># Triangle plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">mpl</span><span class="o">.</span><span class="n">rc_context</span><span class="p">():</span>
+        <span class="c1"># g = plots.getSubplotPlotter(width_inch=12)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">plots</span><span class="o">.</span><span class="n">getSubplotPlotter</span><span class="p">()</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">figure_legend_frame</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">alpha_filled_add</span> <span class="o">=</span> <span class="mf">0.6</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">axes_fontsize</span> <span class="o">=</span> <span class="mi">18</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">legend_fontsize</span> <span class="o">=</span> <span class="mi">18</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">lab_fontsize</span> <span class="o">=</span> <span class="mi">18</span>
+        <span class="k">if</span> <span class="n">params_to_plot</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">triangle_plot</span><span class="p">(</span>
+                <span class="n">mc_samples</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params_to_plot</span><span class="p">,</span> <span class="n">filled_compare</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">triangle_plot</span><span class="p">(</span><span class="n">mc_samples</span><span class="p">,</span> <span class="n">filled_compare</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">truth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_param_markers</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Fix-the-seed">
+<h1>Fix the seed<a class="headerlink" href="#Fix-the-seed" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Set-priors">
+<h1>Set priors<a class="headerlink" href="#Set-priors" title="Link to this heading"></a></h1>
+<p>Can be uniform or gaussian, here we use an uncorrelated Gaussian prior</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_params</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">n_nested</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_params</span><span class="p">)</span>
+<span class="n">prior_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_params</span><span class="p">)</span><span class="o">*</span><span class="mf">2.0</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">inv_prior_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">prior_cov</span><span class="p">)</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">means</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="n">prior_cov</span><span class="p">)</span>
+<span class="n">nested_prior</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="p">(</span>
+    <span class="n">mean</span><span class="o">=</span><span class="n">means</span><span class="p">[:</span><span class="o">-</span><span class="n">n_nested</span><span class="p">],</span> <span class="n">cov</span><span class="o">=</span><span class="n">prior_cov</span><span class="p">[:</span><span class="o">-</span><span class="n">n_nested</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="n">n_nested</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">marginal_prior</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="p">(</span>
+    <span class="n">mean</span><span class="o">=</span><span class="n">means</span><span class="p">[</span><span class="o">-</span><span class="n">n_nested</span><span class="p">:],</span> <span class="n">cov</span><span class="o">=</span><span class="n">prior_cov</span><span class="p">[</span><span class="o">-</span><span class="n">n_nested</span><span class="p">:,</span> <span class="o">-</span><span class="n">n_nested</span><span class="p">:]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-the-Gaussian-likelihood-first">
+<h1>Create the Gaussian likelihood first<a class="headerlink" href="#Create-the-Gaussian-likelihood-first" title="Link to this heading"></a></h1>
+<p>In the case that we are considering, we will have a data vector that is 3 numbers long, and a super model with 5 parameters, and a nested model with 3 parameters.</p>
+<p>Shared parameters are denoted as <span class="math notranslate nohighlight">\(\theta\)</span>, and the parameters that extend the nested model to the super parameter are denoted with <span class="math notranslate nohighlight">\(\eta\)</span>. These are also the nested parameters.</p>
+<dl class="simple">
+<dt>The corresponding Gaussian likelihood is given by :nbsphinx-math:<a href="#id1"><span class="problematic" id="id2">`</span></a>begin{equation}</dt><dd><p>mathcal{L}( bm{d} mid bm{theta}) = frac{expbigl( -frac{1}{2} (bm{d} - bm{mu}(bm{theta, eta}))^text{T} Sigma^{-1} (bm{d} - bm{mu}(bm{theta, eta}) bigr)}{(2 pi)^{3/2}|Sigma|^{1/2}}.</p>
+</dd>
+</dl>
+<p>end{equation}`</p>
+<dl class="simple">
+<dt>For our super model, we have :nbsphinx-math:<a href="#id3"><span class="problematic" id="id4">`</span></a>begin{align}</dt><dd><dl class="simple">
+<dt>bm{mu}(bm{theta, eta}) &amp; = begin{bmatrix}</dt><dd><p>theta_1 + mathrm{arcsinh}(theta_4)\
+arctan(theta_2) + eta_1 \
+e^{0.5 times theta_3} + eta_2
+end{bmatrix}.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>end{align}`</p>
+<p>Whilst for the nested model, we fix <span class="math notranslate nohighlight">\(\eta_1 = -2\)</span> and <span class="math notranslate nohighlight">\(\eta_2 = 0.2\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ndata</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">cov</span> <span class="o">=</span> <span class="n">init_cov</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span>
+<span class="n">inv_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+
+<span class="n">theta_truth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="n">eta_truth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+
+<span class="n">truth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">theta_truth</span><span class="p">,</span> <span class="n">eta_truth</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mock_simulator</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">model_prediction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ndata</span><span class="p">))</span>
+    <span class="n">model_prediction</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">model_prediction</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">(</span><span class="n">theta</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">theta</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="n">model_prediction</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="n">theta</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">model_prediction</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nested_mock_simulator</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">model_prediction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ndata</span><span class="p">))</span>
+    <span class="n">model_prediction</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">model_prediction</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">(</span><span class="n">theta</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">eta_truth</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">model_prediction</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="n">eta_truth</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">model_prediction</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Generate-some-fake-data-with-Gaussian-noise">
+<h1>Generate some fake data with Gaussian noise<a class="headerlink" href="#Generate-some-fake-data-with-Gaussian-noise" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">noiseless_data</span> <span class="o">=</span> <span class="n">mock_simulator</span><span class="p">(</span><span class="n">truth</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">noiseless_data</span><span class="p">,</span> <span class="n">cov</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Get-some-posterior-samples-with-emcee">
+<h1>Get some posterior samples with emcee<a class="headerlink" href="#Get-some-posterior-samples-with-emcee" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nchains</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">samples_per_chain</span> <span class="o">=</span> <span class="mi">6000</span>
+<span class="n">nburn</span> <span class="o">=</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Run-MCMC-for-the-larger-model">
+<h1>Run MCMC for the larger model<a class="headerlink" href="#Run-MCMC-for-the-larger-model" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">super_samples</span><span class="p">,</span>
+    <span class="n">super_weights</span><span class="p">,</span>
+    <span class="n">super_log_prob</span><span class="p">,</span>
+    <span class="n">harmonic_super_samples</span><span class="p">,</span>
+    <span class="n">harmonic_super_log_prob</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">=</span> <span class="n">run_mcmc</span><span class="p">(</span>
+    <span class="n">nchains</span><span class="p">,</span>
+    <span class="n">n_params</span><span class="p">,</span>
+    <span class="n">ln_posterior</span><span class="p">,</span>
+    <span class="n">mock_simulator</span><span class="p">,</span>
+    <span class="n">noiseless_data</span><span class="p">,</span>
+    <span class="n">inv_cov</span><span class="p">,</span>
+    <span class="n">prior</span><span class="p">,</span>
+    <span class="n">samples_per_chain</span><span class="p">,</span>
+    <span class="n">nburn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|██████████| 6000/6000 [00:01&lt;00:00, 3640.95it/s]
+</pre></div></div>
+</div>
+</section>
+<section id="Run-MCMC-for-the-nested-model">
+<h1>Run MCMC for the nested model<a class="headerlink" href="#Run-MCMC-for-the-nested-model" title="Link to this heading"></a></h1>
+<p>Note that the outputs here contain samples in a flat format, and also split by chain to make it easier to ingest for harmonic later on in the script</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">nested_samples</span><span class="p">,</span>
+    <span class="n">nested_weights</span><span class="p">,</span>
+    <span class="n">nested_log_prob</span><span class="p">,</span>
+    <span class="n">harmonic_nested_samples</span><span class="p">,</span>
+    <span class="n">harmonic_nested_log_prob</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">=</span> <span class="n">run_mcmc</span><span class="p">(</span>
+    <span class="n">nchains</span><span class="p">,</span>
+    <span class="n">n_params</span> <span class="o">-</span> <span class="n">n_nested</span><span class="p">,</span>
+    <span class="n">ln_posterior</span><span class="p">,</span>
+    <span class="n">nested_mock_simulator</span><span class="p">,</span>
+    <span class="n">noiseless_data</span><span class="p">,</span>
+    <span class="n">inv_cov</span><span class="p">,</span>
+    <span class="n">nested_prior</span><span class="p">,</span>
+    <span class="n">samples_per_chain</span><span class="p">,</span>
+    <span class="n">nburn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|██████████| 6000/6000 [00:01&lt;00:00, 3570.17it/s]
+</pre></div></div>
+</div>
+</section>
+<section id="Plot!">
+<h1>Plot!<a class="headerlink" href="#Plot!" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;theta_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_params</span><span class="p">)]</span>
+<span class="n">param_labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">rf</span><span class="s2">&quot;\theta_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_params</span><span class="p">)]</span>
+<span class="n">truth_marker</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="p">[</span><span class="n">truth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_params</span><span class="p">)]))</span>
+</pre></div>
+</div>
+</div>
+<section id="Make-the-getdist-MC-objects">
+<h2>Make the getdist MC objects<a class="headerlink" href="#Make-the-getdist-MC-objects" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">super_mc_samples</span> <span class="o">=</span> <span class="n">MCSamples</span><span class="p">(</span>
+    <span class="n">samples</span><span class="o">=</span><span class="n">super_samples</span><span class="p">,</span>
+    <span class="n">weights</span><span class="o">=</span><span class="n">super_weights</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">param_labels</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Super model&quot;</span><span class="p">,</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="s2">&quot;mcmc&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">nested_mc_samples</span> <span class="o">=</span> <span class="n">MCSamples</span><span class="p">(</span>
+    <span class="n">samples</span><span class="o">=</span><span class="n">nested_samples</span><span class="p">,</span>
+    <span class="n">weights</span><span class="o">=</span><span class="n">nested_weights</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">param_names</span><span class="p">[:</span><span class="o">-</span><span class="n">n_nested</span><span class="p">],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">param_labels</span><span class="p">[:</span><span class="o">-</span><span class="n">n_nested</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Nested model&quot;</span><span class="p">,</span>
+    <span class="n">sampler</span><span class="o">=</span><span class="s2">&quot;mcmc&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Removed no burn in
+Removed no burn in
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">triangle_plot</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">super_mc_samples</span><span class="p">,</span> <span class="n">nested_mc_samples</span><span class="p">],</span>
+    <span class="n">truth</span><span class="o">=</span><span class="n">truth_marker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_sddr_28_0.png" src="../_images/tutorials_sddr_28_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Now-calculate-the-Savage-Dickey-Density-Ratio-for-\eta_1-and-\eta_2">
+<h1>Now calculate the Savage Dickey Density Ratio for <span class="math notranslate nohighlight">\(\eta_1\)</span> and <span class="math notranslate nohighlight">\(\eta_2\)</span><a class="headerlink" href="#Now-calculate-the-Savage-Dickey-Density-Ratio-for-\eta_1-and-\eta_2" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">marginalised_samples</span> <span class="o">=</span> <span class="n">super_samples</span><span class="p">[:,</span> <span class="o">-</span><span class="n">n_nested</span><span class="p">:]</span>
+<span class="n">log_prior_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">marginal_prior</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">eta_truth</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="We-can-calculate-the-SDDR-with-a-histogram">
+<h1>We can calculate the SDDR with a histogram<a class="headerlink" href="#We-can-calculate-the-SDDR-with-a-histogram" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">histogram_model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model_classical</span><span class="o">.</span><span class="n">HistogramModel</span><span class="p">(</span><span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">histogram_sddr</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">sddr</span><span class="o">.</span><span class="n">sddr</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">histogram_model</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">marginalised_samples</span><span class="p">)</span>
+<span class="n">hist_log_bf</span><span class="p">,</span> <span class="n">hist_log_bf_std</span> <span class="o">=</span> <span class="n">histogram_sddr</span><span class="o">.</span><span class="n">log_bayes_factor</span><span class="p">(</span><span class="n">log_prior</span><span class="o">=</span><span class="n">log_prior_prob</span><span class="p">,</span>
+                                                    <span class="n">value</span><span class="o">=</span><span class="n">eta_truth</span><span class="p">,</span>
+                                                    <span class="n">nbootstraps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                                    <span class="n">bootstrap_proportion</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                                    <span class="n">bootstrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The Bayes factor calculated from the SDDR with the classical histogram model is: </span><span class="si">{</span><span class="n">hist_log_bf</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="se">\u00b1</span><span class="s2"> </span><span class="si">{</span><span class="n">hist_log_bf_std</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Bootstrapping: 100%|██████████| 100/100 [00:02&lt;00:00, 40.10it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The Bayes factor calculated from the SDDR with the classical histogram model is: 0.9445 ± 0.2378
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
+</div>
+</section>
+<section id="We-can-calculate-the-SDDR-by-learning-the-marginal-posterior-with-a-flow">
+<h1>We can calculate the SDDR by learning the marginal posterior with a flow<a class="headerlink" href="#We-can-calculate-the-SDDR-by-learning-the-marginal-posterior-with-a-flow" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flow_model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">RQSplineModel</span><span class="p">(</span><span class="n">ndim_in</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">standardize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">flow_sddr</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">sddr</span><span class="o">.</span><span class="n">sddr</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">flow_model</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">marginalised_samples</span><span class="p">)</span>
+<span class="n">flow_log_bf</span><span class="p">,</span> <span class="n">flow_log_bf_std</span> <span class="o">=</span> <span class="n">flow_sddr</span><span class="o">.</span><span class="n">log_bayes_factor</span><span class="p">(</span><span class="n">log_prior</span><span class="o">=</span><span class="n">log_prior_prob</span><span class="p">,</span>
+                                          <span class="n">value</span><span class="o">=</span><span class="n">eta_truth</span><span class="p">,</span>
+                                          <span class="n">nbootstraps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                          <span class="n">bootstrap_proportion</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                          <span class="n">bootstrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                          <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The Bayes factor calculated from the SDDR with the normalising flow model is: </span><span class="si">{</span><span class="n">flow_log_bf</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="se">\u00b1</span><span class="s2"> </span><span class="si">{</span><span class="n">flow_log_bf_std</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Bootstrapping: 100%|██████████| 10/10 [07:52&lt;00:00, 47.21s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The Bayes factor calculated from the SDDR with the normalising flow model is: 0.9233 ± 0.0523
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
+</div>
+</section>
+<section id="Let's-calculate-evidence-using-nested-sampling">
+<h1>Let’s calculate evidence using nested sampling<a class="headerlink" href="#Let's-calculate-evidence-using-nested-sampling" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nautilus_prior</span> <span class="o">=</span> <span class="n">Prior</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_params</span><span class="p">):</span>
+    <span class="n">nautilus_prior</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;theta_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="n">norm</span><span class="p">(</span><span class="n">means</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">prior_cov</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nautilus_likelihood</span><span class="p">(</span><span class="n">param_dict</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">param_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;theta_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_params</span><span class="p">)])</span>
+    <span class="n">ln_like</span> <span class="o">=</span> <span class="n">ln_likelihood</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">simulator</span><span class="o">=</span><span class="n">mock_simulator</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">noiseless_data</span><span class="p">,</span> <span class="n">inv_cov</span><span class="o">=</span><span class="n">inv_cov</span>
+    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ln_like</span>
+
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">nautilus_prior</span><span class="p">,</span> <span class="n">nautilus_likelihood</span><span class="p">,</span> <span class="n">n_live</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Starting the nautilus sampler...
+Please report issues at github.com/johannesulf/nautilus.
+Status    | Bounds | Ellipses | Networks | Calls    | f_live | N_eff | log Z
+Finished  | 11     | 1        | 4        | 24500    | N/A    | 12022 | -3.01
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nested_nautilus_prior</span> <span class="o">=</span> <span class="n">Prior</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_params</span> <span class="o">-</span> <span class="n">n_nested</span><span class="p">):</span>
+    <span class="n">nested_nautilus_prior</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;theta_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="n">norm</span><span class="p">(</span><span class="n">means</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">prior_cov</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nested_nautilus_likelihood</span><span class="p">(</span><span class="n">param_dict</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">param_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;theta_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_params</span> <span class="o">-</span> <span class="n">n_nested</span><span class="p">)])</span>
+    <span class="n">ln_like</span> <span class="o">=</span> <span class="n">ln_likelihood</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">simulator</span><span class="o">=</span><span class="n">nested_mock_simulator</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">noiseless_data</span><span class="p">,</span> <span class="n">inv_cov</span><span class="o">=</span><span class="n">inv_cov</span>
+    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ln_like</span>
+
+
+<span class="n">nested_sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">nested_nautilus_prior</span><span class="p">,</span> <span class="n">nested_nautilus_likelihood</span><span class="p">,</span> <span class="n">n_live</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="n">nested_sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Starting the nautilus sampler...
+Please report issues at github.com/johannesulf/nautilus.
+Status    | Bounds | Ellipses | Networks | Calls    | f_live | N_eff | log Z
+Finished  | 10     | 1        | 4        | 21000    | N/A    | 10704 | -2.11
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The log evidence from Nautilus is: </span><span class="si">{</span><span class="n">sampler</span><span class="o">.</span><span class="n">log_z</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="se">\u00b1</span><span class="s2"> </span><span class="si">{</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">n_eff</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The log evidence for the nested model from Nautilus is: </span><span class="si">{</span><span class="n">nested_sampler</span><span class="o">.</span><span class="n">log_z</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="se">\u00b1</span><span class="s2"> </span><span class="si">{</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nested_sampler</span><span class="o">.</span><span class="n">n_eff</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The Bayes factor from Nautilus is: </span><span class="si">{</span><span class="n">nested_sampler</span><span class="o">.</span><span class="n">log_z</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sampler</span><span class="o">.</span><span class="n">log_z</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="se">\u00b1</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">sampler</span><span class="o">.</span><span class="n">n_eff</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="n">nested_sampler</span><span class="o">.</span><span class="n">n_eff</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The log evidence from Nautilus is: -3.0124 ± 0.0091
+The log evidence for the nested model from Nautilus is: -2.1050 ± 0.0097
+The Bayes factor from Nautilus is: 0.9073 ± 0.0133
+</pre></div></div>
+</div>
+</section>
+<section id="Repeat-the-evidence-calculation-but-now-using-harmonic">
+<h1>Repeat the evidence calculation but now using harmonic<a class="headerlink" href="#Repeat-the-evidence-calculation-but-now-using-harmonic" title="Link to this heading"></a></h1>
+<section id="Configure-some-machine-learning-parameters">
+<h2>Configure some machine learning parameters<a class="headerlink" href="#Configure-some-machine-learning-parameters" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">training_proportion</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">standardize</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">flow_type</span> <span class="o">=</span> <span class="s2">&quot;RQSpline&quot;</span>
+<span class="n">epochs_num</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Function-to-run-harmonic">
+<h2>Function to run harmonic<a class="headerlink" href="#Function-to-run-harmonic" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_harmonic</span><span class="p">(</span>
+    <span class="n">samples</span><span class="p">,</span>
+    <span class="n">log_prob</span><span class="p">,</span>
+    <span class="n">nparams</span><span class="p">,</span>
+    <span class="n">training_proportion</span><span class="p">,</span>
+    <span class="n">epochs_num</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="p">,</span>
+    <span class="n">standardize</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="c1"># Configure emcee chains for harmonic</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="n">hm</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">info_log</span><span class="p">(</span><span class="s2">&quot;Configure chains...&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configure chains for the cross-validation stage.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">chains</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Chains</span><span class="p">(</span><span class="n">nparams</span><span class="p">)</span>
+    <span class="n">chains</span><span class="o">.</span><span class="n">add_chains_3d</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">)</span>
+    <span class="n">chains_train</span><span class="p">,</span> <span class="n">chains_test</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">split_data</span><span class="p">(</span>
+        <span class="n">chains</span><span class="p">,</span> <span class="n">training_proportion</span><span class="o">=</span><span class="n">training_proportion</span>
+    <span class="p">)</span>
+
+    <span class="c1"># =======================================================================</span>
+    <span class="c1"># Fit model</span>
+    <span class="c1"># =======================================================================</span>
+    <span class="n">hm</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">info_log</span><span class="p">(</span><span class="s2">&quot;Fit model for </span><span class="si">{}</span><span class="s2"> epochs...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epochs_num</span><span class="p">))</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">RQSplineModel</span><span class="p">(</span>
+        <span class="n">nparams</span><span class="p">,</span> <span class="n">standardize</span><span class="o">=</span><span class="n">standardize</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">chains_train</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs_num</span><span class="p">)</span>
+
+    <span class="c1"># ===================================================================</span>
+    <span class="c1"># Computing evidence using learnt model and emcee chains</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="n">hm</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">info_log</span><span class="p">(</span><span class="s2">&quot;Compute evidence...&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Instantiates the evidence class with a given model. Adds some chains</span>
+<span class="sd">    and computes the log-space evidence (marginal likelihood).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ev</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span><span class="n">chains_test</span><span class="o">.</span><span class="n">nchains</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">chains_test</span><span class="p">)</span>
+    <span class="n">ln_evidence</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compute_ln_evidence</span><span class="p">()</span>
+    <span class="n">ln_evidence_err_neg</span><span class="p">,</span> <span class="n">ln_evidence_err_pos</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">compute_ln_inv_evidence_errors</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ln_evidence</span><span class="p">,</span> <span class="n">ln_evidence_err_neg</span><span class="p">,</span> <span class="n">ln_evidence_err_pos</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">chains</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">Chains</span><span class="p">(</span><span class="n">n_params</span><span class="p">)</span>
+<span class="n">chains</span><span class="o">.</span><span class="n">add_chains_3d</span><span class="p">(</span><span class="n">harmonic_super_samples</span><span class="p">,</span> <span class="n">harmonic_super_log_prob</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">harmonic_ln_evidence</span><span class="p">,</span> <span class="n">harmonic_ln_ev_err_neg</span><span class="p">,</span> <span class="n">harmonic_ln_ev_err_pos</span> <span class="o">=</span> <span class="n">run_harmonic</span><span class="p">(</span>
+    <span class="n">samples</span><span class="o">=</span><span class="n">harmonic_super_samples</span><span class="p">,</span>
+    <span class="n">log_prob</span><span class="o">=</span><span class="n">harmonic_super_log_prob</span><span class="p">,</span>
+    <span class="n">nparams</span><span class="o">=</span><span class="n">n_params</span><span class="p">,</span>
+    <span class="n">training_proportion</span><span class="o">=</span><span class="n">training_proportion</span><span class="p">,</span>
+    <span class="n">epochs_num</span><span class="o">=</span><span class="n">epochs_num</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+    <span class="n">standardize</span><span class="o">=</span><span class="n">standardize</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">harmonic_nested_ln_evidence</span><span class="p">,</span>
+    <span class="n">harmonic_nested_ln_ev_err_neg</span><span class="p">,</span>
+    <span class="n">harmonic_nested_ln_ev_err_pos</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">=</span> <span class="n">run_harmonic</span><span class="p">(</span>
+    <span class="n">samples</span><span class="o">=</span><span class="n">harmonic_nested_samples</span><span class="p">,</span>
+    <span class="n">log_prob</span><span class="o">=</span><span class="n">harmonic_nested_log_prob</span><span class="p">,</span>
+    <span class="n">nparams</span><span class="o">=</span><span class="n">n_params</span> <span class="o">-</span> <span class="n">n_nested</span><span class="p">,</span>
+    <span class="n">training_proportion</span><span class="o">=</span><span class="n">training_proportion</span><span class="p">,</span>
+    <span class="n">epochs_num</span><span class="o">=</span><span class="n">epochs_num</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+    <span class="n">standardize</span><span class="o">=</span><span class="n">standardize</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The log evidence from Harmonic is: </span><span class="si">{</span><span class="n">harmonic_ln_evidence</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (+</span><span class="si">{</span><span class="n">harmonic_ln_ev_err_pos</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">harmonic_ln_ev_err_neg</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The log evidence for the nested model from Harmonic is: </span><span class="si">{</span><span class="n">harmonic_nested_ln_evidence</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (+</span><span class="si">{</span><span class="n">harmonic_nested_ln_ev_err_pos</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">harmonic_nested_ln_ev_err_neg</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The log evidence ratio from Harmonic is: </span><span class="si">{</span><span class="n">harmonic_nested_ln_evidence</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">harmonic_ln_evidence</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (+</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">harmonic_nested_ln_ev_err_pos</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">harmonic_ln_ev_err_pos</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">,-</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">harmonic_nested_ln_ev_err_neg</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">harmonic_ln_ev_err_neg</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The log evidence from Harmonic is: -3.0078 (+0.0036,-0.0036)
+The log evidence for the nested model from Harmonic is: -2.1018 (+0.0012,-0.0012)
+The log evidence ratio from Harmonic is: 0.9060 (+0.0038,-0.0038)
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="The-results-in-a-table">
+<h1>The results in a table<a class="headerlink" href="#The-results-in-a-table" title="Link to this heading"></a></h1>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Log Evidence (Full Model)</p></th>
+<th class="head"><p>Log Evidence (Nested Model)</p></th>
+<th class="head"><p>Bayes Factor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Nautilus</p></td>
+<td><p><span class="math notranslate nohighlight">\(-2.9918 \pm 0.0090\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(-2.1171 \pm 0.0096\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(0.8747 \pm 0.0132\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Harmonic</p></td>
+<td><p><span class="math notranslate nohighlight">\(-3.0109 \pm 0.0024\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(-2.1004 \pm 0.0016\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(0.9105 \pm 0.0028\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Flow SDDR</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+<td><p><span class="math notranslate nohighlight">\(0.9248 \pm 0.0408\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Hist SDDR</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+<td><p><span class="math notranslate nohighlight">\(0.9445 \pm 0.2378\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jason D. McEwen, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Alicja Polanska.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
