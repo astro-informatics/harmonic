@@ -335,20 +335,22 @@ def cross_validation(
                 )
             )
             hm.logs.debug_log(
-                "cross_validation: evidence_inv = {}".format(ev.evidence_inv)
+                "cross_validation: ln_evidence_inv = {}".format(ev.ln_evidence_inv)
             )
             hm.logs.debug_log(
-                "cross_validation: evidence_inv_var = {}".format(ev.evidence_inv_var)
-            )
-            hm.logs.debug_log(
-                "cross_validation:"
-                + " evidence_inv_var**0.5/evidence_inv = {}".format(
-                    ev.evidence_inv_var**0.5 / ev.evidence_inv
+                "cross_validation: ln_evidence_inv_var = {}".format(
+                    ev.ln_evidence_inv_var
                 )
             )
             hm.logs.debug_log(
-                "cross_validation: evidence_inv_var_var = {}".format(
-                    ev.evidence_inv_var_var
+                "cross_validation:"
+                + " np.exp(ev.ln_evidence_inv_var)**0.5 / np.exp(ev.ln_evidence_inv) = {}".format(
+                    np.exp(ev.ln_evidence_inv_var) ** 0.5 / np.exp(ev.ln_evidence_inv)
+                )
+            )
+            hm.logs.debug_log(
+                "cross_validation: ln_evidence_inv_var_var = {}".format(
+                    ev.ln_evidence_inv_var_var
                 )
             )
 
