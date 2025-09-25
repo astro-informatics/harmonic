@@ -1,14 +1,15 @@
 name: Tests
 
-on: [push]
+on:
+  push:
+  pull_request:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: ${{ github.ref == 'refs/heads/main' && '3.11,3.12,3.13' || '3.13' }}
 
     steps:
     - uses: actions/checkout@v2.3.1
