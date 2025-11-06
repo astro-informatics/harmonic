@@ -6,6 +6,9 @@ import jax.numpy as jnp
 import optax
 from tqdm import trange
 from flax.training import train_state  # Useful dataclass to keep train state
+import diffrax
+import scipy.stats as stats
+import numpy as np
 
 
 def make_training_loop(model):
@@ -402,3 +405,215 @@ class RQSplineModel(FlowModel):
         self.n_bins = n_bins
         self.spline_range = spline_range
         self.flow = flows.RQSpline(ndim_in, n_layers, hidden_size, n_bins, spline_range)
+
+
+# ===============================================================================
+# Flow matching
+# ===============================================================================
+
+
+def make_flowmatching_training_loop(flow_model):
+    """
+    Create a function that trains a flow matching model.
+    """
+
+    def flowmatching_loss(params, batch, rng):
+        x = batch
+        sigma = 1.0
+        t = jax.random.uniform(rng, (x.shape[0],))
+        noise = jax.random.normal(rng, x.shape)
+        x_t = (1 - sigma * t[:, None]) * noise + t[:, None] * x
+        optimal_flow = x - sigma * noise
+        pred_flow = flow_model.apply({"params": params}, x_t, t)
+        return jnp.mean((pred_flow - optimal_flow) ** 2)
+
+    @jax.jit
+    def train_step(batch, state, variables, rng):
+        grad_fn = jax.value_and_grad(lambda p: flowmatching_loss(p, batch, rng))
+        value, grad = grad_fn(state.params)
+        state = state.apply_gradients(grads=grad)
+        return value, state
+
+    def train_epoch(rng, state, variables, train_ds, batch_size):
+        train_ds_size = len(train_ds)
+        steps_per_epoch = train_ds_size // batch_size
+        if steps_per_epoch > 0:
+            perms = jax.random.permutation(rng, train_ds_size)
+            perms = perms[: steps_per_epoch * batch_size]
+            perms = perms.reshape((steps_per_epoch, batch_size))
+            for perm in perms:
+                batch = train_ds[perm, ...]
+                value, state = train_step(batch, state, variables, rng)
+        else:
+            value, state = train_step(train_ds, state, variables, rng)
+        return value, state
+
+    def train_flow(
+        rng,
+        state,
+        variables,
+        data: jnp.ndarray,
+        num_epochs: int,
+        batch_size: int,
+        verbose: bool = False,
+    ):
+        loss_values = jnp.zeros(num_epochs)
+        if verbose:
+            from tqdm import trange
+            pbar = trange(num_epochs, desc="Training FlowMatching", miniters=int(num_epochs / 10))
+        else:
+            pbar = range(num_epochs)
+        best_state = state
+        best_loss = 1e9
+        for epoch in pbar:
+            rng, input_rng = jax.random.split(rng)
+            value, state = train_epoch(input_rng, state, variables, data, batch_size)
+            loss_values = loss_values.at[epoch].set(value)
+            if loss_values[epoch] < best_loss:
+                best_state = state
+                best_loss = loss_values[epoch]
+            if verbose and num_epochs > 10 and epoch % int(num_epochs / 10) == 0:
+                pbar.set_description(f"Training FlowMatching")
+        return rng, best_state, loss_values
+
+    return train_flow, train_epoch, train_step
+
+
+def sample_flow_matching(self, n_samples, rng_key, steps=100):
+    # Prior: standard normal
+    x0 = jax.random.normal(rng_key, (n_samples, self.ndim))
+    t0, t1 = 0.0, 1.0
+    ts = jnp.linspace(t0, t1, steps)
+
+    def vector_field(t, x, args):
+        # x shape: (n_samples, ndim)
+        t_vec = jnp.full((x.shape[0],), t)
+        return self.flow.apply({"params": self.state.params}, x, t_vec)
+
+    term = diffrax.ODETerm(vector_field)
+    solver = diffrax.Dopri5()
+    saveat = diffrax.SaveAt(t1=True)
+
+    # Integrate for each sample
+    def integrate_single(x0):
+        sol = diffrax.diffeqsolve(
+            term, solver, t0=t0, t1=t1, dt0=1e-2, y0=x0, saveat=saveat
+        )
+        return sol.ys[0]
+
+    xs = integrate_single(x0)
+    return xs
+
+
+def log_prob_flow_matching(self, x_samples, steps=100):
+    D = x_samples.shape[1]
+    t0, t1 = 0.0, 1.0
+
+    def reverse_vector_field(t, y, args):
+        x, log_det = y[:-1], y[-1]
+        t_val = 1.0 - t  # Reverse time
+        def flow_fn(x_single):
+            return self.flow.apply({"params": self.state.params}, x_single[None, :], jnp.array([t_val]))[0]
+        jac = jax.jacobian(flow_fn)(x)
+        div = jnp.trace(jac)
+        v = -flow_fn(x)
+        d_log_det = -div
+        return jnp.concatenate([v, jnp.array([d_log_det])])
+
+    def get_z_and_logdet(x):
+        y0 = jnp.concatenate([x, jnp.array([0.0])])
+        term = diffrax.ODETerm(reverse_vector_field)
+        solver = diffrax.Dopri5()
+        solution = diffrax.diffeqsolve(
+            term, solver, t0=t0, t1=t1, dt0=1e-2, y0=y0,
+            saveat=diffrax.SaveAt(t1=True)
+        )
+        z = solution.ys[0][:-1]
+        log_det = solution.ys[0][-1]
+        return z, log_det
+
+    zs, log_dets = jax.vmap(get_z_and_logdet)(x_samples)
+    # Prior log density (standard normal)
+    prior = stats.multivariate_normal(mean=np.zeros(D), cov=np.eye(D))
+    log_p_zs = prior.logpdf(np.array(zs))
+    log_densities = log_p_zs + np.array(log_dets)
+    return jnp.array(log_densities)
+
+
+class FlowMatchingModel(FlowModel):
+    """Flow Matching model using an MLP for v(x, t)."""
+
+    def __init__(
+        self,
+        ndim_in: int,
+        hidden_dim: int = 128,
+        n_layers: int = 5,
+        learning_rate: float = 0.001,
+        momentum: float = 0.9,
+        standardize: bool = False,
+    ):
+        FlowModel.__init__(
+            self,
+            ndim_in,
+            learning_rate,
+            momentum,
+            standardize,
+            temperature=1.0,
+        )
+        self.hidden_dim = hidden_dim
+        self.n_layers = n_layers
+        self.flow = flows.FlowMatchingMLP(ndim_in, hidden_dim, n_layers)
+
+    def create_train_state(self, rng):
+        params = self.flow.init(rng, jnp.ones((1, self.ndim)), jnp.ones((1,)))["params"]
+        import optax
+        tx = optax.adam(self.learning_rate, self.momentum)
+        from flax.training import train_state
+        return train_state.TrainState.create(
+            apply_fn=self.flow.apply, params=params, tx=tx
+        )
+
+    def fit(
+        self,
+        X: jnp.ndarray,
+        batch_size: int = 64,
+        epochs: int = 3,
+        key=jax.random.PRNGKey(1000),
+        verbose: bool = False,
+    ):
+        if self.flow is None:
+            raise NotImplementedError("Flow not initialized.")
+
+        if X.shape[1] != self.ndim:
+            raise ValueError("X second dimension not the same as ndim.")
+
+        key, rng_model, rng_init, rng_train = jax.random.split(key, 4)
+        variables = self.flow.init(rng_model, jnp.ones((1, self.ndim)), jnp.ones((1,)))
+        state = self.create_train_state(rng_init)
+
+        # Standardization
+        if self.standardize:
+            self.pre_offset = jnp.mean(X, axis=0)
+            if X.shape[1] > 1:
+                self.pre_amp = jnp.sqrt(jnp.diag(jnp.cov(X.T)))
+            else:
+                self.pre_amp = jnp.sqrt(jnp.std(X, axis=0))
+            X = (X - self.pre_offset) / self.pre_amp
+
+        train_flow, train_epoch, train_step = make_flowmatching_training_loop(self.flow)
+        rng, state, loss_values = train_flow(
+            rng_train, state, variables, X, epochs, batch_size, verbose=verbose
+        )
+
+        self.state = state
+        self.variables = variables
+        self.fitted = True
+        self.loss_values = np.array(loss_values)
+        return
+
+
+    def sample(self, n_sample: int, rng_key=jax.random.PRNGKey(0)) -> jnp.ndarray:
+        return sample_flow_matching(self, n_sample, rng_key)
+
+    def log_prob(self, x: jnp.ndarray) -> jnp.ndarray:
+        return log_prob_flow_matching(self, x)

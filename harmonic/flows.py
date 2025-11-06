@@ -436,3 +436,32 @@ class MLP(nn.Module):
             x = self.activation(layer(x))
         x = self.layers[-1](x)
         return x
+
+
+
+
+# ===============================================================================
+# Flow matching
+
+class FlowMatchingMLP(nn.Module):
+    n_features: int
+    hidden_dim: int = 128
+    n_layers: int = 5  # 4 hidden + 1 output
+
+    @nn.compact
+    def __call__(self, x, t):
+
+        if x.ndim == 1:
+            x = x[None, :]
+        if t.ndim == 0:
+            t = jnp.full((x.shape[0],), t)
+        
+        def swish(x): return x * nn.sigmoid(x)
+        xt = jnp.concatenate([x, t[:, None]], axis=-1)
+        h = nn.Dense(self.hidden_dim)(xt)
+        h = swish(h)
+        for _ in range(self.n_layers - 2):
+            h = nn.Dense(self.hidden_dim)(h)
+            h = swish(h)
+        out = nn.Dense(self.n_features)(h)
+        return out
