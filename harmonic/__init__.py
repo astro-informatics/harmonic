@@ -8,3 +8,4 @@ from . import logs
 from . import model_legacy
 from . import sddr
 from . import model_classical
+from .logs import debug_log
