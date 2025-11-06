@@ -16,3 +16,4 @@ flax
 distrax
 cloudpickle
 getdist
+diffrax
