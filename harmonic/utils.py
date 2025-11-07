@@ -3,6 +3,7 @@ import numpy as np
 import harmonic as hm
 import getdist
 import matplotlib as plt
+import getdist.plots
 
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
