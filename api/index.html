@@ -1909,7 +1909,7 @@ KernelDensityEstimate inside function).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>samples</strong> (<em>-</em>) – 2D array of shape (ndim, nsamples) containing samples.</p></li>
+<li><p><strong>samples</strong> (<em>-</em>) – 2D array of shape (nsamples, ndim) containing samples.</p></li>
 <li><p><strong>labels</strong> (<em>-</em>) – Array of strings containing axis labels.</p></li>
 </ul>
 </dd>
@@ -1929,8 +1929,8 @@ KernelDensityEstimate inside function).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>samples1</strong> – 2D array of shape (ndim, nsamples) containing samples from the posterior.</p></li>
-<li><p><strong>samples2</strong> – 2D array of shape (ndim, nsamples) containing samples from the concentrated flow.</p></li>
+<li><p><strong>samples1</strong> – 2D array of shape (nsamples, ndim) containing samples from the posterior.</p></li>
+<li><p><strong>samples2</strong> – 2D array of shape (nsamples, ndim) containing samples from the concentrated flow.</p></li>
 <li><p><strong>labels</strong> – Array of strings containing axis labels for both sets of samples.</p></li>
 <li><p><strong>fontsize</strong> – Plot fontsize.</p></li>
 <li><p><strong>legend_fontsize</strong> – Plot legend fontsize.</p></li>
