@@ -3,6 +3,7 @@ import numpy as np
 import harmonic as hm
 import getdist
 import matplotlib as plt
+import getdist.plots
 
 
 def eval_func_on_grid(func, xmin, xmax, ymin, ymax, nx, ny):
@@ -52,7 +53,7 @@ def plot_getdist(samples, labels=None):
 
     Args:
         - samples:
-            2D array of shape (ndim, nsamples) containing samples.
+            2D array of shape (nsamples, ndim) containing samples.
         - labels:
             Array of strings containing axis labels.
 
@@ -79,9 +80,9 @@ def plot_getdist_compare(
     Plot triangle plot of marginalised distributions using getdist package.
 
     Args:
-        samples1 : 2D array of shape (ndim, nsamples) containing samples from the posterior.
+        samples1 : 2D array of shape (nsamples, ndim) containing samples from the posterior.
 
-        samples2 : 2D array of shape (ndim, nsamples) containing samples from the concentrated flow.
+        samples2 : 2D array of shape (nsamples, ndim) containing samples from the concentrated flow.
 
         labels: Array of strings containing axis labels for both sets of samples.
 
