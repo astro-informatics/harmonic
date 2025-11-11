@@ -479,66 +479,6 @@ def make_flowmatching_training_loop(flow_model):
     return train_flow, train_epoch, train_step
 
 
-def sample_flow_matching(self, n_samples, rng_key, steps=100):
-    # Prior: standard normal
-    x0 = jax.random.normal(rng_key, (n_samples, self.ndim))
-    t0, t1 = 0.0, 1.0
-    ts = jnp.linspace(t0, t1, steps)
-
-    def vector_field(t, x, args):
-        # x shape: (n_samples, ndim)
-        t_vec = jnp.full((x.shape[0],), t)
-        return self.flow.apply({"params": self.state.params}, x, t_vec)
-
-    term = diffrax.ODETerm(vector_field)
-    solver = diffrax.Dopri5()
-    saveat = diffrax.SaveAt(t1=True)
-
-    # Integrate for each sample
-    def integrate_single(x0):
-        sol = diffrax.diffeqsolve(
-            term, solver, t0=t0, t1=t1, dt0=1e-2, y0=x0, saveat=saveat
-        )
-        return sol.ys[0]
-
-    xs = integrate_single(x0)
-    return xs
-
-
-def log_prob_flow_matching(self, x_samples, steps=100):
-    D = x_samples.shape[1]
-    t0, t1 = 0.0, 1.0
-
-    def reverse_vector_field(t, y, args):
-        x, log_det = y[:-1], y[-1]
-        t_val = 1.0 - t  # Reverse time
-        def flow_fn(x_single):
-            return self.flow.apply({"params": self.state.params}, x_single[None, :], jnp.array([t_val]))[0]
-        jac = jax.jacobian(flow_fn)(x)
-        div = jnp.trace(jac)
-        v = -flow_fn(x)
-        d_log_det = -div
-        return jnp.concatenate([v, jnp.array([d_log_det])])
-
-    def get_z_and_logdet(x):
-        y0 = jnp.concatenate([x, jnp.array([0.0])])
-        term = diffrax.ODETerm(reverse_vector_field)
-        solver = diffrax.Dopri5()
-        solution = diffrax.diffeqsolve(
-            term, solver, t0=t0, t1=t1, dt0=1e-2, y0=y0,
-            saveat=diffrax.SaveAt(t1=True)
-        )
-        z = solution.ys[0][:-1]
-        log_det = solution.ys[0][-1]
-        return z, log_det
-
-    zs, log_dets = jax.vmap(get_z_and_logdet)(x_samples)
-    # Prior log density (standard normal)
-    prior = stats.multivariate_normal(mean=np.zeros(D), cov=np.eye(D))
-    log_p_zs = prior.logpdf(np.array(zs))
-    log_densities = log_p_zs + np.array(log_dets)
-    return jnp.array(log_densities)
-
 
 class FlowMatchingModel(FlowModel):
     """Flow Matching model using an MLP for v(x, t)."""
@@ -611,9 +551,75 @@ class FlowMatchingModel(FlowModel):
         self.loss_values = np.array(loss_values)
         return
 
+    def sample_flow_matching(self, n_samples, rng_key, steps=100):
+        # Prior: standard normal
+        x0 = jax.random.normal(rng_key, (n_samples, self.ndim)) * self.temperature
+        t0, t1 = 0.0, 1.0
+        ts = jnp.linspace(t0, t1, steps)
+
+        def vector_field(t, x, args):
+            # x shape: (n_samples, ndim)
+            t_vec = jnp.full((x.shape[0],), t)
+            return self.flow.apply({"params": self.state.params}, x, t_vec)
+
+        term = diffrax.ODETerm(vector_field)
+        solver = diffrax.Dopri5()
+        saveat = diffrax.SaveAt(t1=True)
+
+        # Integrate for each sample
+        def integrate_single(x0):
+            sol = diffrax.diffeqsolve(
+                term, solver, t0=t0, t1=t1, dt0=1e-2, y0=x0, saveat=saveat
+            )
+            return sol.ys[0]
+
+        xs = integrate_single(x0)
+        return xs
+
+
+    def log_prob_flow_matching(self, x_samples, steps=100):
+        D = x_samples.shape[1]
+        t0, t1 = 0.0, 1.0
+
+        def reverse_vector_field(t, y, args):
+            x, log_det = y[:-1], y[-1]
+            t_val = 1.0 - t  # Reverse time
+            def flow_fn(x_single):
+                return self.flow.apply({"params": self.state.params}, x_single[None, :], jnp.array([t_val]))[0]
+            jac = jax.jacobian(flow_fn)(x)
+            div = jnp.trace(jac)
+            v = -flow_fn(x)
+            d_log_det = -div
+            return jnp.concatenate([v, jnp.array([d_log_det])])
+
+        def get_z_and_logdet(x):
+            y0 = jnp.concatenate([x, jnp.array([0.0])])
+            term = diffrax.ODETerm(reverse_vector_field)
+            solver = diffrax.Dopri5()
+            solution = diffrax.diffeqsolve( 
+                term, solver, t0=t0, t1=t1, dt0=1e-2, y0=y0,
+                saveat=diffrax.SaveAt(t1=True)
+            )
+            z = solution.ys[0][:-1]
+            log_det = solution.ys[0][-1]
+            return z, log_det
+
+        zs, log_dets = jax.vmap(get_z_and_logdet)(x_samples)
+        # Prior log density (standard normal)
+        prior = stats.multivariate_normal(mean=np.zeros(D), cov=np.eye(D)*self.temperature)
+        log_p_zs = prior.logpdf(np.array(zs))
+        log_densities = log_p_zs + np.array(log_dets)
+        return jnp.array(log_densities)
 
     def sample(self, n_sample: int, rng_key=jax.random.PRNGKey(0)) -> jnp.ndarray:
-        return sample_flow_matching(self, n_sample, rng_key)
+        return self.sample_flow_matching(n_sample, rng_key)
 
     def log_prob(self, x: jnp.ndarray) -> jnp.ndarray:
-        return log_prob_flow_matching(self, x)
+        return self.log_prob_flow_matching(x)
+    
+
+    def predict(self, x: jnp.ndarray) -> jnp.ndarray:
+        """
+        Predict the log_e posterior for batched input x using flow matching.
+        """
+        return self.log_prob_flow_matching(x)
