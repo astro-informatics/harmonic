@@ -491,6 +491,7 @@ class FlowMatchingModel(FlowModel):
         learning_rate: float = 0.001,
         momentum: float = 0.9,
         standardize: bool = False,
+        temperature: float = 1.0,
     ):
         FlowModel.__init__(
             self,
@@ -498,7 +499,7 @@ class FlowMatchingModel(FlowModel):
             learning_rate,
             momentum,
             standardize,
-            temperature=1.0,
+            temperature=temperature,
         )
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
@@ -578,6 +579,7 @@ class FlowMatchingModel(FlowModel):
 
 
     def log_prob_flow_matching(self, x_samples, steps=100):
+        x_samples = np.atleast_2d(x_samples)
         D = x_samples.shape[1]
         t0, t1 = 0.0, 1.0
 
@@ -622,4 +624,9 @@ class FlowMatchingModel(FlowModel):
         """
         Predict the log_e posterior for batched input x using flow matching.
         """
-        return self.log_prob_flow_matching(x)
+        x = np.atleast_2d(x)
+        logp = self.log_prob_flow_matching(x)
+        # If input was 1D, return scalar
+        if logp.shape[0] == 1:
+            return logp[0]
+        return logp
