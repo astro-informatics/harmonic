@@ -127,7 +127,7 @@ def ln_posterior(x, ln_prior, a=1.0, b=100.0):
 
 
 def run_example(
-    flow_type, ndim=2, nchains=100, samples_per_chain=1000, nburn=500, plot_corner=False
+    flow_type, ndim=2, nchains=100, samples_per_chain=1000, nburn=500, plot_corner=False, thin=1
 ):
     """Run Rosenbrock example.
 
@@ -144,6 +144,8 @@ def run_example(
         nburn: Number of burn in samples for each chain.
 
         plot_corner: Plot marginalised distributions if true.
+
+        thin: Thinning factor for chains.
     """
 
     # if ndim != 2:
@@ -166,13 +168,13 @@ def run_example(
         epochs_num = 8
     elif flow_type == "RQSpline":
         # epochs_num = 5
-        epochs_num = 10
+        epochs_num = 400
     elif flow_type == "FlowMatching":
-        epochs_num = 1000
+        epochs_num = 5000
 
     temperature = 0.8
     training_proportion = 0.5
-    standardize = False
+    standardize = True
     # Spline params
     n_layers = 3
     n_bins = 8
@@ -233,8 +235,8 @@ def run_example(
 
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
-        samples = np.ascontiguousarray(sampler.chain[:, nburn:, :])
-        lnprob = np.ascontiguousarray(sampler.lnprobability[:, nburn:])
+        samples = np.ascontiguousarray(sampler.chain[:, nburn::thin, :])
+        lnprob  = np.ascontiguousarray(sampler.lnprobability[:, nburn::thin])
 
         # =======================================================================
         # Configure emcee chains for harmonic
@@ -276,29 +278,28 @@ def run_example(
                 standardize=standardize,
                 temperature=1.,
             )
-        model.fit(chains_train.samples, epochs=epochs_num, verbose=True, batch_size=1024)
+        model.fit(chains_train.samples, epochs=epochs_num, verbose=True, batch_size=4096)
         model.temperature = temperature
 
-        if flow_type == "FlowMatching":
-            losses = np.array(model.loss_values)
-            ema_beta = 0.99  # Smoothing factor
-            ema_losses = []
-            ema = None
+        losses = np.array(model.loss_values)
+        ema_beta = 0.99  # Smoothing factor
+        ema_losses = []
+        ema = None
 
-            for loss in losses:
-                if ema is None:
-                    ema = loss
-                else:
-                    ema = ema_beta * ema + (1 - ema_beta) * loss
-                ema_losses.append(ema)
+        for loss in losses:
+            if ema is None:
+                ema = loss
+            else:
+                ema = ema_beta * ema + (1 - ema_beta) * loss
+            ema_losses.append(ema)
 
-            plt.plot(losses, label="Training Loss")
-            plt.plot(ema_losses, color="red", label="EMA Loss")
-            plt.xlabel("Epoch")
-            plt.ylabel("Loss")
-            plt.title("Flow Matching Training Loss")
-            plt.legend()
-            plt.show()
+        plt.plot(losses, label="Training Loss")
+        plt.plot(ema_losses, color="red", label="EMA Loss")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("Flow Matching Training Loss")
+        plt.legend()
+        plt.show()
 
 
         # =======================================================================
@@ -469,6 +470,24 @@ def run_example(
                 )
             plt.show(block=False)
 
+            model.temperature = 1.0
+            samps_uncompressed = np.array(model.sample(num_samp))
+
+            hm.utils.plot_getdist_compare(
+                chains_train.samples, samps_uncompressed, legend_fontsize=12.5
+            )
+            if savefigs:
+                save_name = (
+                    save_name_start
+                    + "_rosenbrock_corner_all_T1.png"
+                )
+                plt.savefig(
+                    save_name,
+                    bbox_inches="tight",
+                    dpi=300,
+                )
+            plt.show(block=False)
+            model.temperature = temperature
             created_plots = True
 
         ln_evidence_inv_summary[i_realisation, 0] = ev.ln_evidence_inv
@@ -517,12 +536,12 @@ if __name__ == "__main__":
 
     # Define parameters.
     ndim = 2
-    nchains = 20
+    nchains = 30
     samples_per_chain = 5000
     nburn = 1000
 
     # flow_str = "RealNVP"
-    flow_str = "FlowMatching"
+    flow_str = "RQSpline"
     np.random.seed(2)
 
     hm.logs.info_log("Rosenbrock example")
@@ -538,5 +557,5 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(
-        flow_str, ndim, nchains, samples_per_chain, nburn, plot_corner=True
+        flow_str, ndim, nchains, samples_per_chain, nburn, plot_corner=True, thin=5
     )
