@@ -121,6 +121,7 @@ class FlowModel(mda.Model):
         self.standardize = standardize
         self.temperature = temperature
         self.flow = None
+        self.loss_values = None
 
     def create_train_state(self, rng):
         params = self.flow.init(rng, jnp.ones((1, self.ndim)))["params"]
@@ -193,6 +194,7 @@ class FlowModel(mda.Model):
         self.state = state
         self.variables = variables
         self.fitted = True
+        self.loss_values = np.array(loss_values)
 
         return
 
