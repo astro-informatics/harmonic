@@ -167,10 +167,12 @@ def run_example(
     elif flow_type == "RQSpline":
         # epochs_num = 5
         epochs_num = 10
+    elif flow_type == "FlowMatching":
+        epochs_num = 1000
 
     temperature = 0.8
     training_proportion = 0.5
-    standardize = True
+    standardize = False
     # Spline params
     n_layers = 3
     n_bins = 8
@@ -205,7 +207,7 @@ def run_example(
     """
     Set up and run multiple simulations
     """
-    n_realisations = 50
+    n_realisations = 1
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 1:
@@ -265,7 +267,39 @@ def run_example(
                 standardize=standardize,
                 temperature=temperature,
             )
-        model.fit(chains_train.samples, epochs=epochs_num, verbose=True)
+        elif flow_type == "FlowMatching":
+            model = hm.model.FlowMatchingModel(
+                ndim_in=ndim,
+                hidden_dim=128,
+                n_layers=5,
+                learning_rate=1e-4,
+                standardize=standardize,
+                temperature=1.,
+            )
+        model.fit(chains_train.samples, epochs=epochs_num, verbose=True, batch_size=1024)
+        model.temperature = temperature
+
+        if flow_type == "FlowMatching":
+            losses = np.array(model.loss_values)
+            ema_beta = 0.99  # Smoothing factor
+            ema_losses = []
+            ema = None
+
+            for loss in losses:
+                if ema is None:
+                    ema = loss
+                else:
+                    ema = ema_beta * ema + (1 - ema_beta) * loss
+                ema_losses.append(ema)
+
+            plt.plot(losses, label="Training Loss")
+            plt.plot(ema_losses, color="red", label="EMA Loss")
+            plt.xlabel("Epoch")
+            plt.ylabel("Loss")
+            plt.title("Flow Matching Training Loss")
+            plt.legend()
+            plt.show()
+
 
         # =======================================================================
         # Computing evidence using learnt model and emcee chains
@@ -483,12 +517,12 @@ if __name__ == "__main__":
 
     # Define parameters.
     ndim = 2
-    nchains = 100
+    nchains = 20
     samples_per_chain = 5000
     nburn = 1000
 
     # flow_str = "RealNVP"
-    flow_str = "RQSpline"
+    flow_str = "FlowMatching"
     np.random.seed(2)
 
     hm.logs.info_log("Rosenbrock example")
