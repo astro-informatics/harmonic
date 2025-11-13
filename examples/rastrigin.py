@@ -89,6 +89,7 @@ def run_example(
     nburn=500,
     plot_corner=False,
     plot_surface=False,
+    thin=1,
 ):
     """Run Rastrigin example.
 
@@ -107,6 +108,8 @@ def run_example(
         plot_corner: Plot marginalised distributions if true.
 
         plot_surface: Plot surface and samples if true.
+
+        thin: Thinning factor for chains.
 
     """
 
@@ -170,8 +173,8 @@ def run_example(
         sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[ln_prior])
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate)
-        samples = np.ascontiguousarray(sampler.chain[:, nburn:, :])
-        lnprob = np.ascontiguousarray(sampler.lnprobability[:, nburn:])
+        samples = np.ascontiguousarray(sampler.chain[:, nburn::thin, :])
+        lnprob  = np.ascontiguousarray(sampler.lnprobability[:, nburn::thin])
 
         # =======================================================================
         # Configure emcee chains for harmonic
@@ -199,37 +202,16 @@ def run_example(
                 temperature=1.0,
             )
             model.fit(chains_train.samples, epochs=5000, verbose=True, batch_size=4096)
-            temperature = 0.6
+            temperature = 0.9
             model.temperature = temperature
-            # Plot training loss
-            losses = np.array(model.loss_values)
-            ema_beta = 0.99  # Smoothing factor
-            ema_losses = []
-            ema = None
-
-            for loss in losses:
-                if ema is None:
-                    ema = loss
-                else:
-                    ema = ema_beta * ema + (1 - ema_beta) * loss
-                ema_losses.append(ema)
-
-            plt.plot(losses, label="Training Loss")
-            plt.plot(ema_losses, color="red", label="EMA Loss")
-            plt.xlabel("Epoch")
-            plt.ylabel("Loss")
-            plt.title("Flow Matching Training Loss")
-            plt.legend()
-            plt.show()
-
         elif model_type == "RQSpline":
             # Match the rosenbrock example’s spline setup
             n_layers = 3
             n_bins = 8
             hidden_size = [32, 32]
             spline_range = (-6.0, 6.0)  # Rastrigin domain
-            standardize = False
-            temperature = 1.0
+            standardize = True
+            temperature = 0.9
 
             model = hm.model.RQSplineModel(
                 ndim,
@@ -240,10 +222,32 @@ def run_example(
                 standardize=standardize,
                 temperature=temperature,
             )
-            model.fit(chains_train.samples, epochs=50, verbose=True, batch_size=1024)
+            model.fit(chains_train.samples, epochs=60, verbose=True, batch_size=4096)
         
         else:
             raise ValueError("Unsupported model_type: {}".format(model_type))
+        
+
+        # Plot training loss
+        losses = np.array(model.loss_values)
+        ema_beta = 0.99  # Smoothing factor
+        ema_losses = []
+        ema = None
+
+        for loss in losses:
+            if ema is None:
+                ema = loss
+            else:
+                ema = ema_beta * ema + (1 - ema_beta) * loss
+            ema_losses.append(ema)
+
+        plt.plot(losses, label="Training Loss")
+        plt.plot(ema_losses, color="red", label="EMA Loss")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("Flow Matching Training Loss")
+        plt.legend()
+        plt.show(block=False)
         
         num_samp = chains_train.samples.shape[0]
         samps_compressed = np.array(model.sample(num_samp))
@@ -263,6 +267,25 @@ def run_example(
                 dpi=300,
             )
         plt.show(block=False)
+
+        model.temperature = 1.0
+        samps_uncompressed = np.array(model.sample(num_samp))
+
+        hm.utils.plot_getdist_compare(
+            chains_train.samples, samps_uncompressed, legend_fontsize=12.5
+        )
+        if savefigs:
+            save_name = (
+                save_name_start+ "corner_all_T1.png"
+            )
+            plt.savefig(
+                save_name,
+                bbox_inches="tight",
+                dpi=300,
+            )
+        plt.show(block=False)
+        model.temperature = temperature
+        
 
         # =======================================================================
         # Computing evidence using learnt model and emcee chains
@@ -509,10 +532,10 @@ if __name__ == "__main__":
 
     # Define parameters.
     ndim = 2
-    nchains = 20
+    nchains = 50
     samples_per_chain = 5000
     nburn = 2000
-    architecture = "RQSpline"
+    architecture = "FlowMatching"  # "RQSpline" or "FlowMatching"
     np.random.seed(20)
 
     hm.logs.info_log("Rastrigin example")
@@ -529,5 +552,5 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(architecture,
-        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=False
+        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=False, thin=10
     )
