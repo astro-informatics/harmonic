@@ -47,7 +47,6 @@ setup(
     ],
     python_requires='>=3.11, <3.14',
     name="harmonic",
-    version="1.3.0",
     prefix=".",
     url="https://github.com/astro-informatics/harmonic",
     author="Jason D. McEwen, Alicja Polanska, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Kiyam Lin, Zixiao Hu & Contributors",
@@ -61,6 +60,7 @@ setup(
     include_package_data=True,
     package_data={"harmonic": ["default-logging-config.yaml"]},
     cmdclass={"build_ext": build_ext},
+    dynamic = ["version",],
     ext_modules=cythonize(
         [
             Extension(
