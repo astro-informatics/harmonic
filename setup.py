@@ -45,7 +45,7 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
     ],
-    python_requires='>=3.11, <3.14'
+    python_requires='>=3.11, <3.14',
     name="harmonic",
     version="1.3.0",
     prefix=".",
