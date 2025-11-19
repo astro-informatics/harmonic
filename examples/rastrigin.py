@@ -201,7 +201,7 @@ def run_example(
                 standardize=False,
                 temperature=1.0,
             )
-            model.fit(chains_train.samples, epochs=5000, verbose=True, batch_size=4096)
+            model.fit(chains_train.samples, epochs=15000, verbose=True, batch_size=4096)
             temperature = 0.9
             model.temperature = temperature
         elif model_type == "RQSpline":
@@ -222,7 +222,7 @@ def run_example(
                 standardize=standardize,
                 temperature=temperature,
             )
-            model.fit(chains_train.samples, epochs=60, verbose=True, batch_size=4096)
+            model.fit(chains_train.samples, epochs=200, verbose=True, batch_size=4096)
         
         else:
             raise ValueError("Unsupported model_type: {}".format(model_type))
@@ -535,7 +535,7 @@ if __name__ == "__main__":
     nchains = 50
     samples_per_chain = 5000
     nburn = 2000
-    architecture = "FlowMatching"  # "RQSpline" or "FlowMatching"
+    architecture ="FlowMatching"  # "RQSpline" or "FlowMatching"
     np.random.seed(20)
 
     hm.logs.info_log("Rastrigin example")
@@ -552,5 +552,5 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(architecture,
-        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=False, thin=10
+        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=False, thin=5
     )

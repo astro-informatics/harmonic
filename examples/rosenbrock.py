@@ -275,7 +275,7 @@ def run_example(
                 hidden_dim=128,
                 n_layers=5,
                 learning_rate=1e-4,
-                standardize=standardize,
+                standardize=False,
                 temperature=1.,
             )
         model.fit(chains_train.samples, epochs=epochs_num, verbose=True, batch_size=4096)
