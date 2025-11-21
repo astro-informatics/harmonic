@@ -1,4 +1,3 @@
-# filepath: /Users/alicjapolanska/Documents/ucl/normalizing_flows/flow_matching_things/fresh_harmonic/harmonic/examples/rastrigin.py
 import numpy as np
 import emcee
 import time
@@ -6,6 +5,8 @@ import matplotlib.pyplot as plt
 from functools import partial
 import harmonic as hm
 import ex_utils
+import jax
+print(f"JAX is using these devices: {jax.devices()}")
 
 
 def ln_prior_uniform(x, xmin=-6.0, xmax=6.0, ymin=-6.0, ymax=6.0):
@@ -123,7 +124,9 @@ def run_example(
     Configure machine learning parameters
     """
     savefigs = True
-    save_name_start = "examples/plots/" + model_type + "_rastrigin_"
+    temperature = 0.9
+    standardize = True
+    save_name_start = "examples/plots/" + model_type + "_s" + str(int(standardize)) + "_rastrigin_"
     nfold = 2
     nhyper = 2
     step = -2
@@ -195,23 +198,20 @@ def run_example(
         if model_type == "FlowMatching":
             model = hm.model.FlowMatchingModel(
                 ndim_in=ndim,
-                hidden_dim=128,
+                hidden_dim=64,
                 n_layers=6,
                 learning_rate=1e-4,
-                standardize=False,
-                temperature=1.0,
+                standardize=standardize,
+                temperature=temperature,
             )
             model.fit(chains_train.samples, epochs=15000, verbose=True, batch_size=4096)
-            temperature = 0.9
-            model.temperature = temperature
+
         elif model_type == "RQSpline":
             # Match the rosenbrock example’s spline setup
             n_layers = 3
             n_bins = 8
             hidden_size = [32, 32]
             spline_range = (-6.0, 6.0)  # Rastrigin domain
-            standardize = True
-            temperature = 0.9
 
             model = hm.model.RQSplineModel(
                 ndim,
@@ -245,8 +245,17 @@ def run_example(
         plt.plot(ema_losses, color="red", label="EMA Loss")
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
-        plt.title("Flow Matching Training Loss")
+        plt.title("Training Loss")
         plt.legend()
+        if savefigs:
+            save_name = (
+                save_name_start + "loss.png"
+            )
+            plt.savefig(
+                save_name,
+                bbox_inches="tight",
+                dpi=300,
+            )
         plt.show(block=False)
         
         num_samp = chains_train.samples.shape[0]
