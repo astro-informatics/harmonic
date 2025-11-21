@@ -46,7 +46,7 @@ setup(
         "Intended Audience :: Science/Research",
     ],
     python_requires='>=3.11, <3.14',
-    name="harmonic",
+    name="harmonic-test-pypi",
     prefix=".",
     url="https://github.com/astro-informatics/harmonic",
     author="Jason D. McEwen, Alicja Polanska, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Kiyam Lin, Zixiao Hu & Contributors",
