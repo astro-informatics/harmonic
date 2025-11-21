@@ -62,29 +62,30 @@ jobs:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
-  # upload_test_pypi:
-  #   needs: [build_wheels]
-  #   runs-on: ubuntu-latest
-  #   environment: test-pypi
-  #   permissions:
-  #     id-token: write
-  #   if: |
-  #     (github.event_name == 'release' && github.event.action == 'published') || 
-  #     (github.event_name == 'push' && github.ref == 'refs/heads/main')
-  #   steps:
-  #     - uses: actions/download-artifact@v5
-  #       with:
-  #         # Unpack all CIBW artifacts (wheels + sdist) into dist/
-  #         # pypa/gh-action-pypi-publish action uploads contents of dist/ unconditionally
-  #         pattern: cibw-*
-  #         path: dist
-  #         merge-multiple: true
-  #       # Try publishing to Test PyPI first - if there are issues this should
-  #       # cause job to fail before attempting to publish on PyPI itself
-  #     - name: Publish package distribution to Test PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         repository-url: https://test.pypi.org/legacy/
+  upload_test_pypi:
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    environment: test-pypi
+    permissions:
+      id-token: write
+    if: |
+      (github.event_name == 'release' && github.event.action == 'published') || 
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') || 
+      (github.event_name == 'push' && github.ref == 'refs/heads/automatic_release')
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          # Unpack all CIBW artifacts (wheels + sdist) into dist/
+          # pypa/gh-action-pypi-publish action uploads contents of dist/ unconditionally
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+        # Try publishing to Test PyPI first - if there are issues this should
+        # cause job to fail before attempting to publish on PyPI itself
+      - name: Publish package distribution to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
   # upload_pypi:
   #   needs: [build_wheels, build_sdist, upload_test_pypi]
