@@ -172,7 +172,7 @@ def run_example(
     elif flow_type == "FlowMatching":
         epochs_num = 5000
 
-    temperature = 0.8
+    temperature = 0.9
     training_proportion = 0.5
     standardize = True
     # Spline params
@@ -274,12 +274,11 @@ def run_example(
                 ndim_in=ndim,
                 hidden_dim=128,
                 n_layers=5,
-                learning_rate=1e-4,
-                standardize=False,
-                temperature=1.,
+                learning_rate=1e-3,
+                standardize=standardize,
+                temperature=temperature,
             )
         model.fit(chains_train.samples, epochs=epochs_num, verbose=True, batch_size=4096)
-        model.temperature = temperature
 
         losses = np.array(model.loss_values)
         ema_beta = 0.99  # Smoothing factor
@@ -299,6 +298,7 @@ def run_example(
         plt.ylabel("Loss")
         plt.title("Flow Matching Training Loss")
         plt.legend()
+        plt.savefig(save_name_start + "_rosenbrock_loss.png", bbox_inches="tight", dpi=300)
         plt.show()
 
 
@@ -536,15 +536,18 @@ if __name__ == "__main__":
 
     # Define parameters.
     ndim = 2
-    nchains = 30
-    samples_per_chain = 5000
-    nburn = 1000
+    nchains = 100
+    samples_per_chain = 1500
+    nburn = 500
 
     # flow_str = "RealNVP"
-    flow_str = "RQSpline"
-    np.random.seed(2)
+    #flow_str = "RQSpline"
+    flow_str = "FlowMatching"
+    np.random.seed(10)
 
     hm.logs.info_log("Rosenbrock example")
+    hm.logs.info_log("-------------------")
+    hm.logs.info_log("Selected Model: {}".format(flow_str))
 
     hm.logs.debug_log("-- Selected Parameters --")
 
