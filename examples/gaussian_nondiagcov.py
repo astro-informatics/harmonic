@@ -3,6 +3,7 @@ import time
 import matplotlib.pyplot as plt
 import harmonic as hm
 import jax
+print(f"JAX is using these devices: {jax.devices()}")
 import jax.numpy as jnp
 import emcee
 import logging
@@ -76,6 +77,7 @@ def run_example(
     nchains=100,
     samples_per_chain=1000,
     plot_corner=False,
+    thin=1,
 ):
     """Run Gaussian example with non-diagonal covariance matrix.
 
@@ -104,12 +106,15 @@ def run_example(
     elif flow_type == "RQSpline":
         #epochs_num = 5
         epochs_num = 110
+    elif flow_type == "FlowMatching":
+        # Longer training usually required; adjust if needed.
+        epochs_num = 8000
 
     # Beginning of path where plots will be saved
     save_name_start = "examples/plots/" + flow_type
 
     temperature = 0.9
-    standardize = True
+    standardize = False
     verbose = True
     
     # Spline params
@@ -125,7 +130,7 @@ def run_example(
     clock = time.process_time()
 
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 1
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 0:
@@ -160,6 +165,11 @@ def run_example(
             )
             samples = np.ascontiguousarray(sampler.chain[:, nburn:, :])
             lnprob = np.ascontiguousarray(sampler.lnprobability[:, nburn:])
+            
+            # --- Thinning ---
+            if thin > 1:
+                samples = samples[:, ::thin, :]
+                lnprob = lnprob[:, ::thin]
 
         # Calculate evidence using harmonic....
 
@@ -188,7 +198,38 @@ def run_example(
                 standardize=standardize,
                 temperature=temperature,
             )
-        model.fit(chains_train.samples, epochs=epochs_num, verbose=verbose)
+
+        elif flow_type == "FlowMatching":
+
+            model = hm.model.FlowMatchingModel(
+                ndim_in=ndim,
+                hidden_dim=64,
+                n_layers=5,
+                learning_rate=1e-4,
+                standardize=standardize,
+                temperature=temperature,
+            )
+        model.fit(chains_train.samples, epochs=epochs_num, verbose=verbose, batch_size=2048)
+
+        losses = np.array(model.loss_values)
+        ema = None
+        ema_beta = 0.99
+        ema_losses = []
+        for L in losses:
+            ema = L if ema is None else ema_beta * ema + (1 - ema_beta) * L
+            ema_losses.append(ema)
+        plt.figure()
+        plt.plot(losses, label="Loss")
+        plt.plot(ema_losses, label="EMA", color="red")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("Training Loss")
+        plt.legend()
+        if savefigs:
+            plt.savefig(save_name_start + "_gaussian_nondiagcov_loss.png", bbox_inches="tight", dpi=300)
+        plt.close()
+
+        plt.show()
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log("Compute evidence...")
@@ -331,14 +372,17 @@ if __name__ == "__main__":
     hm.logs.setup_logging(default_level=logging.DEBUG)
 
     # Define parameters.
-    ndim = 21
-    nchains = 80
+    ndim = 10
+    nchains = 40
     samples_per_chain = 5000
     #flow_str = "RealNVP"
-    flow_str = "RQSpline"
+    #flow_str = "RQSpline"
+    flow_str = "FlowMatching"
     np.random.seed(10)  # used for initializing covariance matrix
 
     hm.logs.info_log("Non-diagonal Covariance Gaussian example")
+    hm.logs.info_log("-------------------------")
+    hm.logs.info_log("Flow model: {}".format(flow_str))
 
     hm.logs.debug_log("-- Selected Parameters --")
 
@@ -346,7 +390,8 @@ if __name__ == "__main__":
     hm.logs.debug_log("Number of chains = {}".format(nchains))
     hm.logs.debug_log("Samples per chain = {}".format(samples_per_chain))
 
+
     hm.logs.debug_log("-------------------------")
 
     # Run example.
-    run_example(flow_str, ndim, nchains, samples_per_chain, plot_corner=True)
+    run_example(flow_str, ndim, nchains, samples_per_chain, plot_corner=True, thin=10)
