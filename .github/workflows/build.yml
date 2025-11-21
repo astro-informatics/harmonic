@@ -69,8 +69,8 @@ jobs:
     permissions:
       id-token: write
     if: |
-      (github.event_name == 'release' && github.event.action == 'published') || 
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') || 
+      (github.event_name == 'release' && github.event.action == 'published') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'push' && github.ref == 'refs/heads/automatic_release')
     steps:
       - uses: actions/download-artifact@v5
