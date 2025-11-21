@@ -1,6 +1,7 @@
 numpy
 setuptools==68.0.0
 wheel==0.41.0
+tensorstore==0.1.65
 cython>=0.29.30
 ipython>=8.4.0
 jupyter>=1.0.0
@@ -9,8 +10,8 @@ scipy>=1.8.1
 colorlog>=6.6.0
 pyyaml>=6.0
 tqdm
-jax
-jaxlib
+jax==0.5.3
+jaxlib==0.5.3
 flax
 #chex==0.1.6
 distrax
