@@ -524,6 +524,10 @@ class FlowMatchingModel(FlowModel):
         key=jax.random.PRNGKey(1000),
         verbose: bool = False,
     ):
+        initialised_temp = self.temperature
+        print("Temperature before training: ", self.temperature)
+        self.temperature = 1.
+        print("Initialising training at temperature ", self.temperature)
         if self.flow is None:
             raise NotImplementedError("Flow not initialized.")
 
@@ -552,6 +556,9 @@ class FlowMatchingModel(FlowModel):
         self.variables = variables
         self.fitted = True
         self.loss_values = np.array(loss_values)
+        self.temperature = initialised_temp
+        print("Temperature set to ", self.temperature)
+
         return
 
     def sample_flow_matching(self, n_samples, rng_key, steps=100):
@@ -576,14 +583,20 @@ class FlowMatchingModel(FlowModel):
             )
             return sol.ys[0]
 
-        xs = integrate_single(x0)
-        return xs
+        samples = integrate_single(x0)
+
+        if self.standardize:
+            samples = samples * self.pre_amp + self.pre_offset
+        return samples
 
 
     def log_prob_flow_matching(self, x_samples, steps=100):
         x_samples = np.atleast_2d(x_samples)
         D = x_samples.shape[1]
         t0, t1 = 0.0, 1.0
+
+        if self.standardize:
+            x_samples = (x_samples - self.pre_offset) / self.pre_amp
 
         def reverse_vector_field(t, y, args):
             x, log_det = y[:-1], y[-1]
@@ -613,6 +626,10 @@ class FlowMatchingModel(FlowModel):
         prior = stats.multivariate_normal(mean=np.zeros(D), cov=np.eye(D)*self.temperature)
         log_p_zs = prior.logpdf(np.array(zs))
         log_densities = log_p_zs + np.array(log_dets)
+        
+        if self.standardize:
+            log_densities -= sum(jnp.log(self.pre_amp))
+
         return jnp.array(log_densities)
 
     def sample(self, n_sample: int, rng_key=jax.random.PRNGKey(0)) -> jnp.ndarray:
