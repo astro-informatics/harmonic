@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v5
         with:
-          # Unpack all CIBW artifacts (wheels + sdist) into dist/
+          # Unpack all CIBW artifacts (wheels) into dist/
           # pypa/gh-action-pypi-publish action uploads contents of dist/ unconditionally
           pattern: cibw-*
           path: dist
