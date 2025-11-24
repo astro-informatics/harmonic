@@ -3,6 +3,7 @@ import time
 import matplotlib.pyplot as plt
 import harmonic as hm
 import jax
+jax.config.update("jax_enable_x64", True)
 print(f"JAX is using these devices: {jax.devices()}")
 import jax.numpy as jnp
 import emcee
@@ -16,7 +17,7 @@ def ln_analytic_evidence(ndim, covs, weights):
         Z += w * (2 * np.pi) ** (ndim / 2) * np.linalg.det(cov) ** 0.5
     return np.log(Z)
 
-def ln_posterior_unnormalised(x, means, inv_covs, weights):
+def ln_posterior(x, means, inv_covs, weights):
     """
     Compute the unnormalised log posterior density of a Gaussian mixture at a point.
 
@@ -66,7 +67,7 @@ def sample_mixture(key, means, covs, n_samples_per, ndim):
         # Compute mixture logprob for each sample
         inv_covs = [jnp.linalg.inv(c) for c in covs]
         weights = jnp.ones(len(means)) / len(means)
-        lps = jax.vmap(lambda x: ln_mixture_posterior(x, means, inv_covs, weights))(s)
+        lps = jax.vmap(lambda x: ln_posterior(x, means, inv_covs, weights))(s)
         samples.append(s)
         lnprobs.append(lps)
     samples = jnp.concatenate(samples, axis=0)
@@ -103,8 +104,10 @@ def run_example(
     ndim=2,
     nchains=100,
     samples_per_chain=1000,
+    burnin=500,
     plot_corner=False,
     thin=1,
+    use_emcee=False,
 ):
     """Run Gaussian example with non-diagonal covariance matrix.
 
@@ -123,9 +126,16 @@ def run_example(
     """
 
     savefigs = True
-    n_components = 3
-    means = [jnp.ones(ndim) * i for i in range(n_components)]
-    covs = [jnp.array(init_cov(ndim)) for _ in range(n_components)]
+    n_components = 5
+    # Spread means in a cube instead of a line
+    np.random.seed(42)  # For reproducible mean placement
+    means = []
+    for i in range(n_components):
+        # Random position in [-2, 2]^ndim cube
+        mean = (np.random.rand(ndim) - 0.5) * 4.0
+        means.append(jnp.array(mean))
+        
+    covs = [jnp.array(init_cov(ndim))*0.01 for _ in range(n_components)]
     weights = jnp.ones(n_components) / n_components
     inv_covs = [jnp.linalg.inv(c) for c in covs]
 
@@ -134,7 +144,7 @@ def run_example(
         epochs_num = 10 #5
     elif flow_type == "RQSpline":
         #epochs_num = 5
-        epochs_num = 110
+        epochs_num = 200
     elif flow_type == "FlowMatching":
         # Longer training usually required; adjust if needed.
         epochs_num = 8000
@@ -144,55 +154,107 @@ def run_example(
         lr = 1e-4
 
     # Beginning of path where plots will be saved
-    save_name_start = "examples/plots/" + flow_type
+    save_name_start = "examples/plots/" + flow_type 
 
-    temperature = 0.9
+    temperature = 0.95
     standardize = True
     verbose = True
     
     # Spline params
-    n_layers = 3
-    n_bins = 128
+    n_layers = 8
+    n_bins = 64
     hidden_size = [32, 32]
     spline_range = (-10.0, 10.0)
 
     if flow_type == "RQSpline":
         save_name_start += "_"  + str(n_layers) + "l_" + str(n_bins) + "b_" + str(epochs_num) + "e_" + str(int(training_proportion * 100)) + "perc_" + str(temperature) + "T" + "_emcee"
     if flow_type == "FlowMatching":
-            save_name_start += "_hd" + str(hidden_dim) + "_nl" + str(fm_n_layers) + str(temperature) + "T"
+            save_name_start += "_hd" + str(hidden_dim) + "_nl" + str(fm_n_layers) + str(temperature) + "T" + "_{}D".format(ndim)
 
     # Start timer.
     clock = time.process_time()
 
     # Run multiple realisations.
-    n_realisations = 1
+    n_realisations = 100
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 0:
             hm.logs.info_log(
                 "Realisation = {}/{}".format(i_realisation + 1, n_realisations)
             )
-        # Define the number of dimensions and the mean of the Gaussian
-        num_samples = nchains * samples_per_chain
-        # Initialize a PRNG key (you can use any valid key)
-        key = jax.random.PRNGKey(i_realisation)
-        mean = jnp.zeros(ndim)
+        
+        
+        if use_emcee:
+            # ===== EMCEE SAMPLING =====
+            print("Using emcee for sampling...")
+            #np.random.seed(i_realisation)
+            # Define log probability function for emcee
+            def log_prob_emcee(x):
+                return float(ln_posterior(jnp.array(x), means, inv_covs, weights))
 
-        # Generate random samples from the 2D Gaussian distribution
-        samples = jax.random.multivariate_normal(key, mean, cov, shape=(num_samples,))
-        lnprob = jax.vmap(ln_posterior, in_axes=(0, None))(samples, jnp.array(inv_cov))
-        samples = jnp.reshape(samples, (nchains, -1, ndim))
-        lnprob = jnp.reshape(lnprob, (nchains, -1))
+            # Initialize walkers - equal number near each component
+            nwalkers = nchains
+            walkers_per_component = nwalkers // n_components
+            remainder = nwalkers % n_components
 
+            p0 = []
+            for comp_idx in range(n_components):
+                n_walkers_this = walkers_per_component + (1 if comp_idx < remainder else 0)
+                for _ in range(n_walkers_this):
+                    p0.append(np.array(means[comp_idx]) + 0.1 * np.random.randn(ndim))
 
-        # Sample from mixture
-        key = jax.random.PRNGKey(0)
-        num_samples_per = nchains * samples_per_chain // n_components
-        samples, lnprob = sample_mixture(key, means, covs, num_samples_per, ndim)
-        samples = jnp.reshape(samples, (nchains, -1, ndim))
-        lnprob = jnp.reshape(lnprob, (nchains, -1))
+            p0 = np.array(p0)
+            hm.logs.info_log(f"Initialized {len(p0)} walkers: {walkers_per_component} per component (+{remainder} extra)")
+
+            # Set up emcee sampler
+            sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob_emcee)
+
+            # Run burn-in
+            hm.logs.info_log(f"Running emcee burn-in for {burnin} steps...")
+            state = sampler.run_mcmc(p0, burnin, progress=True)
+            sampler.reset()
+
+            # Run production
+            hm.logs.info_log(f"Running emcee production for {samples_per_chain} steps...")
+            sampler.run_mcmc(state, samples_per_chain, progress=True)
+
+            # Get samples and log probabilities
+            samples = sampler.get_chain(flat=False)
+            lnprob = sampler.get_log_prob(flat=False)
+
+            # Transpose to match expected format
+            samples = np.transpose(samples, (1, 0, 2))
+            lnprob = np.transpose(lnprob, (1, 0))
+
+            # Convert to JAX arrays
+            samples = jnp.array(samples)
+            lnprob = jnp.array(lnprob)
+
+            # Check acceptance fraction
+            hm.logs.info_log(f"Mean acceptance fraction: {np.mean(sampler.acceptance_fraction):.3f}")
             
-        # --- Thinning ---
+        else:
+            # ===== DIRECT SAMPLING =====
+            print("Using direct sampling...")
+            key = jax.random.PRNGKey(i_realisation)
+            total_samples_needed = nchains * samples_per_chain
+            num_samples_per = (total_samples_needed + n_components - 1) // n_components
+            samples, lnprob = sample_mixture(key, means, covs, num_samples_per, ndim)
+
+            # Truncate to exact number needed
+            samples = samples[:total_samples_needed]
+            lnprob = lnprob[:total_samples_needed]
+
+            # SHUFFLE before reshaping so each chain has mixture samples
+            key, shuffle_key = jax.random.split(key)
+            perm = jax.random.permutation(shuffle_key, total_samples_needed)
+            samples = samples[perm]
+            lnprob = lnprob[perm]
+
+            samples = jnp.reshape(samples, (nchains, samples_per_chain, ndim))
+            lnprob = jnp.reshape(lnprob, (nchains, samples_per_chain))
+
+        # --- Thinning (common for both methods) ---
         if thin > 1:
             samples = samples[:, ::thin, :]
             lnprob = lnprob[:, ::thin]
@@ -264,7 +326,7 @@ def run_example(
 
         # Compute analytic evidence.
         if i_realisation == 0:
-            ln_evidence_analytic = ln_analytic_evidence(ndim, cov)
+            ln_evidence_analytic = ln_analytic_evidence(ndim, covs, weights)
 
         hm.logs.info_log("---------------------------------")
         hm.logs.info_log("The inverse evidence in log space is:")
@@ -395,9 +457,10 @@ if __name__ == "__main__":
     hm.logs.setup_logging(default_level=logging.DEBUG)
 
     # Define parameters.
-    ndim = 21
-    nchains = 80
-    samples_per_chain = 5000
+    ndim = 20
+    nchains = 200
+    samples_per_chain = 2000
+    burnin = 1000
     #flow_str = "RealNVP"
     #flow_str = "RQSpline"
     flow_str = "FlowMatching"
@@ -414,4 +477,4 @@ if __name__ == "__main__":
     hm.logs.debug_log("-------------------------")
 
     # Run example.
-    run_example(flow_str, ndim, nchains, samples_per_chain, plot_corner=True, thin=10)
+    run_example(flow_str, ndim, nchains, samples_per_chain, burnin, plot_corner=True, thin=5, use_emcee=False,)
