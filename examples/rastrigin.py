@@ -6,6 +6,7 @@ from functools import partial
 import harmonic as hm
 import ex_utils
 import jax
+jax.config.update("jax_enable_x64", True)
 print(f"JAX is using these devices: {jax.devices()}")
 
 
@@ -124,7 +125,7 @@ def run_example(
     Configure machine learning parameters
     """
     savefigs = True
-    temperature = 0.9
+    temperature = 0.95
     standardize = True
     save_name_start = "examples/plots/" + model_type + "_s" + str(int(standardize)) + "_rastrigin_"
     nfold = 2
@@ -156,7 +157,7 @@ def run_example(
     """
     Set up and run multiple simulations
     """
-    n_realisations = 1
+    n_realisations = 10
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 1:
@@ -198,7 +199,7 @@ def run_example(
         if model_type == "FlowMatching":
             model = hm.model.FlowMatchingModel(
                 ndim_in=ndim,
-                hidden_dim=64,
+                hidden_dim=256,
                 n_layers=6,
                 learning_rate=1e-4,
                 standardize=standardize,
@@ -248,8 +249,8 @@ def run_example(
         plt.title("Training Loss")
         plt.legend()
         if savefigs:
-            save_name = (
-                save_name_start + "loss.png"
+            save_name = (save_name_start + "_T"
+                + str(temperature) + "loss.png"
             )
             plt.savefig(
                 save_name,
@@ -541,7 +542,7 @@ if __name__ == "__main__":
 
     # Define parameters.
     ndim = 2
-    nchains = 50
+    nchains = 80
     samples_per_chain = 5000
     nburn = 2000
     architecture ="FlowMatching"  # "RQSpline" or "FlowMatching"
@@ -561,5 +562,5 @@ if __name__ == "__main__":
 
     # Run example.
     samples = run_example(architecture,
-        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=False, thin=5
+        ndim, nchains, samples_per_chain, nburn, plot_corner=True, plot_surface=False, thin=10
     )
