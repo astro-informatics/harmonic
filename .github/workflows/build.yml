@@ -36,7 +36,6 @@ on:
   push:
     branches:
       - main
-      - automatic_release
   release:
     types:
       - published
@@ -85,8 +84,7 @@ jobs:
       id-token: write
     if: |
       (github.event_name == 'release' && github.event.action == 'published') ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/automatic_release')
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     steps:
       - uses: actions/download-artifact@v5
         with:
