@@ -18,10 +18,14 @@
     :target: https://arxiv.org/abs/2307.00048
 .. |arxiv4| image:: http://img.shields.io/badge/arXiv-2405.05969-orange.svg?style=flat
     :target: https://arxiv.org/abs/2405.05969
+.. |arxiv5| image:: http://img.shields.io/badge/arXiv-2410.21076-orange.svg?style=flat
+    :target: https://arxiv.org/abs/2410.21076
+.. |arxiv6| image:: http://img.shields.io/badge/arXiv-2506.04339-orange.svg?style=flat
+    :target: https://arxiv.org/abs/2506.04339
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
-|github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3| |arxiv4|
+|github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3| |arxiv4| |arxiv5| |arxiv6|
 
 
 |logo|
@@ -144,6 +148,22 @@ A BibTeX entry for the paper is:
         journal  = {{RASTI}, in press},
         title    = {{B}ayesian model comparison for simulation-based inference},
         year     = {2023}
+     }
+
+Please *also* cite `Lin et al. (2025) <https://arxiv.org/abs/2506.04339>`_ if using the Savage-Dickey density ratio estimation.
+
+A BibTeX entry for the paper is:
+
+.. code-block::
+
+     @article{spurio-mancini:harmonic_sddr,
+        title={{S}avage-{D}ickey density ratio estimation with normalizing flows for {B}ayesian model comparison},
+        author={Kiyam Lin and Alicja Polanska and Davide Piras and Alessio Spurio Mancini and Jason D. McEwen},
+        year={2025},
+        eprint={2506.04339},
+        archivePrefix={arXiv},
+        primaryClass={astro-ph.CO},
+        url={https://arxiv.org/abs/2506.04339},
      }
 
 
