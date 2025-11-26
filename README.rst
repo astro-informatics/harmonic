@@ -18,10 +18,14 @@
     :target: https://arxiv.org/abs/2307.00048
 .. |arxiv4| image:: http://img.shields.io/badge/arXiv-2405.05969-orange.svg?style=flat
     :target: https://arxiv.org/abs/2405.05969
+.. |arxiv5| image:: http://img.shields.io/badge/arXiv-2410.21076-orange.svg?style=flat
+    :target: https://arxiv.org/abs/2410.21076
+.. |arxiv6| image:: http://img.shields.io/badge/arXiv-2506.04339-orange.svg?style=flat
+    :target: https://arxiv.org/abs/2506.04339
 .. .. image:: https://img.shields.io/pypi/pyversions/harmonic.svg
 ..     :target: https://pypi.python.org/pypi/harmonic/
 
-|github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3| |arxiv4|
+|github| |tests| |docs| |codecov| |pypi| |licence| |arxiv1| |arxiv2| |arxiv3| |arxiv4| |arxiv5| |arxiv6|
 
 
 |logo|
@@ -30,9 +34,9 @@
     :width: 90
 =================================================================================================================
 
-``harmonic`` is an open source, well tested and documented Python implementation of the *learnt harmonic mean estimator* (`McEwen et al. 2021 <https://arxiv.org/abs/2111.12720>`_) to compute the marginal likelihood (Bayesian evidence), required for Bayesian model selection.
+``harmonic`` is an open source, well tested and documented Python implementation of the *learned harmonic mean estimator* (`McEwen et al. 2021 <https://arxiv.org/abs/2111.12720>`_) to compute the marginal likelihood (Bayesian evidence), required for Bayesian model selection.
 
-For an accessible overview of the *learnt harmonic mean estimator* please see this `Towards Data Science article <https://towardsdatascience.com/learnt-harmonic-mean-estimator-for-bayesian-model-selection-47258bb0fc2e>`_.
+For an accessible overview of the *learned harmonic mean estimator* please see this `Towards Data Science article <https://towardsdatascience.com/learnt-harmonic-mean-estimator-for-bayesian-model-selection-47258bb0fc2e>`_.
 
 While ``harmonic`` requires only posterior samples, and so is agnostic to the technique used to perform Markov chain Monte Carlo (MCMC) sampling, ``harmonic`` works well with MCMC sampling techniques that naturally provide samples from multiple chains by their ensemble nature, such as affine invariant ensemble samplers.  For instance, ``harmonic`` can be used with the popular `emcee <https://github.com/dfm/emcee>`_ code implementing the affine invariant sampler of `Goodman & Weare (2010) <https://cims.nyu.edu/~weare/papers/d13.pdf>`_, or the `NumPyro <https://github.com/pyro-ppl/numpyro>`_ code implementing various MCMC algorithms.
 
@@ -144,6 +148,22 @@ A BibTeX entry for the paper is:
         journal  = {{RASTI}, in press},
         title    = {{B}ayesian model comparison for simulation-based inference},
         year     = {2023}
+     }
+
+Please *also* cite `Lin et al. (2025) <https://arxiv.org/abs/2506.04339>`_ if using the Savage-Dickey density ratio estimation.
+
+A BibTeX entry for the paper is:
+
+.. code-block::
+
+     @article{spurio-mancini:harmonic_sddr,
+        title={{S}avage-{D}ickey density ratio estimation with normalizing flows for {B}ayesian model comparison},
+        author={Kiyam Lin and Alicja Polanska and Davide Piras and Alessio Spurio Mancini and Jason D. McEwen},
+        year={2025},
+        eprint={2506.04339},
+        archivePrefix={arXiv},
+        primaryClass={astro-ph.CO},
+        url={https://arxiv.org/abs/2506.04339},
      }
 
 

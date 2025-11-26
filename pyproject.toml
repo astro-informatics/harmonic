@@ -1,3 +1,7 @@
 [build-system]
-requires = ["setuptools", "wheel", "numpy", "Cython"]
+requires = ["setuptools", "setuptools-scm", "wheel", "numpy", "Cython"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+write_to = "harmonic/_version.py"

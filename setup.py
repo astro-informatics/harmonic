@@ -38,18 +38,18 @@ extra_link_args = []
 
 setup(
     classifiers=[
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Operating System :: OS Independent",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
     ],
+    python_requires='>=3.11, <3.14',
     name="harmonic",
-    version="1.3.0",
     prefix=".",
     url="https://github.com/astro-informatics/harmonic",
-    author="Jason D. McEwen, Alicja Polanska, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty & Contributors",
+    author="Jason D. McEwen, Alicja Polanska, Christopher G. R. Wallis, Matthew A. Price, Matthew M. Docherty, Kiyam Lin, Zixiao Hu & Contributors",
     author_email="jason.mcewen@ucl.ac.uk",
     license="GNU General Public License v3 (GPLv3)",
     install_requires=required,
@@ -60,6 +60,7 @@ setup(
     include_package_data=True,
     package_data={"harmonic": ["default-logging-config.yaml"]},
     cmdclass={"build_ext": build_ext},
+    dynamic = ["version",],
     ext_modules=cythonize(
         [
             Extension(
