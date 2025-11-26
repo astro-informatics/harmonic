@@ -102,7 +102,7 @@ jobs:
           verbose: true
 
   upload_pypi:
-    needs: [build_wheels, upload_test_pypi]
+    needs: [build_wheels, build_sdist, upload_test_pypi]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
