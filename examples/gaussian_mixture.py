@@ -105,6 +105,7 @@ def run_example(
     nchains=100,
     samples_per_chain=1000,
     burnin=500,
+    n_components=3,
     plot_corner=False,
     thin=1,
     use_emcee=False,
@@ -126,7 +127,6 @@ def run_example(
     """
 
     savefigs = True
-    n_components = 5
     # Spread means in a cube instead of a line
     np.random.seed(42)  # For reproducible mean placement
     means = []
@@ -147,16 +147,16 @@ def run_example(
         epochs_num = 200
     elif flow_type == "FlowMatching":
         # Longer training usually required; adjust if needed.
-        epochs_num = 8000
+        epochs_num = 800
         # FlowMatching params
         hidden_dim = 256
-        fm_n_layers = 8
+        fm_n_layers = 10
         lr = 1e-4
 
     # Beginning of path where plots will be saved
-    save_name_start = "examples/plots/" + flow_type 
+    save_name_start = "examples/plots/" + flow_type + "_" + str(ndim) + "D_" + str(n_components) + "gmm"
 
-    temperature = 0.95
+    temperature = 0.9
     standardize = True
     verbose = True
     
@@ -171,11 +171,13 @@ def run_example(
     if flow_type == "FlowMatching":
             save_name_start += "_hd" + str(hidden_dim) + "_nl" + str(fm_n_layers) + str(temperature) + "T" + "_{}D".format(ndim)
 
+    hm.logs.info_log("Save name start: {}".format(save_name_start))
+
     # Start timer.
     clock = time.process_time()
 
     # Run multiple realisations.
-    n_realisations = 100
+    n_realisations = 1
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 0:
@@ -184,15 +186,13 @@ def run_example(
             )
         
         
+# ===== TRAINING PHASE: Generate training samples =====
         if use_emcee:
-            # ===== EMCEE SAMPLING =====
-            print("Using emcee for sampling...")
-            #np.random.seed(i_realisation)
-            # Define log probability function for emcee
+            # EMCEE sampling for training
+            print("Using emcee for sampling training data...")
             def log_prob_emcee(x):
                 return float(ln_posterior(jnp.array(x), means, inv_covs, weights))
 
-            # Initialize walkers - equal number near each component
             nwalkers = nchains
             walkers_per_component = nwalkers // n_components
             remainder = nwalkers % n_components
@@ -202,69 +202,51 @@ def run_example(
                 n_walkers_this = walkers_per_component + (1 if comp_idx < remainder else 0)
                 for _ in range(n_walkers_this):
                     p0.append(np.array(means[comp_idx]) + 0.1 * np.random.randn(ndim))
-
             p0 = np.array(p0)
-            hm.logs.info_log(f"Initialized {len(p0)} walkers: {walkers_per_component} per component (+{remainder} extra)")
 
-            # Set up emcee sampler
             sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob_emcee)
-
-            # Run burn-in
+            
+            # Burn-in
             hm.logs.info_log(f"Running emcee burn-in for {burnin} steps...")
             state = sampler.run_mcmc(p0, burnin, progress=True)
             sampler.reset()
 
-            # Run production
-            hm.logs.info_log(f"Running emcee production for {samples_per_chain} steps...")
-            sampler.run_mcmc(state, samples_per_chain, progress=True)
-
-            # Get samples and log probabilities
-            samples = sampler.get_chain(flat=False)
-            lnprob = sampler.get_log_prob(flat=False)
-
-            # Transpose to match expected format
-            samples = np.transpose(samples, (1, 0, 2))
-            lnprob = np.transpose(lnprob, (1, 0))
-
-            # Convert to JAX arrays
-            samples = jnp.array(samples)
-            lnprob = jnp.array(lnprob)
-
-            # Check acceptance fraction
-            hm.logs.info_log(f"Mean acceptance fraction: {np.mean(sampler.acceptance_fraction):.3f}")
+            # Training samples
+            training_steps = int(samples_per_chain * training_proportion)
+            hm.logs.info_log(f"Running emcee for {training_steps} training steps...")
+            sampler.run_mcmc(state, training_steps, progress=True)
+            
+            samples_train = sampler.get_chain(flat=False)
+            lnprob_train = sampler.get_log_prob(flat=False)
+            samples_train = np.transpose(samples_train, (1, 0, 2))
+            lnprob_train = np.transpose(lnprob_train, (1, 0))
+            
+            # Store final state for test sampling
+            final_state = sampler.get_last_sample()
             
         else:
-            # ===== DIRECT SAMPLING =====
-            print("Using direct sampling...")
+            # Direct sampling for training
+            print("Using direct sampling for training data...")
             key = jax.random.PRNGKey(i_realisation)
-            total_samples_needed = nchains * samples_per_chain
-            num_samples_per = (total_samples_needed + n_components - 1) // n_components
-            samples, lnprob = sample_mixture(key, means, covs, num_samples_per, ndim)
-
-            # Truncate to exact number needed
-            samples = samples[:total_samples_needed]
-            lnprob = lnprob[:total_samples_needed]
-
-            # SHUFFLE before reshaping so each chain has mixture samples
+            training_steps = int(samples_per_chain * training_proportion)
+            total_train_samples = nchains * training_steps
+            num_samples_per = (total_train_samples + n_components - 1) // n_components
+            
+            samples_train, lnprob_train = sample_mixture(key, means, covs, num_samples_per, ndim)
+            samples_train = samples_train[:total_train_samples]
+            lnprob_train = lnprob_train[:total_train_samples]
+            
             key, shuffle_key = jax.random.split(key)
-            perm = jax.random.permutation(shuffle_key, total_samples_needed)
-            samples = samples[perm]
-            lnprob = lnprob[perm]
+            perm = jax.random.permutation(shuffle_key, total_train_samples)
+            samples_train = samples_train[perm]
+            lnprob_train = lnprob_train[perm]
+            
+            samples_train = jnp.reshape(samples_train, (nchains, training_steps, ndim))
+            lnprob_train = jnp.reshape(lnprob_train, (nchains, training_steps))
 
-            samples = jnp.reshape(samples, (nchains, samples_per_chain, ndim))
-            lnprob = jnp.reshape(lnprob, (nchains, samples_per_chain))
-
-        # --- Thinning (common for both methods) ---
-        if thin > 1:
-            samples = samples[:, ::thin, :]
-            lnprob = lnprob[:, ::thin]
-
-        # Set up chains.
-        chains = hm.Chains(ndim)
-        chains.add_chains_3d(samples, lnprob)
-        chains_train, chains_test = hm.utils.split_data(
-            chains, training_proportion=training_proportion
-        )
+        # Set up training chains
+        chains_train = hm.Chains(ndim)
+        chains_train.add_chains_3d(samples_train, lnprob_train)
 
         # =======================================================================
         # Fit model
@@ -311,17 +293,65 @@ def run_example(
         plt.title("FlowMatching Training Loss")
         plt.legend()
         if savefigs:
-            plt.savefig(save_name_start + "_gmm_loss.png", bbox_inches="tight", dpi=300)
+            plt.savefig(save_name_start + "_loss.png", bbox_inches="tight", dpi=300)
+        plt.show()
         plt.close()
 
-        plt.show()
+# =======================================================================
+        # EVIDENCE COMPUTATION: Sample incrementally
+        # =======================================================================
+        hm.logs.info_log("Compute evidence with incremental sampling...")
 
-        # Use chains and model to compute inverse evidence.
-        hm.logs.info_log("Compute evidence...")
-
-        ev = hm.Evidence(chains_test.nchains, model)
-        # ev.set_mean_shift(0.0)
-        ev.add_chains(chains_test)
+        samples_per_batch = 20  # Samples to generate per iteration
+        test_steps = samples_per_chain - training_steps
+        n_sample_batches = (test_steps + samples_per_batch - 1) // samples_per_batch
+        
+        # Initialize Evidence
+        ev = hm.Evidence(nchains, model)
+        
+        for i_batch in range(n_sample_batches):
+            actual_batch_size = min(samples_per_batch, test_steps - i_batch * samples_per_batch)
+            
+            if use_emcee:
+                # Continue sampling from where we left off
+                hm.logs.info_log(f"Sampling batch {i_batch + 1}/{n_sample_batches} ({actual_batch_size} steps)...")
+                sampler_test = emcee.EnsembleSampler(nwalkers, ndim, log_prob_emcee)
+                sampler_test.run_mcmc(final_state, actual_batch_size, progress=True)
+                
+                samples_batch = sampler_test.get_chain(flat=False)
+                lnprob_batch = sampler_test.get_log_prob(flat=False)
+                samples_batch = np.transpose(samples_batch, (1, 0, 2))
+                lnprob_batch = np.transpose(lnprob_batch, (1, 0))
+                
+                final_state = sampler_test.get_last_sample()
+                
+            else:
+                # Generate new batch of samples
+                hm.logs.info_log(f"Generating batch {i_batch + 1}/{n_sample_batches} ({actual_batch_size} samples)...")
+                key, subkey = jax.random.split(key)
+                total_batch_samples = nchains * actual_batch_size
+                num_samples_per = (total_batch_samples + n_components - 1) // n_components
+                
+                samples_batch, lnprob_batch = sample_mixture(subkey, means, covs, num_samples_per, ndim)
+                samples_batch = samples_batch[:total_batch_samples]
+                lnprob_batch = lnprob_batch[:total_batch_samples]
+                
+                key, shuffle_key = jax.random.split(key)
+                perm = jax.random.permutation(shuffle_key, total_batch_samples)
+                samples_batch = samples_batch[perm]
+                lnprob_batch = lnprob_batch[perm]
+                
+                samples_batch = jnp.reshape(samples_batch, (nchains, actual_batch_size, ndim))
+                lnprob_batch = jnp.reshape(lnprob_batch, (nchains, actual_batch_size))
+            
+            # Add batch to evidence
+            batch_chains = hm.Chains(ndim)
+            batch_chains.add_chains_3d(np.array(samples_batch), np.array(lnprob_batch))
+            ev.add_chains(batch_chains)
+            
+            hm.logs.info_log(f"Added batch {i_batch + 1}/{n_sample_batches} to evidence")
+            del batch_chains, samples_batch, lnprob_batch
+        
         err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
 
         # Compute analytic evidence.
@@ -391,7 +421,7 @@ def run_example(
         if plot_corner and i_realisation == 0:
             hm.utils.plot_getdist(samples.reshape((-1, ndim)))
             if savefigs:
-                save_name = save_name_start + "_gmm_getdist.png"
+                save_name = save_name_start + "_getdist.png"
                 plt.savefig(save_name, bbox_inches="tight")
 
             num_samp = chains_train.samples.shape[0]
@@ -403,7 +433,7 @@ def run_example(
             if savefigs:
                 save_name = (
                     save_name_start
-                    + "_gmm_corner_all_{}D.png".format(ndim)
+                    + "_corner_all.png".format(ndim)
                 )
                 plt.savefig(save_name, bbox_inches="tight", dpi=300)
 
@@ -411,7 +441,7 @@ def run_example(
             if savefigs:
                 save_name = (
                     save_name_start
-                    + "_gmm_flow_getdist_{}D.png".format(ndim)
+                    + "_flow_getdist.png".format(ndim)
                 )
                 plt.savefig(
                     save_name,
@@ -434,16 +464,16 @@ def run_example(
     if n_realisations > 1:
         save_name = (
             save_name_start
-            + "_gmm_ln_evidence_inv"
-            + "_realisations_{}D.dat".format(ndim)
+            + "_ln_evidence_inv"
+            + "_realisations.dat".format(ndim)
         )
         np.savetxt(save_name, ln_evidence_inv_summary)
         ln_evidence_inv_analytic_summary = np.zeros(1)
         ln_evidence_inv_analytic_summary[0] = -ln_evidence_analytic
         save_name = (
             save_name_start
-            + "_gmm_ln_evidence_inv"
-            + "_analytic_{}D.dat".format(ndim)
+            + "_ln_evidence_inv"
+            + "_analytic.dat".format(ndim)
         )
         np.savetxt(save_name, ln_evidence_inv_analytic_summary)
 
@@ -457,24 +487,27 @@ if __name__ == "__main__":
     hm.logs.setup_logging(default_level=logging.DEBUG)
 
     # Define parameters.
-    ndim = 20
+    n_components = 1
+    ndim = 50
     nchains = 200
-    samples_per_chain = 2000
+    samples_per_chain = 500
     burnin = 1000
     #flow_str = "RealNVP"
     #flow_str = "RQSpline"
     flow_str = "FlowMatching"
     np.random.seed(10)  # used for initializing covariance matrix
 
-    hm.logs.info_log("Non-diagonal Covariance Gaussian example")
+    hm.logs.info_log("Non-diagonal Covariance Gaussian mixture example")
 
     hm.logs.debug_log("-- Selected Parameters --")
 
     hm.logs.debug_log("Dimensionality = {}".format(ndim))
+    hm.logs.debug_log("Flow model: {}".format(flow_str))
+
     hm.logs.debug_log("Number of chains = {}".format(nchains))
     hm.logs.debug_log("Samples per chain = {}".format(samples_per_chain))
 
     hm.logs.debug_log("-------------------------")
 
     # Run example.
-    run_example(flow_str, ndim, nchains, samples_per_chain, burnin, plot_corner=True, thin=5, use_emcee=False,)
+    run_example(flow_str, ndim, nchains, samples_per_chain, burnin, n_components, plot_corner=False, thin=1, use_emcee=False,)
