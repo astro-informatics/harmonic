@@ -157,7 +157,7 @@ def run_example(
     save_name_start = "examples/plots/" + flow_type + "_" + str(ndim) + "D_" + str(n_components) + "gmm"
 
     temperature = 0.9
-    standardize = True
+    standardize = False
     verbose = True
     
     # Spline params
@@ -186,7 +186,7 @@ def run_example(
             )
         
         
-# ===== TRAINING PHASE: Generate training samples =====
+        # ===== TRAINING PHASE: Generate training samples =====
         if use_emcee:
             # EMCEE sampling for training
             print("Using emcee for sampling training data...")
@@ -229,24 +229,48 @@ def run_example(
             print("Using direct sampling for training data...")
             key = jax.random.PRNGKey(i_realisation)
             training_steps = int(samples_per_chain * training_proportion)
-            total_train_samples = nchains * training_steps
-            num_samples_per = (total_train_samples + n_components - 1) // n_components
             
-            samples_train, lnprob_train = sample_mixture(key, means, covs, num_samples_per, ndim)
-            samples_train = samples_train[:total_train_samples]
-            lnprob_train = lnprob_train[:total_train_samples]
+            # Sample training data in chunks
+            training_samples_per_batch = 20  # Samples per chain per batch
+            n_train_batches = (training_steps + training_samples_per_batch - 1) // training_samples_per_batch
             
-            key, shuffle_key = jax.random.split(key)
-            perm = jax.random.permutation(shuffle_key, total_train_samples)
-            samples_train = samples_train[perm]
-            lnprob_train = lnprob_train[perm]
+            samples_train_list = []
+            lnprob_train_list = []
             
-            samples_train = jnp.reshape(samples_train, (nchains, training_steps, ndim))
-            lnprob_train = jnp.reshape(lnprob_train, (nchains, training_steps))
+            for i_train_batch in range(n_train_batches):
+                actual_train_batch_size = min(training_samples_per_batch, training_steps - i_train_batch * training_samples_per_batch)
+                total_batch_train_samples = nchains * actual_train_batch_size
+                num_samples_per = (total_batch_train_samples + n_components - 1) // n_components
+                
+                hm.logs.info_log(f"Generating training batch {i_train_batch + 1}/{n_train_batches} ({actual_train_batch_size} samples per chain)...")
+                key, subkey = jax.random.split(key)
+                
+                samples_batch, lnprob_batch = sample_mixture(subkey, means, covs, num_samples_per, ndim)
+                samples_batch = samples_batch[:total_batch_train_samples]
+                lnprob_batch = lnprob_batch[:total_batch_train_samples]
+                
+                key, shuffle_key = jax.random.split(key)
+                perm = jax.random.permutation(shuffle_key, total_batch_train_samples)
+                samples_batch = samples_batch[perm]
+                lnprob_batch = lnprob_batch[perm]
+                
+                samples_batch = jnp.reshape(samples_batch, (nchains, actual_train_batch_size, ndim))
+                lnprob_batch = jnp.reshape(lnprob_batch, (nchains, actual_train_batch_size))
+                
+                samples_train_list.append(samples_batch)
+                lnprob_train_list.append(lnprob_batch)
+                
+                del samples_batch, lnprob_batch
+            
+            # Concatenate all training batches along the time dimension (axis=1)
+            samples_train = jnp.concatenate(samples_train_list, axis=1)
+            lnprob_train = jnp.concatenate(lnprob_train_list, axis=1)
+            
+            del samples_train_list, lnprob_train_list
 
         # Set up training chains
-        chains_train = hm.Chains(ndim)
-        chains_train.add_chains_3d(samples_train, lnprob_train)
+        #chains_train = hm.Chains(ndim)
+        #chains_train.add_chains_3d(samples_train, lnprob_train)
 
         # =======================================================================
         # Fit model
@@ -276,7 +300,10 @@ def run_example(
                 standardize=standardize,
                 temperature=temperature,
             )
-        model.fit(chains_train.samples, epochs=epochs_num, verbose=verbose, batch_size=4096)
+
+        samples_train_flat = samples_train.reshape(-1, ndim)
+
+        model.fit(samples_train_flat, epochs=epochs_num, verbose=verbose, batch_size=4096)
 
         losses = np.array(model.loss_values)
         ema = None
@@ -297,7 +324,7 @@ def run_example(
         plt.show()
         plt.close()
 
-# =======================================================================
+        # =======================================================================
         # EVIDENCE COMPUTATION: Sample incrementally
         # =======================================================================
         hm.logs.info_log("Compute evidence with incremental sampling...")
@@ -424,10 +451,10 @@ def run_example(
                 save_name = save_name_start + "_getdist.png"
                 plt.savefig(save_name, bbox_inches="tight")
 
-            num_samp = chains_train.samples.shape[0]
+            num_samp = samples_train.shape[0]
             samps_compressed = model.sample(num_samp)
 
-            hm.utils.plot_getdist_compare(chains_train.samples, samps_compressed)
+            hm.utils.plot_getdist_compare(samples_train, samps_compressed)
             plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
             if savefigs:
@@ -488,9 +515,9 @@ if __name__ == "__main__":
 
     # Define parameters.
     n_components = 1
-    ndim = 50
-    nchains = 200
-    samples_per_chain = 500
+    ndim = 500
+    nchains = 2000
+    samples_per_chain = 1000
     burnin = 1000
     #flow_str = "RealNVP"
     #flow_str = "RQSpline"
