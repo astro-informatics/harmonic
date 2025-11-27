@@ -125,7 +125,7 @@ def run_example(
     Configure machine learning parameters
     """
     savefigs = True
-    temperature = 0.95
+    temperature = 0.98
     standardize = True
     save_name_start = "examples/plots/" + model_type + "_s" + str(int(standardize)) + "_rastrigin_"
     nfold = 2
@@ -157,7 +157,7 @@ def run_example(
     """
     Set up and run multiple simulations
     """
-    n_realisations = 10
+    n_realisations = 100
     ln_evidence_inv_summary = np.zeros((n_realisations, 5))
     for i_realisation in range(n_realisations):
         if n_realisations > 1:
@@ -249,7 +249,7 @@ def run_example(
         plt.title("Training Loss")
         plt.legend()
         if savefigs:
-            save_name = (save_name_start + "_T"
+            save_name = (save_name_start + "T"
                 + str(temperature) + "loss.png"
             )
             plt.savefig(
@@ -258,6 +258,7 @@ def run_example(
                 dpi=300,
             )
         plt.show(block=False)
+        plt.clf()
         
         num_samp = chains_train.samples.shape[0]
         samps_compressed = np.array(model.sample(num_samp))
