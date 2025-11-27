@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import harmonic as hm
 import jax
 print(f"JAX is using these devices: {jax.devices()}")
+jax.config.update("jax_enable_x64", True)
 import jax.numpy as jnp
 import emcee
 import logging
@@ -108,7 +109,7 @@ def run_example(
         epochs_num = 110
     elif flow_type == "FlowMatching":
         # Longer training usually required; adjust if needed.
-        epochs_num = 8000
+        epochs_num = 15000
 
     # Beginning of path where plots will be saved
     save_name_start = "examples/plots/" + flow_type
@@ -149,7 +150,7 @@ def run_example(
         samples = jnp.reshape(samples, (nchains, -1, ndim))
         lnprob = jnp.reshape(lnprob, (nchains, -1))
 
-        MCMC = True
+        MCMC = False
         if MCMC:
             nburn = 500
             # Set up and run sampler.
@@ -171,7 +172,6 @@ def run_example(
                 samples = samples[:, ::thin, :]
                 lnprob = lnprob[:, ::thin]
 
-        # Calculate evidence using harmonic....
 
         # Set up chains.
         chains = hm.Chains(ndim)
@@ -227,16 +227,52 @@ def run_example(
         plt.legend()
         if savefigs:
             plt.savefig(save_name_start + "_gaussian_nondiagcov_loss.png", bbox_inches="tight", dpi=300)
+        plt.show()
         plt.close()
 
-        plt.show()
 
         # Use chains and model to compute inverse evidence.
         hm.logs.info_log("Compute evidence...")
 
-        ev = hm.Evidence(chains_test.nchains, model)
-        # ev.set_mean_shift(0.0)
-        ev.add_chains(chains_test)
+        # Process chains in batches to avoid memory issues
+        batch_size = 10  # Number of chains to process at once
+        n_test_chains = chains_test.nchains
+        
+        # Get samples and ln_posterior as 3D arrays
+        # Reshape the flat arrays back to 3D
+        samples_3d = []
+        ln_posterior_3d = []
+        for i_chain in range(n_test_chains):
+            start, end = chains_test.get_chain_indices(i_chain)
+            samples_3d.append(chains_test.samples[start:end, :])
+            ln_posterior_3d.append(chains_test.ln_posterior[start:end])
+        
+        samples_3d = np.array(samples_3d)  # Shape: (n_test_chains, samples_per_chain, ndim)
+        ln_posterior_3d = np.array(ln_posterior_3d)  # Shape: (n_test_chains, samples_per_chain)
+        
+        # Initialize Evidence object with first batch
+        first_batch_size = min(batch_size, n_test_chains)
+        first_batch_chains = hm.Chains(ndim)
+        first_batch_chains.add_chains_3d(
+            samples_3d[:first_batch_size],
+            ln_posterior_3d[:first_batch_size]
+        )
+        
+        ev = hm.Evidence(n_test_chains, model)
+        ev.add_chains(first_batch_chains)
+        hm.logs.info_log(f"Added batch 1/{(n_test_chains + batch_size - 1) // batch_size} ({first_batch_size} chains)")
+        
+        # Process remaining chains in batches
+        for batch_start in range(batch_size, n_test_chains, batch_size):
+            batch_end = min(batch_start + batch_size, n_test_chains)
+            batch_chains = hm.Chains(ndim)
+            batch_chains.add_chains_3d(
+                samples_3d[batch_start:batch_end],
+                ln_posterior_3d[batch_start:batch_end]
+            )
+            ev.add_chains(batch_chains)
+            hm.logs.info_log(f"Added batch {(batch_start // batch_size) + 1}/{(n_test_chains + batch_size - 1) // batch_size} ({batch_end - batch_start} chains)")      
+        
         err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
 
         # Compute analytic evidence.
@@ -372,9 +408,9 @@ if __name__ == "__main__":
     hm.logs.setup_logging(default_level=logging.DEBUG)
 
     # Define parameters.
-    ndim = 10
-    nchains = 40
-    samples_per_chain = 5000
+    ndim = 50
+    nchains = 200
+    samples_per_chain = 500
     #flow_str = "RealNVP"
     #flow_str = "RQSpline"
     flow_str = "FlowMatching"
@@ -394,4 +430,4 @@ if __name__ == "__main__":
     hm.logs.debug_log("-------------------------")
 
     # Run example.
-    run_example(flow_str, ndim, nchains, samples_per_chain, plot_corner=True, thin=10)
+    run_example(flow_str, ndim, nchains, samples_per_chain, plot_corner=False, thin=1)
