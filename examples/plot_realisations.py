@@ -74,12 +74,6 @@ def plot_realisations(
         elinewidth=3,
     )
 
-    #ymin, ymax = ax.get_ylim()
-    #print("ymim = {}, ymax = {}".format(ymin, ymax))
-    #if ymin < 0:
-    #    ymin = 0
-    #ax.set_ylim([ymin, ymax])
-
     ax.get_xaxis().set_tick_params(direction="out")
     ax.xaxis.set_ticks_position("bottom")
     ax.set_xticks([1.0, 1.5])
@@ -88,6 +82,17 @@ def plot_realisations(
     ax.set_xlim([0.5, 2.0])
 
     return ax
+
+
+def remove_outliers_iqr(data, multiplier=1.5):
+    """Remove outliers using IQR method."""
+    q1 = np.percentile(data, 25)
+    q3 = np.percentile(data, 75)
+    iqr = q3 - q1
+    lower_bound = q1 - multiplier * iqr
+    upper_bound = q3 + multiplier * iqr
+    mask = (data >= lower_bound) & (data <= upper_bound)
+    return mask
 
 
 savefigs = True
@@ -108,6 +113,17 @@ parser.add_argument(
     type=str,
     help="Name of file containing analytic inverse variance",
 )
+parser.add_argument(
+    "--remove-outliers",
+    action="store_true",
+    help="Remove outliers using IQR method",
+)
+parser.add_argument(
+    "--iqr-multiplier",
+    type=float,
+    default=1.5,
+    help="IQR multiplier for outlier detection (default: 1.5)",
+)
 args = parser.parse_args()
 
 # Load data.
@@ -118,9 +134,47 @@ evidence_inv_std_pos_realisations = evidence_inv_summary[:, 2]
 evidence_inv_var_realisations = evidence_inv_summary[:, 3]
 evidence_inv_var_var_realisations = evidence_inv_summary[:, 4]
 
-#evidence_inv_var_realisations =(evidence_inv_std_neg_realisations**2 + evidence_inv_std_pos_realisations**2) *0.5
+# Remove outliers if requested
+outlier_suffix = ""
+outlier_realisations = None
+outlier_indices = None
+if args.remove_outliers:
+    print(f"Original data size: {len(evidence_inv_realisations)}")
+    mask = remove_outliers_iqr(evidence_inv_realisations, args.iqr_multiplier)
+    
+    # Calculate statistics before filtering
+    mean_all = np.mean(evidence_inv_realisations)
+    std_all = np.std(evidence_inv_realisations)
+    
+    # Store outlier information
+    outlier_indices = np.where(~mask)[0]
+    outlier_realisations = evidence_inv_realisations[~mask]
+    outlier_std_neg = evidence_inv_std_neg_realisations[~mask]
+    outlier_std_pos = evidence_inv_std_pos_realisations[~mask]
+    
+    # Calculate how many std deviations away each outlier is
+    outlier_n_sigma = np.abs(outlier_realisations - mean_all) / std_all
+    
+    # Filter data
+    evidence_inv_realisations = evidence_inv_realisations[mask]
+    evidence_inv_std_neg_realisations = evidence_inv_std_neg_realisations[mask]
+    evidence_inv_std_pos_realisations = evidence_inv_std_pos_realisations[mask]
+    evidence_inv_var_realisations = evidence_inv_var_realisations[mask]
+    evidence_inv_var_var_realisations = evidence_inv_var_var_realisations[mask]
+    
+    print(f"After removing outliers: {len(evidence_inv_realisations)}")
+    print(f"Removed {np.sum(~mask)} outliers")
+    
+    # Print outlier information
+    if len(outlier_realisations) > 0:
+        print("\nOutlier values:")
+        for i, (idx, val, neg, pos, n_sig) in enumerate(zip(outlier_indices, outlier_realisations, 
+                                                              outlier_std_neg, outlier_std_pos, outlier_n_sigma)):
+            print(f"  Index {idx}: {val:.6f} (std: {neg:.6f} / +{pos:.6f}) [{n_sig:.2f}σ away]")
+    
+    outlier_suffix = "_no_outliers"
 
-print("Estimated errors:", evidence_inv_var_realisations)
+
 print("Mean estimate:", np.mean(evidence_inv_realisations), "+-", np.std(evidence_inv_realisations))
 
 evidence_inv_analytic = np.loadtxt(args.filename_analytic)
@@ -131,36 +185,33 @@ plt.rcParams.update({"font.size": 20})
 ax = plot_realisations(
     mc_estimates=evidence_inv_realisations,
     #std_estimated=np.sqrt(np.mean(evidence_inv_var_realisations)),
-    #std_estimated = [[np.mean(-evidence_inv_std_neg_realisations)], [np.mean(evidence_inv_std_pos_realisations)]],
-    std_estimated = [[-evidence_inv_std_neg_realisations[1]], [evidence_inv_std_pos_realisations[1]]],
+    std_estimated = [[np.mean(-evidence_inv_std_neg_realisations)], [np.mean(evidence_inv_std_pos_realisations)]],
+    #std_estimated = [[-evidence_inv_std_neg_realisations[1]], [evidence_inv_std_pos_realisations[1]]],
     analytic_val=evidence_inv_analytic,
     analytic_text=r"Truth",
 )
 plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 ax.set_ylabel(r"Log inverse evidence ($\ln \rho$)")
-# ax.set_ylim([0.0, 0.01])
 
 filename_base = os.path.basename(args.filename_realisations)
 filename_base_noext = os.path.splitext(filename_base)[0]
 if savefigs:
     plt.savefig(
-        "./examples/plots/" + filename_base_noext + "_evidence_inv.png",
+        "./examples/plots/" + filename_base_noext + outlier_suffix + "_evidence_inv.png",
         bbox_inches="tight",
     )
 
 # Plot variance of inverse evidence.
 ax = plot_realisations(
     mc_estimates=evidence_inv_var_realisations,
-    #std_estimated=np.sqrt(np.mean(evidence_inv_var_var_realisations)),
     std_estimated=np.exp(evidence_inv_var_var_realisations[0])
 )
 plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 ax.set_ylabel(r"Inverse evidence variance ($\sigma^2$)")
-# ax.set_ylim([-0.1, 1])
 
 if savefigs:
     plt.savefig(
-        "./examples/plots/" + filename_base_noext + "_evidence_inv_var.png",
+        "./examples/plots/" + filename_base_noext + outlier_suffix + "_evidence_inv_var.png",
         bbox_inches="tight",
     )
 
