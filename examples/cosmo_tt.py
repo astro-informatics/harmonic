@@ -50,7 +50,7 @@ def run_cosmo_tt_example(
     hm.logs.debug_log("Dimensionality = {}".format(ndim))
 
     # Parameter limits
-    limits = [
+    limits_old = [
         (0.5, 0.9),     # sigma8
         (0.1, 0.5),     # Omega_c
         (0.03, 0.06),   # Omega_b
@@ -73,6 +73,29 @@ def run_cosmo_tt_example(
         (0.8, 3.0),     # bias5
     ]
 
+    limits = [
+    (0.78, 0.82),     # sigma8
+    (0.22, 0.28),     # Omega_c
+    (0.03, 0.06),     # Omega_b
+    (0.55, 0.85),     # h
+    (0.93, 1.02),     # n_s
+    (-0.06, 0.06),    # m1
+    (-0.06, 0.06),    # m2
+    (-0.06, 0.06),    # m3
+    (-0.05, 0.07),    # m4
+    (-0.03, 0.03),    # dz1
+    (-0.03, 0.02),    # dz2
+    (-0.02, 0.03),    # dz3
+    (-0.04, 0.04),    # dz4
+    (0.30, 0.70),     # A
+    (-3.0, 3.0),      # eta
+    (1.14, 1.26),     # bias1
+    (1.33, 1.47),     # bias2
+    (1.53, 1.67),     # bias3
+    (1.73, 1.87),     # bias4
+    (1.92, 2.08),     # bias5
+    ]
+
     # ===========================================================================
     # Setup cosmological posterior
     # ===========================================================================
@@ -81,8 +104,7 @@ def run_cosmo_tt_example(
     y1 = desy1.MockY1Likelihood()
     
     def ln_posterior_fixed(theta):
-        """Cosmological log posterior - note y1.posterior returns -ln(posterior)"""
-        return -y1.posterior(theta)  # Negate because y1.posterior returns negative log posterior
+        return -y1.posterior(theta) 
 
     # Wrapper for PyTorch Tensor Train
     def ln_posterior_torch(theta_torch):
@@ -102,8 +124,29 @@ def run_cosmo_tt_example(
         print("Max logprob (torch wrapper):", np.max(logprobs))
         print("Min logprob (torch wrapper):", np.min(logprobs))
         
-        # Convert back to torch - add offset for numerical stability
-        return torch.tensor(logprobs, dtype=theta_torch.dtype, device=theta_torch.device) + 1000.
+        return torch.tensor(logprobs, dtype=theta_torch.dtype, device=theta_torch.device)
+
+
+    def ln_posterior_torch_maybe(theta_torch):
+        theta_np = theta_torch.detach().cpu().numpy()
+        
+        # 1. Get raw log-probs (e.g., -570, -600, -5000)
+        raw_lp = np.array([float(ln_posterior_fixed(t)) for t in theta_np])
+        
+        # 2. THE SHIFT: Force the maximum value in this batch to be 0.0
+        # This ensures e^0 = 1.0. No more underflow.
+        current_max = np.max(raw_lp)
+        shifted_lp = raw_lp - current_max
+        
+        # 3. THE CLAMP: 
+        # A log-prob of -50 is already 10^-22 times less likely than the peak.
+        # Going lower than -50 provides no useful info to the TT and only 
+        # causes the SVD matrix to be "ill-conditioned."
+        final_lp = np.clip(shifted_lp, a_min=-50.0, a_max=None)
+        
+        print(f"SVD Input -> Max: {np.max(final_lp):.1f}, Min: {np.min(final_lp):.1f} (Shifted by {-current_max:.1f})")
+        
+        return torch.tensor(final_lp, dtype=theta_torch.dtype, device=theta_torch.device)
 
     # ===========================================================================
     # Configure tensor train parameters
@@ -123,8 +166,7 @@ def run_cosmo_tt_example(
     reference = dt.UniformReference()  # define reference measure
     preconditioner = dt.UniformMapping(approximation_domain, reference)  # define preconditioner
     
-    # TT options - may need tuning for cosmology
-    tt_options = dt.TTOptions(max_als=3, init_rank=10, tt_method="fixed_rank")
+    tt_options = dt.TTOptions(max_als=5, init_rank=20, tt_method="fixed_rank")
     
     basis = dt.Lagrange1(num_elems=30)  # piecewise linear interpolation - reduced for 21D
     bases = dt.ApproxBases(basis, ndim)  # set bases
