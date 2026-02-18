@@ -15,8 +15,8 @@ import jax.numpy as jnp
 print("JAX devices:", jax.devices())
 
 # Set double precision
-torch.set_default_dtype(torch.float64)
-jax.config.update("jax_enable_x64", True)
+torch.set_default_dtype(torch.float32)
+jax.config.update("jax_enable_x64", False)
 
 
 def run_cosmo_tt_example(
@@ -153,7 +153,7 @@ def run_cosmo_tt_example(
     # ===========================================================================
     
     # Convert limits to approximation domain
-    approximation_domain = torch.tensor(limits, dtype=torch.float64)
+    approximation_domain = torch.tensor(limits, dtype=torch.float32)
     
     labels = input_params
 
@@ -181,7 +181,7 @@ def run_cosmo_tt_example(
     if False:
         hm.logs.info_log("Computing evidence from TT cores...")
         reduced_cores = []
-        evidence = torch.eye(1, dtype=torch.float64, device=device)  # Initialize evidence as 1
+        evidence = torch.eye(1, dtype=torch.float32, device=device)  # Initialize evidence as 1
         for k in range(ndim):
             core_k = dirt.sirts[0].ftt.tt.cores[k]
             reduced_core_k = core_k.sum(dim=1)**2  # Second dimension sum
