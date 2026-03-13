@@ -172,14 +172,14 @@ def run_small_cosmo_tt(
         ln_evidence_hm =  -ev.ln_evidence_inv
         err_ln_inv_evidence_hm = ev.compute_ln_inv_evidence_errors()
 
-        hm.logs.debug_log("---------------------------------")
-        hm.logs.debug_log("Technical Details")
-        hm.logs.debug_log("---------------------------------")
-        hm.logs.debug_log(f"lnargmax = {ev.lnargmax}, lnargmin = {ev.lnargmin}")
-        hm.logs.debug_log(f"lnprobmax = {ev.lnprobmax}, lnprobmin = {ev.lnprobmin}")
-        hm.logs.debug_log(f"lnpredictmax = {ev.lnpredictmax}, lnpredictmin = {ev.lnpredictmin}")
-        hm.logs.debug_log("---------------------------------")
-        hm.logs.debug_log(f"shift = {ev.shift_value}, shift setting = {ev.shift}")
+        print("---------------------------------")
+        print("Technical Details")
+        print("---------------------------------")
+        print(f"lnargmax = {ev.lnargmax}, lnargmin = {ev.lnargmin}")
+        print(f"lnprobmax = {ev.lnprobmax}, lnprobmin = {ev.lnprobmin}")
+        print(f"lnpredictmax = {ev.lnpredictmax}, lnpredictmin = {ev.lnpredictmin}")
+        print("---------------------------------")
+        print(f"shift = {ev.shift_value}, shift setting = {ev.shift}")
         
         print(f"ln_inv_evidence (harmonic)= {ev.ln_evidence_inv} +/- {err_ln_inv_evidence_hm}")
         print(f"ln evidence = {-ev.ln_evidence_inv} +/- {-err_ln_inv_evidence_hm[1]} {-err_ln_inv_evidence_hm[0]}")
@@ -207,7 +207,22 @@ def run_small_cosmo_tt(
     
     tt_evidence = True
     if tt_evidence:
-        def neglog_posterior_torch(theta_torch, lower, upper):
+        theta_ref = 0.5 * (lower_tt + upper_tt)
+        lnpost_ref = float(ln_posterior(theta_ref, lower_tt, upper_tt))
+
+        def neglog_posterior_torch_exact(theta_torch, lower, upper):
+            theta_np = theta_torch.detach().cpu().numpy()
+            lnps = np.array(
+                [float(ln_posterior(t, lower, upper)) for t in theta_np],
+                dtype=np.float64,
+            )
+
+            # True target for correction/evidence: no clipping, no arbitrary shift.
+            lnps = np.where(np.isfinite(lnps), lnps, -1e30)
+            neglogps = -lnps
+            return torch.tensor(neglogps, dtype=theta_torch.dtype, device=theta_torch.device)
+
+        def neglog_posterior_torch_tt(theta_torch, lower, upper):
             theta_np = theta_torch.detach().cpu().numpy()
             lnps = np.array(
                 [float(ln_posterior(t, lower, upper)) for t in theta_np],
@@ -217,8 +232,9 @@ def run_small_cosmo_tt(
             # Deterministic penalty for invalid values
             lnps = np.where(np.isfinite(lnps), lnps, -1e30)
 
-            # DIRT expects negative log target
-            neglogps = -lnps
+            # DIRT expects a negative log target. Shift by a fixed reference point
+            # and clamp deterministically to keep TT fitting numerically stable.
+            neglogps = np.clip(lnpost_ref - lnps, a_min=0.0, a_max=80.0)
             return torch.tensor(neglogps, dtype=theta_torch.dtype, device=theta_torch.device)
 
         # ===========================================================================
@@ -228,15 +244,16 @@ def run_small_cosmo_tt(
         approximation_domain = torch.tensor(limits, dtype=torch.float64)
 
         # Create a partial function with lower and upper bounds pre-specified
-        neglog_posterior_torch_partial = partial(neglog_posterior_torch, lower=lower_tt, upper=upper_tt)
-        target_func = dt.TargetFunc(neglog_posterior_torch_partial)
+        neglog_posterior_torch_tt_partial = partial(neglog_posterior_torch_tt, lower=lower_tt, upper=upper_tt)
+        neglog_posterior_torch_exact_partial = partial(neglog_posterior_torch_exact, lower=lower_tt, upper=upper_tt)
+        target_func = dt.TargetFunc(neglog_posterior_torch_tt_partial)
         
         reference = dt.UniformReference() 
         preconditioner = dt.UniformMapping(approximation_domain, reference)
         
-        # TT setup: since it's 5D, we can afford higher rank and more elements
-        tt_options = dt.TTOptions(max_als=3, init_rank=1, tt_method="fixed_rank")
-        basis = dt.Lagrange1(num_elems=29) 
+        # More robust TT setup for the 5D cosmology posterior.
+        tt_options = dt.TTOptions(max_als=6, init_rank=6, tt_method="fixed_rank")
+        basis = dt.Lagrange1(num_elems=19)
         bases = dt.ApproxBases(basis, ndim)
 
         tt = dt.TT(tt_options)
@@ -244,16 +261,13 @@ def run_small_cosmo_tt(
         bridge = dt.SingleLayer()
         dirt = dt.DIRT(target_func, preconditioner, ftt, bridge)
 
-        # ===========================================================================
-        # Generate Samples via Independence Sampler
-        # ===========================================================================
         hm.logs.info_log("Generating independent samples from TT...")
         num_sampl = nchains * (samples_per_chain-nburn)
         rs = reference.random(n=num_sampl, d=ndim)
         
         startTime = time.time()
         xs, neglogfxs_sirt = dirt.eval_irt(rs)
-        neglogfxs_exact = target_func(xs)
+        neglogfxs_exact = neglog_posterior_torch_exact_partial(xs)
         res = dt.run_independence_sampler(xs, neglogfxs_sirt, neglogfxs_exact)
         
         print(f'Time to generate {num_sampl} samples: {(time.time()-startTime):.2f}s')
@@ -288,6 +302,26 @@ def run_small_cosmo_tt(
         err_ln_inv_evidence_hm_tt = ev.compute_ln_inv_evidence_errors()
 
         print(f"Harmonic + tt posterior samples ln_evidence: {ln_evidence_hm_tt} +/- {-err_ln_inv_evidence_hm_tt[1]} {-err_ln_inv_evidence_hm_tt[0]}")
+
+        print("---------------------------------")
+        print("Technical Details")
+        print("---------------------------------")
+        print(f"lnargmax = {ev.lnargmax}, lnargmin = {ev.lnargmin}")
+        print(f"lnprobmax = {ev.lnprobmax}, lnprobmin = {ev.lnprobmin}")
+        print(f"lnpredictmax = {ev.lnpredictmax}, lnpredictmin = {ev.lnpredictmin}")
+        print("---------------------------------")
+        print(f"shift = {ev.shift_value}, shift setting = {ev.shift}")
+        
+        print(f"ln_inv_evidence (harmonic)= {ev.ln_evidence_inv} +/- {err_ln_inv_evidence_hm_tt}")
+        print(f"ln evidence = {-ev.ln_evidence_inv} +/- {-err_ln_inv_evidence_hm_tt[1]} {-err_ln_inv_evidence_hm_tt[0]}")
+        print(f"kurtosis = {ev.kurtosis} (Aim for ~3)")
+        
+        check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
+        n_eff_limit = np.sqrt(2.0 / (ev.n_eff - 1))
+        print(f"Standardized Variance Check: {check}")
+        print(f"Aim for sqrt( 2/(n_eff-1) ) = {n_eff_limit}")
+        print(f"sqrt(evidence_inv_var_var) / evidence_inv_var = {check}")
+    
 
         if plot_corner:
             #Plot samples from tt
@@ -328,7 +362,7 @@ def run_small_cosmo_tt(
         num_samples_tt = nchains * (samples_per_chain-nburn)
 
         # Estimate evidence
-        evidence = estimate_evidence(neglog_posterior_torch_partial, dirt, num_samples_tt)
+        evidence = estimate_evidence(neglog_posterior_torch_exact_partial, dirt, num_samples_tt)
         print(f"TT importance sampling evidence: {evidence.item():.4e}")
         clock = time.process_time() - clock
         print(f"TT importance sampling evidence estimation completed in {clock:.2f} seconds")
