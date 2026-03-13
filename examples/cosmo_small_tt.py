@@ -141,7 +141,7 @@ def run_small_cosmo_tt(
 
         # Plot results
         hm.utils.plot_getdist(samples_emcee.reshape(-1, ndim), labels=labels)
-        plt.savefig("jax_cosmo_emcee_corner.png", bbox_inches="tight", dpi=300)
+        plt.savefig("small_cosmo_emcee_corner.png", bbox_inches="tight", dpi=300)
         plt.show()
 
         # 2. Configure chains for harmonic
@@ -169,12 +169,9 @@ def run_small_cosmo_tt(
         print("Compute evidence...")
         ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
-        ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
-        err_ln_inv_evidence = ev.compute_ln_inv_evidence_errors()
+        ln_evidence_hm =  -ev.ln_evidence_inv
+        err_ln_inv_evidence_hm = ev.compute_ln_inv_evidence_errors()
 
-        # ===========================================================================
-        # Technical Details (Rosenbrock Style)
-        # ===========================================================================
         hm.logs.debug_log("---------------------------------")
         hm.logs.debug_log("Technical Details")
         hm.logs.debug_log("---------------------------------")
@@ -184,8 +181,8 @@ def run_small_cosmo_tt(
         hm.logs.debug_log("---------------------------------")
         hm.logs.debug_log(f"shift = {ev.shift_value}, shift setting = {ev.shift}")
         
-        print(f"ln_inv_evidence = {ev.ln_evidence_inv} +/- {err_ln_inv_evidence}")
-        print(f"ln evidence = {-ev.ln_evidence_inv} +/- {-err_ln_inv_evidence[1]} {-err_ln_inv_evidence[0]}")
+        print(f"ln_inv_evidence (harmonic)= {ev.ln_evidence_inv} +/- {err_ln_inv_evidence_hm}")
+        print(f"ln evidence = {-ev.ln_evidence_inv} +/- {-err_ln_inv_evidence_hm[1]} {-err_ln_inv_evidence_hm[0]}")
         print(f"kurtosis = {ev.kurtosis} (Aim for ~3)")
         
         check = np.exp(0.5 * ev.ln_evidence_inv_var_var - ev.ln_evidence_inv_var)
@@ -202,7 +199,7 @@ def run_small_cosmo_tt(
             hm.utils.plot_getdist_compare(
                 chains_train.samples, samps_compressed, labels=labels, legend_fontsize=12
             )
-            plt.savefig("jax_cosmo_hm_corner.png", bbox_inches="tight", dpi=300)
+            plt.savefig("small_cosmo_hm_corner.png", bbox_inches="tight", dpi=300)
             plt.show()
 
         clock = time.process_time() - clock
@@ -210,19 +207,19 @@ def run_small_cosmo_tt(
     
     tt_evidence = True
     if tt_evidence:
-        def ln_posterior_torch(theta_torch, lower, upper):
-            """Wrapper to evaluate the log-posterior using JAX within a PyTorch context.
-                This is needed for the Tensor Train approximation.
-            """
+        def neglog_posterior_torch(theta_torch, lower, upper):
             theta_np = theta_torch.detach().cpu().numpy()
-            logprobs = np.array([float(ln_posterior(t, lower, upper)) for t in theta_np])
-                # Check for non-finite values
-            if not np.all(np.isfinite(logprobs)):
-                print("Non-finite values detected in log-posterior:", logprobs)
-            current_max = np.max(logprobs)
-            shifted_lp = np.clip(logprobs - current_max, a_min=-50.0, a_max=None)
-            return torch.tensor(shifted_lp, dtype=theta_torch.dtype, device=theta_torch.device)
-            #return torch.tensor(logprobs, dtype=theta_torch.dtype, device=theta_torch.device)
+            lnps = np.array(
+                [float(ln_posterior(t, lower, upper)) for t in theta_np],
+                dtype=np.float64,
+            )
+
+            # Deterministic penalty for invalid values
+            lnps = np.where(np.isfinite(lnps), lnps, -1e30)
+
+            # DIRT expects negative log target
+            neglogps = -lnps
+            return torch.tensor(neglogps, dtype=theta_torch.dtype, device=theta_torch.device)
 
         # ===========================================================================
         # Configure Tensor Train (deep_tensor)
@@ -231,10 +228,8 @@ def run_small_cosmo_tt(
         approximation_domain = torch.tensor(limits, dtype=torch.float64)
 
         # Create a partial function with lower and upper bounds pre-specified
-        ln_posterior_torch_partial = partial(ln_posterior_torch, lower=lower_tt, upper=upper_tt)
-
-        # Pass the partial function to TargetFunc
-        target_func = dt.TargetFunc(ln_posterior_torch_partial)
+        neglog_posterior_torch_partial = partial(neglog_posterior_torch, lower=lower_tt, upper=upper_tt)
+        target_func = dt.TargetFunc(neglog_posterior_torch_partial)
         
         reference = dt.UniformReference() 
         preconditioner = dt.UniformMapping(approximation_domain, reference)
@@ -289,34 +284,23 @@ def run_small_cosmo_tt(
 
         ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
-        ln_evidence, ln_evidence_std = ev.compute_ln_evidence()
+        ln_evidence_hm_tt = -ev.ln_evidence_inv
+        err_ln_inv_evidence_hm_tt = ev.compute_ln_inv_evidence_errors()
 
-        hm.logs.info_log(f"Final ln_evidence: {ln_evidence:.4f} +/- {ln_evidence_std:.4f}")
+        print(f"Harmonic + tt posterior samples ln_evidence: {ln_evidence_hm_tt} +/- {-err_ln_inv_evidence_hm_tt[1]} {-err_ln_inv_evidence_hm_tt[0]}")
 
         if plot_corner:
+            #Plot samples from tt
             hm.utils.plot_getdist(samples_np, labels=labels)
-            plt.savefig("jax_cosmo_tt_corner.png", bbox_inches="tight", dpi=300)
+            plt.savefig("small_cosmo_tt_corner.png", bbox_inches="tight", dpi=300)
+            plt.title("Samples from TT approximation")
             plt.show()
 
-        def estimate_evidence(
-            neglogpost: Callable[[torch.Tensor], torch.Tensor], 
-            dirt: dt.DIRT, 
-            num_samples: int
-        ) -> torch.Tensor:
-            """Computes an importance sampling estimate of the evidence."""
-            
-            # Generate a set of samples from DIRT approximation
-            rs = dirt.reference.random(n=num_samples, d=dim)
-            xs, neglogposts_dirt = dirt.eval_irt(rs)
-            
-            # Evaluate the exact (unnormalised) posterior at each sample
-            neglogposts_exact = neglogpost(xs)
-            
-            # Estimate evidence using importance sampling
-            res = dt.run_importance_sampling(neglogposts_dirt, neglogposts_exact)
-            evidence_estimate = res.log_norm.exp()
-            
-            return evidence_estimate
+            #Plot trained flow vs TT samples
+            flow_samples_tt = np.array(model.sample(samples_np.shape[0]))
+            hm.utils.plot_getdist_compare(samples_np, flow_samples_tt, labels=labels)
+            plt.savefig("small_cosmo_tt_vs_flow_corner.png", bbox_inches="tight", dpi=300)
+            plt.show()
         
         def estimate_evidence(
             neglogpost: Callable[[torch.Tensor], torch.Tensor], 
@@ -344,11 +328,18 @@ def run_small_cosmo_tt(
         num_samples_tt = nchains * (samples_per_chain-nburn)
 
         # Estimate evidence
-        evidence = estimate_evidence(ln_posterior_torch_partial, dirt, num_samples_tt)
-        print(f"Estimated evidence: {evidence.item():.4e}")
+        evidence = estimate_evidence(neglog_posterior_torch_partial, dirt, num_samples_tt)
+        print(f"TT importance sampling evidence: {evidence.item():.4e}")
         clock = time.process_time() - clock
         print(f"TT importance sampling evidence estimation completed in {clock:.2f} seconds")
 
+    if tt_evidence and emcee_harmonic:
+        print("\nComparison of evidence estimates:")
+        print(f"Harmonic + emcee estimate:{ln_evidence_hm:.4f} +/- {-err_ln_inv_evidence_hm[1]} {-err_ln_inv_evidence_hm[0]}")
+        print(f"Harmonic + tt posterior samples ln_evidence: {ln_evidence_hm_tt} +/- {-err_ln_inv_evidence_hm_tt[1]} {-err_ln_inv_evidence_hm_tt[0]}")
+        print(f" - TT importance sampling estimate: evidence = {evidence.item():.4e} (ln_evidence ~ {np.log(evidence.item()):.4f})")
+
+
 if __name__ == "__main__":
     hm.logs.setup_logging()
-    run_small_cosmo_tt(nchains=100, samples_per_chain=1500, nburn=500)
+    run_small_cosmo_tt(nchains=100, samples_per_chain=2000, nburn=500)
