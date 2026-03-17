@@ -1,4 +1,7 @@
 import numpy as np
+import jax 
+# Set precision
+jax.config.update("jax_enable_x64", True)
 import emcee
 import time
 import matplotlib.pyplot as plt
