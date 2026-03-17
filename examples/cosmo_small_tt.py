@@ -1,27 +1,27 @@
+import torch
+import jax 
+# Set precision
+torch.set_default_dtype(torch.float64)
+# Disable TensorFloat32 to ensure strict double precision
+#torch.backends.cuda.matmul.allow_tf32 = False
+#torch.backends.cudnn.allow_tf32 = False
+jax.config.update("jax_enable_x64", True)
 import numpy as np
 import time
 import matplotlib.pyplot as plt
 import harmonic as hm
-import torch
 import deep_tensor as dt
 from functools import partial
 import emcee
 from typing import Callable
-
-
-# JAX for the "small" cosmological simulator
-import jax 
 import jax.numpy as jnp
 import jax_cosmo as jc
+import os
 
 # Check available devices
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Torch using device:", device)
 print("JAX devices:", jax.devices())
-
-# Set precision
-torch.set_default_dtype(torch.float64)
-jax.config.update("jax_enable_x64", True)
 
 
 def setup_jax_cosmo():
@@ -86,41 +86,85 @@ def ln_posterior(theta, lower, upper):
     return lp + jax_likelihood(theta)
 
 
+@jax.jit
+def jax_ln_prior_box_batch(thetas, lower, upper):
+    in_bounds = jnp.all((thetas >= lower) & (thetas <= upper), axis=1)
+    log_norm = -jnp.log(jnp.prod(upper - lower))
+    return jnp.where(in_bounds, log_norm, -jnp.inf)
+
+
+@jax.jit
+def jax_likelihood_batch(thetas):
+    return jax.vmap(jax_likelihood)(thetas)
+
+
+@jax.jit
+def jax_ln_posterior_batch(thetas, lower, upper):
+    lp = jax_ln_prior_box_batch(thetas, lower, upper)
+    ll = jax_likelihood_batch(thetas)
+    return jnp.where(jnp.isfinite(lp), lp + ll, -jnp.inf)
+
+
+def ln_posterior_vectorized(theta_batch, lower, upper):
+    """Vectorized log-posterior for emcee (shape: nwalkers x ndim)."""
+    theta_arr = np.asarray(theta_batch, dtype=np.float64)
+    if theta_arr.ndim == 1:
+        return float(ln_posterior(theta_arr, lower, upper))
+
+    # Fast path: evaluate the full walker batch in one JAX call.
+    try:
+        lnps = jax_ln_posterior_batch(
+            jnp.asarray(theta_arr),
+            jnp.asarray(lower, dtype=jnp.float64),
+            jnp.asarray(upper, dtype=jnp.float64),
+        )
+        return np.asarray(lnps, dtype=np.float64)
+    except Exception:
+        # Robust fallback for any non-vectorizable corner case.
+        return np.array([float(ln_posterior(t, lower, upper)) for t in theta_arr], dtype=np.float64)
+
+
 def run_small_cosmo_tt(
     nchains=50,
     samples_per_chain=1500,
     nburn=500,
     plot_corner=True,
+    vectorize_emcee=True,
 ):
+    plot_dir = "examples/plots"
+    os.makedirs(plot_dir, exist_ok=True)
+
     # Parameters from notebook: sigma8, Omega_c, Omega_b, h, n_s
     labels = ['sigma8', 'Omega_c', 'Omega_b', 'h', 'n_s']
     ndim = len(labels)
     
-    limits = [
-        (0.7, 0.9),   # sigma8 (Truth ~0.81)
-        (0.1, 0.4),   # Omega_c (Truth ~0.26)
-        (0.03, 0.06), # Omega_b (Truth ~0.049)
-        (0.6, 0.9),   # h (Truth ~0.67)
-        (0.7, 1.1),   # n_s (Truth ~0.96)
-    ]
+    approximation_domain = torch.tensor([
+        [0.7, 0.9],   # sigma8 (Truth ~0.81)
+        [0.2, 0.4],   # Omega_c (Truth ~0.26)
+        [0.035, 0.065], # Omega_b (Truth ~0.05)
+        [0.55, 0.85],   # h (Truth ~0.67)
+        [0.86, 1.1],   # n_s (Truth ~0.96)
+    ], dtype=torch.float64)
 
     # Extract lower and upper bounds from limits
-    lower_tt, upper_tt = np.array(list(zip(*limits)))
+    lower_tt, upper_tt = np.array(list(zip(*approximation_domain.tolist())))
+    print("Parameter bounds for TT approximation:")
+    for i, label in enumerate(labels):
+        print(f"  {label}: [{lower_tt[i]:.3f}, {upper_tt[i]:.3f}]")
+
 
     # Box bounds
-    lower_prior = np.array([0.5, 0.1, 0.04, 0.64, 0.84])
-    upper_prior = np.array([1.2, 0.5, 0.06, 0.82, 1.10])
+    lower_prior = np.array([0.5, 0.1, 0.03, 0.5, 0.82])
+    upper_prior = np.array([1.2, 0.5, 0.07, 0.9, 1.2])
 
     # Model parameters for RQSpline
-    epochs_num = 40
+    epochs_num = 80
     temperature = 0.9
     training_proportion = 0.5
     standardize = True
     n_layers = 4
     n_bins = 8
     hidden_size = [64, 64]
-    # Spline range should roughly cover the prior domain
-    spline_range = (-2.0, 2.0) 
 
     emcee_harmonic = True
     if emcee_harmonic:
@@ -132,7 +176,26 @@ def run_small_cosmo_tt(
         # Initialize walkers in a small ball around the center of the prior
         pos = lower_prior + (upper_prior - lower_prior) * (0.45 + 0.1 * np.random.rand(nchains, ndim))
         
-        sampler = emcee.EnsembleSampler(nchains, ndim, ln_posterior, args=[lower_prior, upper_prior])
+        if vectorize_emcee:
+            # Warm-up compile so the first MCMC step does not pay full JIT cost.
+            _ = ln_posterior_vectorized(pos[: min(8, nchains)], lower_prior, upper_prior)
+            print("Using vectorized emcee log-posterior (JAX batched).")
+            sampler = emcee.EnsembleSampler(
+                nchains,
+                ndim,
+                ln_posterior_vectorized,
+                args=[lower_prior, upper_prior],
+                vectorize=True,
+            )
+        else:
+            print("Using scalar emcee log-posterior.")
+            sampler = emcee.EnsembleSampler(
+                nchains,
+                ndim,
+                ln_posterior,
+                args=[lower_prior, upper_prior],
+                vectorize=False,
+            )
         rstate = np.random.get_state()
         sampler.run_mcmc(pos, samples_per_chain, rstate0=rstate, progress=True)
         
@@ -141,7 +204,11 @@ def run_small_cosmo_tt(
 
         # Plot results
         hm.utils.plot_getdist(samples_emcee.reshape(-1, ndim), labels=labels)
-        plt.savefig("small_cosmo_emcee_corner.png", bbox_inches="tight", dpi=300)
+        plt.savefig(
+            f"{plot_dir}/small_cosmo_emcee_corner.png",
+            bbox_inches="tight",
+            dpi=300,
+        )
         plt.show()
 
         # 2. Configure chains for harmonic
@@ -159,7 +226,6 @@ def run_small_cosmo_tt(
             n_layers=n_layers,
             n_bins=n_bins,
             hidden_size=hidden_size,
-            spline_range=spline_range,
             standardize=standardize,
             temperature=temperature,
         )
@@ -199,9 +265,11 @@ def run_small_cosmo_tt(
             hm.utils.plot_getdist_compare(
                 chains_train.samples, samps_compressed, labels=labels, legend_fontsize=12
             )
-            plt.savefig("small_cosmo_hm_corner.png", bbox_inches="tight", dpi=300)
-            plt.show()
-
+            plt.savefig(
+                f"{plot_dir}/small_cosmo_hm_corner.png",
+                bbox_inches="tight",
+                dpi=300,
+            )
         clock = time.process_time() - clock
         hm.logs.info_log("Execution time = {}s".format(clock))
     
@@ -210,51 +278,42 @@ def run_small_cosmo_tt(
         theta_ref = 0.5 * (lower_tt + upper_tt)
         lnpost_ref = float(ln_posterior(theta_ref, lower_tt, upper_tt))
 
-        def neglog_posterior_torch_exact(theta_torch, lower, upper):
+        def neglog_posterior_torch(theta_torch, lower, upper):
+            """Compute shifted negative log-posterior for TT (numerical stability)."""
             theta_np = theta_torch.detach().cpu().numpy()
             lnps = np.array(
                 [float(ln_posterior(t, lower, upper)) for t in theta_np],
                 dtype=np.float64,
             )
-
-            # True target for correction/evidence: no clipping, no arbitrary shift.
             lnps = np.where(np.isfinite(lnps), lnps, -1e30)
-            neglogps = -lnps
-            return torch.tensor(neglogps, dtype=theta_torch.dtype, device=theta_torch.device)
-
-        def neglog_posterior_torch_tt(theta_torch, lower, upper):
-            theta_np = theta_torch.detach().cpu().numpy()
-            lnps = np.array(
-                [float(ln_posterior(t, lower, upper)) for t in theta_np],
-                dtype=np.float64,
-            )
-
-            # Deterministic penalty for invalid values
-            lnps = np.where(np.isfinite(lnps), lnps, -1e30)
-
-            # DIRT expects a negative log target. Shift by a fixed reference point
-            # and clamp deterministically to keep TT fitting numerically stable.
-            neglogps = np.clip(lnpost_ref - lnps, a_min=0.0, a_max=80.0)
-            return torch.tensor(neglogps, dtype=theta_torch.dtype, device=theta_torch.device)
+            # Shift for numerical stability
+            shifted = lnpost_ref - lnps
+            return torch.tensor(shifted, dtype=theta_torch.dtype, device=theta_torch.device)
 
         # ===========================================================================
         # Configure Tensor Train (deep_tensor)
         # ===========================================================================
         hm.logs.info_log("Building Tensor Train approximation...")
-        approximation_domain = torch.tensor(limits, dtype=torch.float64)
 
         # Create a partial function with lower and upper bounds pre-specified
-        neglog_posterior_torch_tt_partial = partial(neglog_posterior_torch_tt, lower=lower_tt, upper=upper_tt)
-        neglog_posterior_torch_exact_partial = partial(neglog_posterior_torch_exact, lower=lower_tt, upper=upper_tt)
-        target_func = dt.TargetFunc(neglog_posterior_torch_tt_partial)
+        neglog_posterior_torch_partial = partial(neglog_posterior_torch, lower=lower_prior, upper=upper_prior)
+        target_func = dt.TargetFunc(neglog_posterior_torch_partial)
         
         reference = dt.UniformReference() 
         preconditioner = dt.UniformMapping(approximation_domain, reference)
         
-        # More robust TT setup for the 5D cosmology posterior.
-        tt_options = dt.TTOptions(max_als=6, init_rank=6, tt_method="fixed_rank")
-        basis = dt.Lagrange1(num_elems=19)
+        tt_max_als = 2
+        tt_init_rank = 10
+        tt_num_elems = 50
+        tt_options = dt.TTOptions(max_als=tt_max_als, init_rank=tt_init_rank, tt_method="fixed_rank")
+        basis = dt.Lagrange1(num_elems=tt_num_elems)
         bases = dt.ApproxBases(basis, ndim)
+        tt_tag = f"als{tt_max_als}_r{tt_init_rank}_e{tt_num_elems}"
+
+        print(
+            f"TT config: max_als={tt_max_als}, init_rank={tt_init_rank}, "
+            f"num_elems={tt_num_elems}"
+        )
 
         tt = dt.TT(tt_options)
         ftt = dt.FTT(bases, tt)
@@ -262,28 +321,36 @@ def run_small_cosmo_tt(
         dirt = dt.DIRT(target_func, preconditioner, ftt, bridge)
 
         hm.logs.info_log("Generating independent samples from TT...")
+        startTime = time.time()
+        print(f"Generating random samples from the reference distribution for TT evaluation...")
         num_sampl = nchains * (samples_per_chain-nburn)
         rs = reference.random(n=num_sampl, d=ndim)
-        
-        startTime = time.time()
-        xs, neglogfxs_sirt = dirt.eval_irt(rs)
-        neglogfxs_exact = neglog_posterior_torch_exact_partial(xs)
-        res = dt.run_independence_sampler(xs, neglogfxs_sirt, neglogfxs_exact)
-        
-        print(f'Time to generate {num_sampl} samples: {(time.time()-startTime):.2f}s')
-        print(f"Acceptance rate: {res.acceptance_rate:.3f}")
 
-        samples_np = res.xs.detach().cpu().numpy()
+        print(f"Evaluating TT at {num_sampl} samples...")
+        xs, neglogfxs_sirt = dirt.eval_irt(rs)
+
+        # Evaluate shifted target at TT samples for diagnostics
+        neglogfxs_exact = target_func(xs)
+        res = dt.run_independence_sampler(xs, neglogfxs_sirt, neglogfxs_exact)
+        print(f'Time to generate {num_sampl} TT-approx samples: {(time.time()-startTime):.2f}s')
+
+        print(f"Acceptance rate: {res.acceptance_rate:.3f}")
+        if hasattr(res, "iacts") and len(res.iacts) > 0:
+            iact_msg = ", ".join([f"{v:.3f}" for v in res.iacts[:min(3, len(res.iacts))]])
+            print(f"IACT preview: {iact_msg}")
         
+        # Use independence-corrected samples with exact potentials
+        samples_torch = res.xs
+        samples_tt_np = samples_torch.detach().numpy()
+
+        # Undo shift using exact potentials at corrected samples
+        lnprob_tt = lnpost_ref - res.potentials.detach().numpy()
+
         # Reshape for harmonic (nchains, nsamples, ndim)
-        samples = samples_np.reshape(nchains, samples_per_chain-nburn, ndim)
-        
-        # Re-evaluate true log-probs for harmonic evidence calculation
-        hm.logs.info_log("Computing exact log-probabilities for Harmonic...")
-        lnprob = np.zeros((nchains, samples_per_chain-nburn))
-        for i in range(nchains):
-            for j in range(samples_per_chain-nburn):
-                lnprob[i, j] = float(ln_posterior(samples[i, j], lower_tt, upper_tt))
+        samples = samples_tt_np.reshape(nchains, samples_per_chain - nburn, ndim)
+
+        hm.logs.info_log("Using TT-approximate log-probabilities for Harmonic...")
+        lnprob = lnprob_tt.reshape(nchains, samples_per_chain - nburn)
 
         # ===========================================================================
         # Evidence Calculation (harmonic)
@@ -293,8 +360,15 @@ def run_small_cosmo_tt(
         chains.add_chains_3d(samples, lnprob)
         chains_train, chains_test = hm.utils.split_data(chains, training_proportion=0.5)
 
-        model = hm.model.RQSplineModel(ndim, temperature=0.9)
-        model.fit(chains_train.samples, epochs=15, verbose=True, batch_size=256)
+        model = hm.model.RQSplineModel(
+            ndim,
+            n_layers=n_layers,
+            n_bins=n_bins,
+            hidden_size=hidden_size,
+            standardize=standardize,
+            temperature=temperature,
+        )
+        model.fit(chains_train.samples, epochs=epochs_num, verbose=True, batch_size=256)
 
         ev = hm.Evidence(chains_test.nchains, model)
         ev.add_chains(chains_test)
@@ -325,45 +399,52 @@ def run_small_cosmo_tt(
 
         if plot_corner:
             #Plot samples from tt
-            hm.utils.plot_getdist(samples_np, labels=labels)
-            plt.savefig("small_cosmo_tt_corner.png", bbox_inches="tight", dpi=300)
+            hm.utils.plot_getdist(samples_tt_np, labels=labels)
+            plt.savefig(
+                f"{plot_dir}/small_cosmo_tt_corner_{tt_tag}.png",
+                bbox_inches="tight",
+                dpi=300,
+            )
             plt.title("Samples from TT approximation")
             plt.show()
 
             #Plot trained flow vs TT samples
-            flow_samples_tt = np.array(model.sample(samples_np.shape[0]))
-            hm.utils.plot_getdist_compare(samples_np, flow_samples_tt, labels=labels)
-            plt.savefig("small_cosmo_tt_vs_flow_corner.png", bbox_inches="tight", dpi=300)
+            flow_samples_tt = np.array(model.sample(samples_tt_np.shape[0]))
+            hm.utils.plot_getdist_compare(samples_tt_np, flow_samples_tt, labels=labels)
+            plt.savefig(
+                f"{plot_dir}/small_cosmo_tt_vs_flow_corner_{tt_tag}.png",
+                bbox_inches="tight",
+                dpi=300,
+            )
             plt.show()
         
         def estimate_evidence(
-            neglogpost: Callable[[torch.Tensor], torch.Tensor], 
-            dirt: dt.DIRT, 
-            num_samples: int
-            ) -> torch.Tensor:
-            """Computes an importance sampling estimate of the evidence."""
-            
-            # Generate a set of samples from DIRT approximation
+            neglogpost: Callable[[torch.Tensor], torch.Tensor],
+            dirt: dt.DIRT,
+            num_samples: int,
+        ) -> float:
+            """Computes an importance sampling estimate of the log evidence."""
+
             rs = dirt.reference.random(n=num_samples, d=ndim)
             xs, neglogposts_dirt = dirt.eval_irt(rs)
-            
-            # Evaluate the exact (unnormalised) posterior at each sample
+
+            # Evaluate same shifted target as TT was built on
             neglogposts_exact = neglogpost(xs)
-            
-            # Estimate evidence using importance sampling
+
+            # Both are on the same shifted scale; compare directly
             res = dt.run_importance_sampling(neglogposts_dirt, neglogposts_exact)
-            evidence_estimate = res.log_norm.exp()
-            
-            return evidence_estimate
+
+            # Undo the shift: log Z = log Z_shifted + lnpost_ref
+            # (target was shifted = lnpost_ref - lnps, so Z_shifted = exp(-lnpost_ref) * Z)
+            return res.log_norm.item() + lnpost_ref
 
         clock = time.process_time()
 
-        # Number of samples for importance sampling
-        num_samples_tt = nchains * (samples_per_chain-nburn)
+        # Keep a separate importance-sampling evidence estimate.
+        num_samples_tt = nchains * (samples_per_chain - nburn)
+        log_ev = estimate_evidence(target_func, dirt, num_samples_tt)
+        print(f"TT importance sampling ln_evidence: {log_ev:.4f}")
 
-        # Estimate evidence
-        evidence = estimate_evidence(neglog_posterior_torch_exact_partial, dirt, num_samples_tt)
-        print(f"TT importance sampling evidence: {evidence.item():.4e}")
         clock = time.process_time() - clock
         print(f"TT importance sampling evidence estimation completed in {clock:.2f} seconds")
 
@@ -371,9 +452,14 @@ def run_small_cosmo_tt(
         print("\nComparison of evidence estimates:")
         print(f"Harmonic + emcee estimate:{ln_evidence_hm:.4f} +/- {-err_ln_inv_evidence_hm[1]} {-err_ln_inv_evidence_hm[0]}")
         print(f"Harmonic + tt posterior samples ln_evidence: {ln_evidence_hm_tt} +/- {-err_ln_inv_evidence_hm_tt[1]} {-err_ln_inv_evidence_hm_tt[0]}")
-        print(f" - TT importance sampling estimate: evidence = {evidence.item():.4e} (ln_evidence ~ {np.log(evidence.item()):.4f})")
+        print(f" - TT importance sampling estimate: ln_evidence ~ {log_ev:.4f}")
 
 
 if __name__ == "__main__":
     hm.logs.setup_logging()
-    run_small_cosmo_tt(nchains=100, samples_per_chain=2000, nburn=500)
+    run_small_cosmo_tt(
+        nchains=200,
+        samples_per_chain=1000,
+        nburn=500,
+        vectorize_emcee=True,
+    )

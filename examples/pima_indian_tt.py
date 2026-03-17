@@ -1,3 +1,11 @@
+import jax 
+import torch
+# Set precision
+torch.set_default_dtype(torch.float64)
+# Disable TensorFloat32 to ensure strict double precision
+#torch.backends.cuda.matmul.allow_tf32 = False
+#torch.backends.cudnn.allow_tf32 = False
+jax.config.update("jax_enable_x64", True)
 import numpy as np
 import time
 import matplotlib.pyplot as plt
@@ -10,10 +18,6 @@ print("Torch using device:", device)
 import jax 
 import jax.numpy as jnp
 print("JAX devices:", jax.devices())
-#set double precision
-torch.set_default_dtype(torch.float64)
-jax.config.update("jax_enable_x64", True)
-
 from functools import partial
 
 
@@ -45,7 +49,7 @@ def ln_prior(tau, theta):
 
     Args:
 
-        tau: Characteristic width of posterior \in [0.01,1].
+        tau: Characteristic width of posterior \\in [0.01,1].
 
         theta: Vector of parameter variables associated with covariates x.
 
@@ -66,7 +70,7 @@ def ln_posterior(theta, tau, x, y):
 
         theta: Vector of parameter variables associated with covariates x.
 
-        tau: Characteristic width of posterior \in [0.01,1].
+        tau: Characteristic width of posterior \\in [0.01,1].
 
         x: Vector of data covariates (e.g. NP, PGC, BP, TST, DMI etc).
 
@@ -213,7 +217,7 @@ def run_example(
 
     training_proportion = 0.5
     temperature = 0.9
-    epochs_num = 20
+    epochs_num = 60
 
     # "Bias", "NP", "PGC", "BMI", "DP", "AGE"
     # Model 1: 5 dimensions (Bias, NP, PGC, BMI, DP)
@@ -260,7 +264,7 @@ def run_example(
         approximation_domain= approximation_domain_2
 
     preconditioner = dt.UniformMapping(approximation_domain, reference) # define preconditioner
-    tt_options = dt.TTOptions(max_als=1, init_rank=[10], tt_method="fixed_rank") # set number of sweeps (max_als=1), ranks, fix ranks 
+    tt_options = dt.TTOptions(max_als=1, init_rank=10, tt_method="fixed_rank") # set number of sweeps (max_als=1), ranks, fix ranks 
 
     basis = dt.Lagrange1(num_elems=50) # piecewise linear interpolation
     # here you can choose other interpolation basis such as fourier or chebyshev
@@ -307,7 +311,7 @@ def run_example(
 
 
     samples_torch = res.xs  # PyTorch tensor
-    samples_np = samples_torch.detach().cpu().numpy()  # Convert to numpy
+    samples_np = samples_torch.detach().numpy()  # Convert to numpy
 
     plot_samples = True
     if plot_samples:
@@ -325,18 +329,22 @@ def run_example(
                 dpi=300,
             )
     
-    samples = samples_np.reshape(nchains, samples_per_chain, ndim)
+    samples = jnp.array(samples_np.reshape(nchains, samples_per_chain, ndim))
     
     print(f"Reshaped samples: {samples.shape}")
     print("Computing log probabilities...")
     
-    # Compute log probabilities - simple loop
-    lnprob = np.zeros((nchains, samples_per_chain))
-    for i in range(nchains):
-        for j in range(samples_per_chain):
-            lnprob[i, j] = -ln_posterior_fixed(samples[i, j, :])
-        if (i + 1) % 10 == 0:
-            print(f"  Processed {i+1}/{nchains} chains...")
+    if False:
+        # Compute log probabilities - simple loop
+        lnprob = np.zeros((nchains, samples_per_chain))
+        for i in range(nchains):
+            for j in range(samples_per_chain):
+                lnprob[i, j] = -ln_posterior_fixed(samples[i, j, :])
+            if (i + 1) % 10 == 0:
+                print(f"  Processed {i+1}/{nchains} chains...")
+
+
+    lnprob = jnp.array(-res.potentials.detach().numpy().reshape(nchains, samples_per_chain))
     
     print(f"Log probabilities: {lnprob.shape}")
     
