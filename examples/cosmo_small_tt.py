@@ -137,6 +137,11 @@ def run_small_cosmo_tt(
     # Parameters from notebook: sigma8, Omega_c, Omega_b, h, n_s
     labels = ['sigma8', 'Omega_c', 'Omega_b', 'h', 'n_s']
     ndim = len(labels)
+    # Single global parameter reorder used across all methods in this run.
+    # New order: sigma8, Omega_c, h, n_s, Omega_b
+    param_order = np.array([0, 1, 3, 4, 2], dtype=int)
+    inv_param_order = np.argsort(param_order)
+    reorder_tag = "reordered_" + "-".join(map(str, param_order.tolist()))
     
     approximation_domain = torch.tensor([
         [0.7, 0.9],   # sigma8 (Truth ~0.81)
@@ -145,6 +150,8 @@ def run_small_cosmo_tt(
         [0.55, 0.85],   # h (Truth ~0.67)
         [0.86, 1.1],   # n_s (Truth ~0.96)
     ], dtype=torch.float64)
+    approximation_domain = approximation_domain[param_order.tolist(), :]
+    labels = [labels[i] for i in param_order]
 
     # Extract lower and upper bounds from limits
     lower_tt, upper_tt = np.array(list(zip(*approximation_domain.tolist())))
@@ -156,6 +163,29 @@ def run_small_cosmo_tt(
     # Box bounds
     lower_prior = np.array([0.5, 0.1, 0.03, 0.5, 0.82])
     upper_prior = np.array([1.2, 0.5, 0.07, 0.9, 1.2])
+    lower_prior = lower_prior[param_order]
+    upper_prior = upper_prior[param_order]
+
+    def _to_physical_order(theta):
+        arr = np.asarray(theta)
+        return arr[..., inv_param_order]
+
+    def ln_posterior_reordered(theta, lower, upper):
+        return ln_posterior(
+            _to_physical_order(theta),
+            _to_physical_order(lower),
+            _to_physical_order(upper),
+        )
+
+    def ln_posterior_vectorized_reordered(theta_batch, lower, upper):
+        theta_arr = np.asarray(theta_batch)
+        if theta_arr.ndim == 1:
+            return float(ln_posterior_reordered(theta_arr, lower, upper))
+        return ln_posterior_vectorized(
+            _to_physical_order(theta_arr),
+            _to_physical_order(lower),
+            _to_physical_order(upper),
+        )
 
     # Model parameters for RQSpline
     epochs_num = 80
@@ -178,12 +208,12 @@ def run_small_cosmo_tt(
         
         if vectorize_emcee:
             # Warm-up compile so the first MCMC step does not pay full JIT cost.
-            _ = ln_posterior_vectorized(pos[: min(8, nchains)], lower_prior, upper_prior)
+            _ = ln_posterior_vectorized_reordered(pos[: min(8, nchains)], lower_prior, upper_prior)
             print("Using vectorized emcee log-posterior (JAX batched).")
             sampler = emcee.EnsembleSampler(
                 nchains,
                 ndim,
-                ln_posterior_vectorized,
+                ln_posterior_vectorized_reordered,
                 args=[lower_prior, upper_prior],
                 vectorize=True,
             )
@@ -192,7 +222,7 @@ def run_small_cosmo_tt(
             sampler = emcee.EnsembleSampler(
                 nchains,
                 ndim,
-                ln_posterior,
+                ln_posterior_reordered,
                 args=[lower_prior, upper_prior],
                 vectorize=False,
             )
@@ -205,7 +235,7 @@ def run_small_cosmo_tt(
         # Plot results
         hm.utils.plot_getdist(samples_emcee.reshape(-1, ndim), labels=labels)
         plt.savefig(
-            f"{plot_dir}/small_cosmo_emcee_corner.png",
+            f"{plot_dir}/small_cosmo_emcee_corner_{reorder_tag}.png",
             bbox_inches="tight",
             dpi=300,
         )
@@ -266,7 +296,7 @@ def run_small_cosmo_tt(
                 chains_train.samples, samps_compressed, labels=labels, legend_fontsize=12
             )
             plt.savefig(
-                f"{plot_dir}/small_cosmo_hm_corner.png",
+                f"{plot_dir}/small_cosmo_hm_corner_{reorder_tag}.png",
                 bbox_inches="tight",
                 dpi=300,
             )
@@ -276,15 +306,14 @@ def run_small_cosmo_tt(
     tt_evidence = True
     if tt_evidence:
         theta_ref = 0.5 * (lower_tt + upper_tt)
-        lnpost_ref = float(ln_posterior(theta_ref, lower_tt, upper_tt))
+        lnpost_ref = float(ln_posterior_reordered(theta_ref, lower_tt, upper_tt))
 
         def neglog_posterior_torch(theta_torch, lower, upper):
             """Compute shifted negative log-posterior for TT (numerical stability)."""
             theta_np = theta_torch.detach().cpu().numpy()
-            lnps = np.array(
-                [float(ln_posterior(t, lower, upper)) for t in theta_np],
-                dtype=np.float64,
-            )
+            # Batched evaluation significantly improves throughput and stability.
+            lnps = ln_posterior_vectorized_reordered(theta_np, lower, upper)
+            lnps = np.asarray(lnps, dtype=np.float64)
             lnps = np.where(np.isfinite(lnps), lnps, -1e30)
             # Shift for numerical stability
             shifted = lnpost_ref - lnps
@@ -305,7 +334,7 @@ def run_small_cosmo_tt(
         tt_max_als = 2
         tt_init_rank = 10
         tt_num_elems = 50
-        tt_options = dt.TTOptions(max_als=tt_max_als, init_rank=tt_init_rank, tt_method="fixed_rank")
+        tt_options = dt.TTOptions(max_als=tt_max_als, init_rank=tt_init_rank)
         basis = dt.Lagrange1(num_elems=tt_num_elems)
         bases = dt.ApproxBases(basis, ndim)
         tt_tag = f"als{tt_max_als}_r{tt_init_rank}_e{tt_num_elems}"
@@ -401,18 +430,18 @@ def run_small_cosmo_tt(
             #Plot samples from tt
             hm.utils.plot_getdist(samples_tt_np, labels=labels)
             plt.savefig(
-                f"{plot_dir}/small_cosmo_tt_corner_{tt_tag}.png",
+                f"{plot_dir}/small_cosmo_tt_corner_{tt_tag}_{reorder_tag}.png",
                 bbox_inches="tight",
                 dpi=300,
             )
-            plt.title("Samples from TT approximation")
+            plt.title(f"Samples from TT approximation ({reorder_tag})")
             plt.show()
 
             #Plot trained flow vs TT samples
             flow_samples_tt = np.array(model.sample(samples_tt_np.shape[0]))
             hm.utils.plot_getdist_compare(samples_tt_np, flow_samples_tt, labels=labels)
             plt.savefig(
-                f"{plot_dir}/small_cosmo_tt_vs_flow_corner_{tt_tag}.png",
+                f"{plot_dir}/small_cosmo_tt_vs_flow_corner_{tt_tag}_{reorder_tag}.png",
                 bbox_inches="tight",
                 dpi=300,
             )
@@ -459,7 +488,7 @@ if __name__ == "__main__":
     hm.logs.setup_logging()
     run_small_cosmo_tt(
         nchains=200,
-        samples_per_chain=1000,
-        nburn=500,
+        samples_per_chain=3000,
+        nburn=1000,
         vectorize_emcee=True,
     )
