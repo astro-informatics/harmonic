@@ -23,6 +23,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Torch using device:", device)
 print("JAX devices:", jax.devices())
 
+# Invalid likelihood penalty for unphysical regions
+INVALID_LOGLIKE_RAW = -1e30
 
 def setup_jax_cosmo():
     # 1. Define Redshift bins
@@ -62,15 +64,12 @@ def jax_likelihood(theta):
         Omega_k=0.0, w0=-1.0, wa=0.0,
     )
 
-    try:
-        cls = jc.angular_cl.angular_cl(cosmo, ELL, PROBES)
-        mu = jnp.concatenate(cls)
-        diff = DATA_OBS - mu
-        # Likelihood: -0.5 * chi^2
-        lnlike = -0.5 * diff @ INV_COV @ diff
-        return lnlike
-    except:
-        return -1e10 # Return very low value for unphysical regions
+    cls = jc.angular_cl.angular_cl(cosmo, ELL, PROBES)
+    mu = jnp.concatenate(cls)
+    diff = DATA_OBS - mu
+    # Likelihood: -0.5 * chi^2
+    lnlike = -0.5 * diff @ INV_COV @ diff
+    return jnp.where(jnp.isnan(lnlike), INVALID_LOGLIKE_RAW, lnlike)
 
 def ln_prior_box(theta, lower, upper):
     """Uniform Box Prior."""
@@ -141,14 +140,23 @@ def run_small_cosmo_tt(
     # New order: sigma8, Omega_c, h, n_s, Omega_b
     param_order = np.array([0, 1, 3, 4, 2], dtype=int)
     inv_param_order = np.argsort(param_order)
-    reorder_tag = "reordered_" + "-".join(map(str, param_order.tolist()))
+    reorder_tag = "ogreordered_" + "-".join(map(str, param_order.tolist()))
     
+    if False:
+        approximation_domain = torch.tensor([
+            [0.7, 0.9],   # sigma8 (Truth ~0.81)
+            [0.2, 0.4],   # Omega_c (Truth ~0.26)
+            [0.025, 0.08], # Omega_b (Truth ~0.05)
+            [0.45, 0.85],   # h (Truth ~0.67)
+            [0.8, 1.1],   # n_s (Truth ~0.96)
+        ], dtype=torch.float64)
+
     approximation_domain = torch.tensor([
         [0.7, 0.9],   # sigma8 (Truth ~0.81)
-        [0.2, 0.4],   # Omega_c (Truth ~0.26)
-        [0.035, 0.065], # Omega_b (Truth ~0.05)
-        [0.55, 0.85],   # h (Truth ~0.67)
-        [0.86, 1.1],   # n_s (Truth ~0.96)
+        [0.23, 0.3],   # Omega_c (Truth ~0.26)
+        [0.04, 0.06], # Omega_b (Truth ~0.05)
+        [0.64, 0.8],   # h (Truth ~0.67)
+        [0.84, 1.10],   # n_s (Truth ~0.96)
     ], dtype=torch.float64)
     approximation_domain = approximation_domain[param_order.tolist(), :]
     labels = [labels[i] for i in param_order]
@@ -161,8 +169,8 @@ def run_small_cosmo_tt(
 
 
     # Box bounds
-    lower_prior = np.array([0.5, 0.1, 0.03, 0.5, 0.82])
-    upper_prior = np.array([1.2, 0.5, 0.07, 0.9, 1.2])
+    lower_prior = np.array([0.5, 0.1, 0.04, 0.64, 0.84])
+    upper_prior = np.array([1.2, 0.5, 0.06, 0.82, 1.10])
     lower_prior = lower_prior[param_order]
     upper_prior = upper_prior[param_order]
 
@@ -311,13 +319,16 @@ def run_small_cosmo_tt(
         def neglog_posterior_torch(theta_torch, lower, upper):
             """Compute shifted negative log-posterior for TT (numerical stability)."""
             theta_np = theta_torch.detach().cpu().numpy()
-            # Batched evaluation significantly improves throughput and stability.
-            lnps = ln_posterior_vectorized_reordered(theta_np, lower, upper)
-            lnps = np.asarray(lnps, dtype=np.float64)
-            lnps = np.where(np.isfinite(lnps), lnps, -1e30)
-            # Shift for numerical stability
-            shifted = lnpost_ref - lnps
-            return torch.tensor(shifted, dtype=theta_torch.dtype, device=theta_torch.device)
+            # Scalar loop for TT evaluation (avoids JAX recompilation)
+            lnps = np.array(
+                [float(ln_posterior_reordered(t, lower, upper)) for t in theta_np],
+                dtype=np.float64,
+            )
+            # Deterministic penalty for invalid values
+            lnps = np.where(np.isfinite(lnps), lnps, INVALID_LOGLIKE_RAW)
+            # DIRT expects negative log target, shift by reference point
+            neglogps = lnpost_ref - lnps
+            return torch.tensor(neglogps, dtype=theta_torch.dtype, device=theta_torch.device)
 
         # ===========================================================================
         # Configure Tensor Train (deep_tensor)
@@ -331,10 +342,10 @@ def run_small_cosmo_tt(
         reference = dt.UniformReference() 
         preconditioner = dt.UniformMapping(approximation_domain, reference)
         
-        tt_max_als = 2
+        tt_max_als = 1
         tt_init_rank = 10
         tt_num_elems = 50
-        tt_options = dt.TTOptions(max_als=tt_max_als, init_rank=tt_init_rank)
+        tt_options = dt.TTOptions(max_als=tt_max_als, init_rank=tt_init_rank, tt_method="fixed_rank")
         basis = dt.Lagrange1(num_elems=tt_num_elems)
         bases = dt.ApproxBases(basis, ndim)
         tt_tag = f"als{tt_max_als}_r{tt_init_rank}_e{tt_num_elems}"
@@ -460,12 +471,11 @@ def run_small_cosmo_tt(
             # Evaluate same shifted target as TT was built on
             neglogposts_exact = neglogpost(xs)
 
-            # Both are on the same shifted scale; compare directly
+            # Both are on the same scale; compare directly
             res = dt.run_importance_sampling(neglogposts_dirt, neglogposts_exact)
 
-            # Undo the shift: log Z = log Z_shifted + lnpost_ref
-            # (target was shifted = lnpost_ref - lnps, so Z_shifted = exp(-lnpost_ref) * Z)
-            return res.log_norm.item() + lnpost_ref
+            # No shift applied, return log norm directly
+            return res.log_norm.item()
 
         clock = time.process_time()
 
@@ -487,7 +497,7 @@ def run_small_cosmo_tt(
 if __name__ == "__main__":
     hm.logs.setup_logging()
     run_small_cosmo_tt(
-        nchains=200,
+        nchains=100,
         samples_per_chain=3000,
         nburn=1000,
         vectorize_emcee=True,
